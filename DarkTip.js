@@ -26,13 +26,13 @@ if(!window.yepnope) {
 	(function(a,b,c){function H(){var a=z;a.loader={load:G,i:0};return a}function G(a,b,c){var e=b=="c"?r:q;i=0,b=b||"j",u(a)?F(e,a,b,this.i++,d,c):(h.splice(this.i++,0,a),h.length==1&&E());return this}function F(a,c,d,g,j,l){function q(){!o&&A(n.readyState)&&(p.r=o=1,!i&&B(),n.onload=n.onreadystatechange=null,e(function(){m.removeChild(n)},0))}var n=b.createElement(a),o=0,p={t:d,s:c,e:l};n.src=n.data=c,!k&&(n.style.display="none"),n.width=n.height="0",a!="object"&&(n.type=d),n.onload=n.onreadystatechange=q,a=="img"?n.onerror=q:a=="script"&&(n.onerror=function(){p.e=p.r=1,E()}),h.splice(g,0,p),m.insertBefore(n,k?null:f),e(function(){o||(m.removeChild(n),p.r=p.e=o=1,B())},z.errorTimeout)}function E(){var a=h.shift();i=1,a?a.t?e(function(){a.t=="c"?D(a):C(a)},0):(a(),B()):i=0}function D(a){var c=b.createElement("link"),d;c.href=a.s,c.rel="stylesheet",c.type="text/css";if(!a.e&&(o||j)){var g=function(a){e(function(){if(!d)try{((o&&a.sheet!==null)||(j&&a.sheet.cssRules.length))?(d=1,B()):g(a)}catch(b){b.code==1e3||b.message=="security"||b.message=="denied"?(d=1,e(function(){B()},0)):g(a)}},0)};g(c)}else c.onload=function(){d||(d=1,e(function(){B()},0))},a.e&&c.onload();e(function(){d||(d=1,B())},z.errorTimeout),!a.e&&f.parentNode.insertBefore(c,f)}function C(a){var c=b.createElement("script"),d;c.src=a.s,c.onreadystatechange=c.onload=function(){!d&&A(c.readyState)&&(d=1,B(),c.onload=c.onreadystatechange=null)},e(function(){d||(d=1,B())},z.errorTimeout),a.e?c.onload():f.parentNode.insertBefore(c,f)}function B(){var a=1,b=-1;while(h.length- ++b)if(h[b].s&&!(a=h[b].r))break;a&&E()}function A(a){return!a||a=="loaded"||a=="complete"}var d=b.documentElement,e=a.setTimeout,f=b.getElementsByTagName("script")[0],g={}.toString,h=[],i=0,j="MozAppearance"in d.style,k=j&&!!b.createRange().compareNode,l=j&&!k,m=k?d:f.parentNode,n=a.opera&&g.call(a.opera)=="[object Opera]",o="webkitAppearance"in d.style,p=o&&"async"in b.createElement("script"),q=j?"object":n||p?"img":"script",r=o?"img":q,s=Array.isArray||function(a){return g.call(a)=="[object Array]"},t=function(a){return Object(a)===a},u=function(a){return typeof a=="string"},v=function(a){return g.call(a)=="[object Function]"},w=[],x={},y,z;z=function(a){function h(a,b){function i(a){if(u(a))g(a,f,b,0,c);else if(t(a))for(h in a)a.hasOwnProperty(h)&&g(a[h],f,b,h,c)}var c=!!a.test,d=c?a.yep:a.nope,e=a.load||a.both,f=a.callback,h;i(d),i(e),a.complete&&b.load(a.complete)}function g(a,b,d,e,g){var h=f(a),i=h.autoCallback;if(!h.bypass){b&&(b=v(b)?b:b[a]||b[e]||b[a.split("/").pop().split("?")[0]]);if(h.instead)return h.instead(a,b,d,e,g);d.load(h.url,h.forceCSS||!h.forceJS&&/css$/.test(h.url)?"c":c,h.noexec),(v(b)||v(i))&&d.load(function(){H(),b&&b(h.origUrl,g,e),i&&i(h.origUrl,g,e)})}}function f(a){var b=a.split("!"),c=w.length,d=b.pop(),e=b.length,f={url:d,origUrl:d,prefixes:b},g,h;for(h=0;h<e;h++)g=x[b[h]],g&&(f=g(f));for(h=0;h<c;h++)f=w[h](f);return f}var b,d,e=this.yepnope.loader;if(u(a))g(a,0,e,0);else if(s(a))for(b=0;b<a.length;b++)d=a[b],u(d)?g(d,0,e,0):s(d)?z(d):t(d)&&h(d,e);else t(a)&&h(a,e)},z.addPrefix=function(a,b){x[a]=b},z.addFilter=function(a){w.push(a)},z.errorTimeout=1e4,b.readyState==null&&b.addEventListener&&(b.readyState="loading",b.addEventListener("DOMContentLoaded",y=function(){b.removeEventListener("DOMContentLoaded",y,0),b.readyState="complete"},0)),a.yepnope=H()})(this,this.document)
 }
 
-if(typeof window.___DarkTipConfig === 'undefined') {
-	window.___DarkTipConfig = {};
+if(typeof window.___DarkTipSettings === 'undefined') {
+	window.___DarkTipSettings = {};
 }
 
 yepnope([{
 	'test'    : window.jQuery,
-	'nope'    : window.___DarkTipConfig['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+	'nope'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 	'complete': function() {
 		if(!window.jQuery.jsonp){
 			/* jquery.jsonp 2.1.4 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
@@ -48,6 +48,8 @@ yepnope([{
 
 window.DarkTip = {
 	
+	'debug': true,
+	
 	'version': {
 		'major': 1,
 		'minor': 0,
@@ -55,134 +57,218 @@ window.DarkTip = {
 	},
 	
 	'data': {
-		/* ------------------------------------------------------------------ *\
-		 * Configuration
-		\* ------------------------------------------------------------------ */
 		'settings': {
-			'default': {
-				'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
-				'resources': {
-					'modules': 'modules/',
-					'qtip2'  : [
-						'qtip2/jquery.qtip.min.js',
-						'qtip2/jquery.qtip.min.css'
-					],
-					'extras': [
-						'DarkTip.css'
-					]
-				},
-				'applyTo': {
-					'explicit': true,
-					'implicit': true
-				},
-				'extendedMode': {
-					'active'      : true,
-					'keyCode'     : 16,
-					'keyCodeLabel': 'SHIFT'
-				},
-				// These modules will be loaded async
-				'modules': [
-					'wow',
-					'wow-realm',
-					'wow-quest',
-					'wow-item',
-					'wow-character',
-					'wow-guild',
-					'wow-arenateam'
+			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+			'resources': {
+				'modules': 'modules/',
+				'qtip2'  : [
+					'qtip2/jquery.qtip.min.js',
+					'qtip2/jquery.qtip.min.css'
+				],
+				'extras': [
+					'DarkTip.css'
 				]
 			},
-			'user'     : {},
-			'effective': {}
+			'applyTo': {
+				'explicit': true,
+				'implicit': true
+			},
+			'extendedMode': {
+				'active'      : true,
+				'keyCode'     : 16,
+				'keyCodeLabel': 'SHIFT'
+			},
+			// These modules will be loaded async
+			'modules': [
+				'wow',
+				'wow-realm',
+				'wow-quest',
+				'wow-item',
+				'wow-character',
+				'wow-guild',
+				'wow-arenateam'
+			]
 		},
-		
-		
-		/* ------------------------------------------------------------------ *\
-		 * Loaded Modules
-		\* ------------------------------------------------------------------ */
-		'modules': {},
-		
-		
-		/* ------------------------------------------------------------------ *\
-		 * Triggers
-		\* ------------------------------------------------------------------ */
 		'triggers': {
-			'explicit': {},
-			'implicit': {}
+			'explicit': {
+				'wow.realm': '...'
+			},
+			'implicit': {
+				
+			}
 		},
-		
-		
-		/* ------------------------------------------------------------------ *\
-		 * Global Maps
-		\* ------------------------------------------------------------------ */
-		'maps': {},
-		
-		
-		/* ------------------------------------------------------------------ *\
-		 * Translations
-		\* ------------------------------------------------------------------ */
-		'i18n': {},
+		'layout': {
+			'width': {
+				'core': 300,
+				'404' : 250
+			}
+		},
+		'i18n'    : {
+			'en_US': {
+				'blubb': {
+					'aaa': '111',
+					'bbb': '222',
+				} 
+			}
+		},
+		'modules' : {
+			'wow': {
+				'bbb'    : {},
+				'ccc'    : {},
+				'modules': {
+					'realm'    : {},
+					'quest'    : {},
+					'item'     : {},
+					'character': {},
+					'guild'    : {},
+					'arenateam': {}
+				}
+			}
+		}
 	},
 	
-	'init': function() {
-		
-		this.buildSettings();
-		this.startUp();
-		
-		console.log('DarkTip on init end:');
-		console.log(DarkTip);
-		
+	'log': function(message) {
+		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
+		{
+			console.log(message);
+		}
 	},
 	
-	'buildSettings': function() {
-		this['data']['settings']['user']      = window.___DarkTipConfig || {};
-		this['data']['settings']['effective'] = jQuery.extend(true, {}, this['data']['settings']['default'], this['data']['settings']['user']);
-	}, 
+	'setting': function(route)
+	{
+		if(route != '')
+		{
+			return this.readFlat('data.settings.' + route);
+		}
+		return this.readFlat('data.settings');
+	},
 	
-	'resolveRoute': function(route, object, fuzzy) {
-		if(typeof fuzzy === 'undefined') {
+	'readFlat': function(route, fuzzy)
+	{
+		if(typeof fuzzy === 'undefined')
+		{
 			fuzzy = 0;
 		}
-		if(route === '') {
-			return object;
+		
+		if(route === '')
+		{
+			return this;
 		}
+		
 		var segments = route.split('.');
-		var current  = object;
-		for(var i = 0; i < segments.length; i++) {
-			if(typeof current[segments[i]] === 'undefined') {
-				if((i + fuzzy) >= segments.length) {
+		var current  = this;
+		
+		for(var i = 0; i < segments.length; i++)
+		{
+			if(typeof current[segments[i]] === 'undefined')
+			{
+				if((i + fuzzy) >= segments.length)
+				{
 					return current;
 				}
+				// this.log('Reading of route "'+route+'" (fuzzy: '+fuzzy+') failed!');
 				return undefined;
-			} else {
+			}
+			else
+			{
 				current = current[segments[i]];
 			}
 		}
-		return current;
+		return current;		
 	},
 	
-	'setting': function(route) {
-		return this.resolveRoute(route, this['data']['settings']['effective']);
-	},
-	
-	'map': function(module, route, value, to) {
-		route = route + '.' + to + '.' + value;
-		if(module === false) {
-			return this.resolveRoute(route, this['data']['maps']);
-		} else {
-			return this.resolveRoute(route, this['data']['modules'][module]['maps']);
+	'read': function(module, route, fuzzy)
+	{
+		var modules    = module.split('.');
+		var baseRoutes = ['data'];
+		
+		for (var i = 0; i < modules.length; i++)
+		{
+			var temp = baseRoutes[0];
+			baseRoutes.unshift(temp + '.modules.' + modules[i]);
 		}
-	},
-	
-	'parseParams': function(result, route){
-		var params = {};
-		var map    = this.resolveRoute(route, this['data']['modules']);
-		if(map) {
-			for(var p in map){
-				params[map[p]]=result[p];
+		
+		for (var i = 0; i < baseRoutes.length; i++)
+		{
+			var currentRoute = baseRoutes[i] + '.' + route;
+			var result       = this.readFlat(currentRoute, fuzzy);
+			
+			if(result !== undefined)
+			{
+				return result;
 			}
-			return params;
 		}
-		return {};
+		
+		return undefined;
+	},
+	
+	'collect': function(module, route)
+	{
+		var modules    = module.split('.');
+		var baseRoutes = ['data'];
+		
+		for (var i = 0; i < modules.length; i++)
+		{
+			var temp = baseRoutes[0];
+			baseRoutes.unshift(temp + '.modules.' + modules[i]);
+		}
+		
+		var collector = {};
+		
+		for (var i = 0; i < baseRoutes.length; i++)
+		{
+			var currentRoute = baseRoutes[i] + '.' + route;
+			var result       = this.readFlat(currentRoute);
+			
+			if(result !== undefined)
+			{
+				jQuery.extend(true, collector, result);
+			}
+		}
+		
+		return collector;
+	},
+	
+	'localize': function(module, locale, route, fuzzy)
+	{
+		var activeLocale = locale;
+		var redirect     = this.read(module, ('i18n.' + locale + '.meta.redirect'));
+		var fallback     = this.read(module, ('i18n.' + locale + '.meta.fallback'));
+		
+		if(redirect != undefined)
+		{
+			activeLocale = redirect;
+		}
+		
+		var result = this.read(module, ('i18n.' + activeLocale + '.' + route), fuzzy);
+		
+		if((result === undefined) && (fallback != undefined))
+		{
+			activeLocale = fallback;
+			result = this.read(module, ('i18n.' + activeLocale + '.' + route), fuzzy);
+		}
+		
+		if((result === undefined) && (fallback != 'en_US'))
+		{
+			activeLocale = 'en_US';
+			result = this.read(module, ('i18n.' + activeLocale + '.' + route), fuzzy);
+		}
+		
+		if(result === undefined) {
+			this.log('Translation missing! Module: "' + module + '", Locale: "' + locale + '", Route: "' + route + '" (Fuzzy: '+fuzzy+')');
+			return '';
+		}
+		
+		return result;
+	},
+	
+	'write': function(route, data)
+	{
+		// ...
+	},
+	
+	'buildSettings': function() {
+		jQuery.extend(true, this['data']['settings'], window.___DarkTipConfig);
 	},
 	
 	'startUp': function() {
@@ -234,168 +320,35 @@ window.DarkTip = {
 		});		
 	},
 	
-	'handleHover': function(type, element) {
-		if(typeof jQuery(element).data('qtip') === 'object') {
-			jQuery(element).qtip('show');
-		} else {
-			var triggers = this.resolveRoute(('triggers.' + type), this['data']);
-			if(triggers !== undefined) {
-				for(module in triggers) {
-					if(type === 'explicit') {
-						var testme = new String(jQuery(element).data('darktip'));
-					}
-					if(type === 'implicit') {
-						var testme = new String(jQuery(element).attr('href'));
-					}
-					var result = testme.match(triggers[module]['match']);
-					if(result) {
-						var params = this.parseParams(result, (module + '.patterns.' + type + '.params'));
-						this.initTooltip(module, type, params, element);
-					}
-				}
-			}
+	'registerModule': function(key, moduleData)
+	{
+		var submodules = {};
+		// The module seems to come with included submodules, split the off, to include them later
+		if(typeof moduleData['modules'] !== 'undefined')
+		{
+			jQuery.extend(true, submodules, moduleData['modules']);
+		}
+		
+		// Sanitize - clean submodules
+		moduleData['modules']    = {};
+		moduleData['registered'] = true;
+		
+		// check if parent modules are loaded
+		
+		
+		// Recursively jump into the submodules and register them
+		for (module in submodules) {
+			this.registerModule((key + '.' + module), submodule);
 		}
 	},
 	
-	'loadCache': function(module, hash) {
-		return this.resolveRoute((module + '.cache.' + hash), this['data']['modules']);
-	},
-	
-	'saveCache': function(module, hash, content) {
-		
-	},
-	
-	'initTooltip': function(module, type, params, element) {
-		// console.log({'module': module, 'type': type, 'element': element});
-		var prepareParamsFunc = this.resolveRoute((module + '.prepareParams.' + type), this['data']['modules']);
-		if(prepareParamsFunc != undefined) {
-			params = prepareParamsFunc(params);
-		}
-		if(typeof params['locale'] === 'undefined') {
-			params['locale'] = 'en_US';
-		}
-		apicall = jQuery.jqote(
-			this.resolveRoute((module + '.patterns.api'), this['data']['modules']),
-			jQuery.extend(true, {}, params, this.getTemplateTools(params['lcoale']))
-		);
-		hash =  jQuery.jqote(
-			this.resolveRoute((module + '.patterns.hash'), this['data']['modules']),
-			jQuery.extend(true, {}, params, this.getTemplateTools(params['lcoale']))
-		);
-		var content = this.loadCache(module, hash);
-		if(content) {
-			this.addTip(element, content, this.resolveRoute((module + '.layout.width.core'), this['data']['modules']));
-		} else {
-			this.addTip(element, this.localize(params['locale'], ('loading-'+scheme)),WowDataTooltip.getSetting(['layout','width',scheme]));
-		}
-		
-		
-	},
-	
-	'attachTooltip': function(scheme,params,element,data) {
-		
-	},
-	
-	checkAndInit:function(type,scheme,element){
-		
-		
-		
-		
-		content=this.getFromCache('template',scheme,hash);
-		if(content!==false){
-			this.addTip(element,content,WowDataTooltip.getSetting(['layout','width',scheme]));
-		}else{
-			this.addTip(element,this.localize(params['locale'],('loading-'+scheme)),WowDataTooltip.getSetting(['layout','width',scheme]));
-			jQuery.jsonp({
-				url:apicall,
-				callbackParameter:'jsonp',
-				success:function(data){
-					WowDataTooltip.buildTooltip(scheme,params,element,data);
-				},
-				error:function(options){
-					WowDataTooltip.buildTooltip(scheme,params,element);
-				}
-			});
-		}
-	},
-	
-	'registerModule': function(key, moduleData) {
-		
-		console.log('Register Module "' + key + '":');
-		console.log(moduleData);
-		
-		if(typeof this['data']['modules'][key] === 'undefined') {
-			
-			this['data']['modules'][key] = moduleData;
-			
-			var patternExplicit = this.resolveRoute('patterns.explicit', moduleData);
-			if((patternExplicit !== undefined) && (patternExplicit !== false)) {
-				this['data']['triggers']['explicit'][key] = patternExplicit;
-			}
-			
-			var patternImplicit = this.resolveRoute('patterns.implicit', moduleData);
-			if((patternImplicit !== undefined) && (patternImplicit !== false)) {
-				this['data']['triggers']['implicit'][key] = patternImplicit;
-			}
-			
-			if(typeof moduleData['i18n'] !== 'undefined') {
-				for (locale in moduleData['i18n']) {
-					if(this.resolveRoute(('data.i18n.' + locale), this) === undefined) {
-						this['data']['i18n'][locale] = {
-							'meta': {
-								'locale': locale
-							},
-							'modules': {}
-						};
-					}
-					if(this.resolveRoute(('data.i18n.' + locale + '.modules'), this) === undefined) {
-						this['data']['i18n'][locale]['modules'] = {};
-					}
-					this['data']['i18n'][locale]['modules'][key] = jQuery.extend(true, {}, moduleData['i18n'][locale]);
-				}
-			}
-		}
-	},
-	
-	'localize': function(locale, route, fuzzy) {
-		
-		var localeData = this.getLocaleData(locale);
-		var result     = this.resolveRoute(route, localeData, fuzzy);
-		
-		if((result === undefined) && (typeof localeData['meta']['fallback'] !== 'undefined')) {
-			localeData = this.getLocaleData(localeData['meta']['fallback']);
-			result     = this.resolveRoute(route, localeData, fuzzy);
-		}
-		
-		if((result === undefined) && (localeData['meta']['locale'] !== 'en_US')) {
-			localeData = this.getLocaleData('en_US');
-			result     = this.resolveRoute(route, localeData, fuzzy);
-		}
-		
-		return result || '';
-	},
-	
-	'getTemplateTools': function(locale) {
-		return {
-			'extendedActive'      : this.setting('extendedMode.active'),
-			'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
-			'___': {
-				'sub': function(route, data){
-					return jQuery.jqote(
-						DarkTip.getTemplate('fragments.' + route),
-						jQuery.extend(true, {}, DarkTip.getTemplateTools(locale), data)
-					);
-				},
-				'loc': function(route, data){
-					return jQuery.jqote(
-						DarkTip.localize(locale, route),
-						jQuery.extend(true, {}, DarkTip.getTemplateTools(locale), data)
-					);
-				}
-			}
-		};		
-	},
-	
-	
+	'init': function() {
+		this.buildSettings();
+		this.startUp();
+		// console.log(DarkTip.read('wow.realm', 'layout.width.core'));
+		// console.log(DarkTip.localize('wow.realm', 'de_DE', 'blubb.bbb'));
+		// console.log(DarkTip.collect('wow.realm', 'template.tools'));
+		console.log(DarkTip);
+	}
 	
 }

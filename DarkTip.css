@@ -22,7 +22,7 @@
 
 /* --- Override of 280 max-width -------------------------------------------- */
 
-.dtip-tooltip {
+.darktip-tooltip {
 	max-width: 750px;
 	min-width: 200px;
 }

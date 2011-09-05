@@ -36,6 +36,11 @@ DarkTip.registerModule('wow-realm', {
 	'maps': {},
 	
 	'layout': {
+		'position':{
+			'my'    : 'bottom middle',
+			'at'    : 'top middle',
+			'target': false
+		},
 		'width': {
 			'core': 250,
 			'404' : 300
