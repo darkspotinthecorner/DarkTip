@@ -1,0 +1,1 @@
+DarkTip.registerModule('wow-item', {});

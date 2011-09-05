@@ -58,22 +58,22 @@ window.DarkTip = {
 		/* ------------------------------------------------------------------ *\
 		 * Configuration
 		\* ------------------------------------------------------------------ */
-		'config': {
-			'default'  : {
-				'jquery'    : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
-				'resources' : {
+		'settings': {
+			'default': {
+				'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+				'resources': {
 					'modules': 'modules/',
 					'qtip2'  : [
 						'qtip2/jquery.qtip.min.js',
 						'qtip2/jquery.qtip.min.css'
 					],
-					'extras' : [
+					'extras': [
 						'DarkTip.css'
 					]
 				},
 				'applyTo': {
-					'explicit' : true,
-					'battlenet': true
+					'explicit': true,
+					'implicit': true
 				},
 				'extendedMode': {
 					'active'      : true,
@@ -94,24 +94,48 @@ window.DarkTip = {
 			'user'     : {},
 			'effective': {}
 		},
+		
+		
 		/* ------------------------------------------------------------------ *\
 		 * Loaded Modules
 		\* ------------------------------------------------------------------ */
 		'modules': {},
+		
+		
+		/* ------------------------------------------------------------------ *\
+		 * Triggers
+		\* ------------------------------------------------------------------ */
+		'triggers': {
+			'explicit': {},
+			'implicit': {}
+		},
+		
+		
+		/* ------------------------------------------------------------------ *\
+		 * Global Maps
+		\* ------------------------------------------------------------------ */
+		'maps': {},
+		
+		
 		/* ------------------------------------------------------------------ *\
 		 * Translations
 		\* ------------------------------------------------------------------ */
-		'i18n'   : {},
+		'i18n': {},
 	},
 	
 	'init': function() {
-		this.buildConfig();
+		
+		this.buildSettings();
 		this.startUp();
+		
+		console.log('DarkTip on init end:');
+		console.log(DarkTip);
+		
 	},
 	
-	'buildConfig': function() {
-		this['data']['config']['user']      = window.___DarkTipConfig || {};
-		this['data']['config']['effective'] = jQuery.extend(true, {}, this['data']['config']['default'], this['data']['config']['user']);
+	'buildSettings': function() {
+		this['data']['settings']['user']      = window.___DarkTipConfig || {};
+		this['data']['settings']['effective'] = jQuery.extend(true, {}, this['data']['settings']['default'], this['data']['settings']['user']);
 	}, 
 	
 	'resolveRoute': function(route, object, fuzzy) {
@@ -136,50 +160,71 @@ window.DarkTip = {
 		return current;
 	},
 	
-	'getConfig': function(route) {
-		return this.resolveRoute(route, this['data']['config']['effective']);
+	'setting': function(route) {
+		return this.resolveRoute(route, this['data']['settings']['effective']);
+	},
+	
+	'map': function(module, route, value, to) {
+		route = route + '.' + to + '.' + value;
+		if(module === false) {
+			return this.resolveRoute(route, this['data']['maps']);
+		} else {
+			return this.resolveRoute(route, this['data']['modules'][module]['maps']);
+		}
+	},
+	
+	'parseParams': function(result, route){
+		var params = {};
+		var map    = this.resolveRoute(route, this['data']['modules']);
+		if(map) {
+			for(var p in map){
+				params[map[p]]=result[p];
+			}
+			return params;
+		}
+		return {};
 	},
 	
 	'startUp': function() {
 		var filesToLoad = [];
 		if(!window.jQuery.qtip) {
-			var files = this.getConfig('resources.qtip2');
+			var files = this.setting('resources.qtip2');
 			for(var i = 0; i < files.length; i++) {
 				filesToLoad.push(files[i]);
 			}
 		}
-		var files = this.getConfig('resources.extras');
+		var files = this.setting('resources.extras');
 		for (var i = 0; i < files.length; i++) {
 			filesToLoad.push(files[i]);
 		}
-		var files = this.getConfig('modules');
+		var files = this.setting('modules');
 		for (var i = 0; i < files.length; i++) {
-			filesToLoad.push(this.getConfig('resources.modules') + files[i] + '.js');
+			filesToLoad.push(this.setting('resources.modules') + files[i] + '.js');
 		}
 		yepnope({
 			'load': filesToLoad,	
 			'complete': function() {
 				jQuery(function() {
-					if(DarkTip.getConfig('extendedMode.active')) {
+					if(DarkTip.setting('extendedMode.active')) {
 						jQuery(document).keydown(function(event) {
-							if(event.keyCode == DarkTip.getConfig('extendedMode.keyCode')) {
+							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
 								jQuery('body').addClass('dtip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
 						jQuery(document).keyup(function(event) {
-							if(event.keyCode == DarkTip.getConfig('extendedMode.keyCode')) {
+							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
 								jQuery('body').removeClass('dtip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
 					}
-					if(DarkTip.getConfig('applyTo.explicit')) {
+					if(DarkTip.setting('applyTo.explicit')) {
 						jQuery('[data-darktip]').live('mouseover', function() {
 							DarkTip.handleHover('explicit', this);
 						});
 					}
-					if(DarkTip.getConfig('applyTo.implicit')) {
+					if(DarkTip.setting('applyTo.implicit')) {
 						jQuery('[href]').live('mouseover', function() {
 							DarkTip.handleHover('implicit', this);
 						});
@@ -189,29 +234,151 @@ window.DarkTip = {
 		});		
 	},
 	
+	'handleHover': function(type, element) {
+		if(typeof jQuery(element).data('qtip') === 'object') {
+			jQuery(element).qtip('show');
+		} else {
+			var triggers = this.resolveRoute(('triggers.' + type), this['data']);
+			if(triggers !== undefined) {
+				for(module in triggers) {
+					if(type === 'explicit') {
+						var testme = new String(jQuery(element).data('darktip'));
+					}
+					if(type === 'implicit') {
+						var testme = new String(jQuery(element).attr('href'));
+					}
+					var result = testme.match(triggers[module]['match']);
+					if(result) {
+						var params = this.parseParams(result, (module + '.patterns.' + type + '.params'));
+						this.initTooltip(module, type, params, element);
+					}
+				}
+			}
+		}
+	},
+	
+	'loadCache': function(module, hash) {
+		return this.resolveRoute((module + '.cache.' + hash), this['data']['modules']);
+	},
+	
+	'saveCache': function(module, hash, content) {
+		
+	},
+	
+	'initTooltip': function(module, type, params, element) {
+		// console.log({'module': module, 'type': type, 'element': element});
+		var prepareParamsFunc = this.resolveRoute((module + '.prepareParams.' + type), this['data']['modules']);
+		if(prepareParamsFunc != undefined) {
+			params = prepareParamsFunc(params);
+		}
+		if(typeof params['locale'] === 'undefined') {
+			params['locale'] = 'en_US';
+		}
+		apicall = jQuery.jqote(
+			this.resolveRoute((module + '.patterns.api'), this['data']['modules']),
+			jQuery.extend(true, {}, params, this.getTemplateTools(params['lcoale']))
+		);
+		hash =  jQuery.jqote(
+			this.resolveRoute((module + '.patterns.hash'), this['data']['modules']),
+			jQuery.extend(true, {}, params, this.getTemplateTools(params['lcoale']))
+		);
+		var content = this.loadCache(module, hash);
+		if(content) {
+			this.addTip(element, content, this.resolveRoute((module + '.layout.width.core'), this['data']['modules']));
+		} else {
+			this.addTip(element, this.localize(params['locale'], ('loading-'+scheme)),WowDataTooltip.getSetting(['layout','width',scheme]));
+		}
+		
+		
+	},
+	
+	'attachTooltip': function(scheme,params,element,data) {
+		
+	},
+	
+	checkAndInit:function(type,scheme,element){
+		
+		
+		
+		
+		content=this.getFromCache('template',scheme,hash);
+		if(content!==false){
+			this.addTip(element,content,WowDataTooltip.getSetting(['layout','width',scheme]));
+		}else{
+			this.addTip(element,this.localize(params['locale'],('loading-'+scheme)),WowDataTooltip.getSetting(['layout','width',scheme]));
+			jQuery.jsonp({
+				url:apicall,
+				callbackParameter:'jsonp',
+				success:function(data){
+					WowDataTooltip.buildTooltip(scheme,params,element,data);
+				},
+				error:function(options){
+					WowDataTooltip.buildTooltip(scheme,params,element);
+				}
+			});
+		}
+	},
+	
 	'registerModule': function(key, moduleData) {
+		
 		console.log('Register Module "' + key + '":');
 		console.log(moduleData);
+		
+		if(typeof this['data']['modules'][key] === 'undefined') {
+			
+			this['data']['modules'][key] = moduleData;
+			
+			var patternExplicit = this.resolveRoute('patterns.explicit', moduleData);
+			if((patternExplicit !== undefined) && (patternExplicit !== false)) {
+				this['data']['triggers']['explicit'][key] = patternExplicit;
+			}
+			
+			var patternImplicit = this.resolveRoute('patterns.implicit', moduleData);
+			if((patternImplicit !== undefined) && (patternImplicit !== false)) {
+				this['data']['triggers']['implicit'][key] = patternImplicit;
+			}
+			
+			if(typeof moduleData['i18n'] !== 'undefined') {
+				for (locale in moduleData['i18n']) {
+					if(this.resolveRoute(('data.i18n.' + locale), this) === undefined) {
+						this['data']['i18n'][locale] = {
+							'meta': {
+								'locale': locale
+							},
+							'modules': {}
+						};
+					}
+					if(this.resolveRoute(('data.i18n.' + locale + '.modules'), this) === undefined) {
+						this['data']['i18n'][locale]['modules'] = {};
+					}
+					this['data']['i18n'][locale]['modules'][key] = jQuery.extend(true, {}, moduleData['i18n'][locale]);
+				}
+			}
+		}
 	},
 	
 	'localize': function(locale, route, fuzzy) {
+		
 		var localeData = this.getLocaleData(locale);
 		var result     = this.resolveRoute(route, localeData, fuzzy);
+		
 		if((result === undefined) && (typeof localeData['meta']['fallback'] !== 'undefined')) {
 			localeData = this.getLocaleData(localeData['meta']['fallback']);
 			result     = this.resolveRoute(route, localeData, fuzzy);
 		}
+		
 		if((result === undefined) && (localeData['meta']['locale'] !== 'en_US')) {
 			localeData = this.getLocaleData('en_US');
 			result     = this.resolveRoute(route, localeData, fuzzy);
 		}
+		
 		return result || '';
 	},
 	
 	'getTemplateTools': function(locale) {
 		return {
-			'extendedActive'      : this.getConfig('extendedMode.active'),
-			'extendedKeyCodeLabel': this.getConfig('extendedMode.keyCodeLabel'),
+			'extendedActive'      : this.setting('extendedMode.active'),
+			'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
 			'___': {
 				'sub': function(route, data){
 					return jQuery.jqote(
@@ -229,10 +396,6 @@ window.DarkTip = {
 		};		
 	},
 	
-	'saveCache': function(module, api, content){
-		this['cache'][type][scheme][hash]=content;
-		return true;
-	},
 	
 	
 }
