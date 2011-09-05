@@ -1,1 +1,0 @@
-DarkTip.registerModule('wow-guild', {});

@@ -1,7 +1,7 @@
-DarkTip.registerModule('wow-realm', {
+DarkTip.registerModule('wow.realm', {
 	'patterns': {
 		'explicit': {
-			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/,
+			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',

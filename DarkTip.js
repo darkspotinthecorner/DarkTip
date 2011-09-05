@@ -34,14 +34,19 @@ yepnope([{
 	'test'    : window.jQuery,
 	'nope'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 	'complete': function() {
+		
+		jQuery.noConflict();
+		
 		if(!window.jQuery.jsonp){
 			/* jquery.jsonp 2.1.4 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
 			(function(e,b){function d(){}function t(C){c=[C]}function m(C){f.insertBefore(C,f.firstChild)}function l(E,C,D){return E&&E.apply(C.context||C,D)}function k(C){return/\?/.test(C)?"&":"?"}var n="async",s="charset",q="",A="error",r="_jqjsp",w="on",o=w+"click",p=w+A,a=w+"load",i=w+"readystatechange",z="removeChild",g="<script/>",v="success",y="timeout",x=e.browser,f=e("head")[0]||document.documentElement,u={},j=0,c,h={callback:r,url:location.href};function B(C){C=e.extend({},h,C);var Q=C.complete,E=C.dataFilter,M=C.callbackParameter,R=C.callback,G=C.cache,J=C.pageCache,I=C.charset,D=C.url,L=C.data,P=C.timeout,O,K=0,H=d;C.abort=function(){!K++&&H()};if(l(C.beforeSend,C,[C])===false||K){return C}D=D||q;L=L?((typeof L)=="string"?L:e.param(L,C.traditional)):q;D+=L?(k(D)+L):q;M&&(D+=k(D)+encodeURIComponent(M)+"=?");!G&&!J&&(D+=k(D)+"_"+(new Date()).getTime()+"=");D=D.replace(/=\?(&|$)/,"="+R+"$1");function N(S){!K++&&b(function(){H();J&&(u[D]={s:[S]});E&&(S=E.apply(C,[S]));l(C.success,C,[S,v]);l(Q,C,[C,v])},0)}function F(S){!K++&&b(function(){H();J&&S!=y&&(u[D]=S);l(C.error,C,[C,S]);l(Q,C,[C,S])},0)}J&&(O=u[D])?(O.s?N(O.s[0]):F(O)):b(function(T,S,U){if(!K){U=P>0&&b(function(){F(y)},P);H=function(){U&&clearTimeout(U);T[i]=T[o]=T[a]=T[p]=null;f[z](T);S&&f[z](S)};window[R]=t;T=e(g)[0];T.id=r+j++;if(I){T[s]=I}function V(W){(T[o]||d)();W=c;c=undefined;W?N(W[0]):F(A)}if(x.msie){T.event=o;T.htmlFor=T.id;T[i]=function(){/loaded|complete/.test(T.readyState)&&V()}}else{T[p]=T[a]=V;x.opera?((S=e(g)[0]).text="jQuery('#"+T.id+"')[0]."+p+"()"):T[n]=n}T.src=D;m(T);S&&m(S)}},0);return C}B.setup=function(C){e.extend(h,C)};e.jsonp=B})(jQuery,setTimeout);
 		}
+		
 		if(!window.jQuery.jqote){
 			/* jQote2 - client-side Javascript templating engine | Copyright (C) 2010, aefxx | http://aefxx.com/ | Dual licensed under the WTFPL v2 or MIT (X11) licenses | WTFPL v2 Copyright (C) 2004, Sam Hocevar | Date: Thu, Oct 21st, 2010 | Version: 0.9.7 */
 			(function($){var _=false,E1="UndefinedTemplateError",E2="TemplateCompilationError",E3="TemplateExecutionError",A="[object Array]",S="[object String]",F="[object Function]",n=1,c="%",q=/^[^<]*(<[\w\W]+>)[^>]*$/,ts=Object.prototype.toString;function r(e,x){throw ($.extend(e,x),e)}function dns(f) {var a=[];if(ts.call(f)!==A)return _;for(var i=0,l=f.length;i<l;i++)a[i]=f[i].jqote_id;return a.length?a.sort().join('.').replace(/(\b\d+\b)\.(?:\1(\.|$))+/g,"$1$2"):_}function l(s,t){var f,g=[],t=t||c,x=ts.call(s);if(x===F)return s.jqote_id?[s]:_;if(x!==A)return[$.jqotec(s,t)];if(x===A)for(var i=0,l=s.length;i<l;i++)return g.length?g:_}$.fn.extend({jqote:function(x,y){var x=ts.call(x)===A?x:[x],d="";this.each(function(i){var f=$.jqotec(this,y);for(var j=0;j<x.length;j++)d+=f.call(x[j],i,j,x,f)});return d}});$.each({app:"append",pre:"prepend",sub:"html"},function(x,y){$.fn["jqote"+x]=function(e,d,t){var p,r,s=$.jqote(e,d,t),$$=!q.test(s)?function(s){return $(document.createTextNode(s))}:$;if(!!(p=dns(l(e))))r=new RegExp("(^|\\.)"+p.split(".").join("\\.(.*)?")+"(\\.|$)");return this.each(function(){var z=$$(s);$(this)[y](z);(z[0].nodeType===3?$(this):z).trigger("jqote."+x,[z,r])})}});$.extend({jqote:function(e,d,t){var s="",t=t||c,f=l(e);if(f===_)r(new Error("Empty or undefined template passed to $.jqote"),{type:E1});d=ts.call(d)!==A?[d]:d;for(var i=0,m=f.length;i<m;i++)for(var j=0;j<d.length;j++)s+=f[i].call(d[j],i,j,d,f[i]);return s},jqotec:function(x,t){var h,e,y,t=t||c,z=ts.call(x);if(z===S&&q.test(x)){e=y=x;if(h=$.jqotecache[x])return h}else{e=z===S||x.nodeType?$(x):x instanceof jQuery?x:null;if(!e[0]||!(y=e[0].innerHTML)&&!(y=e.text()))r(new Error("Empty or undefined template passed to $.jqotec"),{type:E1});if(h=$.jqotecache[$.data(e[0],"jqote_id")])return h}var s="",i,a=y.replace(/\s*<!\[CDATA\[\s*|\s*\]\]>\s*|[\r\n\t]/g,"").split("<"+t).join(t+">\x1b").split(t+">");for(var m=0,k=a.length;m<k;m++)s+=a[m].charAt(0)!=="\x1b"?"out+='"+a[m].replace(/(\\|["'])/g,"\\$1")+"'":(a[m].charAt(1)==="="?";out+=("+a[m].substr(2)+");":(a[m].charAt(1)==="!"?";out+=$.jqotenc(("+a[m].substr(2)+"));":";"+a[m].substr(1)));s="try{"+('var out="";'+s+";return out;").split("out+='';").join("").split('var out="";out+=').join("var out=")+'}catch(e){e.type="'+E3+'";e.args=arguments;e.template=arguments.callee.toString();throw e;}';try{var f=new Function("i, j, data, fn",s)}catch(e){r(e,{type:E2})}i=e instanceof jQuery?$.data(e[0],"jqote_id",n):e;return $.jqotecache[i]=(f.jqote_id=n++,f)},jqotefn:function(e){var t=ts.call(e),i=t===S&&q.test(e)?e:$.data($(e)[0],"jqote_id");return $.jqotecache[i]||_},jqotetag:function(s){if(ts.call(s)===S)c=s},jqotenc:function(s){return s.toString().replace(/&(?!\w+;)/g,'&#38;').split('<').join('&#60;').split('>').join('&#62;').split('"').join('&#34;').split("'").join('&#39;')},jqotecache:{}});$.event.special.jqote={add:function(o){var n,h=o.handler,d=!o.data?[]:ts.call(o.data)!==A?[o.data]:o.data;if(!o.namespace)o.namespace="app.pre.sub";if(!d.length||!(n=dns(l(d))))return;o.handler=function(e,m,r){return !r||r.test(n)?h.apply(this,[e,m]):null}}}})(jQuery);
 		}
+		
 		DarkTip.init();
 	}
 }]);
@@ -78,24 +83,27 @@ window.DarkTip = {
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
 			},
+			'layout': {
+				'position': {
+					'my'    : 'bottom middle',
+					'at'    : 'top middle',
+					'target': false
+				}
+			},
 			// These modules will be loaded async
 			'modules': [
 				'wow',
-				'wow-realm',
-				'wow-quest',
-				'wow-item',
-				'wow-character',
-				'wow-guild',
-				'wow-arenateam'
+				'wow.realm',
+				'wow.quest',
+				'wow.item',
+				'wow.character',
+				'wow.guild',
+				'wow.arenateam'
 			]
 		},
 		'triggers': {
-			'explicit': {
-				'wow.realm': '...'
-			},
-			'implicit': {
-				
-			}
+			'explicit': [],
+			'implicit': []
 		},
 		'layout': {
 			'width': {
@@ -138,12 +146,12 @@ window.DarkTip = {
 	{
 		if(route != '')
 		{
-			return this.readFlat('data.settings.' + route);
+			return this._read('data.settings.' + route);
 		}
-		return this.readFlat('data.settings');
+		return this._read('data.settings');
 	},
 	
-	'readFlat': function(route, fuzzy)
+	'_read': function(route, fuzzy)
 	{
 		if(typeof fuzzy === 'undefined')
 		{
@@ -191,7 +199,7 @@ window.DarkTip = {
 		for (var i = 0; i < baseRoutes.length; i++)
 		{
 			var currentRoute = baseRoutes[i] + '.' + route;
-			var result       = this.readFlat(currentRoute, fuzzy);
+			var result       = this._read(currentRoute, fuzzy);
 			
 			if(result !== undefined)
 			{
@@ -218,7 +226,7 @@ window.DarkTip = {
 		for (var i = 0; i < baseRoutes.length; i++)
 		{
 			var currentRoute = baseRoutes[i] + '.' + route;
-			var result       = this.readFlat(currentRoute);
+			var result       = this._read(currentRoute);
 			
 			if(result !== undefined)
 			{
@@ -227,6 +235,27 @@ window.DarkTip = {
 		}
 		
 		return collector;
+	},
+	
+	'route': function(module, route)
+	{
+		var modules = module.split('.');
+		var builder = 'data';
+		
+		for (var i = 0; i < modules.length; i++)
+		{
+			if(modules[i] != '')
+			{
+				builder = builder + '.modules.' + modules[i];
+			}
+		}
+		
+		if(typeof route !== 'undefined')
+		{
+			builder = builder + '.' + route;
+		}
+		
+		return(builder);
 	},
 	
 	'localize': function(module, locale, route, fuzzy)
@@ -264,7 +293,40 @@ window.DarkTip = {
 	
 	'write': function(route, data)
 	{
-		// ...
+		var segments = route.split('.');
+		var current  = this;
+		
+		for(var i = 0; i < segments.length; i++)
+		{
+			if(i == (segments.length - 1))
+			{
+				// if last segment ends with "+", data should be an array
+				if(segments[i].match(/^[^\+]+\+$/))
+				{
+					segments[i] = segments[i].slice(0, (segments[i].length - 1));
+					console.log(current[segments[i]]);
+					if(typeof current[segments[i]] === 'undefined')
+					{
+						current[segments[i]] = [];
+					}
+					current[segments[i]].push(data);
+				}
+				else
+				{
+					current[segments[i]] = data;
+				}
+				return true;
+			}
+			else
+			{
+				if(typeof current[segments[i]] === 'undefined')
+				{
+					current[segments[i]] = {};
+				}
+				current = current[segments[i]];
+			}
+		}
+		return false;
 	},
 	
 	'buildSettings': function() {
@@ -294,13 +356,13 @@ window.DarkTip = {
 					if(DarkTip.setting('extendedMode.active')) {
 						jQuery(document).keydown(function(event) {
 							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
-								jQuery('body').addClass('dtip-extended-mode');
+								jQuery('body').addClass('darktip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
 						jQuery(document).keyup(function(event) {
 							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
-								jQuery('body').removeClass('dtip-extended-mode');
+								jQuery('body').removeClass('darktip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
@@ -320,7 +382,47 @@ window.DarkTip = {
 		});		
 	},
 	
-	'registerModule': function(key, moduleData)
+	'handleHover': function(type, element) {
+		if(typeof jQuery(element).data('qtip') === 'object') {
+			jQuery(element).qtip('show');
+		} else {
+			var triggers = this.resolveRoute(('triggers.' + type), this['data']);
+			if(triggers !== undefined) {
+				for(module in triggers) {
+					if(type === 'explicit') {
+						var testme = new String(jQuery(element).data('darktip'));
+					}
+					if(type === 'implicit') {
+						var testme = new String(jQuery(element).attr('href'));
+					}
+					var result = testme.match(triggers[module]['match']);
+					if(result) {
+						var params = this.parseParams(result, (module + '.patterns.' + type + '.params'));
+						this.initTooltip(module, type, params, element);
+					}
+				}
+			}
+		}
+	},
+	
+	'verifyParentModule': function(module)
+	{
+		var segments = module.split('.');
+		if(segments.length < 2)
+		{
+			return true;
+		}
+		segments.pop();
+		var parentModule = segments.join('.');
+		if(this._read(this.route(parentModule, 'registered')))
+		{
+			return true;
+		}
+		this.log('Parent module missing! Module: "' + module + '", Parent: "' + parentModule + '"');
+		return false;
+	},
+	
+	'registerModule': function(moduleKey, moduleData)
 	{
 		var submodules = {};
 		// The module seems to come with included submodules, split the off, to include them later
@@ -334,11 +436,33 @@ window.DarkTip = {
 		moduleData['registered'] = true;
 		
 		// check if parent modules are loaded
-		
-		
-		// Recursively jump into the submodules and register them
-		for (module in submodules) {
-			this.registerModule((key + '.' + module), submodule);
+		if(this.verifyParentModule(moduleKey))
+		{
+			// register patterns for easy access, maybe ^^
+			this.write(this.route(moduleKey), moduleData);
+			
+			var patternExplicit = this._read(this.route(moduleKey, 'patterns.explicit'));
+			if(patternExplicit)
+			{
+				this.write(('data.triggers.explicit+'), {
+					'module' : moduleKey,
+					'pattern': patternExplicit
+				});
+			}
+			
+			var patternImplicit = this._read(this.route(moduleKey, 'patterns.implicit'));
+			if(patternImplicit)
+			{
+				this.write(('data.triggers.implicit+'), {
+					'module' : moduleKey,
+					'pattern': patternImplicit
+				});
+			}
+			
+			// Recursively jump into the submodules and register them
+			for (module in submodules) {
+				this.registerModule((moduleKey + '.' + module), submodules[module]);
+			}
 		}
 	},
 	
@@ -348,6 +472,10 @@ window.DarkTip = {
 		// console.log(DarkTip.read('wow.realm', 'layout.width.core'));
 		// console.log(DarkTip.localize('wow.realm', 'de_DE', 'blubb.bbb'));
 		// console.log(DarkTip.collect('wow.realm', 'template.tools'));
+		// console.log(DarkTip.write('data.bluubbbb.bla.gnargs', 333));
+		// console.log(DarkTip.route('wow', 'registered'));
+		// console.log(DarkTip.route('', 'layout.width.core'));
+		// console.log(DarkTip.route('wow.realm'));
 		console.log(DarkTip);
 	}
 	
