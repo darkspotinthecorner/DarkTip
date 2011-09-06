@@ -83,13 +83,6 @@ window.DarkTip = {
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
 			},
-			'layout': {
-				'position': {
-					'my'    : 'bottom middle',
-					'at'    : 'top middle',
-					'target': false
-				}
-			},
 			// These modules will be loaded async
 			'modules': [
 				'wow',
@@ -106,34 +99,61 @@ window.DarkTip = {
 			'implicit': []
 		},
 		'layout': {
+			'position': {
+				'my'    : 'bottom middle',
+				'at'    : 'top middle',
+				'target': false
+			},
 			'width': {
 				'core': 300,
 				'404' : 250
 			}
 		},
-		'i18n'    : {
-			'en_US': {
-				'blubb': {
-					'aaa': '111',
-					'bbb': '222',
-				} 
-			}
-		},
-		'modules' : {
-			'wow': {
-				'bbb'    : {},
-				'ccc'    : {},
-				'modules': {
-					'realm'    : {},
-					'quest'    : {},
-					'item'     : {},
-					'character': {},
-					'guild'    : {},
-					'arenateam': {}
+		'templates': {
+			'tools': {
+				'___': {
+					'sub': function(module, route, data) {
+						var template = DarkTip.read(module, 'fragments.' + route);
+						if(template.indexOf('<%') === (-1))
+						{
+							// no templateable string, simply return
+							return template;
+						}
+						else
+						{
+							// string is a template, pass to jQote2
+							return jQuery.jqote(
+								template,
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+							);
+						}
+					},
+					'loc': function(module, route, data, fuzzy) {
+						var template = DarkTip.localize(module, data['locale'], route, fuzzy);
+						if(template.indexOf('<%') === (-1))
+						{
+							// no templateable string, simply return
+							return template;
+						}
+						else
+						{
+							// string is a template, pass to jQote2
+							return jQuery.jqote(
+								template,
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+							);
+						}
+					},
 				}
 			}
-		}
+		},
+		'i18n': {
+			'en_US': {}
+		},
+		'modules': {}
 	},
+	
+	'activeTooltips': [],
 	
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
@@ -227,7 +247,6 @@ window.DarkTip = {
 		{
 			var currentRoute = baseRoutes[i] + '.' + route;
 			var result       = this._read(currentRoute);
-			
 			if(result !== undefined)
 			{
 				jQuery.extend(true, collector, result);
@@ -304,7 +323,6 @@ window.DarkTip = {
 				if(segments[i].match(/^[^\+]+\+$/))
 				{
 					segments[i] = segments[i].slice(0, (segments[i].length - 1));
-					console.log(current[segments[i]]);
 					if(typeof current[segments[i]] === 'undefined')
 					{
 						current[segments[i]] = [];
@@ -329,8 +347,58 @@ window.DarkTip = {
 		return false;
 	},
 	
+	'cache': function(module, hash, content)
+	{
+		var cache = this._read(this.route(module, 'cache'));
+		if(typeof cache === 'undefined')
+		{
+			this.write(this.route(module, 'cache'), {});
+			cache = this._read(this.route(module, 'cache'));
+		}
+		
+		if(typeof content === 'undefined')
+		{
+			// read mode
+			if(typeof cache[hash] !== 'undefined')
+			{
+				return cache[hash];
+			}
+			return undefined;
+		}
+		else
+		{
+			// write mode
+			cache[hash] = content;
+		}
+	},
+	
 	'buildSettings': function() {
 		jQuery.extend(true, this['data']['settings'], window.___DarkTipConfig);
+	},
+	
+	'map': function(module, route, value)
+	{
+		var map = this.read(module, route);
+		if(map)
+		{
+			if(typeof map[value] !== 'undefined')
+			{
+				return map[value];
+			}
+		}
+		return undefined;
+	},
+	
+	'mapRegex': function(result, map)
+	{
+		var params = {};
+		if(map) {
+			for(var p in map){
+				params[map[p]]=result[p];
+			}
+			return params;
+		}
+		return {};
 	},
 	
 	'startUp': function() {
@@ -382,27 +450,221 @@ window.DarkTip = {
 		});		
 	},
 	
-	'handleHover': function(type, element) {
-		if(typeof jQuery(element).data('qtip') === 'object') {
+	'handleHover': function(type, element)
+	{
+		if(typeof jQuery(element).data('qtip') === 'object')
+		{
 			jQuery(element).qtip('show');
-		} else {
-			var triggers = this.resolveRoute(('triggers.' + type), this['data']);
-			if(triggers !== undefined) {
-				for(module in triggers) {
-					if(type === 'explicit') {
+		}
+		else
+		{
+			var triggers = this._read(this.route('', 'triggers.' + type));
+			
+			if(triggers !== undefined)
+			{
+				for(var i = 0; i < triggers.length; i++)
+				{
+					if(type === 'explicit')
+					{
 						var testme = new String(jQuery(element).data('darktip'));
 					}
-					if(type === 'implicit') {
+					if(type === 'implicit')
+					{
 						var testme = new String(jQuery(element).attr('href'));
 					}
-					var result = testme.match(triggers[module]['match']);
-					if(result) {
-						var params = this.parseParams(result, (module + '.patterns.' + type + '.params'));
-						this.initTooltip(module, type, params, element);
+					var result = testme.match(triggers[i]['pattern']['match']);
+					
+					if(result)
+					{
+						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type));
+						if(paramFunc)
+						{
+							var params = paramFunc(result);
+						}
+						else
+						{
+							var params = {};
+						}
+						this.initTooltip(triggers[i]['module'], type, params, element);
 					}
 				}
 			}
 		}
+	},
+	
+	'initTooltip': function(module, type, params, element)
+	{
+		if(typeof params['locale'] === 'undefined')
+		{
+			params['locale'] = 'en_US';
+		}
+		var templateTools = this.getTemplateTools(module, params['lcoale']);
+		apicall = jQuery.jqote(
+			this._read(this.route(module, 'patterns.api')),
+			jQuery.extend(true, {}, params, templateTools)
+		);
+		params['hash'] =  jQuery.jqote(
+			this._read(this.route(module, 'patterns.hash')),
+			jQuery.extend(true, {}, params, templateTools)
+		);
+		var content = this.cache(module, params['hash']);
+		if(content)
+		{
+			this.attachTooltip(element, content, module);
+		}
+		else
+		{
+			content = this.localize(module, params['locale'], 'loading');
+			
+			this.attachTooltip(element, content, module);
+			
+			jQuery.jsonp({
+				'url': apicall,
+				'callbackParameter': 'jsonp',
+				'success': function(data) {
+					DarkTip.renderTooltip(module, params, element, data);
+				},
+				'error'  : function(options) {
+					DarkTip.renderTooltip(module, params, element);
+				}
+			});
+		}
+	},
+	
+	'renderTooltip': function(module, params, element, data) {
+		var content = '';
+		
+		// call module func to verify data
+		var validateDataFunc = this.read(module, 'validateData');
+		
+		if(typeof validateDataFunc !== 'undefined')
+		{
+			data = validateDataFunc(data);
+		}
+		
+		if(data)
+		{
+			// call module func to enhance template data
+			var enhanceDataFunc = this.read(module, 'enhanceData');
+			
+			if(typeof enhanceDataFunc !== 'undefined')
+			{
+				data = enhanceDataFunc(params, data);
+			}
+			
+			jQuery(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
+			
+			content = jQuery.jqote(
+				this.read(module, 'templates.core'),
+				jQuery.extend(true, {}, this.getTemplateTools(module, params['locale']), data)
+			);
+		}
+		else
+		{
+			jQuery(element).qtip('api').set('style.width', this.read(module, 'layout.width.404'));
+			
+			content = jQuery.jqote(
+				this.read(module, 'templates.404'),
+				jQuery.extend(true, {}, this.getTemplateTools(module, params['locale']), params)
+			);
+		}
+		
+		jQuery(element).qtip('api').set('content.text', content);
+		
+		this.cache(module, params['hash'], content);
+		
+	},
+	
+	'attachTooltip': function(element, content, module){
+		var width = this.read(module, 'layout.width.core');
+		if(width == undefined) {
+			width = 300;
+		}
+		jQuery(element).qtip({
+			'overwrite': false,
+			'show': {
+				'ready': true
+			},
+			'events': {
+				'render':function(event, api){
+					var tooltip = api['elements']['tooltip'];
+					tooltip.bind('tooltipshow', function(event, api) {
+						DarkTip.addToActiveTooltips(api['id']);
+					});
+					tooltip.bind('tooltiphide', function(event, api) {
+						DarkTip.removeFromActiveTooltips(api['id']);
+					});
+				}
+			},
+			'content': {
+				'text': content
+			},
+			'position': {
+				'my'      : DarkTip.read(module, 'layout.position.my'),
+				'at'      : DarkTip.read(module, 'layout.position.at'),
+				'target'  : DarkTip.read(module, 'layout.position.target'),
+				'viewport': jQuery(window),
+				'effect'  : false
+			},
+			'hide' :'mouseout',
+			'style': {
+				'width'  : width+'px',
+				'classes': 'darktip-tooltip ui-tooltip-cluetip'
+			}
+		});
+	},
+	
+	'addToActiveTooltips': function(id)
+	{
+		var found = false;
+		for (var i = 0; i < this.activeTooltips.length; i++)
+		{
+			if(this.activeTooltips[i] === id)
+			{
+				found = true;
+			}
+		}
+		if(found === false)
+		{
+			this.activeTooltips.push(id);
+		}
+	},
+	
+	'removeFromActiveTooltips': function(id)
+	{
+		var found = false;
+		for (var i = 0; i < this['activeTooltips'].length; i++)
+		{
+			if(this['activeTooltips'][i] === id)
+			{
+				found = i;
+			}
+		}
+		if(found !== false)
+		{
+			this['activeTooltips'].splice(i, 1);
+		}
+	},
+	
+	'repositionActiveTooltips': function()
+	{
+		for (var i = 0; i < this.activeTooltips.length; i++)
+		{
+			jQuery('#ui-tooltip-' + this['activeTooltips'][i]).qtip('reposition');
+		}
+	},
+	
+	'getTemplateTools': function(module, locale) {
+		var tools = {
+			'extendedActive'      : this.setting('extendedMode.active'),
+			'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel')
+		}
+		var collection = this.collect(module, 'templates.tools');
+		if(collection)
+		{
+			jQuery.extend(true, tools, collection);
+		}
+		return tools;
 	},
 	
 	'verifyParentModule': function(module)
@@ -471,7 +733,7 @@ window.DarkTip = {
 		this.startUp();
 		// console.log(DarkTip.read('wow.realm', 'layout.width.core'));
 		// console.log(DarkTip.localize('wow.realm', 'de_DE', 'blubb.bbb'));
-		// console.log(DarkTip.collect('wow.realm', 'template.tools'));
+		// console.log(DarkTip.collect('wow.realm', 'templates.tools'));
 		// console.log(DarkTip.write('data.bluubbbb.bla.gnargs', 333));
 		// console.log(DarkTip.route('wow', 'registered'));
 		// console.log(DarkTip.route('', 'layout.width.core'));

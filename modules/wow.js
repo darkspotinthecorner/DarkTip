@@ -43,9 +43,30 @@ DarkTip.registerModule('wow', {
 			}
 		}
 	},
+	'enhanceData': function(params, data) {
+		var add = {};
+		add['path_host']       = 'http://' + params['host'];
+		add['path_host_media'] = 'http://' + DarkTip.map('wow', 'maps.region.mediahost', params['region']);
+		add['region']          = params['region'];
+		add['locale']          = params['locale'];
+		jQuery.extend(true, data, add);
+		return data;
+	},
+	'templates': {
+		'tools': {
+			'___': {}
+		}
+	},
 	'cache': {},
 	'i18n': {
 		'en_US': {
+			'loading': 'Loading wow data...',
+			'not-found': 'Data not found',
+			'label': {
+				'realm': 'Realm:',
+				'quest': 'Quest:',
+				'region': 'Region:'
+			},
 			'templates': {
 				'extendedInactive': 'Hold [<%= this["extendedKeyCodeLabel"] %>] to switch modes!',
 				'extendedActive'  : 'Release [<%= this["extendedKeyCodeLabel"] %>] to switch modes!'
