@@ -21,28 +21,21 @@ DarkTip.registerModule('wow.quest', {
 		}
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
-			return false;
-		}
-		return data;
-	},
-	
 	'templates': {
 		'core':(
 			'<div class="tooltip-quest">' +
 				'<div class="row level"><%= this["level"] %></div>' +
 				'<div class="row name"><%= this["title"] %></div>' +
 				'<div class="row category"><%= this["category"] %></div>' +
-				'<div class="row reqLevel"><%= this.___.loc("wow.quest", "templates.reqLevel", this) %></div>' +
-				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this.___.loc("wow.quest", "templates.suggestedPartyMembers", this) %><% } %>' +
+				'<div class="row reqLevel"><%= this._loc("wow.quest", "templates.reqLevel", this) %></div>' +
+				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this._loc("wow.quest", "templates.suggestedPartyMembers", this) %><% } %>' +
 			'</div>'				
 		),
 		'404':(
 			'<div class="tooltip-quest tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this.___.loc("wow.quest", "not-found", this) %></span></div>' +
-				'<div class="row quest"><span class="label"><%= this.___.loc("wow.quest", "label.quest", this) %></span> <span class="value"><%= this["questid"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this.___.loc("wow.quest", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="title">404<span class="sub"> / <%= this._loc("wow.quest", "not-found", this) %></span></div>' +
+				'<div class="row quest"><span class="label"><%= this._loc("wow.quest", "label.quest", this) %></span> <span class="value"><%= this["questid"] %></span></div>' +
+				'<div class="row region"><span class="label"><%= this._loc("wow.quest", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},

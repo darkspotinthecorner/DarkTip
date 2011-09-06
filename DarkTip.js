@@ -111,39 +111,42 @@ window.DarkTip = {
 		},
 		'templates': {
 			'tools': {
-				'___': {
-					'sub': function(module, route, data) {
-						var template = DarkTip.read(module, 'fragments.' + route);
-						if(template.indexOf('<%') === (-1))
-						{
-							// no templateable string, simply return
-							return template;
-						}
-						else
-						{
-							// string is a template, pass to jQote2
-							return jQuery.jqote(
-								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
-							);
-						}
-					},
-					'loc': function(module, route, data, fuzzy) {
-						var template = DarkTip.localize(module, data['locale'], route, fuzzy);
-						if(template.indexOf('<%') === (-1))
-						{
-							// no templateable string, simply return
-							return template;
-						}
-						else
-						{
-							// string is a template, pass to jQote2
-							return jQuery.jqote(
-								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
-							);
-						}
-					},
+				'_test': function() {
+					console.log('templates.tools.___.test:');
+					console.log(this);
+					return 'args!';
+				},
+				'_sub': function(module, route, data) {
+					var template = DarkTip.read(module, 'fragments.' + route);
+					if(template.indexOf('<%') === (-1))
+					{
+						// no templateable string, simply return
+						return template;
+					}
+					else
+					{
+						// string is a template, pass to jQote2
+						return jQuery.jqote(
+							template,
+							jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+						);
+					}
+				},
+				'_loc': function(module, route, data, fuzzy) {
+					var template = DarkTip.localize(module, data['locale'], route, fuzzy);
+					if(template.indexOf('<%') === (-1))
+					{
+						// no templateable string, simply return
+						return template;
+					}
+					else
+					{
+						// string is a template, pass to jQote2
+						return jQuery.jqote(
+							template,
+							jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+						);
+					}
 				}
 			}
 		},
@@ -549,7 +552,7 @@ window.DarkTip = {
 			
 			if(typeof enhanceDataFunc !== 'undefined')
 			{
-				data = enhanceDataFunc(params, data);
+				data = enhanceDataFunc(module, params, data);
 			}
 			
 			jQuery(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
@@ -656,8 +659,12 @@ window.DarkTip = {
 	
 	'getTemplateTools': function(module, locale) {
 		var tools = {
-			'extendedActive'      : this.setting('extendedMode.active'),
-			'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel')
+			'_meta': {
+				'extendedActive'      : this.setting('extendedMode.active'),
+				'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
+				'locale'              : locale,
+				'module'              : module
+			}
 		}
 		var collection = this.collect(module, 'templates.tools');
 		if(collection)

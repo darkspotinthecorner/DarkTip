@@ -34,21 +34,21 @@ DarkTip.registerModule('wow.realm', {
 	'templates': {
 		'core':(
 			'<div class="tooltip-realm">' +
-				'<div class="type crealmtype-<%= this["type"] %>"><%= this.___.loc("wow.realm", ("type." + this["type"]), this) %></div>' +
+				'<%= this._test() %>' +
+				'<div class="type crealmtype-<%= this["type"] %>"><%= this._loc("wow.realm", ("type." + this["type"]), this) %></div>' +
 				'<div class="row name"><%= this["name"] %></div>' +
-				'<div class="row battlegroup"><%= this["battlegroup"] %><span class="darktip-only-x"> XXXX</span></div>' +
+				'<div class="row battlegroup"><%= this["battlegroup"] %></div>' +
 				'<div class="row status">' +
-					'<span class="crealmstatus-<%= this["status"] %>"><%= this.___.loc("wow.realm", ("status." + this["status"]), this) %></span>' +
-					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this.___.loc("wow.realm", ("queue." + this["queue"]), this) %></span>)<% } %>' +
+					'<span class="crealmstatus-<%= this["status"] %>"><%= this._loc("wow.realm", ("status." + this["status"]), this) %></span>' +
+					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this._loc("wow.realm", ("queue." + this["queue"]), this) %></span>)<% } %>' +
 				'</div>' +
-				'<div class="darktip-only-x">I\'m extended only...</div>' +
 			'</div>'
 		),
 		'404':(
 			'<div class="tooltip-realm tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this.___.loc("wow.realm", "not-found", this) %></span></div>' +
-				'<div class="row realm"><span class="label"><%= this.___.loc("wow.realm", "label.realm", this) %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this.___.loc("wow.realm", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="title">404<span class="sub"> / <%= this._loc("wow.realm", "not-found", this) %></span></div>' +
+				'<div class="row realm"><span class="label"><%= this._loc("wow.realm", "label.realm", this) %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="row region"><span class="label"><%= this._loc("wow.realm", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},

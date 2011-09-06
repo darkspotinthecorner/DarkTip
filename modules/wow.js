@@ -43,21 +43,28 @@ DarkTip.registerModule('wow', {
 			}
 		}
 	},
-	'enhanceData': function(params, data) {
-		var add = {};
-		add['path_host']       = 'http://' + params['host'];
-		add['path_host_media'] = 'http://' + DarkTip.map('wow', 'maps.region.mediahost', params['region']);
-		add['region']          = params['region'];
-		add['locale']          = params['locale'];
+	
+	'validateData': function(data) {
+		if(typeof data === 'undefined') {
+			return false;
+		}
+		return data;
+	},
+	
+	'enhanceData': function(module, params, data) {
+		var add = {
+			'_meta': {
+				'path_host'      : 'http://' + params['host'],
+				'path_host_media': 'http://' + DarkTip.map('wow', 'maps.region.mediahost', params['region']),
+				'region'         : params['region'],
+				'locale'         : params['locale'],
+				'module'         : module
+			}
+		};
 		jQuery.extend(true, data, add);
 		return data;
 	},
-	'templates': {
-		'tools': {
-			'___': {}
-		}
-	},
-	'cache': {},
+	
 	'i18n': {
 		'en_US': {
 			'loading': 'Loading wow data...',
@@ -73,4 +80,5 @@ DarkTip.registerModule('wow', {
 			}
 		}
 	}
+	
 });
