@@ -94,10 +94,12 @@ window.DarkTip = {
 				'wow.arenateam'
 			]
 		},
+		
 		'triggers': {
 			'explicit': [],
 			'implicit': []
 		},
+		
 		'layout': {
 			'position': {
 				'my'    : 'bottom middle',
@@ -109,15 +111,15 @@ window.DarkTip = {
 				'404' : 250
 			}
 		},
+		
 		'templates': {
 			'tools': {
-				'_test': function() {
-					console.log('templates.tools.___.test:');
-					console.log(this);
-					return 'args!';
-				},
-				'_sub': function(module, route, data) {
-					var template = DarkTip.read(module, 'fragments.' + route);
+				'_sub': function(route, data) {
+					if(typeof data === 'undefined')
+					{
+						data = this;
+					}
+					var template = DarkTip.read(this['_meta']['module'], route);
 					if(template.indexOf('<%') === (-1))
 					{
 						// no templateable string, simply return
@@ -128,12 +130,40 @@ window.DarkTip = {
 						// string is a template, pass to jQote2
 						return jQuery.jqote(
 							template,
-							jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+							jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
 					}
 				},
-				'_loc': function(module, route, data, fuzzy) {
-					var template = DarkTip.localize(module, data['locale'], route, fuzzy);
+				'_subLoop': function(route, data) {
+					var template = DarkTip.read(this['_meta']['module'], route);
+					var collect  = '';
+					if(template.indexOf('<%') === (-1))
+					{
+						// no templateable string, simply return
+						for (var i = 0; i < data.length; i++)
+						{
+							collect = collect + template;
+						}
+					}
+					else
+					{
+						// string is a template, pass to jQote2
+						for (var i = 0; i < data.length; i++)
+						{
+							collect = collect + jQuery.jqote(
+								template,
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
+							);
+						}
+					}
+					return collect;
+				},
+				'_loc': function(route, data, fuzzy) {
+					if(typeof data === 'undefined')
+					{
+						data = this;
+					}
+					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
 					if(template.indexOf('<%') === (-1))
 					{
 						// no templateable string, simply return
@@ -144,14 +174,44 @@ window.DarkTip = {
 						// string is a template, pass to jQote2
 						return jQuery.jqote(
 							template,
-							jQuery.extend(true, {}, DarkTip.getTemplateTools(module, data['locale']), data)
+							jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
 					}
+				},
+				'_locLoop': function(route, data, fuzzy) {
+					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
+					var collect  = '';
+					if(template.indexOf('<%') === (-1))
+					{
+						// no templateable string, simply return
+						for (var i = 0; i < data.length; i++)
+						{
+							collect = collect + template;
+						}
+					}
+					else
+					{
+						// string is a template, pass to jQote2
+						for (var i = 0; i < data.length; i++)
+						{
+							collect = collect + jQuery.jqote(
+								template,
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
+							);
+						}
+					}
+					return collect;
 				}
 			}
 		},
+		
 		'i18n': {
-			'en_US': {}
+			'en_US': {
+				'loading'         : 'Loading...',
+				'not-found'       : 'Nothing found',
+				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!',
+				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!'
+			}
 		},
 		'modules': {}
 	},
@@ -738,13 +798,6 @@ window.DarkTip = {
 	'init': function() {
 		this.buildSettings();
 		this.startUp();
-		// console.log(DarkTip.read('wow.realm', 'layout.width.core'));
-		// console.log(DarkTip.localize('wow.realm', 'de_DE', 'blubb.bbb'));
-		// console.log(DarkTip.collect('wow.realm', 'templates.tools'));
-		// console.log(DarkTip.write('data.bluubbbb.bla.gnargs', 333));
-		// console.log(DarkTip.route('wow', 'registered'));
-		// console.log(DarkTip.route('', 'layout.width.core'));
-		// console.log(DarkTip.route('wow.realm'));
 		console.log(DarkTip);
 	}
 	

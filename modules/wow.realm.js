@@ -34,21 +34,21 @@ DarkTip.registerModule('wow.realm', {
 	'templates': {
 		'core':(
 			'<div class="tooltip-realm">' +
-				'<%= this._test() %>' +
-				'<div class="type crealmtype-<%= this["type"] %>"><%= this._loc("wow.realm", ("type." + this["type"]), this) %></div>' +
+				'<div class="type crealmtype-<%= this["type"] %>"><%= this._loc("type." + this["type"]) %></div>' +
 				'<div class="row name"><%= this["name"] %></div>' +
 				'<div class="row battlegroup"><%= this["battlegroup"] %></div>' +
 				'<div class="row status">' +
-					'<span class="crealmstatus-<%= this["status"] %>"><%= this._loc("wow.realm", ("status." + this["status"]), this) %></span>' +
-					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this._loc("wow.realm", ("queue." + this["queue"]), this) %></span>)<% } %>' +
+					'<span class="crealmstatus-<%= this["status"] %>"><%= this._loc("status." + this["status"]) %></span>' +
+					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this._loc("queue." + this["queue"]) %></span>)<% } %>' +
 				'</div>' +
+				'<div class="row population"><%= this._loc("population." + this["population"]) %></div>' +
 			'</div>'
 		),
 		'404':(
 			'<div class="tooltip-realm tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("wow.realm", "not-found", this) %></span></div>' +
-				'<div class="row realm"><span class="label"><%= this._loc("wow.realm", "label.realm", this) %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this._loc("wow.realm", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="row realm"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="row region"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},
@@ -76,30 +76,6 @@ DarkTip.registerModule('wow.realm', {
 				'medium': 'Medium population',
 				'high'  : 'High population'
 			}
-		},
-		'de_DE': {
-			'loading': 'Lade Realm...',
-			'not-found': 'Realm nicht gefunden',
-			'type': {
-				'pve'  : 'PvE',
-				'pvp'  : 'PvP',
-				'rp'   : 'RP',
-				'rppvp': 'RPPvP'
-			},
-			'queue': {
-				'false': 'Keine Warteschlange',
-				'true' : 'Warteschlange'
-			},
-			'status': {
-				'false': 'Offline',
-				'true' : 'Online'
-			},
-			'population': {
-				'low'   : 'Niedrige Bevölkerung',
-				'medium': 'Mittlere Bevölkerung',
-				'high'  : 'Hoche Bevölkerung'
-			}
-			
 		}
 	}
 });

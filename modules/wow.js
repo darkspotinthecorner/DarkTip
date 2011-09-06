@@ -67,16 +67,69 @@ DarkTip.registerModule('wow', {
 	
 	'i18n': {
 		'en_US': {
-			'loading': 'Loading wow data...',
-			'not-found': 'Data not found',
-			'label': {
-				'realm': 'Realm:',
-				'quest': 'Quest:',
-				'region': 'Region:'
+			'loading'       : 'Loading wow data...',
+			'not-found'     : 'Data not found',
+			'label'         : {
+				'realm' : 'Realm:',
+				'quest' : 'Quest:',
+				'region': 'Region:',
+				'item'  : 'Item:'
 			},
-			'templates': {
-				'extendedInactive': 'Hold [<%= this["extendedKeyCodeLabel"] %>] to switch modes!',
-				'extendedActive'  : 'Release [<%= this["extendedKeyCodeLabel"] %>] to switch modes!'
+			'characterClass': {
+				'1' : {
+					'0': 'Warrior',
+					'1': 'Warrior'
+				},
+				'2' : {
+					'0': 'Paladin',
+					'1': 'Paladin'
+				},
+				'3' : {
+					'0': 'Hunter',
+					'1': 'Hunter'
+				},
+				'4' : {
+					'0': 'Rogue',
+					'1': 'Rogue'
+				},
+				'5' : {
+					'0': 'Priest',
+					'1': 'Priest'
+				},
+				'6' : {
+					'0': 'Death Knight',
+					'1': 'Death Knight'
+				},
+				'7' : {
+					'0': 'Shaman',
+					'1': 'Shaman'
+				},
+				'8' : {
+					'0': 'Mage',
+					'1': 'Mage'
+				},
+				'9' : {
+					'0': 'Warlock',
+					'1': 'Warlock'
+				},
+				'11': {
+					'0': 'Druid',
+					'1': 'Druid'
+				}
+			},
+			'characterRace' : {
+				'1' : 'Human',
+				'2' : 'Orc',
+				'3' : 'Dwarf',
+				'4' : 'Night Elf',
+				'5' : 'Forsaken',
+				'6' : 'Tauren',
+				'7' : 'Gnome',
+				'8' : 'Troll',
+				'9' : 'Goblin',
+				'10': 'Blood Elf',
+				'11': 'Draenei',
+				'22': 'Worgen'
 			}
 		}
 	}

@@ -21,40 +21,38 @@ DarkTip.registerModule('wow.quest', {
 		}
 	},
 	
+	'layout': {
+		'width': {
+			'core': 350
+		}
+	},
+	
 	'templates': {
 		'core':(
 			'<div class="tooltip-quest">' +
 				'<div class="row level"><%= this["level"] %></div>' +
 				'<div class="row name"><%= this["title"] %></div>' +
 				'<div class="row category"><%= this["category"] %></div>' +
-				'<div class="row reqLevel"><%= this._loc("wow.quest", "templates.reqLevel", this) %></div>' +
-				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this._loc("wow.quest", "templates.suggestedPartyMembers", this) %><% } %>' +
+				'<div class="row reqLevel"><%= this._loc("templates.reqLevel") %></div>' +
+				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this._loc("templates.suggestedPartyMembers") %><% } %>' +
 			'</div>'				
 		),
 		'404':(
 			'<div class="tooltip-quest tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("wow.quest", "not-found", this) %></span></div>' +
-				'<div class="row quest"><span class="label"><%= this._loc("wow.quest", "label.quest", this) %></span> <span class="value"><%= this["questid"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this._loc("wow.quest", "label.region", this) %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="row quest"><span class="label"><%= this._loc("label.quest") %></span> <span class="value"><%= this["questid"] %></span></div>' +
+				'<div class="row region"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},
 	
 	'i18n': {
 		'en_US': {
-			'loading': 'Loading quest...',
+			'loading'  : 'Loading quest...',
 			'not-found': 'Quest not found',
 			'templates': {
-				'reqLevel': 'Requires Level <%= this["reqLevel"] %>',
+				'reqLevel'             : 'Requires Level <%= this["reqLevel"] %>',
 				'suggestedPartyMembers': 'Group Quest (<%= this["suggestedPartyMembers"] %>)'
-			}
-		},
-		'de_DE': {
-			'loading': 'Lade Quest...',
-			'not-found': 'Quest nicht gefunden',
-			'templates': {
-				'reqLevel': 'Benötigt Stufe <%= this["reqLevel"] %>',
-				'suggestedPartyMembers': 'Gruppenquest (<%= this["suggestedPartyMembers"] %>)'
 			}
 		}
 	}
