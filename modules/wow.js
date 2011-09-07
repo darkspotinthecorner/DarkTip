@@ -61,7 +61,7 @@ DarkTip.registerModule('wow', {
 				'module'         : module
 			}
 		};
-		jQuery.extend(true, data, add);
+		DarkTip.jq.extend(true, data, add);
 		return data;
 	},
 	
@@ -76,8 +76,15 @@ DarkTip.registerModule('wow', {
 				'region'   : 'Region:',
 				'item'     : 'Item:',
 				'character': 'Character:',
+				'guild'    : 'Guild:',
 				'teamname' : 'Team name:',
 				'teamsize' : 'Team size:'
+			},
+			'factionSide'   : {
+				'0'       : 'Alliance',
+				'1'       : 'Horde',
+				'alliance': 'Alliance',
+				'horde'   : 'Horde'
 			},
 			'characterClass': {
 				'1' : {

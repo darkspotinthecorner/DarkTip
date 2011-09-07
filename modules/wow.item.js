@@ -123,9 +123,9 @@ DarkTip.registerModule('wow.item', {
 						};
 					}
 				}
-				return jQuery.jqote(
+				return DarkTip.jq.jqote(
 					DarkTip.read(this['_meta']['module'], 'templates.fragments.coins'),
-					jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), split)
+					DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), split)
 				);
 			}
 		},
@@ -180,7 +180,6 @@ DarkTip.registerModule('wow.item', {
 							'<% } %>' +
 						'</div>' +
 					'<% } %>' +
-					'<% if(this["maxDurability"]) { %><div class="row maxDurability"><%= this._loc("maxDurability") %></div><% } %>' +
 					'<% if(this["allowableClasses"]) { %><div class="row allowableClasses"><%= this._loc("allowableClasses") %></div><% } %>' +
 					'<% if(this["allowableRaces"]) { %><div class="row allowableRaces"><%= this._loc("allowableRaces") %></div><% } %>' +
 					'<% if(this["requiredLevel"]) { %><div class="row requiredLevel"><%= this._loc("requiredLevel") %></div><% } %>' +
@@ -199,6 +198,7 @@ DarkTip.registerModule('wow.item', {
 					'<div class="data darktip-only-x">' +
 						'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
 						'<div class="row id"><%= this._loc("itemId") %></div>' +
+						'<% if(this["maxDurability"]) { %><div class="row maxDurability"><%= this._loc("maxDurability") %></div><% } %>' +
 						'<% if(this["stackable"] > 1) { %><div class="row stackable"><%= this._loc("stackable") %></div><% } %>' +
 						// itemSource, maybe...
 						'<div class="row sellPrice"><%= this._loc("sellPrice") %></div>' +
@@ -219,7 +219,7 @@ DarkTip.registerModule('wow.item', {
 		'fragments': {
 			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',
 			'allowableRace' : '<span class="crace-<%= this["_value"] %>"><%= this._loc("characterRace." + this["_value"] + ".0")%></span>',
-			'weaponDamage'  : '<div class="row damage"><%= this._loc("damage", this) %></div>',
+			'weaponDamage'  : '<div class="row damage"><%= this._loc("damage") %></div>',
 			'coins'         : (
 				'<% if(this["gold"] > -1) { %><span class="icon-gold"><%= this["gold"] %></span><% } %>' +
 				'<% if(this["silver"] > -1) { %><span class="icon-silver"><%= this["silver"] %></span><% } %>' +
@@ -242,8 +242,8 @@ DarkTip.registerModule('wow.item', {
 					'<% }'
 				),
 				'spell'    : (
-					'<%if(this["spell"]["description"]) { %>' +
-						'<div class="row secondaryStat"><%= this._loc("itemSpell", this) %></div>' +
+					'<% if(this["spell"]["description"]) { %>' +
+						'<div class="row secondaryStat"><%= this._loc("itemSpell") %></div>' +
 					'<% } %>'
 				)
 			}

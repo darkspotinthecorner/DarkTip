@@ -21,37 +21,20 @@
  * ************************************************************************** */
 
 // Check if yepnope.js is defined, if not, we need to define it
-if(!window.yepnope) {
+if(!window.yepnope)
+{
 	/*yepnope1.0.2|WTFPL|webkit-fix*/
 	(function(a,b,c){function H(){var a=z;a.loader={load:G,i:0};return a}function G(a,b,c){var e=b=="c"?r:q;i=0,b=b||"j",u(a)?F(e,a,b,this.i++,d,c):(h.splice(this.i++,0,a),h.length==1&&E());return this}function F(a,c,d,g,j,l){function q(){!o&&A(n.readyState)&&(p.r=o=1,!i&&B(),n.onload=n.onreadystatechange=null,e(function(){m.removeChild(n)},0))}var n=b.createElement(a),o=0,p={t:d,s:c,e:l};n.src=n.data=c,!k&&(n.style.display="none"),n.width=n.height="0",a!="object"&&(n.type=d),n.onload=n.onreadystatechange=q,a=="img"?n.onerror=q:a=="script"&&(n.onerror=function(){p.e=p.r=1,E()}),h.splice(g,0,p),m.insertBefore(n,k?null:f),e(function(){o||(m.removeChild(n),p.r=p.e=o=1,B())},z.errorTimeout)}function E(){var a=h.shift();i=1,a?a.t?e(function(){a.t=="c"?D(a):C(a)},0):(a(),B()):i=0}function D(a){var c=b.createElement("link"),d;c.href=a.s,c.rel="stylesheet",c.type="text/css";if(!a.e&&(o||j)){var g=function(a){e(function(){if(!d)try{((o&&a.sheet!==null)||(j&&a.sheet.cssRules.length))?(d=1,B()):g(a)}catch(b){b.code==1e3||b.message=="security"||b.message=="denied"?(d=1,e(function(){B()},0)):g(a)}},0)};g(c)}else c.onload=function(){d||(d=1,e(function(){B()},0))},a.e&&c.onload();e(function(){d||(d=1,B())},z.errorTimeout),!a.e&&f.parentNode.insertBefore(c,f)}function C(a){var c=b.createElement("script"),d;c.src=a.s,c.onreadystatechange=c.onload=function(){!d&&A(c.readyState)&&(d=1,B(),c.onload=c.onreadystatechange=null)},e(function(){d||(d=1,B())},z.errorTimeout),a.e?c.onload():f.parentNode.insertBefore(c,f)}function B(){var a=1,b=-1;while(h.length- ++b)if(h[b].s&&!(a=h[b].r))break;a&&E()}function A(a){return!a||a=="loaded"||a=="complete"}var d=b.documentElement,e=a.setTimeout,f=b.getElementsByTagName("script")[0],g={}.toString,h=[],i=0,j="MozAppearance"in d.style,k=j&&!!b.createRange().compareNode,l=j&&!k,m=k?d:f.parentNode,n=a.opera&&g.call(a.opera)=="[object Opera]",o="webkitAppearance"in d.style,p=o&&"async"in b.createElement("script"),q=j?"object":n||p?"img":"script",r=o?"img":q,s=Array.isArray||function(a){return g.call(a)=="[object Array]"},t=function(a){return Object(a)===a},u=function(a){return typeof a=="string"},v=function(a){return g.call(a)=="[object Function]"},w=[],x={},y,z;z=function(a){function h(a,b){function i(a){if(u(a))g(a,f,b,0,c);else if(t(a))for(h in a)a.hasOwnProperty(h)&&g(a[h],f,b,h,c)}var c=!!a.test,d=c?a.yep:a.nope,e=a.load||a.both,f=a.callback,h;i(d),i(e),a.complete&&b.load(a.complete)}function g(a,b,d,e,g){var h=f(a),i=h.autoCallback;if(!h.bypass){b&&(b=v(b)?b:b[a]||b[e]||b[a.split("/").pop().split("?")[0]]);if(h.instead)return h.instead(a,b,d,e,g);d.load(h.url,h.forceCSS||!h.forceJS&&/css$/.test(h.url)?"c":c,h.noexec),(v(b)||v(i))&&d.load(function(){H(),b&&b(h.origUrl,g,e),i&&i(h.origUrl,g,e)})}}function f(a){var b=a.split("!"),c=w.length,d=b.pop(),e=b.length,f={url:d,origUrl:d,prefixes:b},g,h;for(h=0;h<e;h++)g=x[b[h]],g&&(f=g(f));for(h=0;h<c;h++)f=w[h](f);return f}var b,d,e=this.yepnope.loader;if(u(a))g(a,0,e,0);else if(s(a))for(b=0;b<a.length;b++)d=a[b],u(d)?g(d,0,e,0):s(d)?z(d):t(d)&&h(d,e);else t(a)&&h(a,e)},z.addPrefix=function(a,b){x[a]=b},z.addFilter=function(a){w.push(a)},z.errorTimeout=1e4,b.readyState==null&&b.addEventListener&&(b.readyState="loading",b.addEventListener("DOMContentLoaded",y=function(){b.removeEventListener("DOMContentLoaded",y,0),b.readyState="complete"},0)),a.yepnope=H()})(this,this.document)
 }
 
-if(typeof window.___DarkTipSettings === 'undefined') {
+if(typeof window.___DarkTipSettings === 'undefined')
+{
 	window.___DarkTipSettings = {};
 }
 
-yepnope([{
-	'test'    : window.jQuery,
-	'nope'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
-	'complete': function() {
-		
-		jQuery.noConflict();
-		
-		if(!window.jQuery.jsonp){
-			/* jquery.jsonp 2.1.4 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
-			(function(e,b){function d(){}function t(C){c=[C]}function m(C){f.insertBefore(C,f.firstChild)}function l(E,C,D){return E&&E.apply(C.context||C,D)}function k(C){return/\?/.test(C)?"&":"?"}var n="async",s="charset",q="",A="error",r="_jqjsp",w="on",o=w+"click",p=w+A,a=w+"load",i=w+"readystatechange",z="removeChild",g="<script/>",v="success",y="timeout",x=e.browser,f=e("head")[0]||document.documentElement,u={},j=0,c,h={callback:r,url:location.href};function B(C){C=e.extend({},h,C);var Q=C.complete,E=C.dataFilter,M=C.callbackParameter,R=C.callback,G=C.cache,J=C.pageCache,I=C.charset,D=C.url,L=C.data,P=C.timeout,O,K=0,H=d;C.abort=function(){!K++&&H()};if(l(C.beforeSend,C,[C])===false||K){return C}D=D||q;L=L?((typeof L)=="string"?L:e.param(L,C.traditional)):q;D+=L?(k(D)+L):q;M&&(D+=k(D)+encodeURIComponent(M)+"=?");!G&&!J&&(D+=k(D)+"_"+(new Date()).getTime()+"=");D=D.replace(/=\?(&|$)/,"="+R+"$1");function N(S){!K++&&b(function(){H();J&&(u[D]={s:[S]});E&&(S=E.apply(C,[S]));l(C.success,C,[S,v]);l(Q,C,[C,v])},0)}function F(S){!K++&&b(function(){H();J&&S!=y&&(u[D]=S);l(C.error,C,[C,S]);l(Q,C,[C,S])},0)}J&&(O=u[D])?(O.s?N(O.s[0]):F(O)):b(function(T,S,U){if(!K){U=P>0&&b(function(){F(y)},P);H=function(){U&&clearTimeout(U);T[i]=T[o]=T[a]=T[p]=null;f[z](T);S&&f[z](S)};window[R]=t;T=e(g)[0];T.id=r+j++;if(I){T[s]=I}function V(W){(T[o]||d)();W=c;c=undefined;W?N(W[0]):F(A)}if(x.msie){T.event=o;T.htmlFor=T.id;T[i]=function(){/loaded|complete/.test(T.readyState)&&V()}}else{T[p]=T[a]=V;x.opera?((S=e(g)[0]).text="jQuery('#"+T.id+"')[0]."+p+"()"):T[n]=n}T.src=D;m(T);S&&m(S)}},0);return C}B.setup=function(C){e.extend(h,C)};e.jsonp=B})(jQuery,setTimeout);
-		}
-		
-		if(!window.jQuery.jqote){
-			/* jQote2 - client-side Javascript templating engine | Copyright (C) 2010, aefxx | http://aefxx.com/ | Dual licensed under the WTFPL v2 or MIT (X11) licenses | WTFPL v2 Copyright (C) 2004, Sam Hocevar | Date: Thu, Oct 21st, 2010 | Version: 0.9.7 */
-			(function($){var _=false,E1="UndefinedTemplateError",E2="TemplateCompilationError",E3="TemplateExecutionError",A="[object Array]",S="[object String]",F="[object Function]",n=1,c="%",q=/^[^<]*(<[\w\W]+>)[^>]*$/,ts=Object.prototype.toString;function r(e,x){throw ($.extend(e,x),e)}function dns(f) {var a=[];if(ts.call(f)!==A)return _;for(var i=0,l=f.length;i<l;i++)a[i]=f[i].jqote_id;return a.length?a.sort().join('.').replace(/(\b\d+\b)\.(?:\1(\.|$))+/g,"$1$2"):_}function l(s,t){var f,g=[],t=t||c,x=ts.call(s);if(x===F)return s.jqote_id?[s]:_;if(x!==A)return[$.jqotec(s,t)];if(x===A)for(var i=0,l=s.length;i<l;i++)return g.length?g:_}$.fn.extend({jqote:function(x,y){var x=ts.call(x)===A?x:[x],d="";this.each(function(i){var f=$.jqotec(this,y);for(var j=0;j<x.length;j++)d+=f.call(x[j],i,j,x,f)});return d}});$.each({app:"append",pre:"prepend",sub:"html"},function(x,y){$.fn["jqote"+x]=function(e,d,t){var p,r,s=$.jqote(e,d,t),$$=!q.test(s)?function(s){return $(document.createTextNode(s))}:$;if(!!(p=dns(l(e))))r=new RegExp("(^|\\.)"+p.split(".").join("\\.(.*)?")+"(\\.|$)");return this.each(function(){var z=$$(s);$(this)[y](z);(z[0].nodeType===3?$(this):z).trigger("jqote."+x,[z,r])})}});$.extend({jqote:function(e,d,t){var s="",t=t||c,f=l(e);if(f===_)r(new Error("Empty or undefined template passed to $.jqote"),{type:E1});d=ts.call(d)!==A?[d]:d;for(var i=0,m=f.length;i<m;i++)for(var j=0;j<d.length;j++)s+=f[i].call(d[j],i,j,d,f[i]);return s},jqotec:function(x,t){var h,e,y,t=t||c,z=ts.call(x);if(z===S&&q.test(x)){e=y=x;if(h=$.jqotecache[x])return h}else{e=z===S||x.nodeType?$(x):x instanceof jQuery?x:null;if(!e[0]||!(y=e[0].innerHTML)&&!(y=e.text()))r(new Error("Empty or undefined template passed to $.jqotec"),{type:E1});if(h=$.jqotecache[$.data(e[0],"jqote_id")])return h}var s="",i,a=y.replace(/\s*<!\[CDATA\[\s*|\s*\]\]>\s*|[\r\n\t]/g,"").split("<"+t).join(t+">\x1b").split(t+">");for(var m=0,k=a.length;m<k;m++)s+=a[m].charAt(0)!=="\x1b"?"out+='"+a[m].replace(/(\\|["'])/g,"\\$1")+"'":(a[m].charAt(1)==="="?";out+=("+a[m].substr(2)+");":(a[m].charAt(1)==="!"?";out+=$.jqotenc(("+a[m].substr(2)+"));":";"+a[m].substr(1)));s="try{"+('var out="";'+s+";return out;").split("out+='';").join("").split('var out="";out+=').join("var out=")+'}catch(e){e.type="'+E3+'";e.args=arguments;e.template=arguments.callee.toString();throw e;}';try{var f=new Function("i, j, data, fn",s)}catch(e){r(e,{type:E2})}i=e instanceof jQuery?$.data(e[0],"jqote_id",n):e;return $.jqotecache[i]=(f.jqote_id=n++,f)},jqotefn:function(e){var t=ts.call(e),i=t===S&&q.test(e)?e:$.data($(e)[0],"jqote_id");return $.jqotecache[i]||_},jqotetag:function(s){if(ts.call(s)===S)c=s},jqotenc:function(s){return s.toString().replace(/&(?!\w+;)/g,'&#38;').split('<').join('&#60;').split('>').join('&#62;').split('"').join('&#34;').split("'").join('&#39;')},jqotecache:{}});$.event.special.jqote={add:function(o){var n,h=o.handler,d=!o.data?[]:ts.call(o.data)!==A?[o.data]:o.data;if(!o.namespace)o.namespace="app.pre.sub";if(!d.length||!(n=dns(l(d))))return;o.handler=function(e,m,r){return !r||r.test(n)?h.apply(this,[e,m]):null}}}})(jQuery);
-		}
-		
-		DarkTip.init();
-	}
-}]);
-
 window.DarkTip = {
+	
+	'jq': undefined,
 	
 	'debug': true,
 	
@@ -122,7 +105,7 @@ window.DarkTip = {
 					else
 					{
 						data['_meta'] = {};
-						jQuery.extend(true, data['_meta'], this['_meta']);
+						DarkTip.jq.extend(true, data['_meta'], this['_meta']);
 					}
 					var template = DarkTip.read(this['_meta']['module'], route);
 					if(template.indexOf('<%') === (-1))
@@ -133,9 +116,9 @@ window.DarkTip = {
 					else
 					{
 						// string is a template, pass to jQote2
-						return jQuery.jqote(
+						return DarkTip.jq.jqote(
 							template,
-							jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
+							DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
 					}
 				},
@@ -165,11 +148,11 @@ window.DarkTip = {
 							}
 							
 							data[i]['_meta'] = {};
-							jQuery.extend(true, data[i]['_meta'], this['_meta']);
+							DarkTip.jq.extend(true, data[i]['_meta'], this['_meta']);
 							
-							collect.push(jQuery.jqote(
+							collect.push(DarkTip.jq.jqote(
 								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
 							));
 						}
 					}
@@ -183,7 +166,7 @@ window.DarkTip = {
 					else
 					{
 						data['_meta'] = {};
-						jQuery.extend(true, data['_meta'], this['_meta']);
+						DarkTip.jq.extend(true, data['_meta'], this['_meta']);
 					}
 					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
 					if(template.indexOf('<%') === (-1))
@@ -194,9 +177,9 @@ window.DarkTip = {
 					else
 					{
 						// string is a template, pass to jQote2
-						return jQuery.jqote(
+						return DarkTip.jq.jqote(
 							template,
-							jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
+							DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
 					}
 				},
@@ -227,11 +210,11 @@ window.DarkTip = {
 							}
 							
 							data[i]['_meta'] = {};
-							jQuery.extend(true, data[i]['_meta'], this['_meta']);
+							DarkTip.jq.extend(true, data[i]['_meta'], this['_meta']);
 							
-							collect.push(jQuery.jqote(
+							collect.push(DarkTip.jq.jqote(
 								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
 							));
 						}
 					}
@@ -347,7 +330,7 @@ window.DarkTip = {
 			var result       = this._read(currentRoute);
 			if(result !== undefined)
 			{
-				jQuery.extend(true, collector, result);
+				this.jq.extend(true, collector, result);
 			}
 		}
 		
@@ -471,7 +454,7 @@ window.DarkTip = {
 	},
 	
 	'buildSettings': function() {
-		jQuery.extend(true, this['data']['settings'], window.___DarkTipConfig);
+		jQuery.extend(true, this['data']['settings'], window.___DarkTipSettings);
 	},
 	
 	'map': function(module, route, value)
@@ -518,28 +501,40 @@ window.DarkTip = {
 		yepnope({
 			'load': filesToLoad,	
 			'complete': function() {
-				jQuery(function() {
-					if(DarkTip.setting('extendedMode.active')) {
-						jQuery(document).keydown(function(event) {
-							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
-								jQuery('body').addClass('darktip-extended-mode');
+				
+				DarkTip.jq = jQuery.noConflict(DarkTip.setting('unbindJQuery'));
+				
+				DarkTip.jq(function() {
+					
+					if(DarkTip.setting('extendedMode.active'))
+					{
+						DarkTip.jq(document).keydown(function(event) {
+							if(event.keyCode == DarkTip.setting('extendedMode.keyCode'))
+							{
+								DarkTip.jq('body').addClass('darktip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
-						jQuery(document).keyup(function(event) {
-							if(event.keyCode == DarkTip.setting('extendedMode.keyCode')) {
-								jQuery('body').removeClass('darktip-extended-mode');
+						
+						DarkTip.jq(document).keyup(function(event) {
+							if(event.keyCode == DarkTip.setting('extendedMode.keyCode'))
+							{
+								DarkTip.jq('body').removeClass('darktip-extended-mode');
 								DarkTip.repositionActiveTooltips();
 							}
 						});
 					}
-					if(DarkTip.setting('applyTo.explicit')) {
-						jQuery('[data-darktip]').live('mouseover', function() {
+					
+					if(DarkTip.setting('applyTo.explicit'))
+					{
+						DarkTip.jq('[data-darktip]').live('mouseover', function() {
 							DarkTip.handleHover('explicit', this);
 						});
 					}
-					if(DarkTip.setting('applyTo.implicit')) {
-						jQuery('[href]').live('mouseover', function() {
+					
+					if(DarkTip.setting('applyTo.implicit'))
+					{
+						DarkTip.jq('[href]').live('mouseover', function() {
 							DarkTip.handleHover('implicit', this);
 						});
 					}
@@ -550,9 +545,9 @@ window.DarkTip = {
 	
 	'handleHover': function(type, element)
 	{
-		if(typeof jQuery(element).data('qtip') === 'object')
+		if(typeof this.jq(element).data('qtip') === 'object')
 		{
-			jQuery(element).qtip('show');
+			this.jq(element).qtip('show');
 		}
 		else
 		{
@@ -564,11 +559,11 @@ window.DarkTip = {
 				{
 					if(type === 'explicit')
 					{
-						var testme = new String(jQuery(element).data('darktip'));
+						var testme = new String(this.jq(element).data('darktip'));
 					}
 					if(type === 'implicit')
 					{
-						var testme = new String(jQuery(element).attr('href'));
+						var testme = new String(this.jq(element).attr('href'));
 					}
 					var result = testme.match(triggers[i]['pattern']['match']);
 					
@@ -597,13 +592,13 @@ window.DarkTip = {
 			params['locale'] = 'en_US';
 		}
 		var templateTools = this.getTemplateTools(module, params['lcoale']);
-		apicall = jQuery.jqote(
+		apicall = this.jq.jqote(
 			this._read(this.route(module, 'patterns.api')),
-			jQuery.extend(true, {}, params, templateTools)
+			this.jq.extend(true, {}, params, templateTools)
 		);
-		params['hash'] =  jQuery.jqote(
+		params['hash'] =  this.jq.jqote(
 			this._read(this.route(module, 'patterns.hash')),
-			jQuery.extend(true, {}, params, templateTools)
+			this.jq.extend(true, {}, params, templateTools)
 		);
 		var content = this.cache(module, params['hash']);
 		if(content)
@@ -616,7 +611,7 @@ window.DarkTip = {
 			
 			this.attachTooltip(element, content, module);
 			
-			jQuery.jsonp({
+			this.jq.jsonp({
 				'url': apicall,
 				'callbackParameter': 'jsonp',
 				'success': function(data) {
@@ -650,24 +645,24 @@ window.DarkTip = {
 				data = enhanceDataFunc(module, params, data);
 			}
 			
-			jQuery(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
+			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
 			
-			content = jQuery.jqote(
+			content = this.jq.jqote(
 				this.read(module, 'templates.core'),
-				jQuery.extend(true, {}, this.getTemplateTools(module, params['locale']), data)
+				this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), data)
 			);
 		}
 		else
 		{
-			jQuery(element).qtip('api').set('style.width', this.read(module, 'layout.width.404'));
+			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.404'));
 			
-			content = jQuery.jqote(
+			content = this.jq.jqote(
 				this.read(module, 'templates.404'),
-				jQuery.extend(true, {}, this.getTemplateTools(module, params['locale']), params)
+				this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), params)
 			);
 		}
 		
-		jQuery(element).qtip('api').set('content.text', content);
+		this.jq(element).qtip('api').set('content.text', content);
 		
 		this.cache(module, params['hash'], content);
 		
@@ -678,7 +673,7 @@ window.DarkTip = {
 		if(width == undefined) {
 			width = 300;
 		}
-		jQuery(element).qtip({
+		this.jq(element).qtip({
 			'overwrite': false,
 			'show': {
 				'ready': true
@@ -701,7 +696,7 @@ window.DarkTip = {
 				'my'      : DarkTip.read(module, 'layout.position.my'),
 				'at'      : DarkTip.read(module, 'layout.position.at'),
 				'target'  : DarkTip.read(module, 'layout.position.target'),
-				'viewport': jQuery(window),
+				'viewport': this.jq(window),
 				'effect'  : false
 			},
 			'hide' :'mouseout',
@@ -748,7 +743,7 @@ window.DarkTip = {
 	{
 		for (var i = 0; i < this.activeTooltips.length; i++)
 		{
-			jQuery('#ui-tooltip-' + this['activeTooltips'][i]).qtip('reposition');
+			this.jq('#ui-tooltip-' + this['activeTooltips'][i]).qtip('reposition');
 		}
 	},
 	
@@ -764,7 +759,7 @@ window.DarkTip = {
 		var collection = this.collect(module, 'templates.tools');
 		if(collection)
 		{
-			jQuery.extend(true, tools, collection);
+			this.jq.extend(true, tools, collection);
 		}
 		return tools;
 	},
@@ -792,7 +787,7 @@ window.DarkTip = {
 		// The module seems to come with included submodules, split the off, to include them later
 		if(typeof moduleData['modules'] !== 'undefined')
 		{
-			jQuery.extend(true, submodules, moduleData['modules']);
+			this.jq.extend(true, submodules, moduleData['modules']);
 		}
 		
 		// Sanitize - clean submodules
@@ -833,7 +828,33 @@ window.DarkTip = {
 	'init': function() {
 		this.buildSettings();
 		this.startUp();
-		console.log(DarkTip);
 	}
 	
 }
+
+if(window.jQuery)
+{
+	window.___DarkTipSettings['unbindJQuery'] = true;
+}
+else
+{
+	window.___DarkTipSettings['unbindJQuery'] = false;
+}
+
+yepnope([{
+	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+	'complete': function() {
+		
+		if(!window.jQuery.jsonp){
+			/* jquery.jsonp 2.1.4 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
+			(function(e,b){function d(){}function t(C){c=[C]}function m(C){f.insertBefore(C,f.firstChild)}function l(E,C,D){return E&&E.apply(C.context||C,D)}function k(C){return/\?/.test(C)?"&":"?"}var n="async",s="charset",q="",A="error",r="_jqjsp",w="on",o=w+"click",p=w+A,a=w+"load",i=w+"readystatechange",z="removeChild",g="<script/>",v="success",y="timeout",x=e.browser,f=e("head")[0]||document.documentElement,u={},j=0,c,h={callback:r,url:location.href};function B(C){C=e.extend({},h,C);var Q=C.complete,E=C.dataFilter,M=C.callbackParameter,R=C.callback,G=C.cache,J=C.pageCache,I=C.charset,D=C.url,L=C.data,P=C.timeout,O,K=0,H=d;C.abort=function(){!K++&&H()};if(l(C.beforeSend,C,[C])===false||K){return C}D=D||q;L=L?((typeof L)=="string"?L:e.param(L,C.traditional)):q;D+=L?(k(D)+L):q;M&&(D+=k(D)+encodeURIComponent(M)+"=?");!G&&!J&&(D+=k(D)+"_"+(new Date()).getTime()+"=");D=D.replace(/=\?(&|$)/,"="+R+"$1");function N(S){!K++&&b(function(){H();J&&(u[D]={s:[S]});E&&(S=E.apply(C,[S]));l(C.success,C,[S,v]);l(Q,C,[C,v])},0)}function F(S){!K++&&b(function(){H();J&&S!=y&&(u[D]=S);l(C.error,C,[C,S]);l(Q,C,[C,S])},0)}J&&(O=u[D])?(O.s?N(O.s[0]):F(O)):b(function(T,S,U){if(!K){U=P>0&&b(function(){F(y)},P);H=function(){U&&clearTimeout(U);T[i]=T[o]=T[a]=T[p]=null;f[z](T);S&&f[z](S)};window[R]=t;T=e(g)[0];T.id=r+j++;if(I){T[s]=I}function V(W){(T[o]||d)();W=c;c=undefined;W?N(W[0]):F(A)}if(x.msie){T.event=o;T.htmlFor=T.id;T[i]=function(){/loaded|complete/.test(T.readyState)&&V()}}else{T[p]=T[a]=V;x.opera?((S=e(g)[0]).text="jQuery('#"+T.id+"')[0]."+p+"()"):T[n]=n}T.src=D;m(T);S&&m(S)}},0);return C}B.setup=function(C){e.extend(h,C)};e.jsonp=B})(jQuery,setTimeout);
+		}
+		
+		if(!window.jQuery.jqote){
+			/* jQote2 - client-side Javascript templating engine | Copyright (C) 2010, aefxx | http://aefxx.com/ | Dual licensed under the WTFPL v2 or MIT (X11) licenses | WTFPL v2 Copyright (C) 2004, Sam Hocevar | Date: Thu, Oct 21st, 2010 | Version: 0.9.7 */
+			(function($){var _=false,E1="UndefinedTemplateError",E2="TemplateCompilationError",E3="TemplateExecutionError",A="[object Array]",S="[object String]",F="[object Function]",n=1,c="%",q=/^[^<]*(<[\w\W]+>)[^>]*$/,ts=Object.prototype.toString;function r(e,x){throw ($.extend(e,x),e)}function dns(f) {var a=[];if(ts.call(f)!==A)return _;for(var i=0,l=f.length;i<l;i++)a[i]=f[i].jqote_id;return a.length?a.sort().join('.').replace(/(\b\d+\b)\.(?:\1(\.|$))+/g,"$1$2"):_}function l(s,t){var f,g=[],t=t||c,x=ts.call(s);if(x===F)return s.jqote_id?[s]:_;if(x!==A)return[$.jqotec(s,t)];if(x===A)for(var i=0,l=s.length;i<l;i++)return g.length?g:_}$.fn.extend({jqote:function(x,y){var x=ts.call(x)===A?x:[x],d="";this.each(function(i){var f=$.jqotec(this,y);for(var j=0;j<x.length;j++)d+=f.call(x[j],i,j,x,f)});return d}});$.each({app:"append",pre:"prepend",sub:"html"},function(x,y){$.fn["jqote"+x]=function(e,d,t){var p,r,s=$.jqote(e,d,t),$$=!q.test(s)?function(s){return $(document.createTextNode(s))}:$;if(!!(p=dns(l(e))))r=new RegExp("(^|\\.)"+p.split(".").join("\\.(.*)?")+"(\\.|$)");return this.each(function(){var z=$$(s);$(this)[y](z);(z[0].nodeType===3?$(this):z).trigger("jqote."+x,[z,r])})}});$.extend({jqote:function(e,d,t){var s="",t=t||c,f=l(e);if(f===_)r(new Error("Empty or undefined template passed to $.jqote"),{type:E1});d=ts.call(d)!==A?[d]:d;for(var i=0,m=f.length;i<m;i++)for(var j=0;j<d.length;j++)s+=f[i].call(d[j],i,j,d,f[i]);return s},jqotec:function(x,t){var h,e,y,t=t||c,z=ts.call(x);if(z===S&&q.test(x)){e=y=x;if(h=$.jqotecache[x])return h}else{e=z===S||x.nodeType?$(x):x instanceof jQuery?x:null;if(!e[0]||!(y=e[0].innerHTML)&&!(y=e.text()))r(new Error("Empty or undefined template passed to $.jqotec"),{type:E1});if(h=$.jqotecache[$.data(e[0],"jqote_id")])return h}var s="",i,a=y.replace(/\s*<!\[CDATA\[\s*|\s*\]\]>\s*|[\r\n\t]/g,"").split("<"+t).join(t+">\x1b").split(t+">");for(var m=0,k=a.length;m<k;m++)s+=a[m].charAt(0)!=="\x1b"?"out+='"+a[m].replace(/(\\|["'])/g,"\\$1")+"'":(a[m].charAt(1)==="="?";out+=("+a[m].substr(2)+");":(a[m].charAt(1)==="!"?";out+=$.jqotenc(("+a[m].substr(2)+"));":";"+a[m].substr(1)));s="try{"+('var out="";'+s+";return out;").split("out+='';").join("").split('var out="";out+=').join("var out=")+'}catch(e){e.type="'+E3+'";e.args=arguments;e.template=arguments.callee.toString();throw e;}';try{var f=new Function("i, j, data, fn",s)}catch(e){r(e,{type:E2})}i=e instanceof jQuery?$.data(e[0],"jqote_id",n):e;return $.jqotecache[i]=(f.jqote_id=n++,f)},jqotefn:function(e){var t=ts.call(e),i=t===S&&q.test(e)?e:$.data($(e)[0],"jqote_id");return $.jqotecache[i]||_},jqotetag:function(s){if(ts.call(s)===S)c=s},jqotenc:function(s){return s.toString().replace(/&(?!\w+;)/g,'&#38;').split('<').join('&#60;').split('>').join('&#62;').split('"').join('&#34;').split("'").join('&#39;')},jqotecache:{}});$.event.special.jqote={add:function(o){var n,h=o.handler,d=!o.data?[]:ts.call(o.data)!==A?[o.data]:o.data;if(!o.namespace)o.namespace="app.pre.sub";if(!d.length||!(n=dns(l(d))))return;o.handler=function(e,m,r){return !r||r.test(n)?h.apply(this,[e,m]):null}}}})(jQuery);
+		}
+		
+		DarkTip.init();
+	}
+}]);
