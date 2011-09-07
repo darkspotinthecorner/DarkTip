@@ -74,7 +74,7 @@ window.DarkTip = {
 				'wow.item',
 				'wow.character',
 				'wow.guild',
-				'wow.arenateam'
+				'wow.arena'
 			]
 		},
 		
@@ -152,7 +152,7 @@ window.DarkTip = {
 							
 							collect.push(DarkTip.jq.jqote(
 								template,
-								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), { '_loop': i }, data[i])
 							));
 						}
 					}
@@ -214,7 +214,7 @@ window.DarkTip = {
 							
 							collect.push(DarkTip.jq.jqote(
 								template,
-								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), { '_loop': i }, data[i])
 							));
 						}
 					}

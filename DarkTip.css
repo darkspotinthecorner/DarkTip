@@ -20,16 +20,16 @@
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
 
+/* ==========================================================================
+ * --- DarkTip Styles -------------------------------------------------------
+ * ========================================================================== */
+
 /* --- Override of 280 max-width -------------------------------------------- */
 
 .darktip-tooltip {
 	max-width: 750px;
 	min-width: 200px;
 }
-
-/* ==========================================================================
- * --- WowDataTooltip Styles ------------------------------------------------
- * ========================================================================== */
 
 /* --------------------------------------------------------------------------
  *  Colors
@@ -401,6 +401,13 @@ body.darktip-extended-mode .darktip-tooltip span.darktip-only-x {
  *  Guild Tooltips
  * -------------------------------------------------------------------------- */
 
+.tooltip-guild .achievementpoints {
+	float: right;
+	font-size: 14px;
+	color: #C09A67;
+	padding-left: 10px;
+}
+
 .tooltip-guild .name {
 	font-size: 14px;
 	font-weight: bold;
@@ -410,10 +417,6 @@ body.darktip-extended-mode .darktip-tooltip span.darktip-only-x {
 
 .tooltip-guild .classification {
 	color: #FFB100;
-}
-
-.tooltip-guild .achievementpoints {
-	color: #C09A67;
 }
 
 /* --------------------------------------------------------------------------
