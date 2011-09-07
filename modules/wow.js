@@ -67,13 +67,17 @@ DarkTip.registerModule('wow', {
 	
 	'i18n': {
 		'en_US': {
-			'loading'       : 'Loading wow data...',
-			'not-found'     : 'Data not found',
-			'label'         : {
-				'realm' : 'Realm:',
-				'quest' : 'Quest:',
-				'region': 'Region:',
-				'item'  : 'Item:'
+			'loading'  : 'Loading wow data...',
+			'not-found': 'Data not found',
+			'not-used' : 'Not used',
+			'label'    : {
+				'realm'    : 'Realm:',
+				'quest'    : 'Quest:',
+				'region'   : 'Region:',
+				'item'     : 'Item:',
+				'character': 'Character:',
+				'teamname' : 'Team name:',
+				'teamsize' : 'Team size:'
 			},
 			'characterClass': {
 				'1' : {
@@ -118,18 +122,54 @@ DarkTip.registerModule('wow', {
 				}
 			},
 			'characterRace' : {
-				'1' : 'Human',
-				'2' : 'Orc',
-				'3' : 'Dwarf',
-				'4' : 'Night Elf',
-				'5' : 'Forsaken',
-				'6' : 'Tauren',
-				'7' : 'Gnome',
-				'8' : 'Troll',
-				'9' : 'Goblin',
-				'10': 'Blood Elf',
-				'11': 'Draenei',
-				'22': 'Worgen'
+				'1' : {
+					'0': 'Human',
+					'1': 'Human'
+				},
+				'2' : {
+					'0': 'Orc',
+					'1': 'Orc'
+				},
+				'3' : {
+					'0': 'Dwarf',
+					'1': 'Dwarf'
+				},
+				'4' : {
+					'0': 'Night Elf',
+					'1': 'Night Elf'
+				},
+				'5' : {
+					'0': 'Forsaken',
+					'1': 'Forsaken'
+				},
+				'6' : {
+					'0': 'Tauren',
+					'1': 'Tauren'
+				},
+				'7' : {
+					'0': 'Gnome',
+					'1': 'Gnome'
+				},
+				'8' : {
+					'0': 'Troll',
+					'1': 'Troll'
+				},
+				'9' : {
+					'0': 'Goblin',
+					'1': 'Goblin'
+				},
+				'10': {
+					'0': 'Blood Elf',
+					'1': 'Blood Elf'
+				},
+				'11': {
+					'0': 'Draenei',
+					'1': 'Draenei'
+				},
+				'22': {
+					'0': 'Worgen',
+					'1': 'Worgen'
+				}
 			}
 		}
 	}

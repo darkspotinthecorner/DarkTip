@@ -3,10 +3,50 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>DarkTip - Test Suite</title>
+	<style type="text/css">
+		
+		* {
+			padding: 0;
+			margin: 0;
+		}
+		
+		body {
+			font-family: sans-serif;
+			font-size: 12px;
+			line-height: 150%;
+		}
+		
+		ul {
+			list-style: none;
+		}
+		
+		h1, h2, h3, h4, h5, h6 {
+			margin-top: 1em;
+			margin-bottom: 0.5em;
+		}
+		
+		.testbox {
+			float: left;
+			margin: 1em;
+			padding: 1em;
+		}
+		
+		.explicit {
+			border: 2px solid #d99;
+			background-color: #fdd;
+		}
+		
+		.implicit {
+			border: 2px solid #9d9;
+			background-color: #dfd;
+		}
+		
+		
+	</style>
 </head>
 <body>
 		
-	<ul style="float: left; margin: 1em; padding: 2em; border: 2px solid #ddd;">
+	<ul class="testbox explicit">
 		<li><h2>Realm Tests - Existing</h2></li>
 		<li><span data-darktip="realm:eu.gilneas(de)">realm:eu.gilneas(de)</span></li>
 		<li><span data-darktip="realm:eu.gilneas(en)">realm:eu.gilneas(en)</span></li>
@@ -15,7 +55,7 @@
 		<li><span data-darktip="realm:eu.gilnssseas(en)">realm:eu.gilnssseas(en)</span></li>
 	</ul>
 	
-	<ul style="float: left; margin: 1em; padding: 2em; border: 2px solid #ddd;">
+	<ul class="testbox explicit">
 		<li><h2>Quest Tests - Existing</h2></li>
 		<li><span data-darktip="quest:eu.25(de)">quest:eu.25(de)</span></li>
 		<li><span data-darktip="quest:eu.25(en)">quest:eu.25(en)</span></li>
@@ -26,13 +66,31 @@
 		<li><span data-darktip="quest:eu.10blubb781(en)">quest:eu.10blubb781(en)</span></li>
 	</ul>
 	
-	<ul style="float: left; margin: 1em; padding: 2em; border: 2px solid #ddd;">
+	<ul class="testbox explicit">
 		<li><h2>Item Tests - Existing</h2></li>
 		<li><span data-darktip="item:eu.49623(de)">item:eu.49623(de)</span></li>
 		<li><span data-darktip="item:eu.49623(en)">item:eu.49623(en)</span></li>
 		<li><h2>Item Tests - 404</h2></li>
 		<li><span data-darktip="item:eu.2349623(de)">item:eu.49623(de)</span></li>
 		<li><span data-darktip="item:eu.2349623(en)">item:eu.49623(en)</span></li>
+	</ul>
+
+	<ul class="testbox explicit">
+		<li><h2>Character Tests - Existing</h2></li>
+		<li><span data-darktip="character:eu.gilneas.rhil(de)">character:eu.gilneas.rhil(de)</span></li>
+		<li><span data-darktip="character:eu.gilneas.rhil(en)">character:eu.gilneas.rhil(en)</span></li>
+		<li><h2>Character Tests - 404</h2></li>
+		<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">character:eu.gilneas.rhilthesecond(de)</span></li>
+		<li><span data-darktip="character:eu.gilneas.rhilthesecond(en)">character:eu.gilneas.rhilthesecond(en)</span></li>
+	</ul>
+
+	<ul class="testbox implicit">
+		<li><h2>Item Tests - Existing</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/item/60288">http://eu.battle.net/wow/de/item/60288</a></li>
+		<li><a href="http://eu.battle.net/wow/en/item/60288">http://eu.battle.net/wow/en/item/60288</a></li>
+		<li><h2>Item Tests - 404</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/item/34160288">http://eu.battle.net/wow/de/item/34160288</a></li>
+		<li><a href="http://eu.battle.net/wow/en/item/34160288">http://eu.battle.net/wow/en/item/34160288</a></li>
 	</ul>
 	
 	

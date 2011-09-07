@@ -119,6 +119,11 @@ window.DarkTip = {
 					{
 						data = this;
 					}
+					else
+					{
+						data['_meta'] = {};
+						jQuery.extend(true, data['_meta'], this['_meta']);
+					}
 					var template = DarkTip.read(this['_meta']['module'], route);
 					if(template.indexOf('<%') === (-1))
 					{
@@ -134,15 +139,19 @@ window.DarkTip = {
 						);
 					}
 				},
-				'_subLoop': function(route, data) {
+				'_subLoop': function(route, data, concat) {
+					if(typeof concat === 'undefined')
+					{
+						concat = '';
+					}
 					var template = DarkTip.read(this['_meta']['module'], route);
-					var collect  = '';
+					var collect  = [];
 					if(template.indexOf('<%') === (-1))
 					{
 						// no templateable string, simply return
 						for (var i = 0; i < data.length; i++)
 						{
-							collect = collect + template;
+							collect.push(template);
 						}
 					}
 					else
@@ -150,19 +159,32 @@ window.DarkTip = {
 						// string is a template, pass to jQote2
 						for (var i = 0; i < data.length; i++)
 						{
-							collect = collect + jQuery.jqote(
+							if(typeof data[i] !== 'object')
+							{
+								data[i] = { '_value': data[i] }
+							}
+							
+							data[i]['_meta'] = {};
+							jQuery.extend(true, data[i]['_meta'], this['_meta']);
+							
+							collect.push(jQuery.jqote(
 								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
-							);
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+							));
 						}
 					}
-					return collect;
+					return collect.join(concat);
 				},
 				'_loc': function(route, data, fuzzy) {
 					if(typeof data === 'undefined')
 					{
 						data = this;
 					}
+					else
+					{
+						data['_meta'] = {};
+						jQuery.extend(true, data['_meta'], this['_meta']);
+					}
 					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
 					if(template.indexOf('<%') === (-1))
 					{
@@ -178,15 +200,20 @@ window.DarkTip = {
 						);
 					}
 				},
-				'_locLoop': function(route, data, fuzzy) {
-					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
-					var collect  = '';
+				'_locLoop': function(route, data, concat) {
+					console.log('_locLoop');
+					if(typeof concat === 'undefined')
+					{
+						concat = '';
+					}
+					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route);
+					var collect  = [];
 					if(template.indexOf('<%') === (-1))
 					{
 						// no templateable string, simply return
 						for (var i = 0; i < data.length; i++)
 						{
-							collect = collect + template;
+							collect.push(template);
 						}
 					}
 					else
@@ -194,13 +221,21 @@ window.DarkTip = {
 						// string is a template, pass to jQote2
 						for (var i = 0; i < data.length; i++)
 						{
-							collect = collect + jQuery.jqote(
+							if(typeof data[i] !== 'object')
+							{
+								data[i] = { '_value': data[i] }
+							}
+							
+							data[i]['_meta'] = {};
+							jQuery.extend(true, data[i]['_meta'], this['_meta']);
+							
+							collect.push(jQuery.jqote(
 								template,
-								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
-							);
+								jQuery.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data[i])
+							));
 						}
 					}
-					return collect;
+					return collect.join(concat);
 				}
 			}
 		},

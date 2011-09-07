@@ -52,14 +52,14 @@ DarkTip.registerModule('wow.item', {
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.explicit.params')));
-			params['host']   = DarkTip.map('wow.realm', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow.realm', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
+			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.implicit.params')));
-			params['region'] = DarkTip.map('wow.realm', 'maps.host.region', params['host']);
-			params['locale'] = DarkTip.map('wow.realm', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
+			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
 	},
@@ -137,7 +137,15 @@ DarkTip.registerModule('wow.item', {
 					'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
 					'<% if(this["heroic"]) { %><div class="row heroic"><%= this._loc("heroic") %></div><% } %>' +
 					'<% if(this["boundZone"]) { %><div class="row boundZone"><%= this["boundZone"]["name"] %></div><% } %>' +
-					'<% if(this["itemBind"]) { %><div class="row itemBind"><% if(this["quality"] == 7) { %><%= this._loc("itemBind.4") %><% } else { %><%= this._loc("itemBind." + this["itemBind"]) %><% } %></div><% } %>' +
+					'<% if(this["itemBind"]) { %>' +
+						'<div class="row itemBind">' +
+							'<% if(this["quality"] == 7) { %>' +
+								'<%= this._loc("itemBind.4") %>' +
+							'<% } else { %>' +
+								'<%= this._loc("itemBind." + this["itemBind"]) %>' +
+							'<% } %>' +
+						'</div>' +
+					'<% } %>' +
 					'<% if(this["maxCount"]) { %><div class="row maxCount"><%= this._loc("maxCount") %></div><% } %>' +
 					'<div class="row classification">' +
 						'<% if(this["containerSlots"]) { %>' +
@@ -150,12 +158,12 @@ DarkTip.registerModule('wow.item', {
 					'<% if(this["baseArmor"]) { %><div class="row baseArmor"><%= this._loc("baseArmor") %></div><% } %>' +
 					'<% if(this["weaponInfo"]) { %>' +
 						'<div class="weaponInfo">' +
-							'<% if(this["weaponInfo"]["damage"]) { for(var i = 0; i < this["weaponInfo"]["damage"].length; i++) { var current = this["weaponInfo"]["damage"][i]; %><div class="row damage"><%= this._loc("damage", current) %></div><% } } %>' +
+							'<%= this._subLoop("templates.fragments.weaponDamage", this["weaponInfo"]["damage"]) %>' +
 							'<div class="weaponSpeed"><%= this._loc("weaponSpeed", this["weaponInfo"]) %></div>' +
 							'<div class="row dps"><%= this._loc("dps", this["weaponInfo"]) %></div>' +
 						'</div>' +
 					'<% } %>' +
-					'<% if(this["bonusStats"]) { for(var i = 0; i < this["bonusStats"].length; i++) { var current = this["bonusStats"][i]; if(this._isStatPrimary(current["stat"])) { %><div class="row primaryStat"><% if(current["amount"] >= 0) { %>+<% } %><%= current["amount"] %> <%= this._loc("itemStat." + current["stat"]) %></div><% } } } %>' +
+					'<%= this._subLoop("templates.fragments.stat.primary", this["bonusStats"]) %>' +
 					'<% if(this["gemInfo"]) { %><div class="row gemInfo"><%= this["gemInfo"]["bonus"]["name"] %></div><% } %>' +
 					'<% if(this["socketInfo"]) { %>' +
 						'<div class="socketInfo">' +
@@ -180,22 +188,8 @@ DarkTip.registerModule('wow.item', {
 					'<% if(this["requiredAbility"]) { %><div class="row requiredAbility"><%= this._loc("requiredAbility") %></div><% } %>' +
 					'<% if(this["minFactionId"]) { %><div class="row minFactionId"><%= this._loc("minFactionId") %></div><% } %>' +
 					'<% if(this["itemLevel"]) { %><div class="row itemLevel"><%= this._loc("itemLevel") %></div><% } %>' +
-					'<% if(this["bonusStats"]) { %>' +
-						'<% for(var i = 0; i < this["bonusStats"].length; i++) { %>' +
-							'<% var current = this["bonusStats"][i]; %>' +
-							'<% if(this._isStatSecondary(current["stat"])) { %>' +
-								'<div class="row secondaryStat"><%= this._loc(("itemStat." + current["stat"]), current) %></div>' +
-							'<% } %>' +
-						'<% } %>' +
-					'<% } %>' +
-					'<% if(this["itemSpells"]) { %>' +
-						'<% for(var i = 0; i < this["itemSpells"].length; i++) { %>' +
-							'<% var current = this["itemSpells"][i]; %>' +
-							'<%if(current["spell"]["description"]) { %>' +
-								'<div class="row secondaryStat"><%= this._loc("itemSpell", current) %></div>' +
-							'<% } %>' +
-						'<% } %>' +
-					'<% } %>' +
+					'<%= this._subLoop("templates.fragments.stat.secondary", this["bonusStats"]) %>' +
+					'<%= this._subLoop("templates.fragments.stat.spell", this["itemSpells"]) %>' +
 					'<% if(this["description"]) { %><div class="row description">&quot;<%= this["description"] %>&quot;</div><% } %>' +
 			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
@@ -223,12 +217,36 @@ DarkTip.registerModule('wow.item', {
 		    '</div>'
 		),
 		'fragments': {
-			'coins': (
+			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',
+			'allowableRace' : '<span class="crace-<%= this["_value"] %>"><%= this._loc("characterRace." + this["_value"] + ".0")%></span>',
+			'weaponDamage'  : '<div class="row damage"><%= this._loc("damage", this) %></div>',
+			'coins'         : (
 				'<% if(this["gold"] > -1) { %><span class="icon-gold"><%= this["gold"] %></span><% } %>' +
 				'<% if(this["silver"] > -1) { %><span class="icon-silver"><%= this["silver"] %></span><% } %>' +
 				'<% if(this["copper"]) { %><span class="icon-copper"><%= this["copper"] %></span><% } else { %>' +
 				'<span class="icon-copper">0</span><% } %>'
-			)
+			),
+			'stat'          : {
+				'primary'  : (
+					'<% if(this._isStatPrimary(this["stat"])) { %>' +
+						'<div class="row primaryStat">' +
+							'<% if(this["amount"] >= 0) { %>+<% } %><%= this["amount"] %> <%= this._loc("itemStat." + this["stat"]) %>' +
+						'</div>' +
+					'<% }'
+				),
+				'secondary': (
+					'<% if(this._isStatSecondary(this["stat"])) { %>' +
+						'<div class="row secondaryStat">' +
+							'<%= this._loc("itemStat." + this["stat"]) %>' +
+						'</div>' +
+					'<% }'
+				),
+				'spell'    : (
+					'<%if(this["spell"]["description"]) { %>' +
+						'<div class="row secondaryStat"><%= this._loc("itemSpell", this) %></div>' +
+					'<% } %>'
+				)
+			}
 		}
 	},
 	
@@ -250,8 +268,8 @@ DarkTip.registerModule('wow.item', {
 			'requiredAbility'  : 'Requires <%= this["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Requires Faction ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
 			'itemLevel'        : 'Item Level <%= this["itemLevel"] %>',
-			'allowableClasses' : 'Classes: <% for(var i = 0; i < this["allowableClasses"].length; i++) { var current = this["allowableClasses"][i]; %><% if(i > 0) { %>, <% } %><span class="cclass-<%= current %>"><%= this._loc(("characterClass." + current + ".0"), 1)%></span><% } %>',
-			'allowableRaces'   : 'Races: <% for(var i = 0; i < this["allowableRaces"].length; i++) { var current = this["allowableRaces"][i]; %><% if(i > 0) { %>, <% } %><span><%= this._loc(("characterRace." + current + ".0"), 1)%></span><% } %>',
+			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
+			'allowableRaces'   : 'Races: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
 			'itemStat'         : {
 				'3' : 'Agility',
 				'4' : 'Strength',
