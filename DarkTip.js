@@ -67,15 +67,7 @@ window.DarkTip = {
 				'keyCodeLabel': 'SHIFT'
 			},
 			// These modules will be loaded async
-			'modules': [
-				'wow',
-				'wow.realm',
-				'wow.quest',
-				'wow.item',
-				'wow.character',
-				'wow.guild',
-				'wow.arena'
-			]
+			'modules': []
 		},
 		
 		'triggers': {
@@ -184,7 +176,6 @@ window.DarkTip = {
 					}
 				},
 				'_locLoop': function(route, data, concat) {
-					console.log('_locLoop');
 					if(typeof concat === 'undefined')
 					{
 						concat = '';
@@ -231,6 +222,7 @@ window.DarkTip = {
 				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!'
 			}
 		},
+		
 		'modules': {}
 	},
 	
