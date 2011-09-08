@@ -163,19 +163,28 @@
   </div>
 
   <script type="text/javascript">
-		window.___DarkTipConfig = {
+		window.___DarkTipSettings = {
 			'resources': {
-				'modules': 'https://raw.github.com/darkspotinthecorner/DarkTip/master/modules/',
+				'modules': 'darktip/modules/',
 				'qtip2'  : [
-					'https://raw.github.com/darkspotinthecorner/DarkTip/master/qtip2/jquery.qtip.min.js',
-					'https://raw.github.com/darkspotinthecorner/DarkTip/master/qtip2/jquery.qtip.min.css'
+					'darktip/qtip2/jquery.qtip.min.js',
+					'darktip/qtip2/jquery.qtip.min.css'
 				],
 				'extras': [
-					'https://raw.github.com/darkspotinthecorner/DarkTip/master/DarkTip.css'
+					'darktip/DarkTip.css'
 				]
-			}
+			},
+			'modules': [
+				'wow',
+				'wow.realm',
+				'wow.quest',
+				'wow.item',
+				'wow.character',
+				'wow.guild',
+				'wow.arena'
+			]
 		};
 	</script>
-	<script type="text/javascript" src="https://raw.github.com/darkspotinthecorner/DarkTip/master/DarkTip.js"></script>
+	<script type="text/javascript" src="darktip/DarkTip.js"></script>
 </body>
 </html>

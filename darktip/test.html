@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>DarkTip - Test Suite</title>
+	<style type="text/css">
+		
+		* {
+			padding: 0;
+			margin: 0;
+		}
+		
+		body {
+			font-family: sans-serif;
+			font-size: 12px;
+			line-height: 150%;
+		}
+		
+		ul {
+			list-style: none;
+		}
+		
+		h1, h2, h3, h4, h5, h6 {
+			margin-top: 1em;
+			margin-bottom: 0.5em;
+		}
+		
+		.testbox {
+			float: left;
+			margin: 1em;
+			padding: 1em;
+		}
+		
+		.explicit {
+			border: 2px solid #d99;
+			background-color: #fdd;
+		}
+		
+		.implicit {
+			border: 2px solid #9d9;
+			background-color: #dfd;
+		}
+		
+		
+	</style>
+</head>
+<body>
+		
+	<ul class="testbox explicit">
+		<li><h2>Realm Tests - Existing</h2></li>
+		<li><span data-darktip="realm:eu.gilneas(de)">realm:eu.gilneas(de)</span></li>
+		<li><span data-darktip="realm:eu.gilneas(en)">realm:eu.gilneas(en)</span></li>
+		<li><h2>Realm Tests - 404</h2></li>
+		<li><span data-darktip="realm:eu.gilnssseas(de)">realm:eu.gilnssseas(de)</span></li>
+		<li><span data-darktip="realm:eu.gilnssseas(en)">realm:eu.gilnssseas(en)</span></li>
+	</ul>
+	
+	<ul class="testbox explicit">
+		<li><h2>Quest Tests - Existing</h2></li>
+		<li><span data-darktip="quest:eu.25(de)">quest:eu.25(de)</span></li>
+		<li><span data-darktip="quest:eu.25(en)">quest:eu.25(en)</span></li>
+		<li><span data-darktip="quest:eu.10781(de)">quest:eu.10781(de)</span></li>
+		<li><span data-darktip="quest:eu.10781(en)">quest:eu.10781(en)</span></li>
+		<li><h2>Quest Tests - 404</h2></li>
+		<li><span data-darktip="quest:eu.10blubb781(de)">quest:eu.10blubb781(de)</span></li>
+		<li><span data-darktip="quest:eu.10blubb781(en)">quest:eu.10blubb781(en)</span></li>
+	</ul>
+	
+	<ul class="testbox explicit">
+		<li><h2>Item Tests - Existing</h2></li>
+		<li><span data-darktip="item:eu.49623(de)">item:eu.49623(de)</span></li>
+		<li><span data-darktip="item:eu.49623(en)">item:eu.49623(en)</span></li>
+		<li><h2>Item Tests - 404</h2></li>
+		<li><span data-darktip="item:eu.2349623(de)">item:eu.49623(de)</span></li>
+		<li><span data-darktip="item:eu.2349623(en)">item:eu.49623(en)</span></li>
+	</ul>
+
+	<ul class="testbox explicit">
+		<li><h2>Character Tests - Existing</h2></li>
+		<li><span data-darktip="character:eu.gilneas.rhil(de)">character:eu.gilneas.rhil(de)</span></li>
+		<li><span data-darktip="character:eu.gilneas.rhil(en)">character:eu.gilneas.rhil(en)</span></li>
+		<li><h2>Character Tests - 404</h2></li>
+		<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">character:eu.gilneas.rhilthesecond(de)</span></li>
+		<li><span data-darktip="character:eu.gilneas.rhilthesecond(en)">character:eu.gilneas.rhilthesecond(en)</span></li>
+	</ul>
+
+	<ul class="testbox explicit">
+		<li><h2>Guild Tests - Existing</h2></li>
+		<li><span data-darktip="guild:eu.gilneas.ascension(de)">guild:eu.gilneas.ascension(de)</span></li>
+		<li><span data-darktip="guild:eu.gilneas.ascension(en)">guild:eu.gilneas.ascension(en)</span></li>
+		<li><h2>Guild Tests - 404</h2></li>
+		<li><span data-darktip="guild:eu.gilneas.ascension yeah(de)">guild:eu.gilneas.ascension yeah(de)</span></li>
+		<li><span data-darktip="guild:eu.gilneas.ascension yeah(en)">guild:eu.gilneas.ascension yeah(en)</span></li>
+	</ul>
+
+	<ul class="testbox explicit">
+		<li><h2>Arena Team Tests - Existing</h2></li>
+		<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)">arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)</span></li>
+		<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(en)">arena:eu.amanthul.5v5.Der Ösi Hat Lead(en)</span></li>
+		<li><h2>Arena Team Tests - 404</h2></li>
+		<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(de)">arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(de)</span></li>
+		<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(en)">arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(en)</span></li>
+	</ul>
+
+	<ul class="testbox implicit">
+		<li><h2>Item Tests - Existing</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/item/60288">http://eu.battle.net/wow/de/item/60288</a></li>
+		<li><a href="http://eu.battle.net/wow/en/item/60288">http://eu.battle.net/wow/en/item/60288</a></li>
+		<li><h2>Item Tests - 404</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/item/34160288">http://eu.battle.net/wow/de/item/34160288</a></li>
+		<li><a href="http://eu.battle.net/wow/en/item/34160288">http://eu.battle.net/wow/en/item/34160288</a></li>
+	</ul>
+	
+	<ul class="testbox implicit">
+		<li><h2>Character Tests - Existing</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple</a></li>
+		<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple</a></li>
+		<li><h2>Character Tests - 404</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple</a></li>
+		<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple</a></li>
+	</ul>
+	
+	<ul class="testbox implicit">
+		<li><h2>Guild Tests - Existing</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">http://eu.battle.net/wow/de/guild/gilneas/Out of Range/</a></li>
+		<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">http://eu.battle.net/wow/en/guild/gilneas/Out of Range/</a></li>
+		<li><h2>Guild Tests - 404</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/</a></li>
+		<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/</a></li>
+	</ul>
+	
+	<ul class="testbox implicit">
+		<li><h2>Arena Team Tests - Existing</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
+		<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
+		<li><h2>Arena Team Tests - 404</h2></li>
+		<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
+		<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
+	</ul>
+	
+	<script type="text/javascript">
+		window.___DarkTipSettings = {
+			'modules': [
+				'wow',
+				'wow.realm',
+				'wow.quest',
+				'wow.item',
+				'wow.character',
+				'wow.guild',
+				'wow.arena'
+			]
+		};
+	</script>
+	<script type="text/javascript" src="DarkTip.js"></script>
+</body>
+</html>
