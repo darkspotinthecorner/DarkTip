@@ -625,11 +625,11 @@ window.DarkTip = {
 		}
 		var templateTools = this.getTemplateTools(module, params['lcoale']);
 		apicall = this.jq.jqote(
-			this._read(this.route(module, 'patterns.api')),
+			this._read(this.route(module, 'triggers.api')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
 		params['hash'] =  this.jq.jqote(
-			this._read(this.route(module, 'patterns.hash')),
+			this._read(this.route(module, 'triggers.hash')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
 		var content = this.cache(module, params['hash']);
@@ -829,10 +829,9 @@ window.DarkTip = {
 		// check if parent modules are loaded
 		if(this.verifyParentModule(moduleKey))
 		{
-			// register patterns for easy access, maybe ^^
 			this.write(this.route(moduleKey), moduleData);
 			
-			var patternExplicit = this._read(this.route(moduleKey, 'patterns.explicit'));
+			var patternExplicit = this._read(this.route(moduleKey, 'triggers.explicit'));
 			if(patternExplicit)
 			{
 				this.write(('data.triggers.explicit+'), {
@@ -841,7 +840,7 @@ window.DarkTip = {
 				});
 			}
 			
-			var patternImplicit = this._read(this.route(moduleKey, 'patterns.implicit'));
+			var patternImplicit = this._read(this.route(moduleKey, 'triggers.implicit'));
 			if(patternImplicit)
 			{
 				this.write(('data.triggers.implicit+'), {

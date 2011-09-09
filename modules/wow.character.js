@@ -1,5 +1,5 @@
 DarkTip.registerModule('wow.character', {
-	'patterns': {
+	'triggers': {
 		'explicit': {
 			'match' : /character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
@@ -24,13 +24,13 @@ DarkTip.registerModule('wow.character', {
 
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'patterns.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'patterns.implicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'triggers.implicit.params')));
 			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;

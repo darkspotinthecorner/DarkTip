@@ -1,5 +1,5 @@
 DarkTip.registerModule('wow.realm', {
-	'patterns': {
+	'triggers': {
 		'explicit': {
 			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
@@ -14,7 +14,7 @@ DarkTip.registerModule('wow.realm', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.realm', 'patterns.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.realm', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow.realm', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow.realm', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;

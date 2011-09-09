@@ -1,5 +1,5 @@
 DarkTip.registerModule('wow.item', {
-	'patterns': {
+	'triggers': {
 		'explicit': {
 			'match' : /item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
@@ -17,10 +17,11 @@ DarkTip.registerModule('wow.item', {
 			}
 		},
 		'api'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["itemid"] %>#<%= this["locale"] %>',
-		'helpers' : {
-			'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
-		}
+		'hash'    : '<%= this["host"] %>#<%= this["itemid"] %>#<%= this["locale"] %>'
+	},
+	
+	'patterns': {
+		'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
 	},
 	
 	'maps': {
@@ -51,13 +52,13 @@ DarkTip.registerModule('wow.item', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.implicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'triggers.implicit.params')));
 			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
@@ -90,7 +91,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'_renderCoins': function(total) {
 				var temp   = total.toString();
-				var result = temp.match(DarkTip.read(this['_meta']['module'], 'patterns.helpers.money'));
+				var result = temp.match(DarkTip.read(this['_meta']['module'], 'patterns.money'));
 				var split  = {
 					'gold'  : -1,
 					'silver': -1,

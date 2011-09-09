@@ -1,5 +1,5 @@
 DarkTip.registerModule('wow.quest', {
-	'patterns': {
+	'triggers': {
 		'explicit': {
 			'match' : /quest:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
@@ -14,7 +14,7 @@ DarkTip.registerModule('wow.quest', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.quest', 'patterns.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.quest', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow.realm', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow.realm', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
