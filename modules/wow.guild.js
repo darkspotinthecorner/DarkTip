@@ -68,6 +68,12 @@ DarkTip.registerModule('wow.guild', {
 			'not-found'     : 'Guild not found',
 			'classification': 'Level <%= this["level"] %> <%= this._loc("factionSide." + this["side"]) %> Guild, <%= this["realm"] %>',
 			'members'       : '<%= this["members"].length %> members'
+		},
+		'de_DE': {
+			'loading'       : 'Lade Gilde...',
+			'not-found'     : 'Gilde nicht gefunden',
+			'classification': 'Stufe <%= this["level"] %> <%= this._loc("factionSide." + this["side"]) %>-Gilde, <%= this["realm"] %>',
+			'members'       : '<%= this["members"].length %> Mitglieder'
 		}
 	}
 });

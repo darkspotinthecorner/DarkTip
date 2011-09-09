@@ -87,96 +87,113 @@ DarkTip.registerModule('wow', {
 				'horde'   : 'Horde'
 			},
 			'characterClass': {
-				'1' : {
-					'0': 'Warrior',
-					'1': 'Warrior'
-				},
-				'2' : {
-					'0': 'Paladin',
-					'1': 'Paladin'
-				},
-				'3' : {
-					'0': 'Hunter',
-					'1': 'Hunter'
-				},
-				'4' : {
-					'0': 'Rogue',
-					'1': 'Rogue'
-				},
-				'5' : {
-					'0': 'Priest',
-					'1': 'Priest'
-				},
-				'6' : {
-					'0': 'Death Knight',
-					'1': 'Death Knight'
-				},
-				'7' : {
-					'0': 'Shaman',
-					'1': 'Shaman'
-				},
-				'8' : {
-					'0': 'Mage',
-					'1': 'Mage'
-				},
-				'9' : {
-					'0': 'Warlock',
-					'1': 'Warlock'
-				},
-				'11': {
-					'0': 'Druid',
-					'1': 'Druid'
-				}
+				'1' : { '0': 'Warrior',      '1': 'Warrior' },
+				'2' : { '0': 'Paladin',      '1': 'Paladin' },
+				'3' : { '0': 'Hunter',       '1': 'Hunter' },
+				'4' : { '0': 'Rogue',        '1': 'Rogue' },
+				'5' : { '0': 'Priest',       '1': 'Priest' },
+				'6' : { '0': 'Death Knight', '1': 'Death Knight' },
+				'7' : { '0': 'Shaman',       '1': 'Shaman' },
+				'8' : { '0': 'Mage',         '1': 'Mage' },
+				'9' : { '0': 'Warlock',      '1': 'Warlock' },
+				'11': { '0': 'Druid',        '1': 'Druid' }
 			},
 			'characterRace' : {
-				'1' : {
-					'0': 'Human',
-					'1': 'Human'
-				},
-				'2' : {
-					'0': 'Orc',
-					'1': 'Orc'
-				},
-				'3' : {
-					'0': 'Dwarf',
-					'1': 'Dwarf'
-				},
-				'4' : {
-					'0': 'Night Elf',
-					'1': 'Night Elf'
-				},
-				'5' : {
-					'0': 'Forsaken',
-					'1': 'Forsaken'
-				},
-				'6' : {
-					'0': 'Tauren',
-					'1': 'Tauren'
-				},
-				'7' : {
-					'0': 'Gnome',
-					'1': 'Gnome'
-				},
-				'8' : {
-					'0': 'Troll',
-					'1': 'Troll'
-				},
-				'9' : {
-					'0': 'Goblin',
-					'1': 'Goblin'
-				},
-				'10': {
-					'0': 'Blood Elf',
-					'1': 'Blood Elf'
-				},
-				'11': {
-					'0': 'Draenei',
-					'1': 'Draenei'
-				},
-				'22': {
-					'0': 'Worgen',
-					'1': 'Worgen'
-				}
+				'1' : { '0': 'Human',     '1': 'Human' },
+				'2' : { '0': 'Orc',       '1': 'Orc' },
+				'3' : { '0': 'Dwarf',     '1': 'Dwarf' },
+				'4' : { '0': 'Night Elf', '1': 'Night Elf' },
+				'5' : { '0': 'Forsaken',  '1': 'Forsaken' },
+				'6' : { '0': 'Tauren',    '1': 'Tauren' },
+				'7' : { '0': 'Gnome',     '1': 'Gnome' },
+				'8' : { '0': 'Troll',     '1': 'Troll' },
+				'9' : { '0': 'Goblin',    '1': 'Goblin' },
+				'10': { '0': 'Blood Elf', '1': 'Blood Elf' },
+				'11': { '0': 'Draenei',   '1': 'Draenei' },
+				'22': {	'0': 'Worgen',	  '1': 'Worgen' }
+			},
+			'characterSkill'   : {
+				'129': 'First Aid',
+				'164': 'Blacksmithing',
+				'165': 'Leatherworking',
+				'171': 'Alchemy',
+				'182': 'Herbalism',
+				'185': 'Cooking',
+				'186': 'Mining',
+				'197': 'Tailoring',
+				'202': 'Engineering',
+				'333': 'Enchanting',
+				'356': 'Fishing',
+				'393': 'Skinning',
+				'755': 'Jewelcrafting',
+				'762': 'Riding',
+				'773': 'Inscription',
+				'794': 'Archeology'
+			}
+		},
+		'de_DE': {
+			'loading'  : 'Lade WoW Daten...',
+			'not-found': 'Keine Daten gefunden',
+			'not-used' : 'Ungenutzt',
+			'label'    : {
+				'realm'    : 'Realm:',
+				'quest'    : 'Quest:',
+				'region'   : 'Region:',
+				'item'     : 'Gegenstand:',
+				'character': 'Charakter:',
+				'guild'    : 'Gilde:',
+				'teamname' : 'Teamname:',
+				'teamsize' : 'Teamgröße:'
+			},
+			'factionSide': {
+				'0'       :'Allianz',
+				'1'       :'Horde',
+				'alliance':'Allianz',
+				'horde'   :'Horde'
+			},
+			'characterClass': {
+				'1' : { '0':'Krieger',      '1':'Kriegerin' },
+				'2' : { '0':'Paladin',      '1':'Paladin' },
+				'3' : { '0':'Jäger',        '1':'Jägerin' },
+				'4' : { '0':'Schurke',      '1':'Schurkin' },
+				'5' : { '0':'Priester',     '1':'Priesterin' },
+				'6' : { '0':'Todesritter',  '1':'Todesritter' },
+				'7' : { '0':'Schamane',     '1':'Schamanin' },
+				'8' : { '0':'Magier',       '1':'Magierin' },
+				'9' : { '0':'Hexenmeister', '1':'Hexenmeisterin' },
+				'11': { '0':'Druide',       '1':'Druidin' }
+			},
+			'characterRace': {
+				'1' : { '0':'Mensch',   '1':'Mensch' },
+				'2' : { '0':'Orc',      '1':'Orc' },
+				'3' : { '0':'Zwerg',    '1':'Zwerg' },
+				'4' : { '0':'Nachtelf', '1':'Nachtelfe' },
+				'5' : { '0':'Untoter',  '1':'Untote' },
+				'6' : { '0':'Tauren',   '1':'Tauren' },
+				'7' : { '0':'Gnom',     '1':'Gnom' },
+				'8' : { '0':'Troll',    '1':'Troll' },
+				'9' : { '0':'Goblin',   '1':'Goblin' },
+				'10': { '0':'Blutelf',  '1':'Blutelfe' },
+				'11': { '0':'Draenei',  '1':'Draenei' },
+				'22': { '0':'Worgen',   '1':'Worgen' }
+			},
+			'characterSkill'   : {
+				'129': 'First Aid',
+				'164': 'Blacksmithing',
+				'165': 'Leatherworking',
+				'171': 'Alchemy',
+				'182': 'Herbalism',
+				'185': 'Cooking',
+				'186': 'Mining',
+				'197': 'Tailoring',
+				'202': 'Engineering',
+				'333': 'Enchanting',
+				'356': 'Fishing',
+				'393': 'Skinning',
+				'755': 'Jewelcrafting',
+				'762': 'Riding',
+				'773': 'Inscription',
+				'794': 'Archeology'
 			}
 		}
 	}

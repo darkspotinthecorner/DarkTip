@@ -76,6 +76,29 @@ DarkTip.registerModule('wow.realm', {
 				'medium': 'Medium population',
 				'high'  : 'High population'
 			}
+		},
+		'de_DE': {
+			'loading': 'Lade Realm...',
+			'not-found': 'Realm nicht gefunden',
+			'type': {
+				'pve'  : 'PvE',
+				'pvp'  : 'PvP',
+				'rp'   : 'RP',
+				'rppvp': 'RPPvP'
+			},
+			'queue': {
+				'false': 'Keine Warteschlange',
+				'true' : 'Warteschlange'
+			},
+			'status': {
+				'false': 'Offline',
+				'true' : 'Online'
+			},
+			'population': {
+				'low'   : 'Geringe Bevölkerung',
+				'medium': 'Mittlere Bevölkerung',
+				'high'  : 'Hohe Bevölkerung'
+			}
 		}
 	}
 });

@@ -293,12 +293,7 @@ DarkTip.registerModule('wow.item', {
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["sellPrice"]) %>',
 			'stackable'        : 'Stackable (<%= this["stackable"] %>)',
 			'itemIsAuctionable': 'Can be auctioned',
-			'itemBind'         : {
-				'1': 'Binds when picked up',
-				'2': 'Binds when equipped',
-				'3': 'Binds when used',
-				'4': 'Binds to Battle.net account'
-			},
+			'itemBind'         : { '1': 'Binds when picked up', '2': 'Binds when equipped', '3': 'Binds when used', '4': 'Binds to Battle.net account' },
 			'itemSocket'       : {
 				'BLUE'     : 'Blue Socket',
 				'RED'      : 'Red Socket',
@@ -312,186 +307,93 @@ DarkTip.registerModule('wow.item', {
 				'COGWHEEL' : 'Cogwheel Socket'
 			},
 			'reputationFaction': {},
-			'reputationLevel'  : {
-				'0': 'Hated',
-				'1': 'Hostile',
-				'2': 'Unfriendly',
-				'3': 'Neutral',
-				'4': 'Friendly',
-				'5': 'Honored',
-				'6': 'Revered',
-				'7': 'Exalted'
-			},
+			'reputationLevel'  : { '0': 'Hated', '1': 'Hostile', '2': 'Unfriendly', '3': 'Neutral', '4': 'Friendly', '5': 'Honored', '6': 'Revered', '7': 'Exalted' },
 			'itemClass'        : {
-				'0' : {
-					'0': 'Consumeable',
-					'1': 'Potion',
-					'2': 'Elixir',
-					'3': 'Flask',
-					'4': 'Scroll',
-					'5': 'Food &amp; Drink',
-					'6': 'Item Enhancement',
-					'7': 'Bandage',
-					'8': 'Other'
-				},
-				'1' : {
-					'0': 'Bag',
-					'1': 'Soul Bag',
-					'2': 'Herb Bag',
-					'3': 'Enchanting Bag',
-					'4': 'Engineering Bag',
-					'5': 'Gem Bag',
-					'6': 'Mining Bag',
-					'7': 'Leatherworking Bag',
-					'8': 'Inscription Bag',
-					'9': 'Tackle Box'
-				},
-				'2' : {
-					'0' : 'Axe', /* 1H */
-					'1' : 'Axe', /* 2H */
-					'2' : 'Bow',
-					'3' : 'Gun',
-					'4' : 'Mace', /* 1H */
-					'5' : 'Mace', /* 2H */
-					'6' : 'Polearm',
-					'7' : 'Sword', /* 1H */
-					'8' : 'Sword', /* 2H */
-					'10': 'Staff',
-					'13': 'Fist Weapon',
-					'14': 'Miscellaneous',
-					'15': 'Dagger',
-					'16': 'Thrown',
-					'18': 'Crossbow',
-					'19': 'Wand',
-					'20': 'Fishing Pole'
-				},
-				'3' : {
-					'0' : 'Red Gem',
-					'1' : 'Blue Gem',
-					'2' : 'Yellow Gem',
-					'3' : 'Purple Gem',
-					'4' : 'Green Gem',
-					'5' : 'Orange Gem',
-					'6' : 'Meta Gem',
-					'7' : 'Simple Gem',
-					'8' : 'Prismatic Gem',
-					'9' : 'Hydraulic Gem',
-					'10': 'Cogwheel Gem'
-				},
-				'4' : {
-					'0' : 'Miscellaneous',
-					'1' : 'Cloth',
-					'2' : 'Leather',
-					'3' : 'Mail',
-					'4' : 'Plate',
-					'6' : 'Shield',
-					'7' : 'Libram',
-					'8' : 'Idol',
-					'9' : 'Totem',
-					'10': 'Sigil',
-					'11': 'Relic'
-				},
-				'7' : {
-					'0' : 'Trade Goods',
-					'1' : 'Parts',
-					'2' : 'Explosives',
-					'3' : 'Devices',
-					'4' : 'Jewelcrafting',
-					'5' : 'Cloth',
-					'6' : 'Leather',
-					'7' : 'Metal &amp; Stone',
-					'8' : 'Meat',
-					'9' : 'Herb',
-					'10': 'Elemental',
-					'11': 'Other',
-					'12': 'Enchanting',
-					'13': 'Materials',
-					'14': 'Item Enchantment'
-				},
-				'9' : {
-					'0' : 'Book',
-					'1' : 'Leatherworking',
-					'2' : 'Tailoring',
-					'3' : 'Engineering',
-					'4' : 'Blacksmithing',
-					'5' : 'Cooking',
-					'6' : 'Alchemy',
-					'7' : 'First Aid',
-					'8' : 'Enchanting',
-					'9' : 'Fishing',
-					'10': 'Jewelcrafting',
-					'11': 'Inscription'
-				},
-				'12': {
-					'0': 'Quest Item'
-				},
-				'13': {
-					'0': 'Key'
-				},
-				'15': {
-					'0': 'Junk',
-					'1': 'Reagent',
-					'2': 'Pet',
-					'3': 'Holiday',
-					'4': 'Other',
-					'5': 'Mount'
-				},
-				'16': {
-					'0' : 'Glyph',
-					'1' : 'Warrior',
-					'2' : 'Paladin',
-					'3' : 'Hunter',
-					'4' : 'Rogue',
-					'5' : 'Priest',
-					'6' : 'Death Knight',
-					'7' : 'Shaman',
-					'8' : 'Mage',
-					'9' : 'Warlock',
-					'11': 'Druid'
-				}
+				'0' : { '0': 'Consumeable', '1': 'Potion', '2': 'Elixir', '3': 'Flask', '4': 'Scroll', '5': 'Food &amp; Drink', '6': 'Item Enhancement', '7': 'Bandage', '8': 'Other' },
+				'1' : { '0': 'Bag', '1': 'Soul Bag', '2': 'Herb Bag', '3': 'Enchanting Bag', '4': 'Engineering Bag', '5': 'Gem Bag', '6': 'Mining Bag', '7': 'Leatherworking Bag', '8': 'Inscription Bag', '9': 'Tackle Box' },
+				'2' : { '0' : 'Axe' /* 1H */, '1' : 'Axe' /* 2H */, '2' : 'Bow', '3' : 'Gun', '4' : 'Mace' /* 1H */, '5' : 'Mace' /* 2H */, '6' : 'Polearm', '7' : 'Sword' /* 1H */, '8' : 'Sword' /* 2H */, '10': 'Staff', '13': 'Fist Weapon', '14': 'Miscellaneous', '15': 'Dagger', '16': 'Thrown', '18': 'Crossbow', '19': 'Wand', '20': 'Fishing Pole' },
+				'3' : { '0' : 'Red Gem', '1' : 'Blue Gem', '2' : 'Yellow Gem', '3' : 'Purple Gem', '4' : 'Green Gem', '5' : 'Orange Gem', '6' : 'Meta Gem', '7' : 'Simple Gem', '8' : 'Prismatic Gem', '9' : 'Hydraulic Gem', '10': 'Cogwheel Gem' },
+				'4' : { '0' : 'Miscellaneous', '1' : 'Cloth', '2' : 'Leather', '3' : 'Mail', '4' : 'Plate', '6' : 'Shield', '7' : 'Libram', '8' : 'Idol', '9' : 'Totem', '10': 'Sigil', '11': 'Relic' },
+				'7' : { '0' : 'Trade Goods', '1' : 'Parts', '2' : 'Explosives', '3' : 'Devices', '4' : 'Jewelcrafting', '5' : 'Cloth', '6' : 'Leather', '7' : 'Metal &amp; Stone', '8' : 'Meat', '9' : 'Herb', '10': 'Elemental', '11': 'Other', '12': 'Enchanting', '13': 'Materials', '14': 'Item Enchantment' },
+				'9' : { '0' : 'Book', '1' : 'Leatherworking', '2' : 'Tailoring', '3' : 'Engineering', '4' : 'Blacksmithing', '5' : 'Cooking', '6' : 'Alchemy', '7' : 'First Aid', '8' : 'Enchanting', '9' : 'Fishing', '10': 'Jewelcrafting', '11': 'Inscription' },
+				'12': { '0': 'Quest Item' },
+				'13': { '0': 'Key' },
+				'15': { '0': 'Junk', '1': 'Reagent', '2': 'Pet', '3': 'Holiday', '4': 'Other', '5': 'Mount' },
+				'16': { '0' : 'Glyph', '1' : 'Warrior', '2' : 'Paladin', '3' : 'Hunter', '4' : 'Rogue', '5' : 'Priest', '6' : 'Death Knight', '7' : 'Shaman', '8' : 'Mage', '9' : 'Warlock', '11': 'Druid' }
 			},
-			'inventoryType'    : {
-				'1' : 'Head',
-				'2' : 'Neck',
-				'3' : 'Shoulder',
-				'4' : 'Shirt',
-				'5' : 'Chest',
-				'6' : 'Waist',
-				'7' : 'Legs',
-				'8' : 'Feet',
-				'9' : 'Wrist',
-				'10': 'Hands',
-				'11': 'Finger',
-				'12': 'Trinket',
-				'13': 'One-Hand',
-				'15': 'Ranged', /* Bow */
-				'16': 'Back',
-				'17': 'Two-Hand',
-				'18': 'Bag',
-				'21': 'Main-hand',
-				'22': 'Off-hand',
-				'23': 'Held in off-hand',
-				'25': 'Ranged', /* Thrown */
-				'26': 'Ranged' /* Gun, Crossbow, Wand */
+			'inventoryType'    : { '1' : 'Head', '2' : 'Neck', '3' : 'Shoulder', '4' : 'Shirt', '5' : 'Chest', '6' : 'Waist', '7' : 'Legs', '8' : 'Feet', '9' : 'Wrist', '10': 'Hands', '11': 'Finger', '12': 'Trinket', '13': 'One-Hand', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'Two-Hand', '18': 'Bag', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
+		},
+		'de_DE': {
+			'loading'          : 'Lade Gegenstand...',
+			'not-found'        : 'Gegenstand nicht gefunden',
+			'itemId'           : 'Gegenstands ID: <%= this["id"] %>',
+			'heroic'           : 'Heroisch',
+			'maxCount'         : 'Einzigartig<% if(this["maxCount"] > 1) { %> (<%= this["maxCount"] %>)<% } %>',
+			'containerSlots'   : '<%= this["containerSlots"] %> Platz <%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %>',
+			'damage'           : '<%= this["minDamage"] %> - <%= this["maxDamage"] %> Schaden',
+			'weaponSpeed'      : 'Geschwindigkeit <%= this["weaponSpeed"] %>',
+			'dps'              : '(<%= this["dps"].toFixed(2) %> Schaden pro Sekunde)',
+			'baseArmor'        : '<%= this["baseArmor"] %> Rüstung',
+			'maxDurability'    : 'Haltbarkeit <%= this["maxDurability"] %> / <%= this["maxDurability"] %>',
+			'requiredLevel'    : 'Erfordert Stufe <%= this["requiredLevel"] %>',
+			'requiredSkill'    : 'Erfordert <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this[requiredSkillRank] %>)',
+			'requiredAbility'  : 'Erfordert <%= this["requiredAbility"]["name"] %>',
+			'minFactionId'     : 'Erfordert Fraktion ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
+			'itemLevel'        : 'Gegenstandsstufe <%= this["itemLevel"] %>',
+			'allowableClasses' : 'Klassen: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
+			'allowableRaces'   : 'Rassen: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
+			'itemStat'         : {
+				'3' : 'Beweglichkeit',
+				'4' : 'Stärke',
+				'5' : 'Intellekt',
+				'6' : 'Willenskraft',
+				'7' : 'Ausdauer',
+				'13': 'Anlegen: Erhöht eure Ausweichwertung um <%= this["amount"] %>.',
+				'14': 'Anlegen: Erhöht eure Parrierwertung um <%= this["amount"] %>.',
+				'31': 'Anlegen: Erhöht eure Trefferwertung um <%= this["amount"] %>.',
+				'32': 'Anlegen: Erhöht eure kritische Trefferwertung um <%= this["amount"] %>.',
+				'35': 'Anlegen: Erhöht eure Abhärtungswertung um <%= this["amount"] %>.',
+				'36': 'Anlegen: Erhöht eure Tempowertung um <%= this["amount"] %>.',
+				'37': 'Anlegen: Erhöht eure Waffenkundewertung um <%= this["amount"] %>.',
+				'38': 'Anlegen: Erhöht eure Angriffswertung um <%= this["amount"] %>.',
+				'46': 'Anlegen: Erhöht eure Gesundheitsregenartion um <%= this["amount"] %>.',
+				'45': 'Anlegen: Erhöht Zaubermacht um <%= this["amount"] %>.',
+				'47': 'Anlegen: Erhöht Zauberdurchschlagskraft um <%= this["amount"] %>.',
+				'49': 'Anlegen: Erhöht eure Meisterschaftswertung um <%= this["amount"] %>.'
 			},
-			'characterSkill'   : {
-				'129': 'First Aid',
-				'164': 'Blacksmithing',
-				'165': 'Leatherworking',
-				'171': 'Alchemy',
-				'182': 'Herbalism',
-				'185': 'Cooking',
-				'186': 'Mining',
-				'197': 'Tailoring',
-				'202': 'Engineering',
-				'333': 'Enchanting',
-				'356': 'Fishing',
-				'393': 'Skinning',
-				'755': 'Jewelcrafting',
-				'762': 'Riding',
-				'773': 'Inscription',
-				'794': 'Archeology'
-			}
+			'itemSpell'        : 'Anlegen / Benutzen / Chance beim Treffer: <%= this["spell"]["description"] %>',
+			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["sellPrice"]) %>',
+			'stackable'        : 'Stapelbar (<%= this["stackable"] %>)',
+			'itemIsAuctionable': 'Kann versteigert werden',
+			'itemBind'         : { '1': 'Wird beim Aufheben gebunden', '2': 'Wird beim Anlegen gebunden', '3': 'Wird bei Benutzung gebunden', '4': 'Wird an Battle.net-Account gebunden' },
+			'itemSocket'       : {
+				'BLUE'     : 'Blauer Sockel',
+				'RED'      : 'Roter Sockel',
+				'YELLOW'   : 'Gelber Sockel',
+				'META'     : 'Meta Sockel',
+				'ORANGE'   : 'Orangener Sockel',
+				'PURPLE'   : 'Lila Sockel',
+				'GREEN'    : 'Grüner Sockel',
+				'PRISMATIC': 'Prismatischer Sockel',
+				'HYDRAULIC': 'Hydraulischer Sockel',
+				'COGWHEEL' : 'Zahnrad Sockel'
+			},
+			'reputationFaction': {},
+			'reputationLevel'  : { '0': 'Haßerfüllt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrfürchtig' },
+			'itemClass'        : {
+				'0' : { '0': 'Verbrauchbar', '1': 'Trank', '2': 'Elixier', '3': 'Fläschchen', '4': 'Schriftrolle', '5': 'Essen &amp; Drinken', '6': 'Gegenstandsverzauberung', '7': 'Verband', '8': 'Anderes' },
+				'1' : { '0': 'Tasche', '1': 'Seelentasche', '2': 'Kräutertasche', '3': 'Verzauberertasche', '4': 'Ingenierstasche', '5': 'Edelsteintasche', '6': 'Bergbautasche', '7': 'Ledertasche', '8': 'Schreibertasche', '9': 'Spinnerkasten' },
+				'2' : { '0': 'Axt' /* 1H */, '1' : 'Axt' /* 2H */, '2': 'Bogen', '3': 'Gewehr', '4': 'Streitkolben' /* 1H */, '5': 'Streitkolben' /* 2H */, '6': 'Stangenwaffe', '7':'Schwert' /* 1H */, '8': 'Schwert' /* 2H */, '10': 'Stab', '13': 'Faustwaffe', '14': 'Verschiedenes', '15': 'Dolch', '16': 'Wurfwaffe', '18': 'Armbrust', '19': 'Zauberstab', '20': 'Angelrute' },
+				'3' : { '0': 'Roter Edelstein', '1': 'Blauer Edelstein', '2': 'Gelber Edelstein', '3': 'Violetter Edelstein', '4': 'Grüner Edelstein', '5': 'Orangener Edelstein', '6': 'Meta Edelstein', '7': 'Einfacher Edelstein', '8': 'Prismatischer Edelstein', '9': 'Hydraulischer Edelstein', '10': 'Zahnrad Edelstein' },
+				'4' : { '0': 'Verschiedenes', '1': 'Stoff', '2': 'Leder', '3': 'Schwere Rüstung', '4': 'Platte', '6': 'Schild', '7': 'Libram', '8': 'Idol', '9': 'Totem', '10': 'Siegel', '11': 'Relikt' },
+				'7' : { '0': 'Handelswaren', '1': 'Teile', '2': 'Sprengstoff', '3': 'Geräte', '4': 'Juwelenschleifen', '5': 'Stoff', '6': 'Leder', '7': 'Metall &amp; Stein', '8': 'Fleisch', '9': 'Kräuter', '10': 'Elementar', '11': 'Anderes', '12': 'Verzauberkunst', '13': 'Materialien', '14': 'Gegenstandsverzauberungen' },
+				'9' : { '0': 'Buch', '1': 'Lederverarbeitung', '2': 'Schneiderei', '3': 'Ingenieurskunst', '4': 'Schmiedekunst', '5': 'Kochen', '6': 'Alchemie', '7': 'Erste Hilfe', '8': 'Verzauberkunst', '9': 'Angeln', '10': 'Juwelenschleifen', '11': 'Inschriftenkunde' },
+				'12': { '0': 'Questgegenstand' },
+				'13': { '0': 'Schlüssel' },
+				'15': { '0': 'Plunder', '1': 'Reagenz', '2': 'Haustier', '3': 'Feiertag', '4': 'Anderes', '5': 'Reittier' },
+				'16': { '0': 'Glyphe', '1': 'Krieger', '2': 'Paladin', '3': 'Jäger', '4': 'Schurke', '5': 'Priester', '6': 'Todesritter', '7': 'Schamane', '8': 'Magier', '9': 'Hexenmeister', '11': 'Druide' }
+			},
+			'inventoryType'    : { '1': 'Kopf', '2': 'Nacken', '3': 'Schulter', '4': 'Hemd', '5': 'Brust', '6': 'Taille', '7': 'Beine', '8': 'Füße', '9': 'Handgelenke', '10': 'Hände', '11': 'Finger', '12': 'Schmuckstück', '13': 'Einhändig', '15': 'Distanz' /* Bogen */, '16': 'Rücken', '17': 'Zweihändig', '18': 'Tasche', '21': 'Waffenhand', '22': 'Schildhand', '23': 'In Schildhand geführt', '25': 'Distanz' /* Wurfwaffe */, '26': 'Distanz' /* Gewehr, Armbrust, Zauberstab */ }
 		}
 	}
 	

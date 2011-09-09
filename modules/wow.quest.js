@@ -33,8 +33,8 @@ DarkTip.registerModule('wow.quest', {
 				'<div class="row level"><%= this["level"] %></div>' +
 				'<div class="row name"><%= this["title"] %></div>' +
 				'<div class="row category"><%= this["category"] %></div>' +
-				'<div class="row reqLevel"><%= this._loc("templates.reqLevel") %></div>' +
-				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this._loc("templates.suggestedPartyMembers") %><% } %>' +
+				'<div class="row reqLevel"><%= this._loc("reqLevel") %></div>' +
+				'<% if(this["suggestedPartyMembers"] > 1) { %><%= this._loc("suggestedPartyMembers") %><% } %>' +
 			'</div>'				
 		),
 		'404':(
@@ -48,12 +48,17 @@ DarkTip.registerModule('wow.quest', {
 	
 	'i18n': {
 		'en_US': {
-			'loading'  : 'Loading quest...',
-			'not-found': 'Quest not found',
-			'templates': {
-				'reqLevel'             : 'Requires Level <%= this["reqLevel"] %>',
-				'suggestedPartyMembers': 'Group Quest (<%= this["suggestedPartyMembers"] %>)'
-			}
+			'loading'              : 'Loading quest...',
+			'not-found'            : 'Quest not found',
+			'reqLevel'             : 'Requires Level <%= this["reqLevel"] %>',
+			'suggestedPartyMembers': 'Group Quest (<%= this["suggestedPartyMembers"] %>)'
+		},
+		'de_DE': {
+			'loading'              : 'Lade Quest...',
+			'not-found'            : 'Quest nicht gefunden',
+			'reqLevel'             : 'Benötigt Stufe <%= this["reqLevel"] %>',
+			'suggestedPartyMembers': 'Gruppenquest (<%= this["suggestedPartyMembers"] %>)'
+			
 		}
 	}
 });

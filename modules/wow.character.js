@@ -130,13 +130,22 @@ DarkTip.registerModule('wow.character', {
 
 	'i18n': {
 		'en_US': {
-			'loading'          : 'Loading character...',
-			'not-found'        : 'Character not found',
-			'classification'   : '<%= this["level"] %> <%= this._loc("characterRace." + this["race"] + ".0") %> <%= this._loc("characterClass." + this["class"] + ".0") %>',
-			'itemLevel'        : '<%= this["averageItemLevelEquipped"] %> average item level (<%= this["averageItemLevel"] %>)',
-			'mounts'           : 'Mounts: <%= this["mounts"].length %>',
-			'companions'       : 'Companions: <%= this["companions"].length %>',
-			'lastModified'     : 'Last modified: <%= this._renderDateTime(this["lastModified"]) %>'
+			'loading'       : 'Loading character...',
+			'not-found'     : 'Character not found',
+			'classification': '<%= this["level"] %> <%= this._loc("characterRace." + this["race"] + ".0") %> <%= this._loc("characterClass." + this["class"] + ".0") %>',
+			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> average item level (<%= this["averageItemLevel"] %>)',
+			'mounts'        : 'Mounts: <%= this["mounts"].length %>',
+			'companions'    : 'Companions: <%= this["companions"].length %>',
+			'lastModified'  : 'Last modified: <%= this._renderDateTime(this["lastModified"]) %>'
+		},
+		'de_DE': {
+			'loading'       : 'Lade Charakter...',
+			'not-found'     : 'Charakter nicht gefunden',
+			'classification': '<%= this["level"] %>, <%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %>, <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %>',
+			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Durchschnittliche Gegenstandsstufe (<%= this["averageItemLevel"] %>)',
+			'mounts'        : 'Reittiere: <%= this["mounts"].length %>',
+			'companions'    : 'Begleiter: <%= this["companions"].length %>',
+			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["lastModified"]) %>'
 		}
 	}
 });

@@ -20,6 +20,12 @@
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
 
+// Paul Irish's console.log() wrapper // http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+if(!window.log)
+{
+	window.log=function(){log.history=log.history||[];log.history.push(arguments);if(this.console){console.log(Array.prototype.slice.call(arguments))}};
+}
+
 // Check if yepnope.js is defined, if not, we need to define it
 if(!window.yepnope)
 {
@@ -220,6 +226,40 @@ window.DarkTip = {
 				'not-found'       : 'Nothing found',
 				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!',
 				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!'
+			},
+			'en_GB': {
+				'meta': {
+					'redirect': 'en_US'
+				}
+			},
+			'de_DE': {
+				'loading'         : 'Laden...',
+				'not-found'       : 'Nichts gefunden',
+				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln!',
+				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!!'
+			},
+			'fr_FR': {
+				
+			},
+			'es_ES': {
+				
+			},
+			'es_MX': {
+				'meta': {
+					'fallback': 'es_ES'
+				}
+			},
+			'ru_RU': {
+				
+			},
+			'ko_KR': {
+				
+			},
+			'zh_TW': {
+				
+			},
+			'zh_CN': {
+				
 			}
 		},
 		
@@ -231,7 +271,7 @@ window.DarkTip = {
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
 		{
-			console.log(message);
+			window.log(message);
 		}
 	},
 	
