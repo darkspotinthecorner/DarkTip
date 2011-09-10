@@ -6,6 +6,7 @@ DarkTip.registerModule('wow', {
 				'eu.battle.net'       : 'eu',
 				'kr.battle.net'       : 'kr',
 				'tw.battle.net'       : 'tw',
+				'cn.battle.net'       : 'cn',
 				'www.battlenet.com.cn': 'cn'
 			}
 		},
@@ -15,7 +16,7 @@ DarkTip.registerModule('wow', {
 				'eu': 'eu.battle.net',
 				'kr': 'kr.battle.net',
 				'tw': 'tw.battle.net',
-				'cn': 'www.battlenet.com.cn'
+				'cn': 'cn.battle.net' /* 'www.battlenet.com.cn' */
 			},
 			'mediahost': {
 				'us': 'us.media.blizzard.com',
