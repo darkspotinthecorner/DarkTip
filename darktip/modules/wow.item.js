@@ -1,5 +1,5 @@
 DarkTip.registerModule('wow.item', {
-	'patterns': {
+	'triggers': {
 		'explicit': {
 			'match' : /item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
@@ -9,7 +9,7 @@ DarkTip.registerModule('wow.item', {
 			}
 		},
 		'implicit': {
-			'match' : /http:\/\/(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/item\/([^\/#]+).*/i,
+			'match' : /http:\/\/(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/item\/([^\/#]+).*/i,
 			'params': {
 				'1': 'host',
 				'2': 'lang',
@@ -17,10 +17,11 @@ DarkTip.registerModule('wow.item', {
 			}
 		},
 		'api'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["itemid"] %>#<%= this["locale"] %>',
-		'helpers' : {
-			'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
-		}
+		'hash'    : '<%= this["host"] %>#<%= this["itemid"] %>#<%= this["locale"] %>'
+	},
+	
+	'patterns': {
+		'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
 	},
 	
 	'maps': {
@@ -51,13 +52,13 @@ DarkTip.registerModule('wow.item', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'patterns.implicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'triggers.implicit.params')));
 			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
@@ -90,7 +91,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'_renderCoins': function(total) {
 				var temp   = total.toString();
-				var result = temp.match(DarkTip.read(this['_meta']['module'], 'patterns.helpers.money'));
+				var result = temp.match(DarkTip.read(this['_meta']['module'], 'patterns.money'));
 				var split  = {
 					'gold'  : -1,
 					'silver': -1,
@@ -133,12 +134,13 @@ DarkTip.registerModule('wow.item', {
 			'<div class="tooltip-item">' +
 	    		'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
 		    	 // --- START simple mode -----------------------------------
-				'<div class="data darktip-only-s">' +
-					'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
-					'<% if(this["heroic"]) { %><div class="row heroic"><%= this._loc("heroic") %></div><% } %>' +
-					'<% if(this["boundZone"]) { %><div class="row boundZone"><%= this["boundZone"]["name"] %></div><% } %>' +
+				'<div class="col-70 darktip-only-s">' +
+					'<div class="headline-right"><%= this["itemLevel"] %></div>' +
+					'<div class="row headline cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
+					'<% if(this["heroic"]) { %><div class="row"><%= this._loc("heroic") %></div><% } %>' +
+					'<% if(this["boundZone"]) { %><div class="row"><%= this["boundZone"]["name"] %></div><% } %>' +
 					'<% if(this["itemBind"]) { %>' +
-						'<div class="row itemBind">' +
+						'<div class="row">' +
 							'<% if(this["quality"] == 7) { %>' +
 								'<%= this._loc("itemBind.4") %>' +
 							'<% } else { %>' +
@@ -146,63 +148,53 @@ DarkTip.registerModule('wow.item', {
 							'<% } %>' +
 						'</div>' +
 					'<% } %>' +
-					'<% if(this["maxCount"]) { %><div class="row maxCount"><%= this._loc("maxCount") %></div><% } %>' +
+					'<% if(this["maxCount"]) { %><div class="row"><%= this._loc("maxCount") %></div><% } %>' +
 					'<div class="row classification">' +
 						'<% if(this["containerSlots"]) { %>' +
-							'<div class="itemClass"><%= this._loc("containerSlots") %></div>' +
+							'<%= this._loc("containerSlots") %>' +
 						'<% } else { %>' +
-							'<% if(this["equippable"]) { %><div class="inventoryType"><%= this._loc("inventoryType." + this["inventoryType"]) %></div><% } %>' +
-							'<div class="itemClass"><%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %></div>' +
+							'<% if(this["equippable"]) { %>' +
+								'<%= this._loc("inventoryType." + this["inventoryType"]) %>' +
+								'<div class="pos-right"><%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %></div>' +
+							'<% } else { %>' +
+								'<%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %>' +
+							'<% } %>' +
 						'<% } %>' +
 					'</div>' +
-					'<% if(this["baseArmor"]) { %><div class="row baseArmor"><%= this._loc("baseArmor") %></div><% } %>' +
+					'<% if(this["baseArmor"]) { %><div class="row"><%= this._loc("baseArmor") %></div><% } %>' +
 					'<% if(this["weaponInfo"]) { %>' +
-						'<div class="weaponInfo">' +
+						'<div>' +
 							'<%= this._subLoop("templates.fragments.weaponDamage", this["weaponInfo"]["damage"]) %>' +
-							'<div class="weaponSpeed"><%= this._loc("weaponSpeed", this["weaponInfo"]) %></div>' +
-							'<div class="row dps"><%= this._loc("dps", this["weaponInfo"]) %></div>' +
+							'<div class="pos-right"><%= this._loc("weaponSpeed", this["weaponInfo"]) %></div>' +
+							'<div class="row"><%= this._loc("dps", this["weaponInfo"]) %></div>' +
 						'</div>' +
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["bonusStats"]) %>' +
-					'<% if(this["gemInfo"]) { %><div class="row gemInfo"><%= this["gemInfo"]["bonus"]["name"] %></div><% } %>' +
-					'<% if(this["socketInfo"]) { %>' +
-						'<div class="socketInfo">' +
-							'<% if(this["socketInfo"]["sockets"]) { %>' +
-								'<%for(var i = 0; i < this["socketInfo"]["sockets"].length; i++) { %>' +
-									'<%var current = this["socketInfo"]["sockets"][i]; %>' +
-									'<div class="row socket">' +
-										'<span class="icon-socket socket-<%= current["type"] %>">' +
-											'<span class="empty"></span><span class="frame"></span>' +
-										'</span>' +
-										'<%= this._loc("itemSocket." + current["type"]) %>' +
-									'</div>' +
-								'<% } %>' +
-							'<% } %>' +
-						'</div>' +
-					'<% } %>' +
-					'<% if(this["allowableClasses"]) { %><div class="row allowableClasses"><%= this._loc("allowableClasses") %></div><% } %>' +
-					'<% if(this["allowableRaces"]) { %><div class="row allowableRaces"><%= this._loc("allowableRaces") %></div><% } %>' +
-					'<% if(this["requiredLevel"]) { %><div class="row requiredLevel"><%= this._loc("requiredLevel") %></div><% } %>' +
-					'<% if(this["requiredSkill"]) { %><div class="row requiredSkill"><%= this._loc("requiredSkill") %></div><% } %>' +
-					'<% if(this["requiredAbility"]) { %><div class="row requiredAbility"><%= this._loc("requiredAbility") %></div><% } %>' +
-					'<% if(this["minFactionId"]) { %><div class="row minFactionId"><%= this._loc("minFactionId") %></div><% } %>' +
-					'<% if(this["itemLevel"]) { %><div class="row itemLevel"><%= this._loc("itemLevel") %></div><% } %>' +
+					'<% if(this["gemInfo"]) { %><div class="row"><%= this["gemInfo"]["bonus"]["name"] %></div><% } %>' +
+					'<% if(this["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["socketInfo"]["sockets"]) %></div><% } %>' +
+					'<% if(this["allowableClasses"]) { %><div class="row"><%= this._loc("allowableClasses") %></div><% } %>' +
+					'<% if(this["allowableRaces"]) { %><div class="row"><%= this._loc("allowableRaces") %></div><% } %>' +
+					'<% if(this["requiredLevel"]) { %><div class="row"><%= this._loc("requiredLevel") %></div><% } %>' +
+					'<% if(this["requiredSkill"]) { %><div class="row"><%= this._loc("requiredSkill") %></div><% } %>' +
+					'<% if(this["requiredAbility"]) { %><div class="row"><%= this._loc("requiredAbility") %></div><% } %>' +
+					'<% if(this["minFactionId"]) { %><div class="row"><%= this._loc("minFactionId") %></div><% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["itemSpells"]) %>' +
-					'<% if(this["description"]) { %><div class="row description">&quot;<%= this["description"] %>&quot;</div><% } %>' +
+					'<% if(this["description"]) { %><div class="row highlight-medium">&quot;<%= this["description"] %>&quot;</div><% } %>' +
 			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
 			    '<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="data darktip-only-x">' +
-						'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
-						'<div class="row id"><%= this._loc("itemId") %></div>' +
-						'<% if(this["maxDurability"]) { %><div class="row maxDurability"><%= this._loc("maxDurability") %></div><% } %>' +
-						'<% if(this["stackable"] > 1) { %><div class="row stackable"><%= this._loc("stackable") %></div><% } %>' +
-						// itemSource, maybe...
-						'<div class="row sellPrice"><%= this._loc("sellPrice") %></div>' +
-						'<% if(this["isAuctionable"]) { %><div class="row isAuctionable"><%= this._loc("isAuctionable") %></div><% } %>' +
+					'<div class="col-70 darktip-only-x">' +
+						'<div class="headline-right"><%= this["itemLevel"] %></div>' +
+						'<div class="row headline cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
+						'<div class="row highlight-strong"><%= this._loc("itemId") %></div>' +
+						'<% if(this["maxDurability"]) { %><div class="row"><%= this._loc("maxDurability") %></div><% } %>' +
+						'<% if(this["isAuctionable"]) { %><div class="row"><%= this._loc("auctionable") %></div><% } %>' +
+						'<div class="row"><%= this._loc("disenchantable") %></div>' +
+						'<% if(this["stackable"] > 1) { %><div class="row"><%= this._loc("stackable") %></div><% } %>' +
+						'<div class="row"><%= this._loc("sellPrice") %></div>' +
 						'<div class="row info-meta"><%= this._loc("extendedActive") %></div>' +
 			    	'</div>' +
 		    	'<% } %>' +
@@ -212,14 +204,14 @@ DarkTip.registerModule('wow.item', {
 		'404': (
 			'<div class="tooltip-item tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row item"><span class="label"><%= this._loc("label.item") %></span> <span class="value"><%= this["itemid"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="row"><span class="label"><%= this._loc("label.item") %></span> <span class="value"><%= this["itemid"] %></span></div>' +
+				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		),
 		'fragments': {
 			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',
 			'allowableRace' : '<span class="crace-<%= this["_value"] %>"><%= this._loc("characterRace." + this["_value"] + ".0")%></span>',
-			'weaponDamage'  : '<div class="row damage"><%= this._loc("damage") %></div>',
+			'weaponDamage'  : '<div class="row"><%= this._loc("damage") %></div>',
 			'coins'         : (
 				'<% if(this["gold"] > -1) { %><span class="icon-gold"><%= this["gold"] %></span><% } %>' +
 				'<% if(this["silver"] > -1) { %><span class="icon-silver"><%= this["silver"] %></span><% } %>' +
@@ -229,24 +221,32 @@ DarkTip.registerModule('wow.item', {
 			'stat'          : {
 				'primary'  : (
 					'<% if(this._isStatPrimary(this["stat"])) { %>' +
-						'<div class="row primaryStat">' +
+						'<div class="row">' +
 							'<% if(this["amount"] >= 0) { %>+<% } %><%= this["amount"] %> <%= this._loc("itemStat." + this["stat"]) %>' +
 						'</div>' +
 					'<% }'
 				),
 				'secondary': (
 					'<% if(this._isStatSecondary(this["stat"])) { %>' +
-						'<div class="row secondaryStat">' +
+						'<div class="row highlight-custom">' +
 							'<%= this._loc("itemStat." + this["stat"]) %>' +
 						'</div>' +
 					'<% }'
 				),
 				'spell'    : (
 					'<% if(this["spell"]["description"]) { %>' +
-						'<div class="row secondaryStat"><%= this._loc("itemSpell") %></div>' +
+						'<div class="row highlight-custom"><%= this._loc("itemSpell") %></div>' +
 					'<% } %>'
 				)
-			}
+			},
+			'socket': (
+				'<div class="row socket highlight-reduced">' +
+					'<span class="icon-socket socket-<%= this["type"] %>">' +
+						'<span class="empty"></span><span class="frame"></span>' +
+					'</span>' +
+					'<%= this._loc("itemSocket." + this["type"]) %>' +
+				'</div>'
+			)
 		}
 	},
 	
@@ -267,7 +267,6 @@ DarkTip.registerModule('wow.item', {
 			'requiredSkill'    : 'Requires <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this["requiredSkillRank"] %>)',
 			'requiredAbility'  : 'Requires <%= this["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Requires Faction ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
-			'itemLevel'        : 'Item Level <%= this["itemLevel"] %>',
 			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Races: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
 			'itemStat'         : {
@@ -292,13 +291,9 @@ DarkTip.registerModule('wow.item', {
 			'itemSpell'        : 'Equip / Use / Chance on Hit: <%= this["spell"]["description"] %>',
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["sellPrice"]) %>',
 			'stackable'        : 'Stackable (<%= this["stackable"] %>)',
-			'itemIsAuctionable': 'Can be auctioned',
-			'itemBind'         : {
-				'1': 'Binds when picked up',
-				'2': 'Binds when equipped',
-				'3': 'Binds when used',
-				'4': 'Binds to Battle.net account'
-			},
+			'disenchantable'   : '<% if(this["disenchantingSkillRank"]) { %>Can be disenchanted (<%= this["disenchantingSkillRank"] %>)<% } else { %>Cannot be disenchanted<% } %>',
+			'auctionable'      : 'Can be auctioned',
+			'itemBind'         : { '1': 'Binds when picked up', '2': 'Binds when equipped', '3': 'Binds when used', '4': 'Binds to Battle.net account' },
 			'itemSocket'       : {
 				'BLUE'     : 'Blue Socket',
 				'RED'      : 'Red Socket',
@@ -311,187 +306,163 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Hydraulic Socket',
 				'COGWHEEL' : 'Cogwheel Socket'
 			},
-			'reputationFaction': {},
-			'reputationLevel'  : {
-				'0': 'Hated',
-				'1': 'Hostile',
-				'2': 'Unfriendly',
-				'3': 'Neutral',
-				'4': 'Friendly',
-				'5': 'Honored',
-				'6': 'Revered',
-				'7': 'Exalted'
-			},
+			'reputationLevel'  : { '0': 'Hated', '1': 'Hostile', '2': 'Unfriendly', '3': 'Neutral', '4': 'Friendly', '5': 'Honored', '6': 'Revered', '7': 'Exalted' },
 			'itemClass'        : {
-				'0' : {
-					'0': 'Consumeable',
-					'1': 'Potion',
-					'2': 'Elixir',
-					'3': 'Flask',
-					'4': 'Scroll',
-					'5': 'Food &amp; Drink',
-					'6': 'Item Enhancement',
-					'7': 'Bandage',
-					'8': 'Other'
-				},
-				'1' : {
-					'0': 'Bag',
-					'1': 'Soul Bag',
-					'2': 'Herb Bag',
-					'3': 'Enchanting Bag',
-					'4': 'Engineering Bag',
-					'5': 'Gem Bag',
-					'6': 'Mining Bag',
-					'7': 'Leatherworking Bag',
-					'8': 'Inscription Bag',
-					'9': 'Tackle Box'
-				},
-				'2' : {
-					'0' : 'Axe', /* 1H */
-					'1' : 'Axe', /* 2H */
-					'2' : 'Bow',
-					'3' : 'Gun',
-					'4' : 'Mace', /* 1H */
-					'5' : 'Mace', /* 2H */
-					'6' : 'Polearm',
-					'7' : 'Sword', /* 1H */
-					'8' : 'Sword', /* 2H */
-					'10': 'Staff',
-					'13': 'Fist Weapon',
-					'14': 'Miscellaneous',
-					'15': 'Dagger',
-					'16': 'Thrown',
-					'18': 'Crossbow',
-					'19': 'Wand',
-					'20': 'Fishing Pole'
-				},
-				'3' : {
-					'0' : 'Red Gem',
-					'1' : 'Blue Gem',
-					'2' : 'Yellow Gem',
-					'3' : 'Purple Gem',
-					'4' : 'Green Gem',
-					'5' : 'Orange Gem',
-					'6' : 'Meta Gem',
-					'7' : 'Simple Gem',
-					'8' : 'Prismatic Gem',
-					'9' : 'Hydraulic Gem',
-					'10': 'Cogwheel Gem'
-				},
-				'4' : {
-					'0' : 'Miscellaneous',
-					'1' : 'Cloth',
-					'2' : 'Leather',
-					'3' : 'Mail',
-					'4' : 'Plate',
-					'6' : 'Shield',
-					'7' : 'Libram',
-					'8' : 'Idol',
-					'9' : 'Totem',
-					'10': 'Sigil',
-					'11': 'Relic'
-				},
-				'7' : {
-					'0' : 'Trade Goods',
-					'1' : 'Parts',
-					'2' : 'Explosives',
-					'3' : 'Devices',
-					'4' : 'Jewelcrafting',
-					'5' : 'Cloth',
-					'6' : 'Leather',
-					'7' : 'Metal &amp; Stone',
-					'8' : 'Meat',
-					'9' : 'Herb',
-					'10': 'Elemental',
-					'11': 'Other',
-					'12': 'Enchanting',
-					'13': 'Materials',
-					'14': 'Item Enchantment'
-				},
-				'9' : {
-					'0' : 'Book',
-					'1' : 'Leatherworking',
-					'2' : 'Tailoring',
-					'3' : 'Engineering',
-					'4' : 'Blacksmithing',
-					'5' : 'Cooking',
-					'6' : 'Alchemy',
-					'7' : 'First Aid',
-					'8' : 'Enchanting',
-					'9' : 'Fishing',
-					'10': 'Jewelcrafting',
-					'11': 'Inscription'
-				},
-				'12': {
-					'0': 'Quest Item'
-				},
-				'13': {
-					'0': 'Key'
-				},
-				'15': {
-					'0': 'Junk',
-					'1': 'Reagent',
-					'2': 'Pet',
-					'3': 'Holiday',
-					'4': 'Other',
-					'5': 'Mount'
-				},
-				'16': {
-					'0' : 'Glyph',
-					'1' : 'Warrior',
-					'2' : 'Paladin',
-					'3' : 'Hunter',
-					'4' : 'Rogue',
-					'5' : 'Priest',
-					'6' : 'Death Knight',
-					'7' : 'Shaman',
-					'8' : 'Mage',
-					'9' : 'Warlock',
-					'11': 'Druid'
-				}
+				'0' : { '0': 'Consumeable', '1': 'Potion', '2': 'Elixir', '3': 'Flask', '4': 'Scroll', '5': 'Food &amp; Drink', '6': 'Item Enhancement', '7': 'Bandage', '8': 'Other' },
+				'1' : { '0': 'Bag', '1': 'Soul Bag', '2': 'Herb Bag', '3': 'Enchanting Bag', '4': 'Engineering Bag', '5': 'Gem Bag', '6': 'Mining Bag', '7': 'Leatherworking Bag', '8': 'Inscription Bag', '9': 'Tackle Box' },
+				'2' : { '0': 'Axe' /* 1H */, '1': 'Axe' /* 2H */, '2': 'Bow', '3': 'Gun', '4': 'Mace' /* 1H */, '5': 'Mace' /* 2H */, '6': 'Polearm', '7': 'Sword' /* 1H */, '8': 'Sword' /* 2H */, '10': 'Staff', '13': 'Fist Weapon', '14': 'Miscellaneous', '15': 'Dagger', '16': 'Thrown', '18': 'Crossbow', '19': 'Wand', '20': 'Fishing Pole' },
+				'3' : { '0': 'Red Gem', '1': 'Blue Gem', '2': 'Yellow Gem', '3': 'Purple Gem', '4': 'Green Gem', '5': 'Orange Gem', '6': 'Meta Gem', '7': 'Simple Gem', '8': 'Prismatic Gem', '9': 'Hydraulic Gem', '10': 'Cogwheel Gem' },
+				'4' : { '0': 'Miscellaneous', '1': 'Cloth', '2': 'Leather', '3': 'Mail', '4': 'Plate', '6': 'Shield', '7': 'Libram', '8': 'Idol', '9': 'Totem', '10': 'Sigil', '11': 'Relic' },
+				'7' : { '0': 'Trade Goods', '1': 'Parts', '2': 'Explosives', '3': 'Devices', '4': 'Jewelcrafting', '5': 'Cloth', '6': 'Leather', '7': 'Metal &amp; Stone', '8': 'Meat', '9': 'Herb', '10': 'Elemental', '11': 'Other', '12': 'Enchanting', '13': 'Materials', '14': 'Item Enchantment' },
+				'9' : { '0': 'Book', '1': 'Leatherworking', '2': 'Tailoring', '3': 'Engineering', '4': 'Blacksmithing', '5': 'Cooking', '6': 'Alchemy', '7': 'First Aid', '8': 'Enchanting', '9': 'Fishing', '10': 'Jewelcrafting', '11': 'Inscription' },
+				'12': { '0': 'Quest Item' },
+				'13': { '0': 'Key' },
+				'15': { '0': 'Junk', '1': 'Reagent', '2': 'Pet', '3': 'Holiday', '4': 'Other', '5': 'Mount' },
+				'16': { '0': 'Glyph', '1': 'Warrior', '2': 'Paladin', '3': 'Hunter', '4': 'Rogue', '5': 'Priest', '6': 'Death Knight', '7': 'Shaman', '8': 'Mage', '9': 'Warlock', '11': 'Druid' }
 			},
-			'inventoryType'    : {
-				'1' : 'Head',
-				'2' : 'Neck',
-				'3' : 'Shoulder',
-				'4' : 'Shirt',
-				'5' : 'Chest',
-				'6' : 'Waist',
-				'7' : 'Legs',
-				'8' : 'Feet',
-				'9' : 'Wrist',
-				'10': 'Hands',
-				'11': 'Finger',
-				'12': 'Trinket',
-				'13': 'One-Hand',
-				'15': 'Ranged', /* Bow */
-				'16': 'Back',
-				'17': 'Two-Hand',
-				'18': 'Bag',
-				'21': 'Main-hand',
-				'22': 'Off-hand',
-				'23': 'Held in off-hand',
-				'25': 'Ranged', /* Thrown */
-				'26': 'Ranged' /* Gun, Crossbow, Wand */
+			'inventoryType'   : { '1': 'Head', '2': 'Neck', '3': 'Shoulder', '4': 'Shirt', '5': 'Chest', '6': 'Waist', '7': 'Legs', '8': 'Feet', '9': 'Wrist', '10': 'Hands', '11': 'Finger', '12': 'Trinket', '13': 'One-Hand', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'Two-Hand', '18': 'Bag', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
+		},
+		'de_DE': {
+			'loading'          : 'Lade Gegenstand...',
+			'not-found'        : 'Gegenstand nicht gefunden',
+			'itemId'           : 'Gegenstands ID: <%= this["id"] %>',
+			'heroic'           : 'Heroisch',
+			'maxCount'         : 'Einzigartig<% if(this["maxCount"] > 1) { %> (<%= this["maxCount"] %>)<% } %>',
+			'containerSlots'   : '<%= this["containerSlots"] %> Platz <%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %>',
+			'damage'           : '<%= this["minDamage"] %> - <%= this["maxDamage"] %> Schaden',
+			'weaponSpeed'      : 'Geschwindigkeit <%= this["weaponSpeed"] %>',
+			'dps'              : '(<%= this["dps"].toFixed(2) %> Schaden pro Sekunde)',
+			'baseArmor'        : '<%= this["baseArmor"] %> Rüstung',
+			'maxDurability'    : 'Haltbarkeit <%= this["maxDurability"] %> / <%= this["maxDurability"] %>',
+			'requiredLevel'    : 'Erfordert Stufe <%= this["requiredLevel"] %>',
+			'requiredSkill'    : 'Erfordert <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this[requiredSkillRank] %>)',
+			'requiredAbility'  : 'Erfordert <%= this["requiredAbility"]["name"] %>',
+			'minFactionId'     : 'Erfordert Fraktion ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
+			'allowableClasses' : 'Klassen: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
+			'allowableRaces'   : 'Rassen: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
+			'itemStat'         : {
+				'3' : 'Beweglichkeit',
+				'4' : 'Stärke',
+				'5' : 'Intellekt',
+				'6' : 'Willenskraft',
+				'7' : 'Ausdauer',
+				'13': 'Anlegen: Erhöht eure Ausweichwertung um <%= this["amount"] %>.',
+				'14': 'Anlegen: Erhöht eure Parrierwertung um <%= this["amount"] %>.',
+				'31': 'Anlegen: Erhöht eure Trefferwertung um <%= this["amount"] %>.',
+				'32': 'Anlegen: Erhöht eure kritische Trefferwertung um <%= this["amount"] %>.',
+				'35': 'Anlegen: Erhöht eure Abhärtungswertung um <%= this["amount"] %>.',
+				'36': 'Anlegen: Erhöht eure Tempowertung um <%= this["amount"] %>.',
+				'37': 'Anlegen: Erhöht eure Waffenkundewertung um <%= this["amount"] %>.',
+				'38': 'Anlegen: Erhöht eure Angriffswertung um <%= this["amount"] %>.',
+				'46': 'Anlegen: Erhöht eure Gesundheitsregenartion um <%= this["amount"] %>.',
+				'45': 'Anlegen: Erhöht Zaubermacht um <%= this["amount"] %>.',
+				'47': 'Anlegen: Erhöht Zauberdurchschlagskraft um <%= this["amount"] %>.',
+				'49': 'Anlegen: Erhöht eure Meisterschaftswertung um <%= this["amount"] %>.'
 			},
-			'characterSkill'   : {
-				'129': 'First Aid',
-				'164': 'Blacksmithing',
-				'165': 'Leatherworking',
-				'171': 'Alchemy',
-				'182': 'Herbalism',
-				'185': 'Cooking',
-				'186': 'Mining',
-				'197': 'Tailoring',
-				'202': 'Engineering',
-				'333': 'Enchanting',
-				'356': 'Fishing',
-				'393': 'Skinning',
-				'755': 'Jewelcrafting',
-				'762': 'Riding',
-				'773': 'Inscription',
-				'794': 'Archeology'
-			}
+			'itemSpell'        : 'Anlegen / Benutzen / Chance beim Treffer: <%= this["spell"]["description"] %>',
+			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["sellPrice"]) %>',
+			'stackable'        : 'Stapelbar (<%= this["stackable"] %>)',
+			'disenchantable'   : '<% if(this["disenchantingSkillRank"]) { %>Kann entzaubert werden (<%= this["disenchantingSkillRank"] %>)<% } else { %>Kann nicht entzaubert werden<% } %>',
+			'auctionable'      : 'Kann versteigert werden',
+			'itemBind'         : { '1': 'Wird beim Aufheben gebunden', '2': 'Wird beim Anlegen gebunden', '3': 'Wird bei Benutzung gebunden', '4': 'Wird an Battle.net-Account gebunden' },
+			'itemSocket'       : {
+				'BLUE'     : 'Blauer Sockel',
+				'RED'      : 'Roter Sockel',
+				'YELLOW'   : 'Gelber Sockel',
+				'META'     : 'Meta Sockel',
+				'ORANGE'   : 'Orangener Sockel',
+				'PURPLE'   : 'Lila Sockel',
+				'GREEN'    : 'Grüner Sockel',
+				'PRISMATIC': 'Prismatischer Sockel',
+				'HYDRAULIC': 'Hydraulischer Sockel',
+				'COGWHEEL' : 'Zahnrad Sockel'
+			},
+			'reputationLevel'  : { '0': 'Haßerfüllt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrfürchtig' },
+			'itemClass'        : {
+				'0' : { '0': 'Verbrauchbar', '1': 'Trank', '2': 'Elixier', '3': 'Fläschchen', '4': 'Schriftrolle', '5': 'Essen &amp; Drinken', '6': 'Gegenstandsverzauberung', '7': 'Verband', '8': 'Anderes' },
+				'1' : { '0': 'Tasche', '1': 'Seelentasche', '2': 'Kräutertasche', '3': 'Verzauberertasche', '4': 'Ingenierstasche', '5': 'Edelsteintasche', '6': 'Bergbautasche', '7': 'Ledertasche', '8': 'Schreibertasche', '9': 'Spinnerkasten' },
+				'2' : { '0': 'Axt' /* 1H */, '1' : 'Axt' /* 2H */, '2': 'Bogen', '3': 'Gewehr', '4': 'Streitkolben' /* 1H */, '5': 'Streitkolben' /* 2H */, '6': 'Stangenwaffe', '7': 'Schwert' /* 1H */, '8': 'Schwert' /* 2H */, '10': 'Stab', '13': 'Faustwaffe', '14': 'Verschiedenes', '15': 'Dolch', '16': 'Wurfwaffe', '18': 'Armbrust', '19': 'Zauberstab', '20': 'Angelrute' },
+				'3' : { '0': 'Roter Edelstein', '1': 'Blauer Edelstein', '2': 'Gelber Edelstein', '3': 'Violetter Edelstein', '4': 'Grüner Edelstein', '5': 'Orangener Edelstein', '6': 'Meta Edelstein', '7': 'Einfacher Edelstein', '8': 'Prismatischer Edelstein', '9': 'Hydraulischer Edelstein', '10': 'Zahnrad Edelstein' },
+				'4' : { '0': 'Verschiedenes', '1': 'Stoff', '2': 'Leder', '3': 'Schwere Rüstung', '4': 'Platte', '6': 'Schild', '7': 'Libram', '8': 'Idol', '9': 'Totem', '10': 'Siegel', '11': 'Relikt' },
+				'7' : { '0': 'Handelswaren', '1': 'Teile', '2': 'Sprengstoff', '3': 'Geräte', '4': 'Juwelenschleifen', '5': 'Stoff', '6': 'Leder', '7': 'Metall &amp; Stein', '8': 'Fleisch', '9': 'Kräuter', '10': 'Elementar', '11': 'Anderes', '12': 'Verzauberkunst', '13': 'Materialien', '14': 'Gegenstandsverzauberungen' },
+				'9' : { '0': 'Buch', '1': 'Lederverarbeitung', '2': 'Schneiderei', '3': 'Ingenieurskunst', '4': 'Schmiedekunst', '5': 'Kochen', '6': 'Alchemie', '7': 'Erste Hilfe', '8': 'Verzauberkunst', '9': 'Angeln', '10': 'Juwelenschleifen', '11': 'Inschriftenkunde' },
+				'12': { '0': 'Questgegenstand' },
+				'13': { '0': 'Schlüssel' },
+				'15': { '0': 'Plunder', '1': 'Reagenz', '2': 'Haustier', '3': 'Feiertag', '4': 'Anderes', '5': 'Reittier' },
+				'16': { '0': 'Glyphe', '1': 'Krieger', '2': 'Paladin', '3': 'Jäger', '4': 'Schurke', '5': 'Priester', '6': 'Todesritter', '7': 'Schamane', '8': 'Magier', '9': 'Hexenmeister', '11': 'Druide' }
+			},
+			'inventoryType'    : { '1': 'Kopf', '2': 'Nacken', '3': 'Schulter', '4': 'Hemd', '5': 'Brust', '6': 'Taille', '7': 'Beine', '8': 'Füße', '9': 'Handgelenke', '10': 'Hände', '11': 'Finger', '12': 'Schmuckstück', '13': 'Einhändig', '15': 'Distanz' /* Bogen */, '16': 'Rücken', '17': 'Zweihändig', '18': 'Tasche', '21': 'Waffenhand', '22': 'Schildhand', '23': 'In Schildhand geführt', '25': 'Distanz' /* Wurfwaffe */, '26': 'Distanz' /* Gewehr, Armbrust, Zauberstab */ }
+		},
+		'es_ES': {
+			'loading'          : 'Cargando objeto...',
+			'not-found'        : 'Objeto no encontrado',
+			'itemId'           : 'ID de Objeto: <%= this["id"] %>',
+			'heroic'           : 'Heroico',
+			'maxCount'         : 'Único<% if(this["maxCount"] > 1) { %> (<%= this["maxCount"] %>)<% } %>',
+			'containerSlots'   : '<%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %> con <%= this["containerSlots"] %> Casillas',
+			'damage'           : '<%= this["minDamage"] %> - <%= this["maxDamage"] %> Daño',
+			'weaponSpeed'      : 'Velocidad <%= this["weaponSpeed"] %>',
+			'dps'              : '(<%= this["dps"].toFixed(2) %> daño por segundo)',
+			'baseArmor'        : '<%= this["baseArmor"] %> de armadura',
+			'maxDurability'    : 'Durabilidad <%= this["maxDurability"] %> / <%= this["maxDurability"] %>',
+			'requiredLevel'    : 'Requiere nivel <%= this["requiredLevel"] %>',
+			'requiredSkill'    : 'Requiere <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this["requiredSkillRank"] %>)',
+			'requiredAbility'  : 'Requiere <%= this["requiredAbility"]["name"] %>',
+			'minFactionId'     : 'Requiere facción con ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
+			'allowableClasses' : 'Clases: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
+			'allowableRaces'   : 'Razas: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
+			'itemStat'         : {
+				'3' : 'de agilidad',
+				'4' : 'de fuerza',
+				'5' : 'de intelecto',
+				'6' : 'de espíritu',
+				'7' : 'de aguante',
+				'13': 'Equipar: Aumenta tu índice de esquivar en <%= this["amount"] %>.',
+				'14': 'Equipar: Aumenta tu índice de parada en <%= this["amount"] %>.',
+				'31': 'Equipar: Aumenta tu índice de golpe en <%= this["amount"] %>.',
+				'32': 'Equipar: Aumenta tu índice de golpe crítico en <%= this["amount"] %>.',
+				'35': 'Equipar: Aumenta tu índice de temple en <%= this["amount"] %>.',
+				'36': 'Equipar: Aumenta tu índice de celeridad en <%= this["amount"] %>.',
+				'37': 'Equipar: Aumenta tu índice de pericia en <%= this["amount"] %>.',
+				'38': 'Equipar: Aumenta el poder de ataque en <%= this["amount"] %>.',
+				'46': 'Equipar: Aumenta la regeneración de salud en <%= this["amount"] %>.',
+				'45': 'Equipar: Aumenta el poder con hechizos en <%= this["amount"] %>.',
+				'47': 'Equipar: Aumenta la penetración de hechizos en <%= this["amount"] %>.',
+				'49': 'Equipar: Aumenta tu índice de maestría en <%= this["amount"] %>.'
+			},
+			'itemSpell'        : 'Equipar / Uso / Probabilidad al golpear: <%= this["spell"]["description"] %>',
+			'sellPrice'        : 'Precio de venta: <%= this._renderCoins(this["sellPrice"]) %>',
+			'stackable'        : 'Se puede apilar (<%= this["stackable"] %>)',
+			'disenchantable'   : '<% if(this["disenchantingSkillRank"]) { %>Se puede desencantar (<%= this["disenchantingSkillRank"] %>)<% } else { %>No se puede desencantar<% } %>',
+			'auctionable'      : 'Se puede subastar',
+			'itemBind'         : { '1': 'Se liga al recogerlo', '2': 'Se liga al equiparlo', '3': 'Se liga al usarlo', '4': 'Se liga a la cuenta de Battle.net' },
+			'itemSocket'       : {
+				'BLUE'     : 'Ranura azul',
+				'RED'      : 'Ranura roja',
+				'YELLOW'   : 'Ranura amarilla',
+				'META'     : 'Ranura meta',
+				'ORANGE'   : 'Ranura naranja',
+				'PURPLE'   : 'Ranura púrpura',
+				'GREEN'    : 'Ranura verde',
+				'PRISMATIC': 'Ranura prismática',
+				'HYDRAULIC': 'Ranura hidráulica',
+				'COGWHEEL' : 'Ranura de engranaje'
+			},
+			'reputationLevel': { '0': 'Odiado', '1': 'Hostil', '2': 'Adverso', '3': 'Neutral', '4': 'Amistoso', '5': 'Honorable', '6': 'Venerado', '7': 'Exaltado' },
+			'itemClass'      : {
+				'0' :{ '0': 'Consumible', '1': 'Poción', '2': 'Elixir', '3': 'Frasco', '4': 'Pergamino', '5': 'Comida y bebida', '6': 'Mejora de Objetos', '7': 'Venda', '8': 'Otros' },
+				'1' :{ '0': 'Bolsa', '1': 'Bolsa de almas', '2': 'Bolsa de hierbas', '3': 'Bolsa de encantamiento', '4': 'Bolsa de ingeniería', '5': 'Bolsa de gemas', '6': 'Bolsa de minería', '7': 'Bolsa de peletería', '8': 'Bolsa de inscripción', '9': 'Caja de aparejos' },
+				'2' :{ '0': 'Hacha' /* 1H */,'1': 'Hacha' /* 2H */,'2': 'Arco', '3': 'Arma de fuego', '4': 'Maza' /* 1H */,'5': 'Maza' /* 2H */,'6': 'Arma de asta', '7': 'Espada' /* 1H */,'8': 'Espada' /* 2H */,'10': 'Bastón', '13': 'Arma de puño', '14': 'Miscelánea', '15': 'Daga', '16': 'Arma arrojadiza', '18': 'Ballesta', '19': 'Varita', '20': 'Caña de pescar' },
+				'3' :{ '0': 'Gema roja', '1': 'Gema azul', '2': 'Gema amarilla', '3': 'Gema púrpura', '4': 'Gema verde', '5': 'Gema naranja', '6': 'Gema meta', '7': 'Gema simple', '8': 'Gema prismática', '9': 'Gema hidráulica', '10': 'Gema de engranaje' },
+				'4' :{ '0': 'Miscelánea', '1': 'Tela', '2': 'Cuero', '3': 'Malla', '4': 'Placas', '6': 'Escudo', '7': 'Tratado', '8': 'Ídolo', '9': 'Tótem', '10': 'Sigilo', '11': 'Reliquia' },
+				'7' :{ '0': 'Objeto Comerciable', '1': 'Piezas', '2': 'Explosivos', '3': 'Instrumentos', '4': 'Joyería', '5': 'Tela', '6': 'Cuero', '7': 'Metal y piedra', '8': 'Carne', '9': 'Hierba', '10': 'Elemental', '11': 'Otro', '12': 'Encantamiento', '13': 'Materiales', '14': 'Encantamiento de objeto' },
+				'9' :{ '0': 'Libro', '1': 'Peletería', '2': 'Sastrería', '3': 'Ingeniería', '4': 'Herrería', '5': 'Cocina', '6': 'Alquimia', '7': 'Primeros auxilios', '8': 'Encantamiento', '9': 'Pesca', '10': 'Joyería', '11': 'Inscripción' },
+				'12':{ '0': 'Objeto de misión' },
+				'13':{ '0': 'Llave' },
+				'15':{ '0': 'Chatarra', '1': 'Componente', '2': 'Mascota', '3': 'Vacaciones', '4': 'Otros', '5': 'Montura' },
+				'16':{ '0': 'Glifo', '1': 'Guerrero', '2': 'Paladín', '3': 'Cazador', '4': 'Pícaro', '5': 'Sacerdote', '6': 'Caballero de la Muerte', '7': 'Chamán', '8': 'Mago', '9': 'Brujo', '11': 'Druida' }
+			},
+			'inventoryType'    : { '1': 'Cabeza', '2': 'Cuello', '3': 'Hombros', '4': 'Camisa', '5': 'Pecho', '6': 'Cintura', '7': 'Piernas', '8': 'Pies', '9': 'Muñequeras', '10': 'Manos', '11': 'Dedo', '12': 'Abalorio', '13': 'Una mano', '15': 'A distancia' /* Bow */, '16': 'Espalda', '17': 'Dos manos', '18': 'Bolsa', '21': 'Mano derecha', '22': 'Mano izquierda', '23': 'Sostener en mano izquierda', '25': 'Arrojadizas' /* Thrown */, '26': 'Arma a distancia' /* Gun,Crossbow,Wand */ }
 		}
 	}
 	

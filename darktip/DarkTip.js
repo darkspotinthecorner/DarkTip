@@ -20,6 +20,12 @@
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
 
+// Paul Irish's console.log() wrapper // http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
+if(!window.log)
+{
+	window.log=function(){log.history=log.history||[];log.history.push(arguments);if(this.console){console.log(Array.prototype.slice.call(arguments))}};
+}
+
 // Check if yepnope.js is defined, if not, we need to define it
 if(!window.yepnope)
 {
@@ -48,14 +54,11 @@ window.DarkTip = {
 		'settings': {
 			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
-				'modules': 'modules/',
 				'qtip2'  : [
 					'qtip2/jquery.qtip.min.js',
 					'qtip2/jquery.qtip.min.css'
 				],
-				'extras': [
-					'DarkTip.css'
-				]
+				'extras': []
 			},
 			'applyTo': {
 				'explicit': true,
@@ -65,9 +68,7 @@ window.DarkTip = {
 				'active'      : true,
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
-			},
-			// These modules will be loaded async
-			'modules': []
+			}
 		},
 		
 		'triggers': {
@@ -218,8 +219,45 @@ window.DarkTip = {
 			'en_US': {
 				'loading'         : 'Loading...',
 				'not-found'       : 'Nothing found',
-				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!',
-				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!'
+				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes',
+				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes'
+			},
+			'en_GB': {
+				'meta': {
+					'redirect': 'en_US'
+				}
+			},
+			'de_DE': {
+				'loading'         : 'Laden...',
+				'not-found'       : 'Nichts gefunden',
+				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln',
+				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
+			},
+			'fr_FR': {
+				
+			},
+			'es_ES': {
+				'loading'         : 'Cargando...',
+				'not-found'       : 'No he encontrado nada',
+				'extendedInactive': '¡Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
+				'extendedActive'  : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
+			},
+			'es_MX': {
+				'meta': {
+					'fallback': 'es_ES'
+				}
+			},
+			'ru_RU': {
+				
+			},
+			'ko_KR': {
+				
+			},
+			'zh_TW': {
+				
+			},
+			'zh_CN': {
+				
 			}
 		},
 		
@@ -231,7 +269,7 @@ window.DarkTip = {
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
 		{
-			console.log(message);
+			window.log(message);
 		}
 	},
 	
@@ -447,8 +485,6 @@ window.DarkTip = {
 	
 	'buildSettings': function() {
 		jQuery.extend(true, this['data']['settings'], window.___DarkTipSettings);
-		console.log(this['data']['settings']);
-		console.log(window.___DarkTipSettings);
 	},
 	
 	'map': function(module, route, value)
@@ -487,10 +523,6 @@ window.DarkTip = {
 		var files = this.setting('resources.extras');
 		for (var i = 0; i < files.length; i++) {
 			filesToLoad.push(files[i]);
-		}
-		var files = this.setting('modules');
-		for (var i = 0; i < files.length; i++) {
-			filesToLoad.push(this.setting('resources.modules') + files[i] + '.js');
 		}
 		yepnope({
 			'load': filesToLoad,	
@@ -587,11 +619,11 @@ window.DarkTip = {
 		}
 		var templateTools = this.getTemplateTools(module, params['lcoale']);
 		apicall = this.jq.jqote(
-			this._read(this.route(module, 'patterns.api')),
+			this._read(this.route(module, 'triggers.api')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
 		params['hash'] =  this.jq.jqote(
-			this._read(this.route(module, 'patterns.hash')),
+			this._read(this.route(module, 'triggers.hash')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
 		var content = this.cache(module, params['hash']);
@@ -791,10 +823,9 @@ window.DarkTip = {
 		// check if parent modules are loaded
 		if(this.verifyParentModule(moduleKey))
 		{
-			// register patterns for easy access, maybe ^^
 			this.write(this.route(moduleKey), moduleData);
 			
-			var patternExplicit = this._read(this.route(moduleKey, 'patterns.explicit'));
+			var patternExplicit = this._read(this.route(moduleKey, 'triggers.explicit'));
 			if(patternExplicit)
 			{
 				this.write(('data.triggers.explicit+'), {
@@ -803,7 +834,7 @@ window.DarkTip = {
 				});
 			}
 			
-			var patternImplicit = this._read(this.route(moduleKey, 'patterns.implicit'));
+			var patternImplicit = this._read(this.route(moduleKey, 'triggers.implicit'));
 			if(patternImplicit)
 			{
 				this.write(('data.triggers.implicit+'), {

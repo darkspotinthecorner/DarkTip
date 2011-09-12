@@ -21,7 +21,7 @@
  * ************************************************************************** */
 
 /* ==========================================================================
- * --- DarkTip Styles -------------------------------------------------------
+ * --- DarkTip.wow Styles ---------------------------------------------------
  * ========================================================================== */
 
 /* --- Override of 280 max-width -------------------------------------------- */
@@ -151,10 +151,6 @@
 	background-color: rgba(0, 0, 0, 0.85);
 }
 
-.darktip-tooltip .row {
-	padding-bottom: 1px;
-}
-
 .darktip-tooltip .tooltip-404 {
 	padding:3 px;
 }
@@ -207,18 +203,27 @@ body.darktip-extended-mode .darktip-tooltip span.darktip-only-x {
 
 .darktip-tooltip .info-meta {
 	color: #777;
+	padding-top: 6px;
 	padding-bottom: 3px;
 }
 
 /* --------------------------------------------------------------------------
- *  Realm Tooltips
+ *  Tooltip Element Rules - Layout
  * -------------------------------------------------------------------------- */
 
-.tooltip-realm .notfound {
-	font-weight: bold;
+.darktip-tooltip .row {
+	padding-bottom: 1px;
 }
 
-.tooltip-realm .name {
+.darktip-tooltip .row.padded {
+	padding: 2px 4px;
+}
+
+.darktip-tooltip div {
+	position: relative;
+}
+
+.darktip-tooltip .headline {
 	font-size: 14px;
 	font-weight: bold;
 	border-bottom: 1px solid #444;
@@ -226,261 +231,101 @@ body.darktip-extended-mode .darktip-tooltip span.darktip-only-x {
 	padding-bottom: 3px;
 }
 
-.tooltip-realm .type {
+.darktip-tooltip .headline-right {
 	float: right;
 	font-size: 14px;
 	font-weight: bold;
 	padding-left: 10px;
 }
 
-.tooltip-realm .battlegroup {
-	color: #71D5FF;
-}
-
-/* --------------------------------------------------------------------------
- *  Quest Tooltips
- * -------------------------------------------------------------------------- */
-
-.tooltip-quest .level {
-	float: right;
-	font-size: 14px;
-	font-weight: bold;
-	color: #999;
-	padding-left: 10px;
-}
-
-.tooltip-quest .name {
-	font-size: 14px;
-	font-weight: bold;
-	border-bottom: 1px solid #444;
-	margin-bottom: 5px;
-	padding-bottom: 3px;
-	color: #FFD100;
-}
-
-.tooltip-quest .category {
-	color: #71D5FF;
-}
-
-/* --------------------------------------------------------------------------
- *  Item Tooltips
- * -------------------------------------------------------------------------- */
-
-.tooltip-item .socketInfo {
+.darktip-tooltip .block {
 	padding-left: 5px;
 }
 
-.tooltip-item .data {
+.darktip-tooltip .icon {
+	float: left;
+	border: 4px solid rgba(0, 0, 0, 0.33);
+}
+
+.darktip-tooltip .col-70 {
 	padding: 4px 4px 4px 70px;
 }
 
-.tooltip-item .icon {
-	float: left;
-	border: 4px solid rgba(0, 0, 0, 0.33);
-}
-
-.tooltip-item .name {
-	font-size: 14px;
-	font-weight: bold;
-	border-bottom: 1px solid #444;
-	margin-bottom: 3px;
-	padding-bottom: 3px;	
-}
-
-.tooltip-item .classification,
-.tooltip-item .weaponInfo {
-	position: relative;
-}
-
-.tooltip-item .classification .inventoryType + .itemClass {
-	position: absolute;
-	top: 0;
-	right: 0;
-}
-
-.tooltip-item .weaponInfo .damage + .weaponSpeed {
-	position: absolute;
-	top: 0;
-	right: 0;
-}
-
-.tooltip-item .socketInfo .socket {
-	line-height: 18px;
-	overflow: hidden;
-	color: #808080;
-}
-
-.tooltip-item .socketInfo .icon-socket {
-	float: left;
-	margin-right: 4px;
-	margin-top: 1px;
-}
-
-.tooltip-item .secondaryStat {
-	color: #0F0;
-}
-
-.tooltip-item .description {
-	color: #FFD100;
-}
-
-.tooltip-item .id {
-	color: #71D5FF;
-}
-
-/* --------------------------------------------------------------------------
- *  Character Tooltips
- * -------------------------------------------------------------------------- */
-
-.tooltip-character .talentspec {
-	color: #999;
-	padding-left: 12px;
-}
-
-.tooltip-character .talentspec.active {
-	color: #00FFB1;
-}
-
-.tooltip-character .icon-talentspec,
-.tooltip-character .icon-profession {
-	height: 10px;
-}
-
-.tooltip-character .thumbnail {
-	float: left;
-	border: 4px solid rgba(0, 0, 0, 0.33);
-}
-
-.tooltip-character .data {
+.darktip-tooltip .col-98 {
 	padding: 4px 4px 4px 98px;
 }
 
-.tooltip-character .achievementpoints {
-	float: right;
-	font-size: 14px;
-	color: #C09A67;
-	padding-left: 10px;
+.darktip-tooltip .pos-right {
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
-.tooltip-character .name {
-	font-size: 14px;
-	font-weight: bold;
-	border-bottom: 1px solid #444;
-	margin-bottom: 3px;
-}
-
-.tooltip-character .itemlevel {
-	color: #C09A67;
-}
-
-.tooltip-character .guild {
-	padding-top: 2px;
-}
-
-.tooltip-character .guildname {
-	color: #FFB100;
-}
-
-.tooltip-character .professions {
-	line-height: 16px;
-}
-
-.tooltip-character .profession-primary {
-	color: #FFB100;
-}
-
-.tooltip-character .profession-secondary {
-	color: #996600;
-}
-
-.tooltip-character .lastModified {
-	color: #C09A67;
-}
-
-/* --------------------------------------------------------------------------
- *  Guild Tooltips
- * -------------------------------------------------------------------------- */
-
-.tooltip-guild .achievementpoints {
-	float: right;
-	font-size: 14px;
-	color: #C09A67;
-	padding-left: 10px;
-}
-
-.tooltip-guild .name {
-	font-size: 14px;
-	font-weight: bold;
-	border-bottom: 1px solid #444;
-	margin-bottom: 5px;
-}
-
-.tooltip-guild .classification {
-	color: #FFB100;
-}
-
-/* --------------------------------------------------------------------------
- *  Arena Team Tooltips
- * -------------------------------------------------------------------------- */
-
-.tooltip-arena .name {
-	font-size: 14px;
-	font-weight: bold;
-	border-bottom: 1px solid #444;
-	margin-bottom: 5px;
-}
-
-.tooltip-arena .view-mode {
-	color: #00FFB1;	
-}
-
-.tooltip-arena .rank-current {
-	float: right;
-	font-size: 14px;
-	font-weight: bold;
-	padding-left: 10px;
-	color: #FFB100;
-}
-
-.tooltip-arena .matches .matches-won {
-	color: #66FF66;
-}
-
-.tooltip-arena .matches .matches-lost {
-	color: #FF6666;
-}
-
-.tooltip-arena .matches .matches-stats {
-	color: #BB9966;
-}
-
-.tooltip-arena .members {
-	margin:4px 0;
-}
-
-.tooltip-arena .member {
-	position: relative;
-	padding: 2px 4px;
-	line-height: 18px;
-}
-
-.tooltip-arena .member .rating-personal {
-	font-size: 85%;
-	color: #808080;
-}
-
-.tooltip-arena .member .matches {
+.darktip-tooltip .padded .pos-right {
 	position: absolute;
 	top: 2px;
 	right: 4px;
 }
 
-.tooltip-arena .member.alt {
+.darktip-tooltip .icon-10x10 {
+	vertical-align: middle;
+	height: 10px;
+	width: auto;
+}
+
+.darktip-tooltip .icon-18x18 {
+	vertical-align: middle;
+	height: 18px;
+	width: auto;
+}
+
+.darktip-tooltip .sockets .socket {
+	line-height: 18px;
+	overflow: hidden;
+}
+
+.darktip-tooltip .sockets .icon-socket {
+	float: left;
+	margin-right: 4px;
+	margin-top: 1px;
+}
+
+.darktip-tooltip .sub {
+	font-size: 85%;
+}
+
+/* --------------------------------------------------------------------------
+ *  Tooltip Element Rules - Color
+ * -------------------------------------------------------------------------- */
+
+.darktip-tooltip .highlight-custom {
+	color: #0F0;
+}
+
+.darktip-tooltip .highlight-strong {
+	color: #71D5FF;
+}
+
+.darktip-tooltip .highlight-medium {
+	color: #FFD100;
+}
+
+.darktip-tooltip .highlight-weak {
+	color: #C09A67;
+}
+
+.darktip-tooltip .highlight-won {
+	color: #66FF66;
+}
+
+.darktip-tooltip .highlight-lost {
+	color: #FF6666;
+}
+
+.darktip-tooltip .highlight-reduced {
+	color: #909090;
+}
+
+.darktip-tooltip .row.alt {
 	background-color: rgba(0, 0, 0, 0.33);
 }
-
-.tooltip-arena .member img {
-	vertical-align: middle;
-}
-
-

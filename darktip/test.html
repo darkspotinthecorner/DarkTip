@@ -57,8 +57,6 @@
 	
 	<ul class="testbox explicit">
 		<li><h2>Quest Tests - Existing</h2></li>
-		<li><span data-darktip="quest:eu.25(de)">quest:eu.25(de)</span></li>
-		<li><span data-darktip="quest:eu.25(en)">quest:eu.25(en)</span></li>
 		<li><span data-darktip="quest:eu.10781(de)">quest:eu.10781(de)</span></li>
 		<li><span data-darktip="quest:eu.10781(en)">quest:eu.10781(en)</span></li>
 		<li><h2>Quest Tests - 404</h2></li>
@@ -140,15 +138,18 @@
 	
 	<script type="text/javascript">
 		window.___DarkTipSettings = {
-			'modules': [
-				'wow',
-				'wow.realm',
-				'wow.quest',
-				'wow.item',
-				'wow.character',
-				'wow.guild',
-				'wow.arena'
-			]
+			'resources': {
+				'extras': [
+					'modules/wow.css',
+					'modules/wow.js',
+					'modules/wow.realm.js',
+					'modules/wow.quest.js',
+					'modules/wow.item.js',
+					'modules/wow.character.js',
+					'modules/wow.guild.js',
+					'modules/wow.arena.js'
+				]
+			}
 		};
 	</script>
 	<script type="text/javascript" src="DarkTip.js"></script>
