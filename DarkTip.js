@@ -54,14 +54,11 @@ window.DarkTip = {
 		'settings': {
 			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
-				'modules': 'modules/',
 				'qtip2'  : [
 					'qtip2/jquery.qtip.min.js',
 					'qtip2/jquery.qtip.min.css'
 				],
-				'extras': [
-					'DarkTip.css'
-				]
+				'extras': []
 			},
 			'applyTo': {
 				'explicit': true,
@@ -71,9 +68,7 @@ window.DarkTip = {
 				'active'      : true,
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
-			},
-			// These modules will be loaded async
-			'modules': []
+			}
 		},
 		
 		'triggers': {
@@ -224,8 +219,8 @@ window.DarkTip = {
 			'en_US': {
 				'loading'         : 'Loading...',
 				'not-found'       : 'Nothing found',
-				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!',
-				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes!'
+				'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes',
+				'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to switch modes'
 			},
 			'en_GB': {
 				'meta': {
@@ -235,8 +230,8 @@ window.DarkTip = {
 			'de_DE': {
 				'loading'         : 'Laden...',
 				'not-found'       : 'Nichts gefunden',
-				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln!',
-				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!!'
+				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln',
+				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
 			},
 			'fr_FR': {
 				
@@ -525,10 +520,6 @@ window.DarkTip = {
 		var files = this.setting('resources.extras');
 		for (var i = 0; i < files.length; i++) {
 			filesToLoad.push(files[i]);
-		}
-		var files = this.setting('modules');
-		for (var i = 0; i < files.length; i++) {
-			filesToLoad.push(this.setting('resources.modules') + files[i] + '.js');
 		}
 		yepnope({
 			'load': filesToLoad,	

@@ -134,12 +134,13 @@ DarkTip.registerModule('wow.item', {
 			'<div class="tooltip-item">' +
 	    		'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
 		    	 // --- START simple mode -----------------------------------
-				'<div class="data darktip-only-s">' +
-					'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
-					'<% if(this["heroic"]) { %><div class="row heroic"><%= this._loc("heroic") %></div><% } %>' +
-					'<% if(this["boundZone"]) { %><div class="row boundZone"><%= this["boundZone"]["name"] %></div><% } %>' +
+				'<div class="col-70 darktip-only-s">' +
+					'<div class="headline-right"><%= this["itemLevel"] %></div>' +
+					'<div class="row headline cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
+					'<% if(this["heroic"]) { %><div class="row"><%= this._loc("heroic") %></div><% } %>' +
+					'<% if(this["boundZone"]) { %><div class="row"><%= this["boundZone"]["name"] %></div><% } %>' +
 					'<% if(this["itemBind"]) { %>' +
-						'<div class="row itemBind">' +
+						'<div class="row">' +
 							'<% if(this["quality"] == 7) { %>' +
 								'<%= this._loc("itemBind.4") %>' +
 							'<% } else { %>' +
@@ -147,63 +148,54 @@ DarkTip.registerModule('wow.item', {
 							'<% } %>' +
 						'</div>' +
 					'<% } %>' +
-					'<% if(this["maxCount"]) { %><div class="row maxCount"><%= this._loc("maxCount") %></div><% } %>' +
+					'<% if(this["maxCount"]) { %><div class="row"><%= this._loc("maxCount") %></div><% } %>' +
 					'<div class="row classification">' +
 						'<% if(this["containerSlots"]) { %>' +
-							'<div class="itemClass"><%= this._loc("containerSlots") %></div>' +
+							'<%= this._loc("containerSlots") %>' +
 						'<% } else { %>' +
-							'<% if(this["equippable"]) { %><div class="inventoryType"><%= this._loc("inventoryType." + this["inventoryType"]) %></div><% } %>' +
-							'<div class="itemClass"><%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %></div>' +
+							'<% if(this["equippable"]) { %>' +
+								'<%= this._loc("inventoryType." + this["inventoryType"]) %>' +
+								'<div class="pos-right"><%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %></div>' +
+							'<% } else { %>' +
+								'<%= this._loc("itemClass." + this["itemClass"] + "." + this["itemSubClass"]) %>' +
+							'<% } %>' +
 						'<% } %>' +
 					'</div>' +
-					'<% if(this["baseArmor"]) { %><div class="row baseArmor"><%= this._loc("baseArmor") %></div><% } %>' +
+					'<% if(this["baseArmor"]) { %><div class="row"><%= this._loc("baseArmor") %></div><% } %>' +
 					'<% if(this["weaponInfo"]) { %>' +
-						'<div class="weaponInfo">' +
+						'<div>' +
 							'<%= this._subLoop("templates.fragments.weaponDamage", this["weaponInfo"]["damage"]) %>' +
-							'<div class="weaponSpeed"><%= this._loc("weaponSpeed", this["weaponInfo"]) %></div>' +
-							'<div class="row dps"><%= this._loc("dps", this["weaponInfo"]) %></div>' +
+							'<div class="pos-right"><%= this._loc("weaponSpeed", this["weaponInfo"]) %></div>' +
+							'<div class="row"><%= this._loc("dps", this["weaponInfo"]) %></div>' +
 						'</div>' +
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["bonusStats"]) %>' +
-					'<% if(this["gemInfo"]) { %><div class="row gemInfo"><%= this["gemInfo"]["bonus"]["name"] %></div><% } %>' +
-					'<% if(this["socketInfo"]) { %>' +
-						'<div class="socketInfo">' +
-							'<% if(this["socketInfo"]["sockets"]) { %>' +
-								'<%for(var i = 0; i < this["socketInfo"]["sockets"].length; i++) { %>' +
-									'<%var current = this["socketInfo"]["sockets"][i]; %>' +
-									'<div class="row socket">' +
-										'<span class="icon-socket socket-<%= current["type"] %>">' +
-											'<span class="empty"></span><span class="frame"></span>' +
-										'</span>' +
-										'<%= this._loc("itemSocket." + current["type"]) %>' +
-									'</div>' +
-								'<% } %>' +
-							'<% } %>' +
-						'</div>' +
-					'<% } %>' +
-					'<% if(this["allowableClasses"]) { %><div class="row allowableClasses"><%= this._loc("allowableClasses") %></div><% } %>' +
-					'<% if(this["allowableRaces"]) { %><div class="row allowableRaces"><%= this._loc("allowableRaces") %></div><% } %>' +
-					'<% if(this["requiredLevel"]) { %><div class="row requiredLevel"><%= this._loc("requiredLevel") %></div><% } %>' +
-					'<% if(this["requiredSkill"]) { %><div class="row requiredSkill"><%= this._loc("requiredSkill") %></div><% } %>' +
-					'<% if(this["requiredAbility"]) { %><div class="row requiredAbility"><%= this._loc("requiredAbility") %></div><% } %>' +
-					'<% if(this["minFactionId"]) { %><div class="row minFactionId"><%= this._loc("minFactionId") %></div><% } %>' +
-					'<% if(this["itemLevel"]) { %><div class="row itemLevel"><%= this._loc("itemLevel") %></div><% } %>' +
+					'<% if(this["gemInfo"]) { %><div class="row"><%= this["gemInfo"]["bonus"]["name"] %></div><% } %>' +
+					'<% if(this["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["socketInfo"]["sockets"]) %></div><% } %>' +
+					'<% if(this["allowableClasses"]) { %><div class="row"><%= this._loc("allowableClasses") %></div><% } %>' +
+					'<% if(this["allowableRaces"]) { %><div class="row"><%= this._loc("allowableRaces") %></div><% } %>' +
+					'<% if(this["requiredLevel"]) { %><div class="row"><%= this._loc("requiredLevel") %></div><% } %>' +
+					'<% if(this["requiredSkill"]) { %><div class="row"><%= this._loc("requiredSkill") %></div><% } %>' +
+					'<% if(this["requiredAbility"]) { %><div class="row"><%= this._loc("requiredAbility") %></div><% } %>' +
+					'<% if(this["minFactionId"]) { %><div class="row"><%= this._loc("minFactionId") %></div><% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["itemSpells"]) %>' +
-					'<% if(this["description"]) { %><div class="row description">&quot;<%= this["description"] %>&quot;</div><% } %>' +
+					'<% if(this["description"]) { %><div class="row highlight-medium">&quot;<%= this["description"] %>&quot;</div><% } %>' +
 			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
 			    '<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="data darktip-only-x">' +
-						'<div class="row name cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
-						'<div class="row id"><%= this._loc("itemId") %></div>' +
-						'<% if(this["maxDurability"]) { %><div class="row maxDurability"><%= this._loc("maxDurability") %></div><% } %>' +
-						'<% if(this["stackable"] > 1) { %><div class="row stackable"><%= this._loc("stackable") %></div><% } %>' +
+					'<div class="col-70 darktip-only-x">' +
+						'<div class="headline-right"><%= this["itemLevel"] %></div>' +
+						'<div class="row headline cquality-<%= this["quality"] %>"><%= this["name"] %></div>' +
+						'<div class="row highlight-strong"><%= this._loc("itemId") %></div>' +
+						'<% if(this["maxDurability"]) { %><div class="row"><%= this._loc("maxDurability") %></div><% } %>' +
+						'<div class="row"><%= this._loc("disenchantable") %></div>' +
+						'<% if(this["stackable"] > 1) { %><div class="row"><%= this._loc("stackable") %></div><% } %>' +
 						// itemSource, maybe...
-						'<div class="row sellPrice"><%= this._loc("sellPrice") %></div>' +
-						'<% if(this["isAuctionable"]) { %><div class="row isAuctionable"><%= this._loc("isAuctionable") %></div><% } %>' +
+						'<div class="row"><%= this._loc("sellPrice") %></div>' +
+						'<% if(this["isAuctionable"]) { %><div class="row"><%= this._loc("isAuctionable") %></div><% } %>' +
 						'<div class="row info-meta"><%= this._loc("extendedActive") %></div>' +
 			    	'</div>' +
 		    	'<% } %>' +
@@ -213,14 +205,14 @@ DarkTip.registerModule('wow.item', {
 		'404': (
 			'<div class="tooltip-item tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row item"><span class="label"><%= this._loc("label.item") %></span> <span class="value"><%= this["itemid"] %></span></div>' +
-				'<div class="row region"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="row"><span class="label"><%= this._loc("label.item") %></span> <span class="value"><%= this["itemid"] %></span></div>' +
+				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		),
 		'fragments': {
 			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',
 			'allowableRace' : '<span class="crace-<%= this["_value"] %>"><%= this._loc("characterRace." + this["_value"] + ".0")%></span>',
-			'weaponDamage'  : '<div class="row damage"><%= this._loc("damage") %></div>',
+			'weaponDamage'  : '<div class="row"><%= this._loc("damage") %></div>',
 			'coins'         : (
 				'<% if(this["gold"] > -1) { %><span class="icon-gold"><%= this["gold"] %></span><% } %>' +
 				'<% if(this["silver"] > -1) { %><span class="icon-silver"><%= this["silver"] %></span><% } %>' +
@@ -230,24 +222,32 @@ DarkTip.registerModule('wow.item', {
 			'stat'          : {
 				'primary'  : (
 					'<% if(this._isStatPrimary(this["stat"])) { %>' +
-						'<div class="row primaryStat">' +
+						'<div class="row">' +
 							'<% if(this["amount"] >= 0) { %>+<% } %><%= this["amount"] %> <%= this._loc("itemStat." + this["stat"]) %>' +
 						'</div>' +
 					'<% }'
 				),
 				'secondary': (
 					'<% if(this._isStatSecondary(this["stat"])) { %>' +
-						'<div class="row secondaryStat">' +
+						'<div class="row highlight-custom">' +
 							'<%= this._loc("itemStat." + this["stat"]) %>' +
 						'</div>' +
 					'<% }'
 				),
 				'spell'    : (
 					'<% if(this["spell"]["description"]) { %>' +
-						'<div class="row secondaryStat"><%= this._loc("itemSpell") %></div>' +
+						'<div class="row highlight-custom"><%= this._loc("itemSpell") %></div>' +
 					'<% } %>'
 				)
-			}
+			},
+			'socket': (
+				'<div class="row socket highlight-reduced">' +
+					'<span class="icon-socket socket-<%= this["type"] %>">' +
+						'<span class="empty"></span><span class="frame"></span>' +
+					'</span>' +
+					'<%= this._loc("itemSocket." + this["type"]) %>' +
+				'</div>'
+			)
 		}
 	},
 	
@@ -268,7 +268,6 @@ DarkTip.registerModule('wow.item', {
 			'requiredSkill'    : 'Requires <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this["requiredSkillRank"] %>)',
 			'requiredAbility'  : 'Requires <%= this["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Requires Faction ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
-			'itemLevel'        : 'Item Level <%= this["itemLevel"] %>',
 			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Races: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
 			'itemStat'         : {
@@ -293,6 +292,7 @@ DarkTip.registerModule('wow.item', {
 			'itemSpell'        : 'Equip / Use / Chance on Hit: <%= this["spell"]["description"] %>',
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["sellPrice"]) %>',
 			'stackable'        : 'Stackable (<%= this["stackable"] %>)',
+			'disenchantable'   : '<% if(this["disenchantingSkillRank"]) { %>Can be disenchanted (<%= this["disenchantingSkillRank"] %>)<% } else { %>Cannot be disenchanted<% } %>',
 			'itemIsAuctionable': 'Can be auctioned',
 			'itemBind'         : { '1': 'Binds when picked up', '2': 'Binds when equipped', '3': 'Binds when used', '4': 'Binds to Battle.net account' },
 			'itemSocket'       : {
@@ -340,7 +340,6 @@ DarkTip.registerModule('wow.item', {
 			'requiredSkill'    : 'Erfordert <%= this._loc("characterSkill." + this["requiredSkill"]) %> (<%= this[requiredSkillRank] %>)',
 			'requiredAbility'  : 'Erfordert <%= this["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Erfordert Fraktion ID <%= this["minFactionId"] %> - <%= this._loc("reputationLevel." + this["minReputation"]) %>',
-			'itemLevel'        : 'Gegenstandsstufe <%= this["itemLevel"] %>',
 			'allowableClasses' : 'Klassen: <%= this._subLoop("templates.fragments.allowableClass", this["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Rassen: <%= this._subLoop("templates.fragments.allowableRace", this["allowableRaces"], ", ") %>',
 			'itemStat'         : {
@@ -365,6 +364,7 @@ DarkTip.registerModule('wow.item', {
 			'itemSpell'        : 'Anlegen / Benutzen / Chance beim Treffer: <%= this["spell"]["description"] %>',
 			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["sellPrice"]) %>',
 			'stackable'        : 'Stapelbar (<%= this["stackable"] %>)',
+			'disenchantable'   : '<% if(this["disenchantingSkillRank"]) { %>Kann entzaubert werden (<%= this["disenchantingSkillRank"] %>)<% } else { %>Kann nicht entzaubert werden<% } %>',
 			'itemIsAuctionable': 'Kann versteigert werden',
 			'itemBind'         : { '1': 'Wird beim Aufheben gebunden', '2': 'Wird beim Anlegen gebunden', '3': 'Wird bei Benutzung gebunden', '4': 'Wird an Battle.net-Account gebunden' },
 			'itemSocket'       : {
