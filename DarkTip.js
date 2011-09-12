@@ -237,7 +237,10 @@ window.DarkTip = {
 				
 			},
 			'es_ES': {
-				
+				'loading'         : 'Cargando...',
+				'not-found'       : 'No he encontrado nada',
+				'extendedInactive': '¡Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
+				'extendedActive'  : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
 			},
 			'es_MX': {
 				'meta': {

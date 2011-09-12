@@ -99,6 +99,29 @@ DarkTip.registerModule('wow.realm', {
 				'medium': 'Mittlere Bevölkerung',
 				'high'  : 'Hohe Bevölkerung'
 			}
+		},
+		'es_ES': {
+			'loading': 'Cargando reino...',
+			'not-found': 'Reino no encontrado',
+			'type': {
+				'pve'  : 'JcE',
+				'pvp'  : 'JcJ',
+				'rp'   : 'JR',
+				'rppvp': 'JR JcJ'
+			},
+			'queue': {
+				'false': 'no hay cola',
+				'true' : 'hay cola'
+			},
+			'status': {
+				'false': 'no conectado',
+				'true' : 'conectado'
+			},
+			'population': {
+				'low'   : 'baja población',
+				'medium': 'población media',
+				'high'  : 'alta población'
+			}
 		}
 	}
 });

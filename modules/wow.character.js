@@ -139,6 +139,18 @@ DarkTip.registerModule('wow.character', {
 			'mounts'        : 'Reittiere: <%= this["mounts"].length %>',
 			'companions'    : 'Begleiter: <%= this["companions"].length %>',
 			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["lastModified"]) %>'
+		},
+		'es_ES': {
+			'loading'       : 'Cargando personaje...',
+			'not-found'     : 'Personaje no encontrado',
+			'classification': '<%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %> <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de nivel <%= this["level"] %>',
+			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> nivel medio de objeto (<%= this["averageItemLevel"] %>)',
+			'mounts'        : 'Monturas: <%= this["mounts"].length %>',
+			'companions'    : 'Compañeros: <%= this["companions"].length %>',
+			'lastModified'  : 'Última modificación: <%= this._renderDateTime(this["lastModified"]) %>'
+		},
+		'es_MX': {
+			'classification': '<%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de <%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %>, nivel <%= this["level"] %>'
 		}
 	}
 });

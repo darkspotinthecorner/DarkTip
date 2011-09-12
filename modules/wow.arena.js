@@ -116,7 +116,22 @@ DarkTip.registerModule('wow.arena', {
 			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten für aktuelle Wochenwerte',
 			'extendedActive'       : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen für Saisonwerte'
-			
+		},
+		'es_ES': {
+			'loading'              : 'Cargando equipo de arenas...',
+			'not-found'            : 'Equipo de arenas no encontrado',
+			'view-mode-current'    : 'Esta Semana',
+			'view-mode-season'     : 'Temporada',
+			'classification'       : '<%= this["teamsize"] %>v<%= this["teamsize"] %> <%= this._loc("factionSide." + this["side"]) %> Arena Team, <%= this["realm"] %>',
+			'rating-team'          : 'Puntuación: <%= this["rating"] %>',
+			'rank-current'         : 'Rango #<%= this["ranking"] %>',
+			'rank-previous'        : 'Rango de la semana pasada: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>no<% } %>',
+			'matches-current'      : 'Partidas: <span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["gamesPlayed"] %><% if(this["gamesPlayed"] > 0) { %>, <%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Partidas: <span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["sessionGamesPlayed"] %><% if(this["sessionGamesPlayed"] > 0) { %>, <%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'extendedInactive'     : '¡Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estadísticas actuales!',
+			'extendedActive'       : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estadísticas de la temporada!'
 		}
 	}
 });
