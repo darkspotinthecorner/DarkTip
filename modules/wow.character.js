@@ -95,7 +95,7 @@ DarkTip.registerModule('wow.character', {
 		),
 		'fragments': {
 			'talentSpec': (
-				'<div class="row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
+				'<div class="block row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
 					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 					'<% if(this["name"]) { %><%= this["name"] %><% } else { %><%= this._loc("not-used") %><% } %>' +
 				'</div>'
