@@ -430,8 +430,8 @@ window.DarkTip = {
 		{
 			if(i == (segments.length - 1))
 			{
-				// if last segment ends with "+", data should be an array
-				if(segments[i].match(/^[^\+]+\+$/))
+				// if last segment ends with "+", data container is an array and data will be pushed
+				if(segments[i].match(/^.+\+$/))
 				{
 					segments[i] = segments[i].slice(0, (segments[i].length - 1));
 					if(typeof current[segments[i]] === 'undefined')
@@ -440,6 +440,16 @@ window.DarkTip = {
 					}
 					current[segments[i]].push(data);
 				}
+				// if last segment starts with "+", data container is an array and data will be unshifted
+				else if(segments[i].match(/^\+.+$/))
+				{
+					segments[i] = segments[i].slice(1, segments[i].length);
+					if(typeof current[segments[i]] === 'undefined')
+					{
+						current[segments[i]] = [];
+					}
+					current[segments[i]].unshift(data);
+				}				
 				else
 				{
 					current[segments[i]] = data;
@@ -605,6 +615,7 @@ window.DarkTip = {
 							var params = {};
 						}
 						this.initTooltip(triggers[i]['module'], type, params, element);
+						break;
 					}
 				}
 			}
@@ -828,7 +839,7 @@ window.DarkTip = {
 			var patternExplicit = this._read(this.route(moduleKey, 'triggers.explicit'));
 			if(patternExplicit)
 			{
-				this.write(('data.triggers.explicit+'), {
+				this.write(('data.triggers.+explicit'), {
 					'module' : moduleKey,
 					'pattern': patternExplicit
 				});
@@ -837,7 +848,7 @@ window.DarkTip = {
 			var patternImplicit = this._read(this.route(moduleKey, 'triggers.implicit'));
 			if(patternImplicit)
 			{
-				this.write(('data.triggers.implicit+'), {
+				this.write(('data.triggers.+implicit'), {
 					'module' : moduleKey,
 					'pattern': patternImplicit
 				});

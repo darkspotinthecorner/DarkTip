@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>DarkTip - Test Suite</title>
+	<style type="text/css">
+		
+		* {
+			padding: 0;
+			margin: 0;
+		}
+		
+		body {
+			font-family: sans-serif;
+			font-size: 12px;
+			line-height: 150%;
+		}
+		
+		ul {
+			list-style: none;
+		}
+		
+		h1, h2, h3, h4, h5, h6 {
+			margin-top: 1em;
+			margin-bottom: 0.5em;
+		}
+		
+		.testbox {
+			float: left;
+			margin: 1em;
+			padding: 1em;
+			border: 2px solid #d99;
+			background-color: #fdd;
+		}
+		
+	</style>
+</head>
+<body>
+		
+	<ul class="testbox">
+		<li><h2>Module Test: example-1</h2></li>
+		<li><span data-darktip="example1:aaa.bbb.ccc">example1:aaa.bbb.ccc</span></li>
+	</ul>
+	
+	<script type="text/javascript">
+		window.___DarkTipSettings = {
+			'resources': {
+				'extras': [
+					'modules/examples/example-1.js'
+				]
+			}
+		};
+	</script>
+	<script type="text/javascript" src="DarkTip.js"></script>
+</body>
+</html>
