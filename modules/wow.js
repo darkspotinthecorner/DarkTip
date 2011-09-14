@@ -1,4 +1,11 @@
 DarkTip.registerModule('wow', {
+	
+	'triggers': {
+		'apiParams': {
+			'callback': 'jsonp'
+		}
+	},
+	
 	'maps': {
 		'host': {
 			'region': {

@@ -629,10 +629,11 @@ window.DarkTip = {
 			params['locale'] = 'en_US';
 		}
 		var templateTools = this.getTemplateTools(module, params['lcoale']);
-		apicall = this.jq.jqote(
+		var apicall = this.jq.jqote(
 			this._read(this.route(module, 'triggers.api')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
+		var apicallback = this.read(module, 'triggers.apiParams.callback');
 		params['hash'] =  this.jq.jqote(
 			this._read(this.route(module, 'triggers.hash')),
 			this.jq.extend(true, {}, params, templateTools)
@@ -650,7 +651,7 @@ window.DarkTip = {
 			
 			this.jq.jsonp({
 				'url': apicall,
-				'callbackParameter': 'jsonp',
+				'callbackParameter': apicallback,
 				'success': function(data) {
 					DarkTip.renderTooltip(module, params, element, data);
 				},
