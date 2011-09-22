@@ -234,7 +234,10 @@ window.DarkTip = {
 				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
 			},
 			'fr_FR': {
-				
+				'loading'         : 'Chargement...',
+				'not-found'       : 'Aucun résultat',
+				'extendedInactive': 'Appuyer [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
+				'extendedActive'  : 'Relacher [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode'
 			},
 			'es_ES': {
 				'loading'         : 'Cargando...',

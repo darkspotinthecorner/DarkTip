@@ -117,6 +117,22 @@ DarkTip.registerModule('wow.arena', {
 			'extendedInactive'     : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten für aktuelle Wochenwerte',
 			'extendedActive'       : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen für Saisonwerte'
 		},
+		'fr_FR': {
+			'loading'              : 'Chargement team d\'arènes...',
+			'not-found'            : 'Aucune team d\'arènes trouvée',
+			'view-mode-current'    : 'Voir la semaine en cours',
+			'view-mode-season'     : 'Voir la saison',
+			'classification'       : '<%= this["teamsize"] %>v<%= this["teamsize"] %> <%= this._loc("factionSide." + this["side"]) %> team d’arènes, <%= this["realm"] %>',
+			'rating-team'          : 'Cote: <%= this["rating"] %>',
+			'rank-current'         : 'Classement #<%= this["ranking"] %>',
+			'rank-previous'        : 'Classement semaine dernière: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>None<% } %>',
+			'matches-current'      : 'Matches: <span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["gamesPlayed"] %><% if(this["gamesPlayed"] > 0) { %>, <%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Matches: <span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["sessionGamesPlayed"] %><% if(this["sessionGamesPlayed"] > 0) { %>, <%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'extendedInactive'     : 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view current statistics',
+			'extendedActive'       : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view seasonal statistics'
+		},
 		'es_ES': {
 			'loading'              : 'Cargando equipo de arenas...',
 			'not-found'            : 'Equipo de arenas no encontrado',

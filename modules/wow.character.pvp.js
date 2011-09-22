@@ -126,6 +126,11 @@ DarkTip.registerModule('wow.character.pvp', {
 			'totalHonorableKills': 'Ehrenhafte Siege: <%= this["totalHonorableKills"] %>',
 			'arenaTeams'         : 'Arenateams:',
 			'ratedBattlegrounds' : 'Gewertete Schlachtfelder: <%= this["personalRating"] %>'
+		},
+		'fr_FR': {
+			'totalHonorableKills': 'Victoires honorables: <%= this["totalHonorableKills"] %>',
+			'arenaTeams'         : 'Team d\'arènes:',
+			'ratedBattlegrounds' : 'Classement en champ de bataille: <%= this["personalRating"] %>'
 		}
 	}
 	

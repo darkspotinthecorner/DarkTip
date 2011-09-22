@@ -140,6 +140,15 @@ DarkTip.registerModule('wow.character', {
 			'companions'    : 'Begleiter: <%= this["companions"].length %>',
 			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["lastModified"]) %>'
 		},
+		'fr_FR': {
+			'loading'       : 'Chargement personnage...',
+			'not-found'     : 'Aucun personnage trouvée',
+			'classification': '<%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %> <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de niveau <%= this["level"] %>',
+			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Niveau moyen des objets (<%= this["averageItemLevel"] %>)',
+			'mounts'        : 'Montures: <%= this["mounts"].length %>',
+			'companions'    : 'Mascottes: <%= this["companions"].length %>',
+			'lastModified'  : 'Dernière mise à jour: <%= this._renderDateTime(this["lastModified"]) %>'
+		},
 		'es_ES': {
 			'loading'       : 'Cargando personaje...',
 			'not-found'     : 'Personaje no encontrado',

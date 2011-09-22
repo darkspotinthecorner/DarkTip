@@ -59,6 +59,12 @@ DarkTip.registerModule('wow.quest', {
 			'reqLevel'             : 'Benötigt Stufe <%= this["reqLevel"] %>',
 			'suggestedPartyMembers': 'Gruppenquest (<%= this["suggestedPartyMembers"] %>)'
 		},
+		'fr_FR': {
+			'loading'              : 'Chargement...',
+			'not-found'            : 'Aucun résultat',
+			'reqLevel'             : 'Niveau requis <%= this["reqLevel"] %>',
+			'suggestedPartyMembers': 'Quête de groupe (<%= this["suggestedPartyMembers"] %>)'
+		},
 		'es_ES': {
 			'loading'              : 'Cargando misión...',
 			'not-found'            : 'Misión no encontrada',
