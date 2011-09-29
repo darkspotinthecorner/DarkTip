@@ -1,12 +1,11 @@
-DarkTip.registerModule('wow.quest', {
+DarkTip.registerModule('wow.wowhead.quest', {
 	
 	'triggers': {
-		'explicit': {
-			'match' : /quest:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+		'implicit': {
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/quest=([^\.#]+).*/i,
 			'params': {
-				'1': 'region',
-				'2': 'questid',
-				'3': 'lang'
+				'1': 'wowheadhost',
+				'2': 'questid'
 			}
 		},
 		'api'     : 'http://<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
@@ -14,10 +13,12 @@ DarkTip.registerModule('wow.quest', {
 	},
 	
 	'getParams': {
-		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.quest', 'triggers.explicit.params')));
-			params['host']   = DarkTip.map('wow.realm', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow.realm', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+		'implicit': function(result) {
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.quest', 'triggers.implicit.params')));
+			params['region'] = 'eu';
+			params['lang']   = DarkTip.map('wow.wowhead', 'maps.wowheadhost.lang', params['wowheadhost']);
+			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
+			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
 	},

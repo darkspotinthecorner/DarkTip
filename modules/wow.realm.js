@@ -1,4 +1,5 @@
 DarkTip.registerModule('wow.realm', {
+	
 	'triggers': {
 		'explicit': {
 			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
@@ -147,4 +148,5 @@ DarkTip.registerModule('wow.realm', {
 			}
 		}
 	}
+	
 });

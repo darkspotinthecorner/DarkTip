@@ -1,4 +1,5 @@
 DarkTip.registerModule('youtube.video', {
+	
 	'triggers': {
 		'explicit': {
 			'match' : /^youtube\-video:(.+)$/i,
@@ -69,4 +70,5 @@ DarkTip.registerModule('youtube.video', {
 			'not-found': 'Youtube Video nicht gefunden'
 		}
 	}
+	
 });

@@ -1,4 +1,5 @@
 DarkTip.registerModule('wow.arena', {
+	
 	'triggers': {
 		'explicit': {
 			'match' : /arena:(us|eu|kr|tw|cn)\.([^\.]+)\.(2v2|3v3|5v5)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
@@ -150,4 +151,5 @@ DarkTip.registerModule('wow.arena', {
 			'extendedActive'       : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estadísticas de la temporada!'
 		}
 	}
+	
 });
