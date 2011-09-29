@@ -234,7 +234,10 @@ window.DarkTip = {
 				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
 			},
 			'fr_FR': {
-				
+				'loading'         : 'Chargement...',
+				'not-found'       : 'Aucun résultat',
+				'extendedInactive': 'Appuyer [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
+				'extendedActive'  : 'Relacher [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode'
 			},
 			'es_ES': {
 				'loading'         : 'Cargando...',
@@ -629,10 +632,11 @@ window.DarkTip = {
 			params['locale'] = 'en_US';
 		}
 		var templateTools = this.getTemplateTools(module, params['lcoale']);
-		apicall = this.jq.jqote(
+		var apicall = this.jq.jqote(
 			this._read(this.route(module, 'triggers.api')),
 			this.jq.extend(true, {}, params, templateTools)
 		);
+		var apicallback = this.read(module, 'triggers.apiParams.callback');
 		params['hash'] =  this.jq.jqote(
 			this._read(this.route(module, 'triggers.hash')),
 			this.jq.extend(true, {}, params, templateTools)
@@ -650,7 +654,7 @@ window.DarkTip = {
 			
 			this.jq.jsonp({
 				'url': apicall,
-				'callbackParameter': 'jsonp',
+				'callbackParameter': apicallback,
 				'success': function(data) {
 					DarkTip.renderTooltip(module, params, element, data);
 				},

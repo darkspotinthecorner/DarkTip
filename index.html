@@ -66,7 +66,7 @@
     	<ol>
 			<li><a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">Download</a> and extract the DarkTip files.</li>
 			<li>Upload the files to a directory on your webserver that is accessible by the public.</li>
-			<li>On any where you want to have DarkTip active, include the following code:
+			<li>On any webpage where you want to have DarkTip active, include the following code:
 <pre>
 &lt;script type="text/javascript"&gt;
 
@@ -80,15 +80,24 @@
       ],
 
       'extras': [
-        'darktip/modules/wow.css',
-        'darktip/modules/wow.js',
-        'darktip/modules/wow.realm.js',
-        'darktip/modules/wow.quest.js',
-        'darktip/modules/wow.item.js',
-        'darktip/modules/wow.character.js',
-        'darktip/modules/wow.character.pvp.js',
-        'darktip/modules/wow.guild.js',
-        'darktip/modules/wow.arena.js'
+		'darktip/modules/wow.css',
+		'darktip/modules/wow.js',
+		'darktip/modules/wow.realm.js',
+		'darktip/modules/wow.quest.js',
+		'darktip/modules/wow.item.js',
+		'darktip/modules/wow.character.js',
+		'darktip/modules/wow.character.pvp.js',
+		'darktip/modules/wow.guild.js',
+		'darktip/modules/wow.arena.js',
+		
+		/*
+		 * Include wow.wowhead modules only if you want to place battle.net API tooltips on wowhead links
+		 */
+		'darktip/modules/wow.wowhead.js',
+		'darktip/modules/wow.wowhead.character.js',
+		'darktip/modules/wow.wowhead.guild.js',
+		'darktip/modules/wow.wowhead.item.js',
+		'darktip/modules/wow.wowhead.quest.js'
       ]
 
     }
@@ -110,71 +119,99 @@
 		<ul class="testbox">
 			<li><h1>Realm</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="realm:eu.gilneas(de)">&lt;span data-darktip="realm:eu.gilneas(de)"&gt;</li>
 			<li><span data-darktip="realm:eu.gilneas(en)">&lt;span data-darktip="realm:eu.gilneas(en)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilneas(de)">&lt;span data-darktip="realm:eu.gilneas(de)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilneas(fr)">&lt;span data-darktip="realm:eu.gilneas(fr)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilneas(es)">&lt;span data-darktip="realm:eu.gilneas(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="realm:eu.gilnssseas(de)">&lt;span data-darktip="realm:eu.gilnssseas(de)"&gt;</span></li>
 			<li><span data-darktip="realm:eu.gilnssseas(en)">&lt;span data-darktip="realm:eu.gilnssseas(en)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilnssseas(de)">&lt;span data-darktip="realm:eu.gilnssseas(de)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilnssseas(fr)">&lt;span data-darktip="realm:eu.gilnssseas(fr)"&gt;</span></li>
+			<li><span data-darktip="realm:eu.gilnssseas(es)">&lt;span data-darktip="realm:eu.gilnssseas(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Quest</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="quest:eu.10781(de)">&lt;span data-darktip="quest:eu.10781(de)"&gt;</span></li>
 			<li><span data-darktip="quest:eu.10781(en)">&lt;span data-darktip="quest:eu.10781(en)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10781(de)">&lt;span data-darktip="quest:eu.10781(de)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10781(fr)">&lt;span data-darktip="quest:eu.10781(fr)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10781(es)">&lt;span data-darktip="quest:eu.10781(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="quest:eu.10blubb781(de)">&lt;span data-darktip="quest:eu.10blubb781(de)"&gt;</span></li>
 			<li><span data-darktip="quest:eu.10blubb781(en)">&lt;span data-darktip="quest:eu.10blubb781(en)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10blubb781(de)">&lt;span data-darktip="quest:eu.10blubb781(de)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10blubb781(fr)">&lt;span data-darktip="quest:eu.10blubb781(fr)"&gt;</span></li>
+			<li><span data-darktip="quest:eu.10blubb781(es)">&lt;span data-darktip="quest:eu.10blubb781(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Item</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="item:eu.49623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
 			<li><span data-darktip="item:eu.49623(en)">&lt;span data-darktip="item:eu.49623(en)"&gt;</span></li>
+			<li><span data-darktip="item:eu.49623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
+			<li><span data-darktip="item:eu.49623(fr)">&lt;span data-darktip="item:eu.49623(fr)"&gt;</span></li>
+			<li><span data-darktip="item:eu.49623(es)">&lt;span data-darktip="item:eu.49623(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="item:eu.2349623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
 			<li><span data-darktip="item:eu.2349623(en)">&lt;span data-darktip="item:eu.49623(en)"&gt;</span></li>
+			<li><span data-darktip="item:eu.2349623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
+			<li><span data-darktip="item:eu.2349623(fr)">&lt;span data-darktip="item:eu.49623(fr)"&gt;</span></li>
+			<li><span data-darktip="item:eu.2349623(es)">&lt;span data-darktip="item:eu.49623(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Character</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="character:eu.gilneas.rhil(de)">&lt;span data-darktip="character:eu.gilneas.rhil(de)"&gt;</span></li>
 			<li><span data-darktip="character:eu.gilneas.rhil(en)">&lt;span data-darktip="character:eu.gilneas.rhil(en)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhil(de)">&lt;span data-darktip="character:eu.gilneas.rhil(de)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhil(fr)">&lt;span data-darktip="character:eu.gilneas.rhil(fr)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhil(es)">&lt;span data-darktip="character:eu.gilneas.rhil(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(de)"&gt;</span></li>
 			<li><span data-darktip="character:eu.gilneas.rhilthesecond(en)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(en)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(de)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhilthesecond(fr)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(fr)"&gt;</span></li>
+			<li><span data-darktip="character:eu.gilneas.rhilthesecond(es)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Character PvP</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="character-pvp:eu.alakir.ßlud(de)">&lt;span data-darktip="character-pvp:eu.alakir.ßlud(de)"&gt;</span></li>
 			<li><span data-darktip="character-pvp:eu.alakir.ßlud(en)">&lt;span data-darktip="character-pvp:eu.alakir.ßlud(en)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßlud(de)">&lt;span data-darktip="character-pvp:eu.alakir.ßlud(de)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßlud(fr)">&lt;span data-darktip="character-pvp:eu.alakir.ßlud(fr)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßlud(es)">&lt;span data-darktip="character-pvp:eu.alakir.ßlud(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="character-pvp:eu.alakir.ßludddddd(de)">&lt;span data-darktip="character-pvp:eu.alakir.ßludddddd(de)"&gt;</span></li>
 			<li><span data-darktip="character-pvp:eu.alakir.ßludddddd(en)">&lt;span data-darktip="character-pvp:eu.alakir.ßludddddd(en)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßludddddd(de)">&lt;span data-darktip="character-pvp:eu.alakir.ßludddddd(de)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßludddddd(fr)">&lt;span data-darktip="character-pvp:eu.alakir.ßludddddd(fr)"&gt;</span></li>
+			<li><span data-darktip="character-pvp:eu.alakir.ßludddddd(es)">&lt;span data-darktip="character-pvp:eu.alakir.ßludddddd(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Guild</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension(de)">&lt;span data-darktip="guild:eu.gilneas.ascension(de)"&gt;</span></li>
 			<li><span data-darktip="guild:eu.gilneas.ascension(en)">&lt;span data-darktip="guild:eu.gilneas.ascension(en)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension(de)">&lt;span data-darktip="guild:eu.gilneas.ascension(de)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension(fr)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension(es)">&lt;span data-darktip="guild:eu.gilneas.ascension(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension yeah(de)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(de)"&gt;</span></li>
 			<li><span data-darktip="guild:eu.gilneas.ascension yeah(en)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(en)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension yeah(de)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(de)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension yeah(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(fr)"&gt;</span></li>
+			<li><span data-darktip="guild:eu.gilneas.ascension yeah(es)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(es)"&gt;</span></li>
 		</ul>
 
 		<ul class="testbox explicit">
 			<li><h1>Arena Team</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)"&gt;</span></li>
 			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(en)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(en)"&gt;</span></li>
+			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(de)"&gt;</span></li>
+			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(fr)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(fr)"&gt;</span></li>
+			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(es)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Lead(es)"&gt;</span></li>
 			<li><h2>404</h2></li>
 			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(de)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(de)"&gt;</span></li>
 			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(en)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(en)"&gt;</span></li>
+			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(fr)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(fr)"&gt;</span></li>
+			<li><span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(es)">&lt;span data-darktip="arena:eu.amanthul.5v5.Der Ösi Hat Kein Lead(es)"&gt;</span></li>
 		</ul>
 
 		<h1 class="subsection">Implicit Markdown</h1>
@@ -182,53 +219,131 @@
 		<ul class="testbox">
 			<li><h1>Item</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/item/60288">&lt;a href="http://eu.battle.net/wow/de/item/60288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/item/60288">&lt;a href="http://eu.battle.net/wow/en/item/60288"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/item/60288">http://eu.battle.net/wow/en/item/60288</a></li>
+			<li><a href="http://eu.battle.net/wow/de/item/60288">http://eu.battle.net/wow/de/item/60288</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/item/60288">http://eu.battle.net/wow/fr/item/60288</a></li>
+			<li><a href="http://eu.battle.net/wow/es/item/60288">http://eu.battle.net/wow/es/item/60288</a></li>
 			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/item/34160288">&lt;a href="http://eu.battle.net/wow/de/item/34160288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/item/34160288">&lt;a href="http://eu.battle.net/wow/en/item/34160288"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/item/34160288">http://eu.battle.net/wow/en/item/34160288</a></li>
+			<li><a href="http://eu.battle.net/wow/de/item/34160288">http://eu.battle.net/wow/de/item/34160288</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/item/34160288">http://eu.battle.net/wow/fr/item/34160288</a></li>
+			<li><a href="http://eu.battle.net/wow/es/item/34160288">http://eu.battle.net/wow/es/item/34160288</a></li>
 		</ul>
 
 		<ul class="testbox">
 			<li><h1>Character</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple">http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple</a></li>
 			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple</a></li>
+			<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple">http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple</a></li>
 		</ul>
 
 		<ul class="testbox">
 			<li><h1>Character PvP</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâh/pvp">&lt;a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâh/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâh/pvp">&lt;a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâh/pvp"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâh/pvp">http://eu.battle.net/wow/en/character/alakir/Ñûttâh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâh/pvp">http://eu.battle.net/wow/de/character/alakir/Ñûttâh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/character/alakir/Ñûttâh/pvp">http://eu.battle.net/wow/fr/character/alakir/Ñûttâh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/es/character/alakir/Ñûttâh/pvp">http://eu.battle.net/wow/es/character/alakir/Ñûttâh/pvp</a></li>
 			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâhhhh/pvp">&lt;a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâhhhh/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâhhhh/pvp">&lt;a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâhhhh/pvp"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/character/alakir/Ñûttâhhhh/pvp">http://eu.battle.net/wow/en/character/alakir/Ñûttâhhhh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/de/character/alakir/Ñûttâhhhh/pvp">http://eu.battle.net/wow/de/character/alakir/Ñûttâhhhh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/character/alakir/Ñûttâhhhh/pvp">http://eu.battle.net/wow/fr/character/alakir/Ñûttâhhhh/pvp</a></li>
+			<li><a href="http://eu.battle.net/wow/es/character/alakir/Ñûttâhhhh/pvp">http://eu.battle.net/wow/es/character/alakir/Ñûttâhhhh/pvp</a></li>
 		</ul>
 
 		<ul class="testbox">		
 			<li><h1>Guild</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">http://eu.battle.net/wow/en/guild/gilneas/Out of Range/</a></li>
+			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">http://eu.battle.net/wow/de/guild/gilneas/Out of Range/</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/">http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/</a></li>
+			<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/">http://eu.battle.net/wow/es/guild/gilneas/Out of Range/</a></li>
 			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/</a></li>
+			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/</a></li>
+			<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/">http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/</a></li>
 		</ul>
 
-		<ul class="testbox implicit">
+		<ul class="testbox">
 			<li><h1>Arena Team</h1></li>
 			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/">&lt;a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/">&lt;a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/es/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/es/arena/amanthul/5v5/Der Ösi Hat Lead/">http://eu.battle.net/wow/fr/arena/amanthul/5v5/Der Ösi Hat Lead/</a></li>
 			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">&lt;a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">&lt;a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/"&gt;</a></li>
+			<li><a href="http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/en/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/de/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/fr/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/fr/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
+			<li><a href="http://eu.battle.net/wow/es/arena/amanthul/5v5/Der Ösi Hat Kein Lead/">http://eu.battle.net/wow/es/arena/amanthul/5v5/Der Ösi Hat Kein Lead/</a></li>
 		</ul>
     </p>
+
+	<h1 class="subsection">Wowhead Links</h1>
+	
+	<ul class="testbox">
+		<li><h1>Item</h1></li>
+		<li><h2>Existing</h2></li>
+		<li><a href="http://www.wowhead.com/item=46960#comments">http://www.wowhead.com/item=46960#comments</a></li>
+		<li><a href="http://de.wowhead.com/item=46960#comments">http://de.wowhead.com/item=46960#comments</a></li>
+		<li><a href="http://fr.wowhead.com/item=46960#comments">http://fr.wowhead.com/item=46960#comments</a></li>
+		<li><a href="http://es.wowhead.com/item=46960#comments">http://es.wowhead.com/item=46960#comments</a></li>
+		<li><h2>404</h2></li>
+		<li><a href="http://www.wowhead.com/item=4696012334#comments">http://www.wowhead.com/item=4696012334#comments</a></li>
+		<li><a href="http://de.wowhead.com/item=4696012334#comments">http://de.wowhead.com/item=4696012334#comments</a></li>
+		<li><a href="http://fr.wowhead.com/item=4696012334#comments">http://fr.wowhead.com/item=4696012334#comments</a></li>
+		<li><a href="http://es.wowhead.com/item=4696012334#comments">http://es.wowhead.com/item=4696012334#comments</a></li>
+	</ul>
+	
+	<ul class="testbox">
+		<li><h1>Quest</h1></li>
+		<li><h2>Existing</h2></li>
+		<li><a href="http://www.wowhead.com/quest=26248#screenshots">http://www.wowhead.com/quest=26248#screenshots</a></li>
+		<li><a href="http://de.wowhead.com/quest=26248#screenshots">http://de.wowhead.com/quest=26248#screenshots</a></li>
+		<li><a href="http://fr.wowhead.com/quest=26248#screenshots">http://fr.wowhead.com/quest=26248#screenshots</a></li>
+		<li><a href="http://es.wowhead.com/quest=26248#screenshots">http://es.wowhead.com/quest=26248#screenshots</a></li>
+		<li><h2>404</h2></li>
+		<li><a href="http://www.wowhead.com/quest=2624824442#screenshots">http://www.wowhead.com/quest=2624824442#screenshots</a></li>
+		<li><a href="http://de.wowhead.com/quest=2624824442#screenshots">http://de.wowhead.com/quest=2624824442#screenshots</a></li>
+		<li><a href="http://fr.wowhead.com/quest=2624824442#screenshots">http://fr.wowhead.com/quest=2624824442#screenshots</a></li>
+		<li><a href="http://es.wowhead.com/quest=2624824442#screenshots">http://es.wowhead.com/quest=2624824442#screenshots</a></li>
+	</ul>
+
+	<ul class="testbox">
+		<li><h1>Character</h1></li>
+		<li><h2>Existing</h2></li>
+		<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhil#inventory">http://www.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+		<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhil#inventory">http://de.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+		<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+		<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhil#inventory">http://es.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+		<li><h2>404</h2></li>
+		<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhiiiil#inventory">http://www.wowhead.com/profile=eu.gilneas.rhiiiil#inventory</a></li>
+		<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhiiiil#inventory">http://de.wowhead.com/profile=eu.gilneas.rhiiiil#inventory</a></li>
+		<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhiiiil#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhiiiil#inventory</a></li>
+		<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhiiiil#inventory">http://es.wowhead.com/profile=eu.gilneas.rhiiiil#inventory</a></li>
+	</ul>
+
+	<ul class="testbox">		
+		<li><h1>Guild</h1></li>
+		<li><h2>Existing</h2></li>
+		<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascension#characters">http://www.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+		<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascension#characters">http://de.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+		<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascension#characters">http://fr.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+		<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascension#characters">http://es.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+		<li><h2>404</h2></li>
+		<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+		<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+		<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+		<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+	</ul>
     
     <h2>Download</h2>
     <p>You can download this project in either <a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">zip</a> or <a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master">tar</a> formats.</p>
@@ -258,7 +373,16 @@
 					'darktip/modules/wow.character.js',
 					'darktip/modules/wow.character.pvp.js',
 					'darktip/modules/wow.guild.js',
-					'darktip/modules/wow.arena.js'
+					'darktip/modules/wow.arena.js',
+					
+					/*
+					 * Include wow.wowhead modules only if you want to place battle.net API tooltips on wowhead links
+					 */
+					'darktip/modules/wow.wowhead.js',
+					'darktip/modules/wow.wowhead.character.js',
+					'darktip/modules/wow.wowhead.guild.js',
+					'darktip/modules/wow.wowhead.item.js',
+					'darktip/modules/wow.wowhead.quest.js'
 				]
 			}
 		};

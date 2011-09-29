@@ -1,20 +1,11 @@
-DarkTip.registerModule('wow.character', {
+DarkTip.registerModule('wow.wowhead.character', {
 	
 	'triggers': {
-		'explicit': {
-			'match' : /character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
-			'params': {
-				'1': 'region',
-				'2': 'realm',
-				'3': 'character',
-				'4': 'lang'
-			}
-		},
 		'implicit': {
-			'match' : /http:\/\/(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/character\/([^\/]+)\/([^\/#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/profile=(us|eu)\.([^\.]+)\.([^\.#]+).*/i,
 			'params': {
-				'1': 'host',
-				'2': 'lang',
+				'1': 'wowheadhost',
+				'2': 'region',
 				'3': 'realm',
 				'4': 'character'
 			}
@@ -24,15 +15,10 @@ DarkTip.registerModule('wow.character', {
 	},
 
 	'getParams': {
-		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'triggers.explicit.params')));
-			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
-			return params;
-		},
 		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'triggers.implicit.params')));
-			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.character', 'triggers.implicit.params')));
+			params['lang']   = DarkTip.map('wow.wowhead', 'maps.wowheadhost.lang', params['wowheadhost']);
+			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}

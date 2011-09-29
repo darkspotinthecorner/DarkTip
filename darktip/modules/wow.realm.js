@@ -1,4 +1,5 @@
 DarkTip.registerModule('wow.realm', {
+	
 	'triggers': {
 		'explicit': {
 			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
@@ -100,6 +101,29 @@ DarkTip.registerModule('wow.realm', {
 				'high'  : 'Hohe Bevölkerung'
 			}
 		},
+		'fr_FR': {
+			'loading': 'Chargement...',
+			'not-found': 'Aucun résultat',
+			'type': {
+				'pve'  : 'JcE',
+				'pvp'  : 'JcJ',
+				'rp'   : 'JR',
+				'rppvp': 'JR JcJ'
+			},
+			'queue': {
+				'false': 'No queue',
+				'true' : 'Queue'
+			},
+			'status': {
+				'false': 'Hors ligne',
+				'true' : 'En ligne'
+			},
+			'population': {
+				'low'   : 'Population faible',
+				'medium': 'Population moyenne',
+				'high'  : 'Population élevée'
+			}
+		},
 		'es_ES': {
 			'loading': 'Cargando reino...',
 			'not-found': 'Reino no encontrado',
@@ -124,4 +148,5 @@ DarkTip.registerModule('wow.realm', {
 			}
 		}
 	}
+	
 });
