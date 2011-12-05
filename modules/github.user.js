@@ -43,30 +43,31 @@ DarkTip.registerModule('github.user', {
 	
 	'layout': {
 		'width': {
-			'core': 250
+			'core': 350
 		}
 	},
 	
 	'templates': {
 		'core':(
 			'<div class="tooltip-github-user">' +
-				'<div class="headline">' +
-					'<div class="avatar"><img src="<%= this["avatar_url"] %>" alt="<%= this["login"] %>" title="<%= this["login"] %>" /></div>' +
-					'<div class="username"><%= this["login"] %><% if(this["name"]) { %> (<%= this["name"] %>)<% } %></div>' +
+				'<div class="avatar"><img src="<%= this["avatar_url"] %>" alt="<%= this["login"] %>" title="<%= this["login"] %>" /></div>' +
+				'<div class="col-98">' +
+					'<% if(this["name"]) { %><div class="headline-right realname "><%= this["name"] %></div><% } %>' +
+					'<div class="row headline username"><%= this["login"] %></div>' +
+					'<div class="githubbed">' +
+						'<% if(this["followers"]) { %><div class="followers"><label><%= this._loc("label.followers") %></label> <%= this["followers"] %></div><% } %>' +
+						'<% if(this["following"]) { %><div class="following"><label><%= this._loc("label.following") %></label> <%= this["following"] %></div><% } %>' +
+						'<% if(this["public_repos"]) { %><div class="public_repos"><label><%= this._loc("label.public_repos") %></label> <%= this["public_repos"] %></div><% } %>' +
+						'<% if(this["public_gists"]) { %><div class="public_gists"><label><%= this._loc("label.public_gists") %></label> <%= this["public_gists"] %></div><% } %>' +
+					'</div>' +
+					'<div class="personals">' +
+						'<% if(this["email"]) { %><div class="email"><label><%= this._loc("label.email") %></label> <%= this["email"] %></div><% } %>' +
+						'<% if(this["blog"]) { %><div class="blog"><label><%= this._loc("label.blog") %></label> <%= this["blog"] %></div><% } %>' +
+						'<% if(this["company"]) { %><div class="company"><label><%= this._loc("label.company") %></label> <%= this["company"] %></div><% } %>' +
+						'<% if(this["location"]) { %><div class="location"><label><%= this._loc("label.location") %></label> <%= this["location"] %></div><% } %>' +
+					'</div>' +
 				'</div>' +
-				'<div class="githubbed">' +
-					'<% if(this["followers"]) { %><div class="followers"><%= this._loc("label.followers") %> <%= this["followers"] %></div><% } %>' +
-					'<% if(this["following"]) { %><div class="following"><%= this._loc("label.following") %> <%= this["following"] %></div><% } %>' +
-					'<% if(this["public_repos"]) { %><div class="public_repos"><%= this._loc("label.public_repos") %> <%= this["public_repos"] %></div><% } %>' +
-					'<% if(this["public_gists"]) { %><div class="public_gists"><%= this._loc("label.public_gists") %> <%= this["public_gists"] %></div><% } %>' +
-				'</div>' +
-				'<div class="personals">' +
-					'<% if(this["email"]) { %><div class="email"><%= this._loc("label.email") %> <%= this["email"] %></div><% } %>' +
-					'<% if(this["blog"]) { %><div class="blog"><%= this._loc("label.blog") %> <%= this["blog"] %></div><% } %>' +
-					'<% if(this["company"]) { %><div class="company"><%= this._loc("label.company") %> <%= this["company"] %></div><% } %>' +
-					'<% if(this["location"]) { %><div class="location"><%= this._loc("label.location") %> <%= this["location"] %></div><% } %>' +
-				'</div>' +
-				'<% if(this["bio"]) { %><div class="bio"><%= this["bio"] %></div><% } %>' +
+				'<% if(this["bio"]) { %><div class="row bio"><%= this["bio"] %></div><% } %>' +
 			'</div>'				
 		),
 		'404':(

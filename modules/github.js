@@ -9,6 +9,12 @@ DarkTip.registerModule('github', {
 	'maps': {
 	},
 	
+	'layout': {
+		'css': {
+			'class': 'darktip-tooltip-github'
+		}
+	},
+	
 	'validateData': function(data) {
 		if(typeof data === 'undefined') {
 			return false;

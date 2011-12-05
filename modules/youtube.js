@@ -12,6 +12,12 @@ DarkTip.registerModule('youtube', {
 	'maps': {
 	},
 	
+	'layout': {
+		'css': {
+			'class': 'darktip-tooltip-youtube'
+		}
+	},
+	
 	'validateData': function(data) {
 		if(typeof data === 'undefined') {
 			return false;

@@ -52,6 +52,12 @@ DarkTip.registerModule('wow', {
 		}
 	},
 	
+	'layout': {
+		'css': {
+			'class': 'darktip-tooltip-wow'
+		}
+	},
+	
 	'validateData': function(data) {
 		if(typeof data === 'undefined') {
 			return false;
