@@ -211,11 +211,11 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
  *  Tooltip Element Rules - Layout
  * -------------------------------------------------------------------------- */
 
-.darktip-tooltip-wow .row {
+.darktip-tooltip-wow .darktip-row {
 	padding-bottom: 1px;
 }
 
-.darktip-tooltip-wow .row.padded {
+.darktip-tooltip-wow .darktip-row.padded {
 	padding: 2px 4px;
 }
 
@@ -326,6 +326,6 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 	color: #909090;
 }
 
-.darktip-tooltip-wow .row.alt {
+.darktip-tooltip-wow .darktip-row.alt {
 	background-color: rgba(0, 0, 0, 0.33);
 }

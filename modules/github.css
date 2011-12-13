@@ -75,11 +75,11 @@
 	color: #FFB100;
 }
 
-.darktip-tooltip-github .row {
+.darktip-tooltip-github .darktip-row {
 	padding-bottom: 1px;
 }
 
-.darktip-tooltip-github .row.padded {
+.darktip-tooltip-github .darktip-row.padded {
 	padding: 2px 4px;
 }
 

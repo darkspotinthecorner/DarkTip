@@ -53,7 +53,7 @@ DarkTip.registerModule('github.user', {
 				'<div class="avatar"><img src="<%= this["avatar_url"] %>" alt="<%= this["login"] %>" title="<%= this["login"] %>" /></div>' +
 				'<div class="col-98">' +
 					'<% if(this["name"]) { %><div class="headline-right realname "><%= this["name"] %></div><% } %>' +
-					'<div class="row headline username"><%= this["login"] %></div>' +
+					'<div class="darktip-row headline username"><%= this["login"] %></div>' +
 					'<div class="githubbed">' +
 						'<% if(this["followers"]) { %><div class="followers"><label><%= this._loc("label.followers") %></label> <%= this["followers"] %></div><% } %>' +
 						'<% if(this["following"]) { %><div class="following"><label><%= this._loc("label.following") %></label> <%= this["following"] %></div><% } %>' +
@@ -67,13 +67,13 @@ DarkTip.registerModule('github.user', {
 						'<% if(this["location"]) { %><div class="location"><label><%= this._loc("label.location") %></label> <%= this["location"] %></div><% } %>' +
 					'</div>' +
 				'</div>' +
-				'<% if(this["bio"]) { %><div class="row bio"><%= this["bio"] %></div><% } %>' +
+				'<% if(this["bio"]) { %><div class="darktip-row bio"><%= this["bio"] %></div><% } %>' +
 			'</div>'				
 		),
 		'404':(
 			'<div class="tooltip-github-user tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.username") %></span> <span class="value"><%= this["username"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.username") %></span> <span class="value"><%= this["username"] %></span></div>' +
 		    '</div>'
 		)
 	},
