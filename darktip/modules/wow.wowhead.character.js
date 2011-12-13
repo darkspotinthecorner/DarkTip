@@ -43,30 +43,30 @@ DarkTip.registerModule('wow.wowhead.character', {
 		    	 /* --- START simple mode -------------------------------- */
 				'<div class="col-98 darktip-only-s">' +
 					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-		    		'<div class="row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
-		    		'<div class="row"><%= this._loc("classification") %></div>' +
+		    		'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
+		    		'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<%= this._subLoop("templates.fragments.talentSpec", this["talents"]) %>' +
-					'<% if(this["guild"]) { %><div class="row highlight-medium">&lt;<%= this["guild"]["name"] %>&gt;<% if(this["guild"]["level"]) { %> (<%= this["guild"]["level"] %>)<% } %></div><% } %>' +
-					'<div class="row"><%= this["realm"] %></div>' +
-					'<% if(this["items"]) { %><div class="row highlight-weak"><%= this._loc("itemLevel", this["items"]) %></div><% } %>' +
-			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["guild"]["name"] %>&gt;<% if(this["guild"]["level"]) { %> (<%= this["guild"]["level"] %>)<% } %></div><% } %>' +
+					'<div class="darktip-row"><%= this["realm"] %></div>' +
+					'<% if(this["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["items"]) %></div><% } %>' +
+			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 		    	'</div>' +
 				 /* --- END simple mode ---------------------------------- */
 				 /* --- START extended mode ------------------------------ */
 			    '<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="col-98 darktip-only-x">' +
 						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-			    		'<div class="row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
+			    		'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
 						'<% if(this["professions"]) { %>' +
 							'<div class="block">' +
 								'<%= this._subLoop("templates.fragments.profession.primary", this["professions"]["primary"]) %>' +
 								'<%= this._subLoop("templates.fragments.profession.secondary", this["professions"]["secondary"]) %>' +
 							'</div>' +
 						'<% } %>' +
-						'<% if(this["mounts"]) { %><div class="row"><%= this._loc("mounts") %></div><% } %>' +
-						'<% if(this["companions"]) { %><div class="row"><%= this._loc("companions") %></div><% } %>' +
-						'<div class="row highlight-reduced"><%= this._loc("lastModified") %></div>' +
-						'<div class="row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<% if(this["mounts"]) { %><div class="darktip-row"><%= this._loc("mounts") %></div><% } %>' +
+						'<% if(this["companions"]) { %><div class="darktip-row"><%= this._loc("companions") %></div><% } %>' +
+						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
+						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
 			    	'</div>' +
 		    	'<% } %>' +
 				 /* --- END extended mode -------------------------------- */
@@ -75,14 +75,14 @@ DarkTip.registerModule('wow.wowhead.character', {
 		'404': (
 			'<div class="tooltip-character tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		),
 		'fragments': {
 			'talentSpec': (
-				'<div class="block row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
+				'<div class="block darktip-row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
 					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 					'<% if(this["name"]) { %><%= this["name"] %><% } else { %><%= this._loc("not-used") %><% } %>' +
 				'</div>'
@@ -90,7 +90,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 			'profession': {
 				'primary'  : (
 					'<% if(this["rank"] > 0) { %>' +
-						'<div class="row highlight-medium">' +
+						'<div class="darktip-row highlight-medium">' +
 							'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 							'<%= this["name"] %>: <%= this["rank"] %>' +
 						'</div>' +
@@ -98,7 +98,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 				),
 				'secondary': (
 					'<% if(this["rank"] > 0) { %>' +
-						'<div class="row highlight-weak">' +
+						'<div class="darktip-row highlight-weak">' +
 							'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 							'<%= this["name"] %>: <%= this["rank"] %>' +
 						'</div>' +

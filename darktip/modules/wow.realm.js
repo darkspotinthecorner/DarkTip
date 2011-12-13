@@ -36,20 +36,20 @@ DarkTip.registerModule('wow.realm', {
 		'core':(
 			'<div class="tooltip-realm">' +
 				'<div class="headline-right crealmtype-<%= this["type"] %>"><%= this._loc("type." + this["type"]) %></div>' +
-				'<div class="row headline"><%= this["name"] %></div>' +
-				'<div class="row highlight-strong"><%= this["battlegroup"] %></div>' +
-				'<div class="row">' +
+				'<div class="darktip-row headline"><%= this["name"] %></div>' +
+				'<div class="darktip-row highlight-strong"><%= this["battlegroup"] %></div>' +
+				'<div class="darktip-row">' +
 					'<span class="crealmstatus-<%= this["status"] %>"><%= this._loc("status." + this["status"]) %></span>' +
 					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this._loc("queue." + this["queue"]) %></span>)<% } %>' +
 				'</div>' +
-				'<div class="row"><%= this._loc("population." + this["population"]) %></div>' +
+				'<div class="darktip-row"><%= this._loc("population." + this["population"]) %></div>' +
 			'</div>'
 		),
 		'404':(
 			'<div class="tooltip-realm tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},

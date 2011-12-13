@@ -50,31 +50,31 @@ DarkTip.registerModule('wow.arena', {
 		'core': (
 			'<div class="tooltip-arena">' +
 				'<div class="headline-right"><%= this._loc("rank-current") %></div>' +
-				'<div class="row headline cside-<%= this["side"] %>"><%= this["name"] %></div>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="row highlight-strong darktip-only-x"><%= this._loc("view-mode-current") %></div><% } %>' +
-				'<div class="row highlight-strong darktip-only-s"><%= this._loc("view-mode-season") %></div>' +
-				'<div class="row"><%= this._loc("classification") %></div>' +
-				'<div class="row"><%= this._loc("rank-previous") %></div>' +
-				'<div class="row"><%= this._loc("rating-team") %></div>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="row darktip-only-x"><%= this._loc("matches-current") %></div><% } %>' +
-				'<div class="row darktip-only-s"><%= this._loc("matches-season") %></div>' +
+				'<div class="darktip-row headline cside-<%= this["side"] %>"><%= this["name"] %></div>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row highlight-strong darktip-only-x"><%= this._loc("view-mode-current") %></div><% } %>' +
+				'<div class="darktip-row highlight-strong darktip-only-s"><%= this._loc("view-mode-season") %></div>' +
+				'<div class="darktip-row"><%= this._loc("classification") %></div>' +
+				'<div class="darktip-row"><%= this._loc("rank-previous") %></div>' +
+				'<div class="darktip-row"><%= this._loc("rating-team") %></div>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-only-x"><%= this._loc("matches-current") %></div><% } %>' +
+				'<div class="darktip-row darktip-only-s"><%= this._loc("matches-season") %></div>' +
 				'<div class="members"><%= this._subLoop("templates.fragments.member", this["members"]) %></div>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div><% } %>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div><% } %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div><% } %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div><% } %>' +
 			'</div>'
 		),
 		'404': (
 			'<div class="tooltip-arena tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.teamname") %></span> <span class="value"><%= this["teamname"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.teamsize") %></span> <span class="value"><%= this["teamsize"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.teamname") %></span> <span class="value"><%= this["teamname"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.teamsize") %></span> <span class="value"><%= this["teamsize"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		),
 		'fragments': {
 			'member': (
-				'<div class="row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
 					'<% if(this["_meta"]["extendedActive"]) { %><div class="pos-right darktip-only-x"><%= this._loc("matches-current-short") %></div><% } %>' +
 					'<div class="pos-right darktip-only-s"><%= this._loc("matches-season-short") %></div>' +
 					'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +

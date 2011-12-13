@@ -51,27 +51,27 @@ DarkTip.registerModule('wow.character.pvp', {
 				 /* --- START simple mode -------------------------------- */
 				'<div class="col-98 darktip-only-s">' +
 					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-					'<div class="row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
-					'<div class="row"><%= this._loc("classification") %></div>' +
+					'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
+					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<%= this._subLoop("templates.fragments.talentSpec", this["talents"]) %>' +
 					'<% if(this["pvp"]) { %>' +
-						'<div class="row highlight-medium"><%= this._loc("totalHonorableKills", this["pvp"]) %></div>' +
+						'<div class="darktip-row highlight-medium"><%= this._loc("totalHonorableKills", this["pvp"]) %></div>' +
 						'<%= this._sub("templates.fragments.arenaTeams") %>' +
 						'<%= this._sub("templates.fragments.ratedBattlegrounds", this["pvp"]["ratedBattlegrounds"]) %>' +
 					'<% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				 /* --- END simple mode ---------------------------------- */
 				 /* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="col-98 darktip-only-x">' +
 						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-						'<div class="row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
-						'<div class="row"><%= this["realm"] %></div>' +
-						'<% if(this["guild"]) { %><div class="row highlight-medium">&lt;<%= this["guild"]["name"] %>&gt;<% if(this["guild"]["level"]) { %> (<%= this["guild"]["level"] %>)<% } %></div><% } %>' +
-						'<% if(this["items"]) { %><div class="row highlight-weak"><%= this._loc("itemLevel", this["items"]) %></div><% } %>' +
-						'<div class="row highlight-reduced"><%= this._loc("lastModified") %></div>' +
-						'<div class="row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
+						'<div class="darktip-row"><%= this["realm"] %></div>' +
+						'<% if(this["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["guild"]["name"] %>&gt;<% if(this["guild"]["level"]) { %> (<%= this["guild"]["level"] %>)<% } %></div><% } %>' +
+						'<% if(this["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["items"]) %></div><% } %>' +
+						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
+						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				 /* --- END extended mode -------------------------------- */
@@ -80,9 +80,9 @@ DarkTip.registerModule('wow.character.pvp', {
 		'404': (
 			'<div class="tooltip-character tooltip-pvp tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
@@ -99,13 +99,13 @@ DarkTip.registerModule('wow.character.pvp', {
 				'</div>'
 			),
 			'arenaTeam': (
-				'<div class="row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
 					'<div class="pos-right highlight-weak"><%= this["personalRating"] %></div>' +
 					'<span><span class="sub highlight-strong"><%= this["size"] %></span> <%= this["name"] %></span> <span class="sub highlight-reduced">(<%= this["teamRating"] %>)</span>' +
 				'</div>'
 			),
 			'ratedBattleground': (
-				'<div class="row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
 					'<div class="pos-right">' +
 						'<span class="highlight-won"><%= this["won"] %></span> - <span class="highlight-lost"><%= this["played"] - this["won"] %></span>' +
 						'<% if(this["played"] > 0) { %> | <span class="highlight-weak"><%= ((this["won"] / this["played"])*100).toFixed(0) %>%</span><% } %>' +

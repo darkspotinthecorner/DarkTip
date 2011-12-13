@@ -710,9 +710,13 @@ window.DarkTip = {
 	},
 	
 	'attachTooltip': function(element, content, module){
-		var width = this.read(module, 'layout.width.core');
+		var width    = this.read(module, 'layout.width.core');
 		if(width == undefined) {
 			width = 300;
+		}
+		var cssclass = this.read(module, 'layout.css.class');
+		if(cssclass == undefined) {
+			cssclass = '';
 		}
 		this.jq(element).qtip({
 			'overwrite': false,
@@ -743,7 +747,7 @@ window.DarkTip = {
 			'hide' :'mouseout',
 			'style': {
 				'width'  : width+'px',
-				'classes': 'darktip-tooltip ui-tooltip-cluetip'
+				'classes': ('ui-tooltip-cluetip darktip-tooltip ' + cssclass)
 			}
 		});
 	},

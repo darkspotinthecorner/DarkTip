@@ -33,17 +33,17 @@ DarkTip.registerModule('wow.wowhead.quest', {
 		'core':(
 			'<div class="tooltip-quest">' +
 				'<div class="headline-right"><%= this["level"] %></div>' +
-				'<div class="row headline highlight-medium"><%= this["title"] %></div>' +
-				'<div class="row highlight-strong"><%= this["category"] %></div>' +
-				'<div class="row"><%= this._loc("reqLevel") %></div>' +
-				'<% if(this["suggestedPartyMembers"] > 1) { %><div class="row"><%= this._loc("suggestedPartyMembers") %></div><% } %>' +
+				'<div class="darktip-row headline highlight-medium"><%= this["title"] %></div>' +
+				'<div class="darktip-row highlight-strong"><%= this["category"] %></div>' +
+				'<div class="darktip-row"><%= this._loc("reqLevel") %></div>' +
+				'<% if(this["suggestedPartyMembers"] > 1) { %><div class="darktip-row"><%= this._loc("suggestedPartyMembers") %></div><% } %>' +
 			'</div>'				
 		),
 		'404':(
 			'<div class="tooltip-quest tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.quest") %></span> <span class="value"><%= this["questid"] %></span></div>' +
-				'<div class="row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.quest") %></span> <span class="value"><%= this["questid"] %></span></div>' +
+				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 		    '</div>'
 		)
 	},
