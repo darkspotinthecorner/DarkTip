@@ -12,9 +12,15 @@ DarkTip.registerModule('youtube.video', {
 			'params': {
 				'2': 'videoid'
 			}
-		},
-		'api'     : 'http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q=%22<%= this["videoid"] %>%22&max-results=1&safesearch=strict',
-		'hash'    : '<%= this["videoid"] %>'
+		}
+	},
+	
+	'queries': {
+		'video': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q=%22<%= this["videoid"] %>%22&max-results=1&safesearch=strict'
+		}
 	},
 	
 	'getParams': {
@@ -28,12 +34,12 @@ DarkTip.registerModule('youtube.video', {
 		}
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
+	'prepareData': function(state) {
+		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
-		if((typeof data['data'] !== 'undefined') && (typeof data['data']['items'] !== 'undefined') && (data['data']['items'].length > 0)) {
-			return data['data']['items'][0];
+		if((typeof state['data']['video']['data'] !== 'undefined') && (typeof state['data']['video']['data']['items'] !== 'undefined') && (state['data']['video']['data']['items'].length > 0)) {
+			return state['data']['video']['data']['items'][0];
 		}
 		return false;
 	},

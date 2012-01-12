@@ -58,11 +58,11 @@ DarkTip.registerModule('wow', {
 		}
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
+	'prepareData': function(state) {
+		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
-		return data;
+		return state['data'];
 	},
 	
 	'enhanceData': function(module, params, data) {
@@ -85,6 +85,7 @@ DarkTip.registerModule('wow', {
 			'not-found': 'Data not found',
 			'not-used' : 'Not used',
 			'label'    : {
+				'slot'     : 'Slot:',
 				'realm'    : 'Realm:',
 				'quest'    : 'Quest:',
 				'region'   : 'Region:',
@@ -150,6 +151,7 @@ DarkTip.registerModule('wow', {
 			'not-found': 'Keine Daten gefunden',
 			'not-used' : 'Ungenutzt',
 			'label'    : {
+				'slot'     : 'Slot:',
 				'realm'    : 'Realm:',
 				'quest'    : 'Quest:',
 				'region'   : 'Region:',
@@ -215,6 +217,7 @@ DarkTip.registerModule('wow', {
 			'not-found': 'WoW Aucune donnée trouvée',
 			'not-used' : 'Inutilisées',
 			'label'    : {
+				'slot'     : 'Slot:',
 				'realm'    : 'Royaume:',
 				'quest'    : 'Quête:',
 				'region'   : 'Région:',
@@ -280,6 +283,7 @@ DarkTip.registerModule('wow', {
 			'not-found': 'No se encontraron datos',
 			'not-used' : 'Sin usar',
 			'label'    : {
+				'slot'     : 'Ranura:',
 				'realm'    : 'Reinos:',
 				'quest'    : 'Misión:',
 				'region'   : 'Región:',
@@ -338,71 +342,6 @@ DarkTip.registerModule('wow', {
 				'762': 'Equitación',
 				'773': 'Inscripción',
 				'794': 'Arqueología'
-			}
-		},
-		'fr_FR': {
-			'loading'  : 'Chargement des données WoW...',
-			'not-found': 'WoW Aucune donnée trouvée',
-			'not-used' : 'Inutilisées',
-			'label'    : {
-				'realm'    : 'Royaume:',
-				'quest'    : 'Quête:',
-				'region'   : 'Région:',
-				'item'     : 'Objet:',
-				'character': 'Personnage:',
-				'guild'    : 'Guilde:',
-				'teamname' : 'Nom:',
-				'teamsize' : 'Taille:'
-			},
-			'factionSide': {
-				'0'       : 'Alliance',
-				'1'       : 'Horde',
-				'alliance': 'Alliance',
-				'horde'   : 'Horde'
-			},
-			'characterClass': {
-				'1' : { '0': 'Guerrier',             '1': 'Guerrière' },
-				'2' : { '0': 'Paladin',              '1': 'Paladin' },
-				'3' : { '0': 'Chasseur',             '1': 'Chasseresse' },
-				'4' : { '0': 'Voleur',               '1': 'Voleuse' },
-				'5' : { '0': 'Prêtre',               '1': 'Prêtresse' },
-				'6' : { '0': 'Chevalier de la mort', '1': 'Chevalier de la mort' },
-				'7' : { '0': 'Chaman',               '1': 'Chamane' },
-				'8' : { '0': 'Mage',                 '1': 'Mage' },
-				'9' : { '0': 'Démoniste',            '1': 'Démoniste' },
-				'11': { '0': 'Druide',               '1': 'Druidesse' }
-			},
-			'characterRace': {
-				'1' : { '0': 'Humain',          '1': 'Humaine' },
-				'2' : { '0': 'Orc',             '1': 'Orque' },
-				'3' : { '0': 'Nain',            '1': 'Naine' },
-				'4' : { '0': 'Elfe de la nuit', '1': 'Elfe de la nuit' },
-				'5' : { '0': 'Mort-vivant',     '1': 'Morte-vivante' },
-				'6' : { '0': 'Tauren',          '1': 'Tauren' },
-				'7' : { '0': 'Gnome',           '1': 'Gnome' },
-				'8' : { '0': 'Troll',           '1': 'Trollesse' },
-				'9' : { '0': 'Gobelin',         '1': 'Gobeline' },
-				'10': { '0': 'Elfe de sang',    '1': 'Elfe de sang' },
-				'11': { '0': 'Draeneï',         '1': 'Draeneï' },
-				'22': { '0': 'Worgen',          '1': 'Worgen' }
-			},
-			'characterSkill': {
-				'129': 'Secourisme',
-				'164': 'Forge',
-				'165': 'Travail du cuir',
-				'171': 'Alchimie',
-				'182': 'Herboristerie',
-				'185': 'Cuisine',
-				'186': 'Minage',
-				'197': 'Couture',
-				'202': 'Ingénierie',
-				'333': 'Enchantement',
-				'356': 'Pêche',
-				'393': 'Dépeçage',
-				'755': 'Joaillerie',
-				'762': 'Riding',
-				'773': 'Calligraphie',
-				'794': 'Archéologie'
 			}
 		}
 	}

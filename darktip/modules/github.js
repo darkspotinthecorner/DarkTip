@@ -15,11 +15,11 @@ DarkTip.registerModule('github', {
 		}
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
+	'prepareData': function(state) {
+		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
-		return data;
+		return state['data'];
 	},
 	
 	'enhanceData': function(module, params, data) {
@@ -44,9 +44,3 @@ DarkTip.registerModule('github', {
 	}
 	
 });
-
-/*
-
-https://api.github.com/users/darkspotinthecorner/repos?callback=foo
-
-*/

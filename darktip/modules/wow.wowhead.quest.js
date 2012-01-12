@@ -7,9 +7,15 @@ DarkTip.registerModule('wow.wowhead.quest', {
 				'1': 'wowheadhost',
 				'2': 'questid'
 			}
-		},
-		'api'     : 'http://<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["questid"] %>#<%= this["locale"] %>'
+		}
+	},
+	
+	'queries': {
+		'quest': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>'
+		}
 	},
 	
 	'getParams': {
@@ -32,11 +38,11 @@ DarkTip.registerModule('wow.wowhead.quest', {
 	'templates': {
 		'core':(
 			'<div class="tooltip-quest">' +
-				'<div class="headline-right"><%= this["level"] %></div>' +
-				'<div class="darktip-row headline highlight-medium"><%= this["title"] %></div>' +
-				'<div class="darktip-row highlight-strong"><%= this["category"] %></div>' +
+				'<div class="headline-right"><%= this["quest"]["level"] %></div>' +
+				'<div class="darktip-row headline highlight-medium"><%= this["quest"]["title"] %></div>' +
+				'<div class="darktip-row highlight-strong"><%= this["quest"]["category"] %></div>' +
 				'<div class="darktip-row"><%= this._loc("reqLevel") %></div>' +
-				'<% if(this["suggestedPartyMembers"] > 1) { %><div class="darktip-row"><%= this._loc("suggestedPartyMembers") %></div><% } %>' +
+				'<% if(this["quest"]["suggestedPartyMembers"] > 1) { %><div class="darktip-row"><%= this._loc("suggestedPartyMembers") %></div><% } %>' +
 			'</div>'				
 		),
 		'404':(
@@ -52,26 +58,26 @@ DarkTip.registerModule('wow.wowhead.quest', {
 		'en_US': {
 			'loading'              : 'Loading quest...',
 			'not-found'            : 'Quest not found',
-			'reqLevel'             : 'Requires Level <%= this["reqLevel"] %>',
-			'suggestedPartyMembers': 'Group Quest (<%= this["suggestedPartyMembers"] %>)'
+			'reqLevel'             : 'Requires Level <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Group Quest (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},
 		'de_DE': {
 			'loading'              : 'Lade Quest...',
 			'not-found'            : 'Quest nicht gefunden',
-			'reqLevel'             : 'Benötigt Stufe <%= this["reqLevel"] %>',
-			'suggestedPartyMembers': 'Gruppenquest (<%= this["suggestedPartyMembers"] %>)'
+			'reqLevel'             : 'Benötigt Stufe <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Gruppenquest (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},
 		'fr_FR': {
 			'loading'              : 'Chargement...',
 			'not-found'            : 'Aucun résultat',
-			'reqLevel'             : 'Niveau requis <%= this["reqLevel"] %>',
-			'suggestedPartyMembers': 'Quête de groupe (<%= this["suggestedPartyMembers"] %>)'
+			'reqLevel'             : 'Niveau requis <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Quête de groupe (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},
 		'es_ES': {
 			'loading'              : 'Cargando misión...',
 			'not-found'            : 'Misión no encontrada',
-			'reqLevel'             : 'Requiere nivel <%= this["reqLevel"] %>',
-			'suggestedPartyMembers': 'Misión de Grupo (<%= this["suggestedPartyMembers"] %>)'
+			'reqLevel'             : 'Requiere nivel <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Misión de Grupo (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		}
 	}
 	

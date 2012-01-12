@@ -8,9 +8,15 @@ DarkTip.registerModule('wow.realm', {
 				'2': 'realm',
 				'3': 'lang'
 			}
-		},
-		'api'     : 'http://<%= this["host"] %>/api/wow/realm/status?realm=<%= this["realm"] %>&locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["realm"] %>#<%= this["locale"] %>'
+		}
+	},
+	
+	'queries': {
+		'realm': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://<%= this["host"] %>/api/wow/realm/status?realm=<%= this["realm"] %>&locale=<%= this["locale"] %>'
+		}
 	},
 	
 	'getParams': {
@@ -22,12 +28,12 @@ DarkTip.registerModule('wow.realm', {
 		}
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
+	'prepareData': function(state) {
+		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
-		if(data['realms'].length === 1) {
-			return data['realms'][0];
+		if(state['data']['realm']['realms'].length === 1) {
+			return state['data']['realm']['realms'][0];
 		}
 		return false;
 	},

@@ -6,7 +6,7 @@ DarkTip.registerModule('github.user', {
 			'params': {
 				'1': 'username'
 			}
-		},
+		}
 		/*
 		'implicit': {
 			'match' : /^http:\/\/www\.youtube\.com\/(v\/|watch\?v=)([A-Za-z0-9\-_]+).*$/i,
@@ -15,15 +15,22 @@ DarkTip.registerModule('github.user', {
 			}
 		},
 		*/
-		'api'     : 'https://api.github.com/users/<%= this["username"] %>',
-		'hash'    : '<%= this["username"] %>'
+	},
+	
+	'queries': {
+		'user': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'https://api.github.com/users/<%= this["username"] %>'
+		}
 	},
 	
 	'getParams': {
 		'explicit': function(result) {
 			var params = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('github.user', 'triggers.explicit.params')));
 			return params;
-		}/*,
+		}
+		/*
 		'implicit': function(result) {
 			var params = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('youtube.video', 'triggers.implicit.params')));
 			return params;
@@ -31,12 +38,12 @@ DarkTip.registerModule('github.user', {
 		*/
 	},
 	
-	'validateData': function(data) {
-		if(typeof data === 'undefined') {
+	'prepareData': function(state) {
+		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
-		if((typeof data['meta'] !== 'undefined') && (typeof data['meta']['status'] !== 'undefined') && (data['meta']['status'] === 200)) {
-			return data['data'];
+		if((typeof state['data']['user']['meta'] !== 'undefined') && (typeof state['data']['user']['meta']['status'] !== 'undefined') && (state['data']['user']['meta']['status'] === 200)) {
+			return state['data']['user']['data'];
 		}
 		return false;
 	},
