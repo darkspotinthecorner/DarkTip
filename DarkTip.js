@@ -101,18 +101,16 @@ window.DarkTip = {
 						DarkTip.jq.extend(true, data['_meta'], this['_meta']);
 					}
 					var template = DarkTip.read(this['_meta']['module'], route);
-					if(template.indexOf('<%') === (-1))
+					if(DarkTip.isTemplateString(template))
 					{
-						// no templateable string, simply return
-						return template;
-					}
-					else
-					{
-						// string is a template, pass to jQote2
 						return DarkTip.jq.jqote(
 							template,
 							DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
+					}
+					else
+					{
+						return template;
 					}
 				},
 				'_subLoop': function(route, data, concat) {
@@ -122,17 +120,8 @@ window.DarkTip = {
 					}
 					var template = DarkTip.read(this['_meta']['module'], route);
 					var collect  = [];
-					if(template.indexOf('<%') === (-1))
+					if(DarkTip.isTemplateString(template))
 					{
-						// no templateable string, simply return
-						for (var i = 0; i < data.length; i++)
-						{
-							collect.push(template);
-						}
-					}
-					else
-					{
-						// string is a template, pass to jQote2
 						for (var i = 0; i < data.length; i++)
 						{
 							if(typeof data[i] !== 'object')
@@ -147,6 +136,13 @@ window.DarkTip = {
 								template,
 								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), { '_loop': i }, data[i])
 							));
+						}
+					}
+					else
+					{
+						for (var i = 0; i < data.length; i++)
+						{
+							collect.push(template);
 						}
 					}
 					return collect.join(concat);
@@ -162,18 +158,16 @@ window.DarkTip = {
 						DarkTip.jq.extend(true, data['_meta'], this['_meta']);
 					}
 					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route, fuzzy);
-					if(template.indexOf('<%') === (-1))
+					if(DarkTip.isTemplateString(template))
 					{
-						// no templateable string, simply return
-						return template;
-					}
-					else
-					{
-						// string is a template, pass to jQote2
 						return DarkTip.jq.jqote(
 							template,
 							DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), data)
 						);
+					}
+					else
+					{
+						return template;
 					}
 				},
 				'_locLoop': function(route, data, concat) {
@@ -183,17 +177,8 @@ window.DarkTip = {
 					}
 					var template = DarkTip.localize(this['_meta']['module'], this['_meta']['locale'], route);
 					var collect  = [];
-					if(template.indexOf('<%') === (-1))
+					if(DarkTip.isTemplateString(template))
 					{
-						// no templateable string, simply return
-						for (var i = 0; i < data.length; i++)
-						{
-							collect.push(template);
-						}
-					}
-					else
-					{
-						// string is a template, pass to jQote2
 						for (var i = 0; i < data.length; i++)
 						{
 							if(typeof data[i] !== 'object')
@@ -208,6 +193,13 @@ window.DarkTip = {
 								template,
 								DarkTip.jq.extend(true, {}, DarkTip.getTemplateTools(this['_meta']['module'], this['_meta']['locale']), { '_loop': i }, data[i])
 							));
+						}
+					}
+					else
+					{
+						for (var i = 0; i < data.length; i++)
+						{
+							collect.push(template);
 						}
 					}
 					return collect.join(concat);
@@ -269,6 +261,10 @@ window.DarkTip = {
 	
 	'activeTooltips': [],
 	
+	'cacheStorage': {},
+	
+	'dataCollectStates': [],
+	
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
 		{
@@ -283,6 +279,35 @@ window.DarkTip = {
 			return this._read('data.settings.' + route);
 		}
 		return this._read('data.settings');
+	},
+	
+	'compareRule': function(data, rule)
+	{
+		// mandatory always true
+		if(rule === true)
+		{
+			return true;
+		}
+		// simple existance check (aaa.bbb.ccc)
+		if(rule.match(/^[a-z0-9_\-]+(\.[a-z0-9_\-]+)*$/i))
+		{
+			var segments = rule.split('.');
+			var current  = data;
+
+			for(var i = 0; i < segments.length; i++)
+			{
+				if(typeof current[segments[i]] === 'undefined')
+				{
+					return undefined;
+				}
+				else
+				{
+					current = current[segments[i]];
+				}
+			}
+			return current;		
+		}
+		return undefined;
 	},
 	
 	'_read': function(route, fuzzy)
@@ -471,28 +496,23 @@ window.DarkTip = {
 		return false;
 	},
 	
-	'cache': function(module, hash, content)
+	'cache': function(apicall, data)
 	{
-		var cache = this._read(this.route(module, 'cache'));
-		if(typeof cache === 'undefined')
-		{
-			this.write(this.route(module, 'cache'), {});
-			cache = this._read(this.route(module, 'cache'));
-		}
-		
-		if(typeof content === 'undefined')
+		if(typeof data === 'undefined')
 		{
 			// read mode
-			if(typeof cache[hash] !== 'undefined')
+			if(typeof this['cacheStorage'][apicall] !== 'undefined')
 			{
-				return cache[hash];
+				return this['cacheStorage'][apicall];
 			}
 			return undefined;
 		}
 		else
 		{
 			// write mode
-			cache[hash] = content;
+			this['cacheStorage'][apicall] = data;
+			
+			return true;
 		}
 	},
 	
@@ -523,6 +543,18 @@ window.DarkTip = {
 			return params;
 		}
 		return {};
+	},
+	
+	'isTemplateString': function(test)
+	{
+		if(typeof test === 'string')
+		{
+			if(test.match(/<%=?.+%>/i))
+			{
+				return true;
+			}
+		}
+		return false;
 	},
 	
 	'startUp': function() {
@@ -631,52 +663,255 @@ window.DarkTip = {
 		{
 			params['locale'] = 'en_US';
 		}
-		var templateTools = this.getTemplateTools(module, params['lcoale']);
-		var apicall = this.jq.jqote(
-			this._read(this.route(module, 'triggers.api')),
-			this.jq.extend(true, {}, params, templateTools)
-		);
-		var apicallback = this.read(module, 'triggers.apiParams.callback');
-		params['hash'] =  this.jq.jqote(
-			this._read(this.route(module, 'triggers.hash')),
-			this.jq.extend(true, {}, params, templateTools)
-		);
-		var content = this.cache(module, params['hash']);
-		if(content)
-		{
-			this.attachTooltip(element, content, module);
-		}
-		else
-		{
-			content = this.localize(module, params['locale'], 'loading');
-			
-			this.attachTooltip(element, content, module);
-			
-			this.jq.jsonp({
-				'url': apicall,
-				'callbackParameter': apicallback,
-				'success': function(data) {
-					DarkTip.renderTooltip(module, params, element, data);
-				},
-				'error'  : function(options) {
-					DarkTip.renderTooltip(module, params, element);
-				}
-			});
-		}
+		var content = this.localize(module, params['locale'], 'loading');
+		
+		this.attachTooltip(element, content, module);
+		
+		this.startDataCollect(module, params, element);
 	},
 	
-	'renderTooltip': function(module, params, element, data) {
+	'initDataCollectState': function(module, params, element)
+	{
+		var id = this['dataCollectStates'].length;
+		
+		this['dataCollectStates'][id] = {
+			
+			'id'  : id,
+			
+			'repo': {
+				'module'       : module,
+				'params'       : params,
+				'element'      : element,
+				'templateTools': this.getTemplateTools(module, params['locale']),
+				'callbackParam': this.read(module, 'triggers.apiParams.callback'),
+				'requiredData' : []
+			},
+			
+			'status' : 'pending',
+			
+			'queries': {
+				'sleeping': {},
+				'running' : {},
+				'done'    : {}
+			},
+			
+			'data': {},
+			
+			'awakenQuery': function(key)
+			{
+				if(typeof this['queries']['sleeping'][key] !== 'undefined')
+				{
+					this['queries']['running'][key] = this['queries']['sleeping'][key];
+					return delete this['queries']['sleeping'][key];
+				}
+				return false;
+			},
+			
+			'awakenCachedQuery': function(key)
+			{
+				if(typeof this['queries']['sleeping'][key] !== 'undefined')
+				{
+					this['queries']['done'][key] = this['queries']['sleeping'][key];
+					return delete this['queries']['sleeping'][key];
+				}
+				return false;
+			},
+			
+			'completeQuery': function(key)
+			{
+				if(typeof this['queries']['running'][key] !== 'undefined')
+				{
+					this['queries']['done'][key] = this['queries']['running'][key];
+					return delete this['queries']['running'][key];
+				}
+				return false;
+			},
+			
+			'buildCallbackQuerySuccess': function(id, key, apicall)
+			{
+				return function(data, options)
+				{
+					state = DarkTip.getDataCollectionState(id);
+					
+					DarkTip.cache(apicall, data);
+					
+					state['data'][key] = data;
+					
+					state.completeQuery(key);
+					
+					state.run();
+					
+					state.finish();
+				}
+			},
+			
+			'buildCallbackQueryError': function(id, key)
+			{
+				return function(options)
+				{
+					state = DarkTip.getDataCollectionState(id);
+					
+					if(state['queries']['running'][key]['required'])
+					{
+						state['status'] = 'error';
+					}
+					
+					state.completeQuery(key);
+					
+					state.run();
+					
+					state.finish();
+				}
+			},
+			
+			'done': function()
+			{
+				if(Object.keys(this['queries']['running']).length === 0)
+				{
+					return true;
+				}
+				return false;
+			},
+			
+			'finish': function()
+			{
+				if(this.done())
+				{
+					if((this['status'] === 'error') || (this['status'] === 'pending'))
+					{
+						this['status'] = 'done';
+						
+						DarkTip.renderTooltip(this);
+					}
+				}
+			},
+			
+			'run': function()
+			{
+				var state = this;
+				
+				DarkTip.jq.each(this['queries']['sleeping'], function(key, query) {
+					
+					if(DarkTip.isTemplateString(query['condition']))
+					{
+						var result = DarkTip.compareRule(state['data'], DarkTip.jq.jqote(query['condition'], DarkTip.jq.extend(true, {}, state['repo']['params'], state['repo']['templateTools'])));
+					}
+					else
+					{
+						var result = DarkTip.compareRule(state['data'], query['condition']);
+					}
+					
+					if(typeof result !== 'undefined')
+					{
+						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state['repo']['params'], {'condition': result}, state['repo']['templateTools']));
+						var cache   = DarkTip.cache(apicall);
+						
+						if(cache)
+						{
+							state.awakenCachedQuery(key);
+							
+							state['data'][key] = cache;
+						}
+						else
+						{
+							state.awakenQuery(key);
+							
+							DarkTip.jq.jsonp({
+								'url'              : apicall,
+								'callbackParameter': state['repo']['callbackParam'],
+								'success'          : state.buildCallbackQuerySuccess(id, key, apicall),
+								'error'            : state.buildCallbackQueryError(id, key)
+							});				
+						}
+					}
+					
+				});
+				
+				this.finish();
+			}
+			
+		};
+		
+		var apicalls    = this._read(this.route(module, 'queries'));
+		var apicallback = this.read(module, 'triggers.apiParams.callback');
+		
+		this.jq.each(apicalls, function(key, payload)
+		{
+			if(typeof payload === 'object')
+			{
+				if(typeof payload['required'] === 'undefined')
+				{
+					payload['required'] = true;
+				}
+				
+				if(typeof payload['condition'] === 'undefined')
+				{
+					payload['condition'] = true;
+				}
+				
+				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
+					'required' : payload['required'] == true,
+					'condition': payload['condition'],
+					'call'     : payload['call']
+				};
+			}
+			else
+			{
+				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
+					'required' : true,
+					'condition': true,
+					'call'     : payload
+				};
+			}
+			
+			if(DarkTip['dataCollectStates'][id]['queries']['sleeping'][key]['required'])
+			{
+				DarkTip['dataCollectStates'][id]['repo']['requiredData'].push(key);
+			}
+			
+		});
+		
+		return this.getDataCollectionState(id);
+	},
+	
+	'getDataCollectionState': function(id)
+	{
+		return this['dataCollectStates'][id] || false;
+	},
+	
+	'startDataCollect': function(module, params, element)
+	{
+		var state = this.initDataCollectState(module, params, element);
+		
+		state.run();
+	},
+	
+	'renderTooltip': function(state)
+	{
+		var module  = state['repo']['module'];
+		var params  = state['repo']['params'];
+		var element = state['repo']['element'];
+		var data    = state['data'];
+		var error   = false;
 		var content = '';
 		
-		// call module func to verify data
-		var validateDataFunc = this.read(module, 'validateData');
+		DarkTip.jq.each(state['repo']['requiredData'], function(nothing, key) {
+			
+			if(typeof state['data'][key] === 'undefined')
+			{
+				error = true;
+			}
+
+		});
 		
-		if(typeof validateDataFunc !== 'undefined')
+		var prepareDataFunc = this.read(module, 'prepareData');
+		
+		if(typeof prepareDataFunc !== 'undefined')
 		{
-			data = validateDataFunc(data);
+			data = prepareDataFunc(state);
 		}
 		
-		if(data)
+		if(!error && data)
 		{
 			// call module func to enhance template data
 			var enhanceDataFunc = this.read(module, 'enhanceData');
@@ -704,9 +939,6 @@ window.DarkTip = {
 		}
 		
 		this.jq(element).qtip('api').set('content.text', content);
-		
-		this.cache(module, params['hash'], content);
-		
 	},
 	
 	'attachTooltip': function(element, content, module){
@@ -780,7 +1012,7 @@ window.DarkTip = {
 		}
 		if(found !== false)
 		{
-			this['activeTooltips'].splice(i, 1);
+			this['activeTooltips'].splice(found, 1);
 		}
 	},
 	
@@ -890,8 +1122,8 @@ yepnope([{
 	'complete': function() {
 		
 		if(!window.jQuery.jsonp){
-			/* jquery.jsonp 2.1.4 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
-			(function(e,b){function d(){}function t(C){c=[C]}function m(C){f.insertBefore(C,f.firstChild)}function l(E,C,D){return E&&E.apply(C.context||C,D)}function k(C){return/\?/.test(C)?"&":"?"}var n="async",s="charset",q="",A="error",r="_jqjsp",w="on",o=w+"click",p=w+A,a=w+"load",i=w+"readystatechange",z="removeChild",g="<script/>",v="success",y="timeout",x=e.browser,f=e("head")[0]||document.documentElement,u={},j=0,c,h={callback:r,url:location.href};function B(C){C=e.extend({},h,C);var Q=C.complete,E=C.dataFilter,M=C.callbackParameter,R=C.callback,G=C.cache,J=C.pageCache,I=C.charset,D=C.url,L=C.data,P=C.timeout,O,K=0,H=d;C.abort=function(){!K++&&H()};if(l(C.beforeSend,C,[C])===false||K){return C}D=D||q;L=L?((typeof L)=="string"?L:e.param(L,C.traditional)):q;D+=L?(k(D)+L):q;M&&(D+=k(D)+encodeURIComponent(M)+"=?");!G&&!J&&(D+=k(D)+"_"+(new Date()).getTime()+"=");D=D.replace(/=\?(&|$)/,"="+R+"$1");function N(S){!K++&&b(function(){H();J&&(u[D]={s:[S]});E&&(S=E.apply(C,[S]));l(C.success,C,[S,v]);l(Q,C,[C,v])},0)}function F(S){!K++&&b(function(){H();J&&S!=y&&(u[D]=S);l(C.error,C,[C,S]);l(Q,C,[C,S])},0)}J&&(O=u[D])?(O.s?N(O.s[0]):F(O)):b(function(T,S,U){if(!K){U=P>0&&b(function(){F(y)},P);H=function(){U&&clearTimeout(U);T[i]=T[o]=T[a]=T[p]=null;f[z](T);S&&f[z](S)};window[R]=t;T=e(g)[0];T.id=r+j++;if(I){T[s]=I}function V(W){(T[o]||d)();W=c;c=undefined;W?N(W[0]):F(A)}if(x.msie){T.event=o;T.htmlFor=T.id;T[i]=function(){/loaded|complete/.test(T.readyState)&&V()}}else{T[p]=T[a]=V;x.opera?((S=e(g)[0]).text="jQuery('#"+T.id+"')[0]."+p+"()"):T[n]=n}T.src=D;m(T);S&&m(S)}},0);return C}B.setup=function(C){e.extend(h,C)};e.jsonp=B})(jQuery,setTimeout);
+			/* jquery.jsonp 2.2.0 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
+			(function(a){function b(){}function c(a){A=[a]}function d(a,b,c,d){try{d=a&&a.apply(b.context||b,c)}catch(e){d=!1}return d}function e(a){return/\?/.test(a)?"&":"?"}function D(l){function V(a){O++||(P(),I&&(y[K]={s:[a]}),E&&(a=E.apply(l,[a])),d(l.success,l,[a,t]),d(D,l,[l,t]))}function W(a){O++||(P(),I&&a!=u&&(y[K]=a),d(l.error,l,[l,a]),d(D,l,[l,a]))}l=a.extend({},B,l);var D=l.complete,E=l.dataFilter,F=l.callbackParameter,G=l.callback,H=l.cache,I=l.pageCache,J=l.charset,K=l.url,L=l.data,M=l.timeout,N,O=0,P=b,Q,R,S,T,U;return l.abort=function(){!(O++)&&P()},d(l.beforeSend,l,[l])===!1||O?l:(K=K||h,L=L?typeof L=="string"?L:a.param(L,l.traditional):h,K+=L?e(K)+L:h,F&&(K+=e(K)+encodeURIComponent(F)+"=?"),!H&&!I&&(K+=e(K)+"_"+(new Date).getTime()+"="),K=K.replace(/=\?(&|$)/,"="+G+"$1"),I&&(N=y[K])?N.s?V(N.s[0]):W(N):(v[G]=c,S=a(s)[0],S.id=k+z++,J&&(S[g]=J),C&&C.version()<11.6?(T=a(s)[0]).text="document.getElementById('"+S.id+"')."+n+"()":S[f]=f,!(o in S)&&p in S&&(S.htmlFor=S.id,S.event=m),S[o]=S[n]=S[p]=function(a){if(!S[q]||/loaded|complete/.test(S[q])){try{S[m]&&S[m]()}catch(b){}a=A,A=0,a?V(a[0]):W(i)}},S.src=K,P=function(a){U&&clearTimeout(U),S[p]=S[o]=S[n]=null,w[r](S),T&&w[r](T)},w[j](S,x),T&&w[j](T,x),U=M>0&&setTimeout(function(){W(u)},M)),l)}var f="async",g="charset",h="",i="error",j="insertBefore",k="_jqjsp",l="on",m=l+"click",n=l+i,o=l+"load",p=l+"readystatechange",q="readyState",r="removeChild",s="<script>",t="success",u="timeout",v=window,w=a("head")[0]||document.documentElement,x=w.firstChild,y={},z=0,A,B={callback:k,url:location.href},C=v.opera;D.setup=function(b){a.extend(B,b)},a.jsonp=D})(jQuery)
 		}
 		
 		if(!window.jQuery.jqote){

@@ -9,9 +9,27 @@ DarkTip.registerModule('wow.wowhead.character', {
 				'3': 'realm',
 				'4': 'character'
 			}
+		}
+	},
+	
+	'queries': {
+		'character': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,companions,mounts&locale=<%= this["locale"] %>'
+		}
+		/*
+		'races'    : {
+			'required' : false,
+			'condition': 'character.race',
+			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>'
 		},
-		'api'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,companions,mounts&locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["realm"] %>#<%= this["character"] %>#<%= this["locale"] %>'
+		'classes'  : {
+			'required' : false,
+			'condition': 'character.class',
+			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>'
+		},
+		// */
 	},
 
 	'getParams': {
@@ -39,32 +57,32 @@ DarkTip.registerModule('wow.wowhead.character', {
 		},
 		'core': (
 			'<div class="tooltip-character">' +
-		    	'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["race"] %>-<%= this["gender"] %>.jpg" />' +
+		    	'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
 		    	 /* --- START simple mode -------------------------------- */
 				'<div class="col-98 darktip-only-s">' +
-					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-		    		'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
+					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+		    		'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 		    		'<div class="darktip-row"><%= this._loc("classification") %></div>' +
-					'<%= this._subLoop("templates.fragments.talentSpec", this["talents"]) %>' +
-					'<% if(this["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["guild"]["name"] %>&gt;<% if(this["guild"]["level"]) { %> (<%= this["guild"]["level"] %>)<% } %></div><% } %>' +
-					'<div class="darktip-row"><%= this["realm"] %></div>' +
-					'<% if(this["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["items"]) %></div><% } %>' +
+					'<%= this._subLoop("templates.fragments.talentSpec", this["character"]["talents"]) %>' +
+					'<% if(this["character"]["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["character"]["guild"]["name"] %>&gt;<% if(this["character"]["guild"]["level"]) { %> (<%= this["character"]["guild"]["level"] %>)<% } %></div><% } %>' +
+					'<div class="darktip-row"><%= this["character"]["realm"] %></div>' +
+					'<% if(this["character"]["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
 			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 		    	'</div>' +
 				 /* --- END simple mode ---------------------------------- */
 				 /* --- START extended mode ------------------------------ */
 			    '<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="col-98 darktip-only-x">' +
-						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-			    		'<div class="darktip-row headline cclass-<%= this["class"] %>"><%= this["name"] %></div>' +
-						'<% if(this["professions"]) { %>' +
+						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+			    		'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+						'<% if(this["character"]["professions"]) { %>' +
 							'<div class="block">' +
-								'<%= this._subLoop("templates.fragments.profession.primary", this["professions"]["primary"]) %>' +
-								'<%= this._subLoop("templates.fragments.profession.secondary", this["professions"]["secondary"]) %>' +
+								'<%= this._subLoop("templates.fragments.profession.primary", this["character"]["professions"]["primary"]) %>' +
+								'<%= this._subLoop("templates.fragments.profession.secondary", this["character"]["professions"]["secondary"]) %>' +
 							'</div>' +
 						'<% } %>' +
-						'<% if(this["mounts"]) { %><div class="darktip-row"><%= this._loc("mounts") %></div><% } %>' +
-						'<% if(this["companions"]) { %><div class="darktip-row"><%= this._loc("companions") %></div><% } %>' +
+						'<% if(this["character"]["mounts"]) { %><div class="darktip-row"><%= this._loc("mounts") %></div><% } %>' +
+						'<% if(this["character"]["companions"]) { %><div class="darktip-row"><%= this._loc("companions") %></div><% } %>' +
 						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
 						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
 			    	'</div>' +
@@ -112,41 +130,41 @@ DarkTip.registerModule('wow.wowhead.character', {
 		'en_US': {
 			'loading'       : 'Loading character...',
 			'not-found'     : 'Character not found',
-			'classification': '<%= this["level"] %> <%= this._loc("characterRace." + this["race"] + ".0") %> <%= this._loc("characterClass." + this["class"] + ".0") %>',
+			'classification': '<%= this["character"]["level"] %> <%= this._loc("characterRace." + this["character"]["race"] + ".0") %> <%= this._loc("characterClass." + this["character"]["class"] + ".0") %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> average item level (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Mounts: <%= this["mounts"].length %>',
-			'companions'    : 'Companions: <%= this["companions"].length %>',
-			'lastModified'  : 'Last modified: <%= this._renderDateTime(this["lastModified"]) %>'
+			'mounts'        : 'Mounts: <%= this["character"]["mounts"].length %>',
+			'companions'    : 'Companions: <%= this["character"]["companions"].length %>',
+			'lastModified'  : 'Last modified: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'de_DE': {
 			'loading'       : 'Lade Charakter...',
 			'not-found'     : 'Charakter nicht gefunden',
-			'classification': '<%= this["level"] %>, <%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %>, <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %>',
+			'classification': '<%= this["character"]["level"] %>, <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Durchschnittliche Gegenstandsstufe (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Reittiere: <%= this["mounts"].length %>',
-			'companions'    : 'Begleiter: <%= this["companions"].length %>',
-			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["lastModified"]) %>'
+			'mounts'        : 'Reittiere: <%= this["character"]["mounts"].length %>',
+			'companions'    : 'Begleiter: <%= this["character"]["companions"].length %>',
+			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement personnage...',
 			'not-found'     : 'Aucun personnage trouvée',
-			'classification': '<%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %> <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de niveau <%= this["level"] %>',
+			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de niveau <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Niveau moyen des objets (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Montures: <%= this["mounts"].length %>',
-			'companions'    : 'Mascottes: <%= this["companions"].length %>',
-			'lastModified'  : 'Dernière mise à jour: <%= this._renderDateTime(this["lastModified"]) %>'
+			'mounts'        : 'Montures: <%= this["character"]["mounts"].length %>',
+			'companions'    : 'Mascottes: <%= this["character"]["companions"].length %>',
+			'lastModified'  : 'Dernière mise à jour: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_ES': {
 			'loading'       : 'Cargando personaje...',
 			'not-found'     : 'Personaje no encontrado',
-			'classification': '<%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %> <%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de nivel <%= this["level"] %>',
+			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de nivel <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> nivel medio de objeto (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Monturas: <%= this["mounts"].length %>',
-			'companions'    : 'Compañeros: <%= this["companions"].length %>',
-			'lastModified'  : 'Última modificación: <%= this._renderDateTime(this["lastModified"]) %>'
+			'mounts'        : 'Monturas: <%= this["character"]["mounts"].length %>',
+			'companions'    : 'Compañeros: <%= this["character"]["companions"].length %>',
+			'lastModified'  : 'Última modificación: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_MX': {
-			'classification': '<%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %> de <%= this._loc("characterRace." + this["race"] + "." + this["gender"]) %>, nivel <%= this["level"] %>'
+			'classification': '<%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, nivel <%= this["character"]["level"] %>'
 		}
 	}
 	

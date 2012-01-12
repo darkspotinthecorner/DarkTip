@@ -105,7 +105,7 @@
 
 .darktip-tooltip-wow .icon-socket                         { display: block; position: relative; width: 15px; height: 15px; }
 .darktip-tooltip-wow .icon-socket .gem                    { display: block; width: 15px; height: 15px; }
-.darktip-tooltip-wow .icon-socket .gem img                { display: block; width: 13px; height: 13px; padding: 1px 0 0 1px; }
+.darktip-tooltip-wow .icon-socket .gem img                { display: block; width: 13px; height: 13px; padding: 0; position: absolute; left: -3px; top: -3px; }
 .darktip-tooltip-wow .icon-socket .empty                  { position: absolute; left: 1px; top: 1px; width: 13px; height: 13px; }
 
 /* Original image: http://us.battle.net/wow/static/images/icons/frames/sockets.png / (c) 2011 by Blizzard Entertainment */
@@ -324,6 +324,10 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 
 .darktip-tooltip-wow .highlight-reduced {
 	color: #909090;
+}
+
+.darktip-tooltip-wow .highlight-transmog {
+	color: #FF80FF;
 }
 
 .darktip-tooltip-wow .darktip-row.alt {

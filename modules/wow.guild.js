@@ -18,9 +18,15 @@ DarkTip.registerModule('wow.guild', {
 				'3': 'realm',
 				'4': 'guild'
 			}
-		},
-		'api'     : 'http://<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>',
-		'hash'    : '<%= this["host"] %>#<%= this["realm"] %>#<%= this["guild"] %>#<%= this["locale"] %>'
+		}
+	},
+	
+	'queries': {
+		'guild': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>'
+		}
 	},
 
 	'getParams': {
@@ -47,10 +53,10 @@ DarkTip.registerModule('wow.guild', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-guild">' +
-				'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["achievementPoints"] %></span></div>' +
-    			'<div class="darktip-row headline cside-<%= this["side"] %>"><%= this["name"] %></div>' +
+				'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["guild"]["achievementPoints"] %></span></div>' +
+    			'<div class="darktip-row headline cside-<%= this["guild"]["side"] %>"><%= this["guild"]["name"] %></div>' +
 	    		'<div class="darktip-row highlight-medium"><%= this._loc("classification") %></div>' +
-				'<% if(this["members"]) { %><div class="darktip-row"><%= this._loc("members") %></div><% } %>' +
+				'<% if(this["guild"]["members"]) { %><div class="darktip-row"><%= this._loc("members") %></div><% } %>' +
 			'</div>'
 		),
 		'404': (
@@ -67,26 +73,26 @@ DarkTip.registerModule('wow.guild', {
 		'en_US': {
 			'loading'       : 'Loading Guild...',
 			'not-found'     : 'Guild not found',
-			'classification': 'Level <%= this["level"] %> <%= this._loc("factionSide." + this["side"]) %> Guild, <%= this["realm"] %>',
-			'members'       : '<%= this["members"].length %> members'
+			'classification': 'Level <%= this["guild"]["level"] %> <%= this._loc("factionSide." + this["guild"]["side"]) %> Guild, <%= this["guild"]["realm"] %>',
+			'members'       : '<%= this["guild"]["members"].length %> members'
 		},
 		'de_DE': {
 			'loading'       : 'Lade Gilde...',
 			'not-found'     : 'Gilde nicht gefunden',
-			'classification': 'Stufe <%= this["level"] %> <%= this._loc("factionSide." + this["side"]) %>-Gilde, <%= this["realm"] %>',
-			'members'       : '<%= this["members"].length %> Mitglieder'
+			'classification': 'Stufe <%= this["guild"]["level"] %> <%= this._loc("factionSide." + this["guild"]["side"]) %>-Gilde, <%= this["guild"]["realm"] %>',
+			'members'       : '<%= this["guild"]["members"].length %> Mitglieder'
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement Guilde...',
 			'not-found'     : 'Aucune Guilde trouvée',
-			'classification': 'Niveau <%= this["level"] %> Faction <%= this._loc("factionSide." + this["side"]) %> , <%= this["realm"] %>',
-			'members'       : '<%= this["members"].length %> membres'
+			'classification': 'Niveau <%= this["guild"]["level"] %> Faction <%= this._loc("factionSide." + this["guild"]["side"]) %> , <%= this["guild"]["realm"] %>',
+			'members'       : '<%= this["guild"]["members"].length %> membres'
 		},
 		'es_ES': {
 			'loading'       : 'Cargando hermandad...',
 			'not-found'     : 'Hermandad no encontrada',
-			'classification': 'Hermandad (<%= this._loc("factionSide." + this["side"]) %>), nivel <%= this["level"] %>, <%= this["realm"] %>',
-			'members'       : '<%= this["members"].length %> miembros'
+			'classification': 'Hermandad (<%= this._loc("factionSide." + this["guild"]["side"]) %>), nivel <%= this["guild"]["level"] %>, <%= this["guild"]["realm"] %>',
+			'members'       : '<%= this["guild"]["members"].length %> miembros'
 		}
 	}
 	
