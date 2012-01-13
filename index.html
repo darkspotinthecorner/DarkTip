@@ -1,87 +1,170 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset='utf-8'>
+	
+	<meta charset='utf-8' />
 
-  <title>darkspotinthecorner/DarkTip @ GitHub</title>
+	<title>darkspotinthecorner/DarkTip @ GitHub</title>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #ffffff;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #000000; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #000000; }
-    h3 { text-align: center; color: #000000; }
-    a { color: #000000; }
-    pre a { color: #3399DD; text-decoration: none; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	.testbox { border-radius: 6px; background-color: #ddd; list-style: none; padding: 8px; overflow: hidden; }
-	.testbox ul { list-style: none; }
-	#demo-custom-implicit, #demo-custom-explicit { border-radius: 6px; background-color: #fff; clear: both; padding: 8px; }
-	#custom-implicit-input, #custom-explicit-input { border-radius: 6px; border: 3px solid #ddd; width: 500px; height: 30px; font-size: 22px; padding: 1px 3px; color: #666; }
-	#custom-implicit-button, #custom-explicit-button { border-radius: 6px; border: 3px solid #ccc; width: 140px; height: 38px; font-size: 18px; font-weight: bold; background-color: #ddd; color: #999; vertical-align: top; }
-	#custom-implicit-button:hover, #custom-explicit-button:hover { border-color: #bbb; background-color: #ccc; color: #333; }
-	.testbox h1 { padding-top: 0; margin-top: 0; font-size: 2em; color: #999; float: right; clear: both; }
-	.testbox h1.padded { padding-top: 20px; }
-	.testbox h2 { font-size: 1.2em; }
-	.testbox li { font-size: 90%; }
-	.testbox a { color: #71D5FF; display: inline-block; margin: 5px 0; padding: 10px; border-radius: 5px; background-color: #036; }
-	.testbox span[data-darktip] { color: #71D5FF; display: inline-block; margin: 5px 0; padding: 10px; border-radius: 5px; background-color: #306; }
-	h1.subsection { text-align: right; font-size: 2.5em; color: #888; }
-	#custom-implicit-list, #custom-explicit-list { list-style: none; padding: 0; margin: 6px 10px; }
-	#custom-explicit-templates { clear: both; margin: 6px; }
-	#custom-explicit-templates-list { overflow: hidden; padding: 0; }
-	#custom-explicit-templates-list li { cursor: pointer; float: left; border-radius: 3px; background-color: #aaa; padding: 3px 9px 3px 6px; margin-right: 4px; font-style: italic; }
-	#custom-explicit-templates-list li:hover { background-color: #333; color: #fff; }
-  </style>
+	<style type="text/css">
+		
+		body {
+			margin-top: 1.0em;
+			background-color: #ffffff;
+			font-family: Helvetica, Arial, FreeSans, san-serif;
+			color: #000000;
+		}
+		
+		#container {
+			margin: 0 auto;
+			width: 700px;
+		}
+		
+		h1 {
+			font-size: 3.8em;
+			color: #000000;
+			margin-bottom: 3px;
+		}
+		
+		h1 .small {
+			font-size: 0.4em;
+		}
+		
+		h1 a {
+			text-decoration: none;
+		}
+		
+		h2 {
+			font-size: 1.5em;
+			color: #000000;
+		}
+		
+		h3 {
+			text-align: center;
+			color: #000000;
+		}
+		
+		a {
+			color: #000000;
+		}
+		
+		pre a {
+			color: #3399DD;
+			text-decoration: none;
+		}
+		
+		.description {
+			font-size: 1.2em;
+			margin-bottom: 30px;
+			margin-top: 30px;
+			font-style: italic;
+		}
+		
+		.download {
+			float: right;
+		}
+		
+		pre {
+			background: #000;
+			color: #fff;
+			padding: 15px;
+		}
+		
+		hr {
+			border: 0;
+			width: 80%;
+			border-bottom: 1px solid #aaa;
+		}
+		
+		.footer {
+			text-align: center;
+			padding-top: 30px;
+			font-style: italic;
+		}
+		
+		.testbox {
+			border-radius: 6px;
+			background-color: #ddd;
+			list-style: none;
+			padding: 8px;
+		}
+		
+		.testbox h1 {
+			padding-top: 0;
+			margin-top: 0;
+			font-size: 2em;
+			color: #999;
+			float: right;
+		}
+		
+		.testbox h2 {
+			font-size: 1.2em;
+		}
+		
+		.testbox li {
+			font-size: 90%;
+		}
+		
+		.testbox a {
+			color: #71D5FF;
+			display: inline-block;
+			margin: 5px 0;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #036;
+		}
+		
+		.testbox span[data-darktip] {
+			color: #71D5FF;
+			display: inline-block;
+			margin: 5px 0;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #306;
+		}
+		
+		h1.subsection {
+			text-align: right;
+			font-size: 2.5em;
+			color: #888;
+		}
+		
+	</style>
 </head>
-
 <body>
-  <a href="http://github.com/darkspotinthecorner/DarkTip"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+	<a href="http://github.com/darkspotinthecorner/DarkTip">
+		<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+	</a>
 
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/darkspotinthecorner/DarkTip">DarkTip</a>
-      <span class="small">by <a href="http://github.com/darkspotinthecorner">darkspotinthecorner</a></span></h1>
-
-    <div class="description">
-      The DarkTip plugin is a javascript based tooltip framework that enables quick and easy development of modules that hook into specific aspects of a webpage and display context sensitive tooltips.
-    </div>
-
-    <h2>Authors</h2>
-    <p>darkspotinthecorner [darkspotinthecorner (at) gmail (dot) com]</p>
-    
-    <h2>Contact</h2>
-    <p>[darkspotinthecorner (at) gmail (dot) com]</p>
-    
-	<a name="code-index"></a>
-	<h2>Using DarkTip</h2>
-    <p>
-    	<ol>
-			<li><a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">Download</a> and extract the DarkTip files.</li>
-			<li>Upload the files to a directory on your webserver that is accessible by the public.</li>
-			<li>On any webpage where you want to have DarkTip active, include the following code:
-<pre>
+	<div id="container">
+		<div class="download">
+			<a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master"><img border="0" width="90" src="http://github.com/images/modules/download/zip.png" /></a>
+			<a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master"><img border="0" width="90" src="http://github.com/images/modules/download/tar.png" /></a>
+		</div>
+    	
+    	<h1>
+			<a href="http://github.com/darkspotinthecorner/DarkTip"><img src="img/darktip_logo.png" alt="DarkTip" title="DarkTip" /></a>
+			<span class="small">by <a href="http://github.com/darkspotinthecorner">darkspotinthecorner</a></span>
+		</h1>
+    	
+		<div class="description">
+			The DarkTip plugin is a javascript based tooltip framework that enables quick and easy development of modules that hook into specific aspects of a webpage and display context sensitive tooltips.
+		</div>
+    	
+		<h2>Authors</h2>
+		<p>darkspotinthecorner [darkspotinthecorner (at) gmail (dot) com]</p>
+    	
+		<h2>Contact</h2>
+		<p>[darkspotinthecorner (at) gmail (dot) com]</p>
+    	
+		<a name="code-index"></a>
+		<h2>Using DarkTip</h2>
+		<p>
+			<ol>
+				<li><a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">Download</a> and extract the DarkTip files.</li>
+				<li>Upload the files to a directory on your webserver that is accessible by the public.</li>
+				<li>On any webpage where you want to have DarkTip active, include the following code:
+					<pre>
 &lt;script type="text/javascript"&gt;
 
   window.___DarkTipSettings = {
@@ -118,352 +201,340 @@
 &lt;/script&gt;
 &lt;script type="text/javascript" src="darktip/DarkTip.js"&gt;&lt;/script&gt;
 </pre>
-			</li>
-			<li>IMPORTANT: Replace the example paths with your own valid paths that fit your server directory!</li>
-		</ol>
-    </p>
-
-    <h2>Demos</h2>
-    <p>
-		
-		<a name="demo-realm"></a>
-		<h1 class="subsection">Realm <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="realm:eu.gilneas(en)">&lt;span data-darktip="realm:eu.gilneas(en)"&gt;</span></li>
-			<li><span data-darktip="realm:eu.gilneas(de)">&lt;span data-darktip="realm:eu.gilneas(de)"&gt;</li>
-			<li><span data-darktip="realm:eu.gilneas(fr)">&lt;span data-darktip="realm:eu.gilneas(fr)"&gt;</span></li>
-			<li><span data-darktip="realm:eu.gilneas(es)">&lt;span data-darktip="realm:eu.gilneas(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="realm:eu.gilnssseas(en)">&lt;span data-darktip="realm:eu.gilnssseas(en)"&gt;</span></li>
-			<li><span data-darktip="realm:eu.gilnssseas(de)">&lt;span data-darktip="realm:eu.gilnssseas(de)"&gt;</span></li>
-			<li><span data-darktip="realm:eu.gilnssseas(fr)">&lt;span data-darktip="realm:eu.gilnssseas(fr)"&gt;</span></li>
-			<li><span data-darktip="realm:eu.gilnssseas(es)">&lt;span data-darktip="realm:eu.gilnssseas(es)"&gt;</span></li>
-		</ul>
-		
-		<a name="demo-quest"></a>
-		<h1 class="subsection">Quest <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox explicit">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="quest:eu.10781(en)">&lt;span data-darktip="quest:eu.10781(en)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10781(de)">&lt;span data-darktip="quest:eu.10781(de)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10781(fr)">&lt;span data-darktip="quest:eu.10781(fr)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10781(es)">&lt;span data-darktip="quest:eu.10781(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="quest:eu.10blubb781(en)">&lt;span data-darktip="quest:eu.10blubb781(en)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10blubb781(de)">&lt;span data-darktip="quest:eu.10blubb781(de)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10blubb781(fr)">&lt;span data-darktip="quest:eu.10blubb781(fr)"&gt;</span></li>
-			<li><span data-darktip="quest:eu.10blubb781(es)">&lt;span data-darktip="quest:eu.10blubb781(es)"&gt;</span></li>
-		</ul>
-		
-		<a name="demo-item"></a>
-		<h1 class="subsection">Item <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="item:eu.49623(en)">&lt;span data-darktip="item:eu.49623(en)"&gt;</span></li>
-			<li><span data-darktip="item:eu.49623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
-			<li><span data-darktip="item:eu.49623(fr)">&lt;span data-darktip="item:eu.49623(fr)"&gt;</span></li>
-			<li><span data-darktip="item:eu.49623(es)">&lt;span data-darktip="item:eu.49623(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="item:eu.2349623(en)">&lt;span data-darktip="item:eu.2349623(en)"&gt;</span></li>
-			<li><span data-darktip="item:eu.2349623(de)">&lt;span data-darktip="item:eu.2349623(de)"&gt;</span></li>
-			<li><span data-darktip="item:eu.2349623(fr)">&lt;span data-darktip="item:eu.2349623(fr)"&gt;</span></li>
-			<li><span data-darktip="item:eu.2349623(es)">&lt;span data-darktip="item:eu.2349623(es)"&gt;</span></li>
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/item/60288">&lt;a href="http://eu.battle.net/wow/en/item/60288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/item/60288">&lt;a href="http://eu.battle.net/wow/de/item/60288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/item/60288">&lt;a href="http://eu.battle.net/wow/fr/item/60288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/item/60288">&lt;a href="http://eu.battle.net/wow/es/item/60288"&gt;</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/item/34160288">&lt;a href="http://eu.battle.net/wow/en/item/34160288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/item/34160288">&lt;a href="http://eu.battle.net/wow/de/item/34160288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/item/34160288">&lt;a href="http://eu.battle.net/wow/fr/item/34160288"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/item/34160288">&lt;a href="http://eu.battle.net/wow/es/item/34160288"&gt;</a></li>
-		</ul>
-		
-		<a name="demo-item-equipped"></a>
-		<h1 class="subsection">Equipped Item <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.mainhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.mainhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.back(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.back(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.mashus.waist(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.mashus.waist(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.blackhand.nightstalker.waist(en)">&lt;span data-darktip=&quot;item-equipped:eu.blackhand.nightstalker.waist(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.die-aldor.vedra.shoulder(en)">&lt;span data-darktip=&quot;item-equipped:eu.die-aldor.vedra.shoulder(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(de)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(de)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(fr)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(fr)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(es)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(es)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhil.offhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.offhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(de)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(de)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(fr)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(fr)&quot;&gt;...&lt;/span&gt;</span></li>
-			<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(es)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(es)&quot;&gt;...&lt;/span&gt;</span></li>
-		</ul>
-		
-		<a name="demo-character"></a>
-		<h1 class="subsection">Character <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="character:eu.gilneas.rhil(en)">&lt;span data-darktip="character:eu.gilneas.rhil(en)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhil(de)">&lt;span data-darktip="character:eu.gilneas.rhil(de)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhil(fr)">&lt;span data-darktip="character:eu.gilneas.rhil(fr)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhil(es)">&lt;span data-darktip="character:eu.gilneas.rhil(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="character:eu.gilneas.rhilthesecond(en)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(en)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(de)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhilthesecond(fr)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(fr)"&gt;</span></li>
-			<li><span data-darktip="character:eu.gilneas.rhilthesecond(es)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(es)"&gt;</span></li>
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple"&gt;</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
-		</ul>
-		
-		<a name="demo-character-pvp"></a>
-		<h1 class="subsection">Character PvP <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebru(en)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(en)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebru(de)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(de)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebru(fr)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(fr)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebru(es)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(en)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(en)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(de)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(de)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(fr)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(fr)"&gt;</span></li>
-			<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(es)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(es)"&gt;</span></li>
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp"&gt;</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/en/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/de/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/fr/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
-		</ul>
-		
-		<a name="demo-guild"></a>
-		<h1 class="subsection">Guild <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension(en)">&lt;span data-darktip="guild:eu.gilneas.ascension(en)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension(de)">&lt;span data-darktip="guild:eu.gilneas.ascension(de)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension(fr)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension(es)">&lt;span data-darktip="guild:eu.gilneas.ascension(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension yeah(en)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(en)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension yeah(de)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(de)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension yeah(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(fr)"&gt;</span></li>
-			<li><span data-darktip="guild:eu.gilneas.ascension yeah(es)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(es)"&gt;</span></li>
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/"&gt;</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/"&gt;</a></li>
-		</ul>
-		
-		<a name="demo-arena"></a>
-		<h1 class="subsection">Arena Team <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Explicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)"&gt;</span></li>
-			<li><h2>404</h2></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(en)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(en)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(de)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(de)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(fr)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(fr)"&gt;</span></li>
-			<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(es)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(es)"&gt;</span></li>
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
-			<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
-		</ul>
-		
-		<a name="demo-wowhead-character"></a>
-		<h1 class="subsection">Wowhead Character Pickup <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhil#inventory">http://www.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
-			<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhil#inventory">http://de.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
-			<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
-			<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhil#inventory">http://es.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://www.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
-			<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://de.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
-			<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
-			<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
-		</ul>
-		
-		<a name="demo-wowhead-guild"></a>
-		<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascension#characters">http://www.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
-			<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascension#characters">http://de.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
-			<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascension#characters">http://fr.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
-			<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascension#characters">http://es.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
-			<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
-			<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
-			<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
-		</ul>
-		
-		<a name="demo-wowhead-item"></a>
-		<h1 class="subsection">Wowhead Item Pickup <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://www.wowhead.com/item=46960#comments">http://www.wowhead.com/item=46960#comments</a></li>
-			<li><a href="http://de.wowhead.com/item=46960#comments">http://de.wowhead.com/item=46960#comments</a></li>
-			<li><a href="http://fr.wowhead.com/item=46960#comments">http://fr.wowhead.com/item=46960#comments</a></li>
-			<li><a href="http://es.wowhead.com/item=46960#comments">http://es.wowhead.com/item=46960#comments</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://www.wowhead.com/item=4696023443#comments">http://www.wowhead.com/item=4696023443#comments</a></li>
-			<li><a href="http://de.wowhead.com/item=4696023443#comments">http://de.wowhead.com/item=4696023443#comments</a></li>
-			<li><a href="http://fr.wowhead.com/item=4696023443#comments">http://fr.wowhead.com/item=4696023443#comments</a></li>
-			<li><a href="http://es.wowhead.com/item=4696023443#comments">http://es.wowhead.com/item=4696023443#comments</a></li>
-		</ul>
-		
-		<a name="demo-wowhead-quest"></a>
-		<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Implicit</h1></li>
-			<li><h2>Existing</h2></li>
-			<li><a href="http://www.wowhead.com/quest=26248#screenshots">http://www.wowhead.com/quest=26248#screenshots</a></li>
-			<li><a href="http://de.wowhead.com/quest=26248#screenshots">http://de.wowhead.com/quest=26248#screenshots</a></li>
-			<li><a href="http://fr.wowhead.com/quest=26248#screenshots">http://fr.wowhead.com/quest=26248#screenshots</a></li>
-			<li><a href="http://es.wowhead.com/quest=26248#screenshots">http://es.wowhead.com/quest=26248#screenshots</a></li>
-			<li><h2>404</h2></li>
-			<li><a href="http://www.wowhead.com/quest=262482331#screenshots">http://www.wowhead.com/quest=262482331#screenshots</a></li>
-			<li><a href="http://de.wowhead.com/quest=262482331#screenshots">http://de.wowhead.com/quest=262482331#screenshots</a></li>
-			<li><a href="http://fr.wowhead.com/quest=262482331#screenshots">http://fr.wowhead.com/quest=262482331#screenshots</a></li>
-			<li><a href="http://es.wowhead.com/quest=262482331#screenshots">http://es.wowhead.com/quest=262482331#screenshots</a></li>
-		</ul>
-		
-		<a name="demo-own-links"></a>
-		<h1 class="subsection">Custom <a href="#code-index">&uArr;</a></h1>
-		<ul class="testbox">
-			<li><h1>Try your own data-darktip code</h1></li>
-			<li>
-				<div id="custom-explicit-templates">
-					<h2>Templates</h2>
-					<ul id="custom-explicit-templates-list">
-						<li data-template="realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
-						<li data-template="quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
-						<li data-template="item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
-						<li data-template="item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
-						<li data-template="character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
-						<li data-template="character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
-						<li data-template="guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
-						<li data-template="arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
-					</ul>
-				</div>
-			</li>
-			<li>
-				<div id="demo-custom-explicit">
-					<input id="custom-explicit-input" value="" /> <input type="button" id="custom-explicit-button" value="Generate!" />
-				</div>
-				<ul id="custom-explicit-list"></ul>
-			</li>
-			<li><h1 class="padded">Try your own url</h1></li>
-			<li>
-				<div id="demo-custom-implicit">
-					<input id="custom-implicit-input" value="" /> <input type="button" id="custom-implicit-button" value="Generate!" />
-				</div>
-				<ul id="custom-implicit-list"></ul>
-			</li>
-		</ul>
-		
-    </p>
-
-    <h2>Download</h2>
-    <p>You can download this project in either <a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">zip</a> or <a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master">tar</a> formats.</p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
-      <pre>$ git clone git://github.com/darkspotinthecorner/DarkTip</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/darkspotinthecorner/DarkTip">darkspotinthecorner/DarkTip</a>
-    </div>
-
-  </div>
+				</li>
+				<li>IMPORTANT: Replace the example paths with your own valid paths that fit your server directory!</li>
+			</ol>
+		</p>
+    	
+		<h2>Demos</h2>
+		<p>
+			<a name="demo-realm"></a>
+			<h1 class="subsection">Realm <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="realm:eu.gilneas(en)">&lt;span data-darktip="realm:eu.gilneas(en)"&gt;</span></li>
+				<li><span data-darktip="realm:eu.gilneas(de)">&lt;span data-darktip="realm:eu.gilneas(de)"&gt;</li>
+				<li><span data-darktip="realm:eu.gilneas(fr)">&lt;span data-darktip="realm:eu.gilneas(fr)"&gt;</span></li>
+				<li><span data-darktip="realm:eu.gilneas(es)">&lt;span data-darktip="realm:eu.gilneas(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="realm:eu.gilnssseas(en)">&lt;span data-darktip="realm:eu.gilnssseas(en)"&gt;</span></li>
+				<li><span data-darktip="realm:eu.gilnssseas(de)">&lt;span data-darktip="realm:eu.gilnssseas(de)"&gt;</span></li>
+				<li><span data-darktip="realm:eu.gilnssseas(fr)">&lt;span data-darktip="realm:eu.gilnssseas(fr)"&gt;</span></li>
+				<li><span data-darktip="realm:eu.gilnssseas(es)">&lt;span data-darktip="realm:eu.gilnssseas(es)"&gt;</span></li>
+			</ul>
+    	
+			<a name="demo-quest"></a>
+			<h1 class="subsection">Quest <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox explicit">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="quest:eu.10781(en)">&lt;span data-darktip="quest:eu.10781(en)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10781(de)">&lt;span data-darktip="quest:eu.10781(de)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10781(fr)">&lt;span data-darktip="quest:eu.10781(fr)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10781(es)">&lt;span data-darktip="quest:eu.10781(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="quest:eu.10blubb781(en)">&lt;span data-darktip="quest:eu.10blubb781(en)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10blubb781(de)">&lt;span data-darktip="quest:eu.10blubb781(de)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10blubb781(fr)">&lt;span data-darktip="quest:eu.10blubb781(fr)"&gt;</span></li>
+				<li><span data-darktip="quest:eu.10blubb781(es)">&lt;span data-darktip="quest:eu.10blubb781(es)"&gt;</span></li>
+			</ul>
+    	
+			<a name="demo-item"></a>
+			<h1 class="subsection">Item <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="item:eu.49623(en)">&lt;span data-darktip="item:eu.49623(en)"&gt;</span></li>
+				<li><span data-darktip="item:eu.49623(de)">&lt;span data-darktip="item:eu.49623(de)"&gt;</span></li>
+				<li><span data-darktip="item:eu.49623(fr)">&lt;span data-darktip="item:eu.49623(fr)"&gt;</span></li>
+				<li><span data-darktip="item:eu.49623(es)">&lt;span data-darktip="item:eu.49623(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="item:eu.2349623(en)">&lt;span data-darktip="item:eu.2349623(en)"&gt;</span></li>
+				<li><span data-darktip="item:eu.2349623(de)">&lt;span data-darktip="item:eu.2349623(de)"&gt;</span></li>
+				<li><span data-darktip="item:eu.2349623(fr)">&lt;span data-darktip="item:eu.2349623(fr)"&gt;</span></li>
+				<li><span data-darktip="item:eu.2349623(es)">&lt;span data-darktip="item:eu.2349623(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/item/60288">&lt;a href="http://eu.battle.net/wow/en/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/item/60288">&lt;a href="http://eu.battle.net/wow/de/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/item/60288">&lt;a href="http://eu.battle.net/wow/fr/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/item/60288">&lt;a href="http://eu.battle.net/wow/es/item/60288"&gt;</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/item/34160288">&lt;a href="http://eu.battle.net/wow/en/item/34160288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/item/34160288">&lt;a href="http://eu.battle.net/wow/de/item/34160288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/item/34160288">&lt;a href="http://eu.battle.net/wow/fr/item/34160288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/item/34160288">&lt;a href="http://eu.battle.net/wow/es/item/34160288"&gt;</a></li>
+			</ul>
+    	
+			<a name="demo-item-equipped"></a>
+			<h1 class="subsection">Equipped Item <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.mainhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.mainhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.back(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.back(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.mashus.waist(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.mashus.waist(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.blackhand.nightstalker.waist(en)">&lt;span data-darktip=&quot;item-equipped:eu.blackhand.nightstalker.waist(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.die-aldor.vedra.shoulder(en)">&lt;span data-darktip=&quot;item-equipped:eu.die-aldor.vedra.shoulder(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(de)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(de)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(fr)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(fr)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.legs(es)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.legs(es)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhil.offhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhil.offhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(en)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(de)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(de)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(fr)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(fr)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(es)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(es)&quot;&gt;...&lt;/span&gt;</span></li>
+			</ul>
+    	
+			<a name="demo-character"></a>
+			<h1 class="subsection">Character <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="character:eu.gilneas.rhil(en)">&lt;span data-darktip="character:eu.gilneas.rhil(en)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhil(de)">&lt;span data-darktip="character:eu.gilneas.rhil(de)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhil(fr)">&lt;span data-darktip="character:eu.gilneas.rhil(fr)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhil(es)">&lt;span data-darktip="character:eu.gilneas.rhil(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="character:eu.gilneas.rhilthesecond(en)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(en)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhilthesecond(de)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(de)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhilthesecond(fr)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(fr)"&gt;</span></li>
+				<li><span data-darktip="character:eu.gilneas.rhilthesecond(es)">&lt;span data-darktip="character:eu.gilneas.rhilthesecond(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
+			</ul>
+    	
+			<a name="demo-character-pvp"></a>
+			<h1 class="subsection">Character PvP <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebru(en)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(en)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebru(de)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(de)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebru(fr)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(fr)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebru(es)">&lt;span data-darktip="character-pvp:eu.khadgar.gebru(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(en)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(en)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(de)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(de)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(fr)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(fr)"&gt;</span></li>
+				<li><span data-darktip="character-pvp:eu.khadgar.gebrunothere(es)">&lt;span data-darktip="character-pvp:eu.khadgar.gebrunothere(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/en/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/de/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/fr/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
+			</ul>
+    	
+			<a name="demo-guild"></a>
+			<h1 class="subsection">Guild <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension(en)">&lt;span data-darktip="guild:eu.gilneas.ascension(en)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension(de)">&lt;span data-darktip="guild:eu.gilneas.ascension(de)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension(fr)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension(es)">&lt;span data-darktip="guild:eu.gilneas.ascension(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension yeah(en)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(en)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension yeah(de)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(de)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension yeah(fr)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(fr)"&gt;</span></li>
+				<li><span data-darktip="guild:eu.gilneas.ascension yeah(es)">&lt;span data-darktip="guild:eu.gilneas.ascension yeah(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Rangers/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Rangers/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Rangers/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/"&gt;</a></li>
+			</ul>
+    	
+			<a name="demo-arena"></a>
+			<h1 class="subsection">Arena Team <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)"&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(en)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(en)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(de)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(de)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(fr)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(fr)"&gt;</span></li>
+				<li><span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(es)">&lt;span data-darktip="arena:eu.khadgar.5v5.MostOfUsDontDoDrugsRightNow(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
+			</ul>
+    	
+			<a name="demo-wowhead-character"></a>
+			<h1 class="subsection">Wowhead Character Pickup <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhil#inventory">http://www.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+				<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhil#inventory">http://de.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+				<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+				<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhil#inventory">http://es.wowhead.com/profile=eu.gilneas.rhil#inventory</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://www.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://www.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
+				<li><a href="http://de.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://de.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
+				<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://fr.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
+				<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
+			</ul>
+    	
+			<a name="demo-wowhead-guild"></a>
+			<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascension#characters">http://www.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascension#characters">http://de.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascension#characters">http://fr.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascension#characters">http://es.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://www.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+				<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://de.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+				<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://fr.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+				<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
+			</ul>
+    	
+			<a name="demo-wowhead-item"></a>
+			<h1 class="subsection">Wowhead Item Pickup <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/item=46960#comments">http://www.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://de.wowhead.com/item=46960#comments">http://de.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://fr.wowhead.com/item=46960#comments">http://fr.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://es.wowhead.com/item=46960#comments">http://es.wowhead.com/item=46960#comments</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://www.wowhead.com/item=4696023443#comments">http://www.wowhead.com/item=4696023443#comments</a></li>
+				<li><a href="http://de.wowhead.com/item=4696023443#comments">http://de.wowhead.com/item=4696023443#comments</a></li>
+				<li><a href="http://fr.wowhead.com/item=4696023443#comments">http://fr.wowhead.com/item=4696023443#comments</a></li>
+				<li><a href="http://es.wowhead.com/item=4696023443#comments">http://es.wowhead.com/item=4696023443#comments</a></li>
+			</ul>
+    	
+			<a name="demo-wowhead-quest"></a>
+			<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/quest=26248#screenshots">http://www.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://de.wowhead.com/quest=26248#screenshots">http://de.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://fr.wowhead.com/quest=26248#screenshots">http://fr.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://es.wowhead.com/quest=26248#screenshots">http://es.wowhead.com/quest=26248#screenshots</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://www.wowhead.com/quest=262482331#screenshots">http://www.wowhead.com/quest=262482331#screenshots</a></li>
+				<li><a href="http://de.wowhead.com/quest=262482331#screenshots">http://de.wowhead.com/quest=262482331#screenshots</a></li>
+				<li><a href="http://fr.wowhead.com/quest=262482331#screenshots">http://fr.wowhead.com/quest=262482331#screenshots</a></li>
+				<li><a href="http://es.wowhead.com/quest=262482331#screenshots">http://es.wowhead.com/quest=262482331#screenshots</a></li>
+			</ul>
+    	
+			<a name="demo-own-links"></a>
+			<h1 class="subsection">Custom <a href="#code-index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Try your own data-darktip code</h1></li>
+				<li>
+					<div id="custom-explicit-templates">
+						<h2>Templates</h2>
+						<ul id="custom-explicit-templates-list">
+							<li data-template="realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
+							<li data-template="quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
+							<li data-template="item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
+							<li data-template="item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
+							<li data-template="character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
+							<li data-template="character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
+							<li data-template="guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
+							<li data-template="arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<div id="demo-custom-explicit">
+						<input id="custom-explicit-input" value="" /> <input type="button" id="custom-explicit-button" value="Generate!" />
+					</div>
+					<ul id="custom-explicit-list"></ul>
+				</li>
+				<li><h1 class="padded">Try your own url</h1></li>
+				<li>
+					<div id="demo-custom-implicit">
+						<input id="custom-implicit-input" value="" /> <input type="button" id="custom-implicit-button" value="Generate!" />
+					</div>
+					<ul id="custom-implicit-list"></ul>
+				</li>
+			</ul>
+    	</p>
+    	
+		<h2>Download</h2>
+		<p>You can download this project in either <a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">zip</a> or <a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master">tar</a> formats.</p>
+		<p>You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
+			<pre>$ git clone git://github.com/darkspotinthecorner/DarkTip</pre>
+		</p>
+    	
+		<div class="footer">
+			get the source code on GitHub : <a href="http://github.com/darkspotinthecorner/DarkTip">darkspotinthecorner/DarkTip</a>
+		</div>
+	</div>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 	<script type="text/javascript">
-		
+
 		jQuery(function () {
 			
 			jQuery('#custom-implicit-button').bind('click', function() {
-				
 				var url = jQuery('#custom-implicit-input').attr('value');
-				
 				if(url != '')
 				{
 					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt; ... &lt;/a&gt;</a></li>');
 				}
-				
 			});
 			
 			jQuery('#custom-explicit-button').bind('click', function() {
-				
 				var code = jQuery('#custom-explicit-input').attr('value');
-
 				if(code != '')
 				{
 					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt; ... &lt;/span&gt;</span></li>');
 				}
-
 			});
 			
 			jQuery('#custom-explicit-templates-list li').bind('click', function() {
-				
 				template = jQuery(this).data('template');
-				
 				jQuery('#custom-explicit-input').attr('value', template);
-				
 			});
 			
 		});
-		
+
 	</script>
 	<script type="text/javascript">
 		window.___DarkTipSettings = {
@@ -493,5 +564,6 @@
 		};
 	</script>
 	<script type="text/javascript" src="darktip/DarkTip.js"></script>
+	
 </body>
 </html>
