@@ -89,6 +89,51 @@
 			padding: 8px;
 		}
 		
+
+		.testbox ul {
+			list-style: none;
+		}
+		
+		#demo-custom-implicit,
+		#demo-custom-explicit {
+			border-radius: 6px;
+			background-color: #fff;
+			clear: both;
+			padding: 8px;
+			text-align: center;
+		}
+		
+		#custom-implicit-input,
+		#custom-explicit-input {
+			border-radius: 6px;
+			border: 3px solid #ddd;
+			width: 500px;
+			height: 30px;
+			font-size: 22px;
+			padding: 1px 3px;
+			color: #666;
+		}
+		
+		#custom-implicit-button,
+		#custom-explicit-button {
+			border-radius: 6px;
+			border: 3px solid #ccc;
+			width: 140px;
+			height: 38px;
+			font-size: 18px;
+			font-weight: bold;
+			background-color: #ddd;
+			color: #999;
+			vertical-align: top;
+		}
+		
+		#custom-implicit-button:hover,
+		#custom-explicit-button:hover {
+			border-color: #bbb;
+			background-color: #ccc;
+			color: #333;
+		}
+		
 		.testbox h1 {
 			padding-top: 0;
 			margin-top: 0;
@@ -129,6 +174,38 @@
 			color: #888;
 		}
 		
+		#custom-implicit-list,
+		#custom-explicit-list {
+			list-style: none;
+			padding: 0;
+			margin: 6px 10px;
+		}
+		
+		#custom-explicit-templates {
+			clear: both;
+			margin: 6px;
+		}
+		
+		#custom-explicit-templates-list {
+			overflow: hidden;
+			padding: 0;
+		}
+		
+		#custom-explicit-templates-list li {
+			cursor: pointer;
+			float: left;
+			border-radius: 3px;
+			background-color: #aaa;
+			padding: 3px 9px 3px 6px;
+			margin-right: 4px;
+			font-style: italic;
+		}
+		
+		#custom-explicit-templates-list li:hover {
+			background-color: #333;
+			color: #fff;
+		}
+		
 	</style>
 </head>
 <body>
@@ -156,6 +233,7 @@
     	
 		<h2>Contact</h2>
 		<p>[darkspotinthecorner (at) gmail (dot) com]</p>
+		<p><a href="https://plus.google.com/u/0/b/109019720443407643481/">DarkTip's Google+ Page</a></p>
     	
 		<a name="code-index"></a>
 		<h2>Using DarkTip</h2>
@@ -179,19 +257,19 @@
       'extras': [
         'darktip/modules/wow.css',
         'darktip/modules/wow.js',
-        '<a href="#demo-realm">darktip/modules/wow.realm.js</a>',
-        '<a href="#demo-quest">darktip/modules/wow.quest.js</a>',
-        '<a href="#demo-item">darktip/modules/wow.item.js</a>',
-        '<a href="#demo-item-equipped">darktip/modules/wow.item.equipped.js</a>',
-        '<a href="#demo-character">darktip/modules/wow.character.js</a>',
-        '<a href="#demo-character-pvp">darktip/modules/wow.character.pvp.js</a>',
-        '<a href="#demo-guild">darktip/modules/wow.guild.js</a>',
-        '<a href="#demo-arena">darktip/modules/wow.arena.js</a>',
+        '<a href="#demo-realm" title="Jump to WoW realm demos">darktip/modules/wow.realm.js</a>',
+        '<a href="#demo-quest" title="Jump to WoW quest demos">darktip/modules/wow.quest.js</a>',
+        '<a href="#demo-item" title="Jump to WoW item demos">darktip/modules/wow.item.js</a>',
+        '<a href="#demo-item-equipped" title="Jump to WoW equipped item demos">darktip/modules/wow.item.equipped.js</a>',
+        '<a href="#demo-character" title="Jump to WoW character demos">darktip/modules/wow.character.js</a>',
+        '<a href="#demo-character-pvp" title="Jump to WoW character pvp demos">darktip/modules/wow.character.pvp.js</a>',
+        '<a href="#demo-guild" title="Jump to WoW guild demos">darktip/modules/wow.guild.js</a>',
+        '<a href="#demo-arena" title="Jump to WoW arena demos">darktip/modules/wow.arena.js</a>',
         'darktip/modules/wow.wowhead.js',
-        '<a href="#demo-wowhead-character">darktip/modules/wow.wowhead.character.js</a>',
-        '<a href="#demo-wowhead-guild">darktip/modules/wow.wowhead.guild.js</a>',
-        '<a href="#demo-wowhead-item">darktip/modules/wow.wowhead.item.js</a>',
-        '<a href="#demo-wowhead-quest">darktip/modules/wow.wowhead.quest.js</a>'
+        '<a href="#demo-wowhead-character" title="Jump to WoW character demos via Wowhead links">darktip/modules/wow.wowhead.character.js</a>',
+        '<a href="#demo-wowhead-guild" title="Jump to WoW guild demos via Wowhead links">darktip/modules/wow.wowhead.guild.js</a>',
+        '<a href="#demo-wowhead-item" title="Jump to WoW item demos via Wowhead links">darktip/modules/wow.wowhead.item.js</a>',
+        '<a href="#demo-wowhead-quest" title="Jump to WoW quest demos via Wowhead links">darktip/modules/wow.wowhead.quest.js</a>'
       ]
 
     }
@@ -209,7 +287,7 @@
 		<h2>Demos</h2>
 		<p>
 			<a name="demo-realm"></a>
-			<h1 class="subsection">Realm <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Realm <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -225,7 +303,7 @@
 			</ul>
     	
 			<a name="demo-quest"></a>
-			<h1 class="subsection">Quest <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Quest <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox explicit">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -241,7 +319,7 @@
 			</ul>
     	
 			<a name="demo-item"></a>
-			<h1 class="subsection">Item <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -268,7 +346,7 @@
 			</ul>
     	
 			<a name="demo-item-equipped"></a>
-			<h1 class="subsection">Equipped Item <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Equipped Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -290,7 +368,7 @@
 			</ul>
     	
 			<a name="demo-character"></a>
-			<h1 class="subsection">Character <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Character <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -317,7 +395,7 @@
 			</ul>
     	
 			<a name="demo-character-pvp"></a>
-			<h1 class="subsection">Character PvP <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Character PvP <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -344,7 +422,7 @@
 			</ul>
     	
 			<a name="demo-guild"></a>
-			<h1 class="subsection">Guild <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Guild <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -371,7 +449,7 @@
 			</ul>
     	
 			<a name="demo-arena"></a>
-			<h1 class="subsection">Arena Team <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Arena Team <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -398,7 +476,7 @@
 			</ul>
     	
 			<a name="demo-wowhead-character"></a>
-			<h1 class="subsection">Wowhead Character Pickup <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Wowhead Character Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -414,7 +492,7 @@
 			</ul>
     	
 			<a name="demo-wowhead-guild"></a>
-			<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -430,7 +508,7 @@
 			</ul>
     	
 			<a name="demo-wowhead-item"></a>
-			<h1 class="subsection">Wowhead Item Pickup <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Wowhead Item Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -446,7 +524,7 @@
 			</ul>
     	
 			<a name="demo-wowhead-quest"></a>
-			<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
 				<li><h2>Existing</h2></li>
@@ -462,7 +540,7 @@
 			</ul>
     	
 			<a name="demo-own-links"></a>
-			<h1 class="subsection">Custom <a href="#code-index">&uArr;</a></h1>
+			<h1 class="subsection">Custom <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Try your own data-darktip code</h1></li>
 				<li>
@@ -516,7 +594,7 @@
 				var url = jQuery('#custom-implicit-input').attr('value');
 				if(url != '')
 				{
-					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt; ... &lt;/a&gt;</a></li>');
+					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt;</a></li>');
 				}
 			});
 			
@@ -524,7 +602,7 @@
 				var code = jQuery('#custom-explicit-input').attr('value');
 				if(code != '')
 				{
-					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt; ... &lt;/span&gt;</span></li>');
+					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt;</span></li>');
 				}
 			});
 			
