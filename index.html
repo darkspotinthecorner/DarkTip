@@ -28,13 +28,24 @@
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
-	.testbox { border-radius: 6px; background-color: #ddd; list-style: none; padding: 8px; }
-	.testbox h1 { padding-top: 0; margin-top: 0; font-size: 2em; color: #999; float: right; }
+	.testbox { border-radius: 6px; background-color: #ddd; list-style: none; padding: 8px; overflow: hidden; }
+	.testbox ul { list-style: none; }
+	#demo-custom-implicit, #demo-custom-explicit { border-radius: 6px; background-color: #fff; clear: both; padding: 8px; }
+	#custom-implicit-input, #custom-explicit-input { border-radius: 6px; border: 3px solid #ddd; width: 500px; height: 30px; font-size: 22px; padding: 1px 3px; color: #666; }
+	#custom-implicit-button, #custom-explicit-button { border-radius: 6px; border: 3px solid #ccc; width: 140px; height: 38px; font-size: 18px; font-weight: bold; background-color: #ddd; color: #999; vertical-align: top; }
+	#custom-implicit-button:hover, #custom-explicit-button:hover { border-color: #bbb; background-color: #ccc; color: #333; }
+	.testbox h1 { padding-top: 0; margin-top: 0; font-size: 2em; color: #999; float: right; clear: both; }
+	.testbox h1.padded { padding-top: 20px; }
 	.testbox h2 { font-size: 1.2em; }
 	.testbox li { font-size: 90%; }
 	.testbox a { color: #71D5FF; display: inline-block; margin: 5px 0; padding: 10px; border-radius: 5px; background-color: #036; }
 	.testbox span[data-darktip] { color: #71D5FF; display: inline-block; margin: 5px 0; padding: 10px; border-radius: 5px; background-color: #306; }
 	h1.subsection { text-align: right; font-size: 2.5em; color: #888; }
+	#custom-implicit-list, #custom-explicit-list { list-style: none; padding: 0; margin: 6px 10px; }
+	#custom-explicit-templates { clear: both; margin: 6px; }
+	#custom-explicit-templates-list { overflow: hidden; padding: 0; }
+	#custom-explicit-templates-list li { cursor: pointer; float: left; border-radius: 3px; background-color: #aaa; padding: 3px 9px 3px 6px; margin-right: 4px; font-style: italic; }
+	#custom-explicit-templates-list li:hover { background-color: #333; color: #fff; }
   </style>
 </head>
 
@@ -371,12 +382,34 @@
 		<a name="demo-own-links"></a>
 		<h1 class="subsection">Custom <a href="#code-index">&uArr;</a></h1>
 		<ul class="testbox">
-			<li><h1>Try your own Battle.net url</h1></li>
+			<li><h1>Try your own data-darktip code</h1></li>
 			<li>
-				<div id="form">
-					<p><input id="darktip-dynamic-character-profile-input" value="" /> <input type="button" id="darktip-dynamic-character-profile-button" value="Generate!" /></p>
-					<ol id="darktip-dynamic-character-profile-hyperlinks"></ol>
+				<div id="custom-explicit-templates">
+					<h2>Templates</h2>
+					<ul id="custom-explicit-templates-list">
+						<li data-template="realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
+						<li data-template="quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
+						<li data-template="item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
+						<li data-template="item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
+						<li data-template="character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
+						<li data-template="character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
+						<li data-template="guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
+						<li data-template="arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
+					</ul>
 				</div>
+			</li>
+			<li>
+				<div id="demo-custom-explicit">
+					<input id="custom-explicit-input" value="" /> <input type="button" id="custom-explicit-button" value="Generate!" />
+				</div>
+				<ul id="custom-explicit-list"></ul>
+			</li>
+			<li><h1 class="padded">Try your own url</h1></li>
+			<li>
+				<div id="demo-custom-implicit">
+					<input id="custom-implicit-input" value="" /> <input type="button" id="custom-implicit-button" value="Generate!" />
+				</div>
+				<ul id="custom-implicit-list"></ul>
 			</li>
 		</ul>
 		
@@ -399,14 +432,33 @@
 		
 		jQuery(function () {
 			
-			jQuery('#darktip-dynamic-character-profile-button').bind('click', function() {
+			jQuery('#custom-implicit-button').bind('click', function() {
 				
-				var url = jQuery('#darktip-dynamic-character-profile-input').attr('value');
+				var url = jQuery('#custom-implicit-input').attr('value');
 				
 				if(url != '')
 				{
-					jQuery('#darktip-dynamic-character-profile-hyperlinks').append('<li><a href="'+url+'">'+url+'</a></li>');
+					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt; ... &lt;/a&gt;</a></li>');
 				}
+				
+			});
+			
+			jQuery('#custom-explicit-button').bind('click', function() {
+				
+				var code = jQuery('#custom-explicit-input').attr('value');
+
+				if(code != '')
+				{
+					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt; ... &lt;/span&gt;</span></li>');
+				}
+
+			});
+			
+			jQuery('#custom-explicit-templates-list li').bind('click', function() {
+				
+				template = jQuery(this).data('template');
+				
+				jQuery('#custom-explicit-input').attr('value', template);
 				
 			});
 			
