@@ -368,6 +368,18 @@
 			<li><a href="http://es.wowhead.com/quest=262482331#screenshots">http://es.wowhead.com/quest=262482331#screenshots</a></li>
 		</ul>
 		
+		<a name="demo-own-links"></a>
+		<h1 class="subsection">Custom <a href="#code-index">&uArr;</a></h1>
+		<ul class="testbox">
+			<li><h1>Try your own Battle.net url</h1></li>
+			<li>
+				<div id="form">
+					<p><input id="darktip-dynamic-character-profile-input" value="" /> <input type="button" id="darktip-dynamic-character-profile-button" value="Generate!" /></p>
+					<ol id="darktip-dynamic-character-profile-hyperlinks"></ol>
+				</div>
+			</li>
+		</ul>
+		
     </p>
 
     <h2>Download</h2>
@@ -382,7 +394,26 @@
 
   </div>
 
-  <script type="text/javascript">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript">
+		
+		jQuery(function () {
+			
+			jQuery('#darktip-dynamic-character-profile-button').bind('click', function() {
+				
+				var url = jQuery('#darktip-dynamic-character-profile-input').attr('value');
+				
+				if(url != '')
+				{
+					jQuery('#darktip-dynamic-character-profile-hyperlinks').append('<li><a href="'+url+'">'+url+'</a></li>');
+				}
+				
+			});
+			
+		});
+		
+	</script>
+	<script type="text/javascript">
 		window.___DarkTipSettings = {
 			'resources': {
 				'qtip2': [
