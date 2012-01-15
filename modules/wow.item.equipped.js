@@ -289,6 +289,7 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<div class="col-70 darktip-only-x">' +
 						'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
 						'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
+						'<% if(this["character"]["items"]) { %><%= this._sub("templates.fragments.iLevelDiff") %><% } %>' +
 						'<div class="darktip-row highlight-strong"><%= this._loc("itemId") %></div>' +
 						'<% if(this["item"]["maxDurability"]) { %><div class="darktip-row"><%= this._loc("maxDurability") %></div><% } %>' +
 						'<% if(this["item"]["isAuctionable"]) { %><div class="darktip-row"><%= this._loc("auctionable") %></div><% } %>' +
@@ -319,7 +320,21 @@ DarkTip.registerModule('wow.item.equipped', {
 				'<% if(this["copper"]) { %><span class="icon-copper"><%= this["copper"] %></span><% } else { %>' +
 				'<span class="icon-copper">0</span><% } %>'
 			),
-			'stat'          : {
+			'iLevelDiff': (
+				'<% this["item"]["iLevelDiff"] = (this["item"]["itemLevel"] - this["character"]["items"]["averageItemLevelEquipped"]); %>' +
+				'<% if(this["item"]["iLevelDiff"] < -19) { %>' +
+					'<div class="darktip-row darktip-ilvl-2low"><%= this._loc("iLevelDiff.verylow") %></div>' +
+				'<% } else if(this["item"]["iLevelDiff"] < 0) { %>' +
+					'<div class="darktip-row darktip-ilvl-low"><%= this._loc("iLevelDiff.lower") %></div>' +
+				'<% } else if(this["item"]["iLevelDiff"] == 0) { %>' +
+					'<div class="darktip-row darktip-ilvl-match"><%= this._loc("iLevelDiff.match") %></div>' +
+				'<% } else if(this["item"]["iLevelDiff"] < 20) { %>' +
+					'<div class="darktip-row darktip-ilvl-high"><%= this._loc("iLevelDiff.higher") %></div>' +
+				'<% } else { %>' +
+					'<div class="darktip-row darktip-ilvl-2high"><%= this._loc("iLevelDiff.veryhigh") %></div>' +
+				'<% } %>'
+			),
+			'stat': {
 				'primary'  : (
 					'<% if(this._isStatPrimary(this["stat"])) { %>' +
 						'<div class="darktip-row">' +
@@ -365,13 +380,27 @@ DarkTip.registerModule('wow.item.equipped', {
 			'loading'    : 'Loading item...',
 			'not-found'  : 'Item not found',
 			'transmogged': 'Transmogrified to: <%= this["transmog"]["name"] %>',
-			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)'
+			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)',
+			'iLevelDiff' : {
+				'verylow' : 'This item is much below it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
+				'lower'   : 'This item is slightly below it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
+				'match'   : 'This item matches it\'s owner\'s average item level.',
+				'higher'  : 'This item is slightly above it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)',
+				'veryhigh': 'This item is much above it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)'
+			}
 		},
 		'de_DE': {
 			'loading'    : 'Lade Gegenstand...',
 			'not-found'  : 'Gegenstand nicht gefunden',
 			'transmogged': 'Transmogrifiziert zu: <%= this["transmog"]["name"] %>',
-			'reforged'   : 'Umgeschmiedet (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)'
+			'reforged'   : 'Umgeschmiedet (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)',
+			'iLevelDiff' : {
+				'verylow' : 'Dieser Gegenstand ist deutlich unterhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> unterhalb)',
+				'lower'   : 'Dieser Gegenstand ist unterhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> unterhalb)',
+				'match'   : 'Dieser Gegenstand entspricht der durchschnittlichen Gegenstandsstufe seines Besitzers.',
+				'higher'  : 'Dieser Gegenstand ist oberhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> oberhalb)',
+				'veryhigh': 'Dieser Gegenstand ist deutlich oberhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> oberhalb)'
+			}
 		},
 		'fr_FR': {
 			'loading'    : 'Chargement Objets...',
