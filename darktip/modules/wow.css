@@ -333,3 +333,23 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 .darktip-tooltip-wow .darktip-row.alt {
 	background-color: rgba(0, 0, 0, 0.33);
 }
+
+.darktip-tooltip-wow .darktip-ilvl-2low {
+	color: #FF5757;
+}
+
+.darktip-tooltip-wow .darktip-ilvl-low {
+	color: #FFAB57;
+}
+
+.darktip-tooltip-wow .darktip-ilvl-match {
+	color: #FFFF57;
+}
+
+.darktip-tooltip-wow .darktip-ilvl-high {
+	color: #ACFF59;
+}
+
+.darktip-tooltip-wow .darktip-ilvl-2high {
+	color: #59FF59;
+}
