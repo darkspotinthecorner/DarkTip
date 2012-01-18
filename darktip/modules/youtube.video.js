@@ -8,9 +8,9 @@ DarkTip.registerModule('youtube.video', {
 			}
 		},
 		'implicit': {
-			'match' : /^http:\/\/www\.youtube\.com\/(v\/|watch\?v=)([A-Za-z0-9\-_]+).*$/i,
+			'match' : /^(http:\/\/)?www\.youtube\.com\/(v\/|watch\?v=)([A-Za-z0-9\-_]+).*$/i,
 			'params': {
-				'2': 'videoid'
+				'3': 'videoid'
 			}
 		}
 	},

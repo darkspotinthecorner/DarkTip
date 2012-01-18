@@ -49,12 +49,6 @@ DarkTip.registerModule('wow.wowhead.character', {
 	},
 
 	'templates': {
-		'tools': {
-			'_renderDateTime': function(datetime) {
-				var dto = new Date(datetime);
-				return dto.toLocaleString();
-			}
-		},
 		'core': (
 			'<div class="tooltip-character">' +
 		    	'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
@@ -143,7 +137,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Durchschnittliche Gegenstandsstufe (<%= this["averageItemLevel"] %>)',
 			'mounts'        : 'Reittiere: <%= this["character"]["mounts"].length %>',
 			'companions'    : 'Begleiter: <%= this["character"]["companions"].length %>',
-			'lastModified'  : 'Stand von: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
+			'lastModified'  : 'Stand vom <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement personnage...',
