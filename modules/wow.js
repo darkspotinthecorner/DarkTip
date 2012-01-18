@@ -79,6 +79,53 @@ DarkTip.registerModule('wow', {
 		return data;
 	},
 	
+	'templates': {
+		'tools': {
+			'_renderDateTime': function(datetime) {
+				var date = new Date(datetime);
+				var temp = {
+					'year'  : date.getFullYear(),
+					'month' : date.getMonth() + 1,
+					'day'   : date.getDate(),
+					'hour'  : date.getHours(),
+					'minute': date.getMinutes(),
+					'second': date.getSeconds(),
+					'ampm'  : { 'flag': '', 'hour': 0 }
+				};
+				if(temp['hour'] == 0)
+				{
+					temp['ampm']['flag'] = 'AM';
+					temp['ampm']['hour'] = temp['hour'] + 12;
+				}
+				else if(temp['hour'] < 12)
+				{
+					temp['ampm']['flag'] = 'AM';
+					temp['ampm']['hour'] = temp['hour'];
+				}
+				else if(temp['hour'] == 12)
+				{
+					temp['ampm']['flag'] = 'PM';
+					temp['ampm']['hour'] = temp['hour'];
+				}
+				else
+				{
+					temp['ampm']['flag'] = 'PM';
+					temp['ampm']['hour'] = temp['hour'] - 12;
+				}
+				console.log(temp);
+				return this._loc('datetime', temp);
+			},
+			'_padZero': function(number, width) {
+				width -= number.toString().length;
+				if(width > 0)
+				{
+					return new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number;
+				}
+				return number;
+			}
+		}
+	},
+	
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading wow data...',
@@ -144,7 +191,10 @@ DarkTip.registerModule('wow', {
 				'762': 'Riding',
 				'773': 'Inscription',
 				'794': 'Archeology'
-			}
+			},
+			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
+			'date'    : '<%= this._padZero(this["month"], 2) %>/<%= this._padZero(this["day"], 2) %>/<%= this["year"] %>',
+			'time'    : '<%= this._padZero(this["ampm"]["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %> <%= this["ampm"]["flag"] %>'
 		},
 		'de_DE': {
 			'loading'  : 'Lade WoW Daten...',
@@ -210,7 +260,10 @@ DarkTip.registerModule('wow', {
 				'762': 'Reiten',
 				'773': 'Inschriftenkunde',
 				'794': 'Archäologie'
-			}
+			},
+			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
+			'date'    : '<%= this._padZero(this["day"], 2) %>.<%= this._padZero(this["month"], 2) %>.<%= this["year"] %>',
+			'time'    : '<%= this._padZero(this["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %>'
 		},
 		'fr_FR': {
 			'loading'  : 'Chargement des données WoW...',
@@ -276,7 +329,10 @@ DarkTip.registerModule('wow', {
 				'762': 'Riding',
 				'773': 'Calligraphie',
 				'794': 'Archéologie'
-			}
+			},
+			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
+			'date'    : '<%= this._padZero(this["day"], 2) %>-<%= this._padZero(this["month"], 2) %>-<%= this["year"] %>',
+			'time'    : '<%= this._padZero(this["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %>'
 		},
 		'es_ES': {
 			'loading'  : 'WoW carga de datos...',
@@ -342,7 +398,10 @@ DarkTip.registerModule('wow', {
 				'762': 'Equitación',
 				'773': 'Inscripción',
 				'794': 'Arqueología'
-			}
+			},
+			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
+			'date'    : '<%= this._padZero(this["day"], 2) %>/<%= this._padZero(this["month"], 2) %>/<%= this["year"] %>',
+			'time'    : '<%= this._padZero(this["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %>'
 		}
 	}
 	
