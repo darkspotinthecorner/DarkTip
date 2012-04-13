@@ -32,12 +32,14 @@ DarkTip.registerModule('wow.guild', {
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.guild', 'triggers.explicit.params')));
+			params['guild']  = params['guild'].replace(/_/g, ' ');
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.guild', 'triggers.implicit.params')));
+			params['guild']  = params['guild'].replace(/_/g, ' ');
 			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;

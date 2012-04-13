@@ -33,15 +33,17 @@ DarkTip.registerModule('wow.arena', {
 
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.arena', 'triggers.explicit.params')));
-			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			var params         = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.arena', 'triggers.explicit.params')));
+			params['teamname'] = params['teamname'].replace(/_/g, ' ');
+			params['host']     = DarkTip.map('wow', 'maps.region.host', params['region']);
+			params['locale']   = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		},
 		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.arena', 'triggers.implicit.params')));
-			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
-			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			var params         = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.arena', 'triggers.implicit.params')));
+			params['teamname'] = params['teamname'].replace(/_/g, ' ');
+			params['region']   = DarkTip.map('wow', 'maps.host.region', params['host']);
+			params['locale']   = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
 	},

@@ -23,6 +23,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 	'getParams': {
 		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.guild', 'triggers.implicit.params')));
+			params['guild']  = params['guild'].replace(/_/g, ' ');
 			params['lang']   = DarkTip.map('wow.wowhead', 'maps.wowheadhost.lang', params['wowheadhost']);
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
