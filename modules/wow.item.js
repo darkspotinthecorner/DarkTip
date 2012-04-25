@@ -178,7 +178,7 @@ DarkTip.registerModule('wow.item', {
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["item"]["bonusStats"]) %>' +
 					'<% if(this["item"]["gemInfo"]) { %><div class="darktip-row"><%= this["item"]["gemInfo"]["bonus"]["name"] %></div><% } %>' +
-					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% } %>' +
+					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row highlight-reduced"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
 					'<% if(this["item"]["allowableClasses"]) { %><div class="darktip-row"><%= this._loc("allowableClasses") %></div><% } %>' +
 					'<% if(this["item"]["allowableRaces"]) { %><div class="darktip-row"><%= this._loc("allowableRaces") %></div><% } %>' +
 					'<% if(this["item"]["requiredLevel"]) { %><div class="darktip-row"><%= this._loc("requiredLevel") %></div><% } %>' +
@@ -331,6 +331,7 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Hydraulic Socket',
 				'COGWHEEL' : 'Cogwheel Socket'
 			},
+			'socketBonus'      : 'Socket Bonus: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Hated', '1': 'Hostile', '2': 'Unfriendly', '3': 'Neutral', '4': 'Friendly', '5': 'Honored', '6': 'Revered', '7': 'Exalted' },
 			'itemClass'        : {
 				'0' : { '0': 'Consumeable', '1': 'Potion', '2': 'Elixir', '3': 'Flask', '4': 'Scroll', '5': 'Food &amp; Drink', '6': 'Item Enhancement', '7': 'Bandage', '8': 'Other' },
@@ -421,6 +422,7 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Hydraulischer Sockel',
 				'COGWHEEL' : 'Zahnrad Sockel'
 			},
+			'socketBonus'      : 'Sockelbonus: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Haßerfüllt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrfürchtig' },
 			'itemClass'        : {
 				'0' : { '0': 'Verbrauchbar', '1': 'Trank', '2': 'Elixier', '3': 'Fläschchen', '4': 'Schriftrolle', '5': 'Essen &amp; Drinken', '6': 'Gegenstandsverzauberung', '7': 'Verband', '8': 'Anderes' },
@@ -511,6 +513,7 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Châsse Hydraulique',
 				'COGWHEEL' : 'Chambre de roue dentée'
 			},
+			'socketBonus'      : 'Bonues de sertissage: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Haï', '1': 'Hostile', '2': 'Inamical', '3': 'Neutre', '4': 'Amical', '5': 'Honoré', '6': 'Révéré', '7': 'Exalté' },
 			'itemClass'        : {
 				'0' : { '0': 'Consommable', '1': 'Potion', '2': 'Elixir', '3': 'Flacon', '4': 'Parchemin', '5': 'Nourriture &amp; boissons', '6': 'Amélioration d\'objet', '7': 'Bandage', '8': 'Autre' },
@@ -601,8 +604,9 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Ranura hidráulica',
 				'COGWHEEL' : 'Ranura de engranaje'
 			},
-			'reputationLevel': { '0': 'Odiado', '1': 'Hostil', '2': 'Adverso', '3': 'Neutral', '4': 'Amistoso', '5': 'Honorable', '6': 'Venerado', '7': 'Exaltado' },
-			'itemClass'      : {
+			'socketBonus'      : 'Bonus ranura: <%= this["item"]["socketInfo"]["socketBonus"] %>',
+			'reputationLevel'  : { '0': 'Odiado', '1': 'Hostil', '2': 'Adverso', '3': 'Neutral', '4': 'Amistoso', '5': 'Honorable', '6': 'Venerado', '7': 'Exaltado' },
+			'itemClass'        : {
 				'0' :{ '0': 'Consumible', '1': 'Poción', '2': 'Elixir', '3': 'Frasco', '4': 'Pergamino', '5': 'Comida y bebida', '6': 'Mejora de Objetos', '7': 'Venda', '8': 'Otros' },
 				'1' :{ '0': 'Bolsa', '1': 'Bolsa de almas', '2': 'Bolsa de hierbas', '3': 'Bolsa de encantamiento', '4': 'Bolsa de ingeniería', '5': 'Bolsa de gemas', '6': 'Bolsa de minería', '7': 'Bolsa de peletería', '8': 'Bolsa de inscripción', '9': 'Caja de aparejos' },
 				'2' :{ '0': 'Hacha' /* 1H */,'1': 'Hacha' /* 2H */,'2': 'Arco', '3': 'Arma de fuego', '4': 'Maza' /* 1H */,'5': 'Maza' /* 2H */,'6': 'Arma de asta', '7': 'Espada' /* 1H */,'8': 'Espada' /* 2H */,'10': 'Bastón', '13': 'Arma de puño', '14': 'Miscelánea', '15': 'Daga', '16': 'Arma arrojadiza', '18': 'Ballesta', '19': 'Varita', '20': 'Caña de pescar' },

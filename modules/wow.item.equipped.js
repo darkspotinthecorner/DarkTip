@@ -80,6 +80,15 @@ DarkTip.registerModule('wow.item.equipped', {
 			'offhand' : 'offHand',
 			'ranged'  : 'ranged'
 		},
+		'match': {
+			'socket2gem':{
+				'META'    : [ 'META' ],
+				'RED'     : [ 'PRISMATIC', 'RED',    'PURPLE', 'ORANGE' ],
+				'BLUE'    : [ 'PRISMATIC', 'BLUE',   'PURPLE', 'GREEN' ],
+				'YELLOW'  : [ 'PRISMATIC', 'YELLOW', 'ORANGE', 'GREEN' ],
+				'COGWHEEL': [ 'COGWHEEL' ]
+			}
+		},
 		'reforge': {
 			'113': { 'source': 6,  'target': 13 }, // Spiri => Dodge Rating
 			'114': { 'source': 6,  'target': 14 }, // Spirit => Parry Rating
@@ -148,6 +157,30 @@ DarkTip.registerModule('wow.item.equipped', {
 		}
 		
 		var slot = DarkTip.map("wow.item.equipped", "maps.slot", state['repo']['params']['slot'].toLowerCase());
+		
+		// check for socket bonus
+		if((typeof state['data']['item'] !== 'undefined') && (typeof state['data']['item']['socketInfo']['socketBonus'] !== 'undefined'))
+		{
+			state['data']['item']['socketInfo']['mismatchedGems'] = state['data']['item']['socketInfo']['sockets'].length;
+			
+			for(i = 0; i < state['data']['item']['socketInfo']['sockets'].length; i++)
+			{
+				var gemkey = 'gem' + i;
+				
+				if(typeof state['data'][gemkey] !== 'undefined')
+				{
+					var matchinggems = DarkTip.map("wow.item.equipped", "maps.match.socket2gem", state['data']['item']['socketInfo']['sockets'][i]['type']);
+					
+					if(typeof matchinggems !== 'undefined')
+					{
+						if(DarkTip.jq.inArray(state['data'][gemkey]['gemInfo']['type']['type'], matchinggems) !== -1)
+						{
+							state['data']['item']['socketInfo']['mismatchedGems'] = state['data']['item']['socketInfo']['mismatchedGems'] - 1;
+						}
+					}
+				}
+			}
+		}
 		
 		if(DarkTip.compareRule(state['data'], ('character.items.'+slot+'.tooltipParams.extraSocket')))
 		{
@@ -271,7 +304,7 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["item"]["bonusStats"]) %>' +
 					'<% if(this["item"]["gemInfo"]) { %><div class="darktip-row"><%= this["item"]["gemInfo"]["bonus"]["name"] %></div><% } %>' +
-					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% } %>' +
+					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row <% if(this["item"]["socketInfo"]["mismatchedGems"] == 0) { %>highlight-custom<% } else { %>highlight-reduced<% } %>"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
 					'<% if(this["item"]["allowableClasses"]) { %><div class="darktip-row"><%= this._loc("allowableClasses") %></div><% } %>' +
 					'<% if(this["item"]["allowableRaces"]) { %><div class="darktip-row"><%= this._loc("allowableRaces") %></div><% } %>' +
 					'<% if(this["item"]["requiredLevel"]) { %><div class="darktip-row"><%= this._loc("requiredLevel") %></div><% } %>' +
