@@ -23,7 +23,7 @@ DarkTip.registerModule('wow', {
 				'eu': 'eu.battle.net',
 				'kr': 'kr.battle.net',
 				'tw': 'tw.battle.net',
-				'cn': 'cn.battle.net' /* 'www.battlenet.com.cn' */
+				'cn': 'www.battlenet.com.cn' /* 'cn.battle.net' */
 			},
 			'mediahost': {
 				'us': 'us.media.blizzard.com',
@@ -112,7 +112,6 @@ DarkTip.registerModule('wow', {
 					temp['ampm']['flag'] = 'PM';
 					temp['ampm']['hour'] = temp['hour'] - 12;
 				}
-				console.log(temp);
 				return this._loc('datetime', temp);
 			},
 			'_padZero': function(number, width) {
