@@ -17,6 +17,16 @@ DarkTip.registerModule('wow.character', {
 				'2': 'lang',
 				'3': 'realm',
 				'4': 'character'
+			},
+			'decorate': function(element, params, data) {
+				
+				var color_class     = DarkTip.map('wow.character', 'maps.class.color', data['character']['class']);
+				var mediahost       = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
+				var icon_racegender = 'http://' + mediahost + '/wow/icons/18/race_' + data['character']['race'] + '_' + data['character']['gender'] + '.jpg';
+				var icon_class      = 'http://' + mediahost + '/wow/icons/18/class_' + data['character']['class'] + '.jpg';
+				
+				DarkTip.jq(element).css({'color': color_class, 'background-color': 'rgba(0,0,0,0.9)', 'padding': '2px 4px', 'display': 'inline-block', 'margin': '1px', 'border-radius': '4px', 'text-decoration': 'none'});
+				DarkTip.jq(element).prepend('<img src="' + icon_racegender + '" style="vertical-align: middle;" /> <img src="' + icon_class + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},
@@ -39,6 +49,23 @@ DarkTip.registerModule('wow.character', {
 			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>'
 		},
 		// */
+	},
+	
+	'maps': {
+		'class': {
+			'color': {
+				'1' : '#C79C6E',
+				'2' : '#F58CBA',
+				'3' : '#ABD473',
+				'4' : '#FFF569',
+				'5' : '#FFFFFF',
+				'6' : '#C41F3B',
+				'7' : '#0070DE',
+				'8' : '#69CCF0',
+				'9' : '#9482C9',
+				'11': '#FF7D0A'
+			}
+		}
 	},
 
 	'getParams': {

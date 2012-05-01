@@ -8,6 +8,16 @@ DarkTip.registerModule('wow.wowhead.character', {
 				'2': 'region',
 				'3': 'realm',
 				'4': 'character'
+			},
+			'decorate': function(element, params, data) {
+
+				var color_class     = DarkTip.map('wow.character', 'maps.class.color', data['character']['class']);
+				var mediahost       = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
+				var icon_racegender = 'http://' + mediahost + '/wow/icons/18/race_' + data['character']['race'] + '_' + data['character']['gender'] + '.jpg';
+				var icon_class      = 'http://' + mediahost + '/wow/icons/18/class_' + data['character']['class'] + '.jpg';
+
+				DarkTip.jq(element).css({'color': color_class, 'background-color': 'rgba(0,0,0,0.9)', 'padding': '2px 4px', 'display': 'inline-block', 'margin': '1px', 'border-radius': '4px', 'text-decoration': 'none'});
+				DarkTip.jq(element).prepend('<img src="' + icon_racegender + '" style="vertical-align: middle;" /> <img src="' + icon_class + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},

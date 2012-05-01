@@ -55,7 +55,7 @@ window.DarkTip = {
 		'settings': {
 			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
-				'qtip2'  : [
+				'qtip2' : [
 					'qtip2/jquery.qtip.min.js',
 					'qtip2/jquery.qtip.min.css'
 				],
@@ -65,7 +65,8 @@ window.DarkTip = {
 				'explicit': true,
 				'implicit': true
 			},
-			'extendedMode': {
+			'decorativeMode': false,
+			'extendedMode'  : {
 				'active'      : true,
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
@@ -558,22 +559,31 @@ window.DarkTip = {
 		return false;
 	},
 	
-	'startUp': function() {
+	'startUp': function()
+	{
 		var filesToLoad = [];
-		if(!window.jQuery.qtip) {
+		
+		if(!window.jQuery.qtip)
+		{
 			var files = this.setting('resources.qtip2');
-			for(var i = 0; i < files.length; i++) {
+			
+			for(var i = 0; i < files.length; i++)
+			{
 				filesToLoad.push(files[i]);
 			}
 		}
+		
 		var files = this.setting('resources.extras');
-		for (var i = 0; i < files.length; i++) {
+		
+		for (var i = 0; i < files.length; i++)
+		{
 			filesToLoad.push(files[i]);
 		}
+		
 		yepnope({
 			'load': filesToLoad,	
-			'complete': function() {
-				
+			'complete': function()
+			{
 				DarkTip.jq = jQuery.noConflict(DarkTip.setting('unbindJQuery'));
 				
 				DarkTip.jq(function() {
@@ -668,10 +678,10 @@ window.DarkTip = {
 		
 		this.attachTooltip(element, content, module);
 		
-		this.startDataCollect(module, params, element);
+		this.startDataCollect(module, params, element, type);
 	},
 	
-	'initDataCollectState': function(module, params, element)
+	'initDataCollectState': function(module, params, element, type)
 	{
 		var id = this['dataCollectStates'].length;
 		
@@ -681,6 +691,7 @@ window.DarkTip = {
 			
 			'repo': {
 				'module'       : module,
+				'type'         : type,
 				'params'       : params,
 				'element'      : element,
 				'templateTools': this.getTemplateTools(module, params['locale']),
@@ -880,9 +891,9 @@ window.DarkTip = {
 		return this['dataCollectStates'][id] || false;
 	},
 	
-	'startDataCollect': function(module, params, element)
+	'startDataCollect': function(module, params, element, type)
 	{
-		var state = this.initDataCollectState(module, params, element);
+		var state = this.initDataCollectState(module, params, element, type);
 		
 		state.run();
 	},
@@ -890,6 +901,7 @@ window.DarkTip = {
 	'renderTooltip': function(state)
 	{
 		var module  = state['repo']['module'];
+		var type    = state['repo']['type'];
 		var params  = state['repo']['params'];
 		var element = state['repo']['element'];
 		var data    = state['data'];
@@ -920,6 +932,16 @@ window.DarkTip = {
 			if(typeof enhanceDataFunc !== 'undefined')
 			{
 				data = enhanceDataFunc(module, params, data);
+			}
+			
+			if(this['data']['settings']['decorativeMode'])
+			{
+				var decorateFunc = this.read(module, ('triggers.' + type + '.decorate'));
+				
+				if (typeof decorateFunc !== 'undefined')
+				{
+					decorateFunc(element, params, data);
+				}
 			}
 			
 			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));

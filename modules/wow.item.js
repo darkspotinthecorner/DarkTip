@@ -15,6 +15,15 @@ DarkTip.registerModule('wow.item', {
 				'1': 'host',
 				'2': 'lang',
 				'3': 'itemid'
+			},
+			'decorate': function(element, params, data) {
+
+				var color_quality = DarkTip.map('wow.item', 'maps.quality.color', data['item']['quality']);
+				var mediahost     = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
+				var icon_item     = 'http://' + mediahost + '/wow/icons/18/' + data['item']['icon'] + '.jpg';
+				
+				DarkTip.jq(element).css({'color': color_quality, 'background-color': 'rgba(0,0,0,0.9)', 'padding': '2px 4px', 'display': 'inline-block', 'margin': '1px', 'border-radius': '4px', 'text-decoration': 'none'});
+				DarkTip.jq(element).prepend('<img src="' + icon_item + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},
@@ -32,6 +41,18 @@ DarkTip.registerModule('wow.item', {
 	},
 	
 	'maps': {
+		'quality': {
+			'color': {
+				'0': '#9D9D9D',
+				'1': '#FFFFFF',
+				'2': '#1EFF00',
+				'3': '#0070FF',
+				'4': '#C600FF',
+				'5': '#FF8000',
+				'6': '#E6CC80',
+				'7': '#E6CC80'
+			}
+		},
 		'stats': {
 			'primary': {
 				'3': 'Agility',
@@ -241,7 +262,17 @@ DarkTip.registerModule('wow.item', {
 				),
 				'spell'    : (
 					'<% if(this["spell"]["description"]) { %>' +
-						'<div class="darktip-row highlight-custom"><%= this._loc("itemSpell") %></div>' +
+						'<div class="darktip-row highlight-custom">' +
+							'<% if(this["trigger"] == "ON_EQUIP") { %>' +
+								'<%= this._loc("itemSpell.onEquip") %>' +
+							'<% } else if(this["trigger"] == "ON_USE") { %>' +
+								'<%= this._loc("itemSpell.onUse") %>' +
+							'<% } else if(this["trigger"] == "ON_PROC") { %>' +
+								'<%= this._loc("itemSpell.onProc") %>' +
+							'<% } else { %>' +
+								'<%= this._loc("itemSpell.unknown") %>' +
+							'<% } %>' +
+						'</div>' +
 					'<% } %>'
 				)
 			},
@@ -313,7 +344,12 @@ DarkTip.registerModule('wow.item', {
 				'47': 'Equip: Increases spell penetration by <%= this["amount"] %>.',
 				'49': 'Equip: Increases your mastery rating by <%= this["amount"] %>.'
 			},
-			'itemSpell'        : 'Equip / Use / Chance on Hit: <%= this["spell"]["description"] %>',
+			'itemSpell'        : {
+				'onEquip': 'Equip: <%= this["spell"]["description"] %>',
+				'onUse'  : 'Use: <%= this["spell"]["description"] %>',
+				'onProc' : 'Chance on hit: <%= this["spell"]["description"] %>',
+				'unknown': 'Unknown: <%= this["spell"]["description"] %>'
+			},
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Stackable (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Can be disenchanted (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Cannot be disenchanted<% } %>',
@@ -404,7 +440,12 @@ DarkTip.registerModule('wow.item', {
 				'47': 'Anlegen: Erhöht Zauberdurchschlagskraft um <%= this["amount"] %>.',
 				'49': 'Anlegen: Erhöht eure Meisterschaftswertung um <%= this["amount"] %>.'
 			},
-			'itemSpell'        : 'Anlegen / Benutzen / Chance beim Treffer: <%= this["spell"]["description"] %>',
+			'itemSpell'        : {
+				'onEquip': 'Anlegen: <%= this["spell"]["description"] %>',
+				'onUse'  : 'Benutzen: <%= this["spell"]["description"] %>',
+				'onProc' : 'Trefferchance: <%= this["spell"]["description"] %>',
+				'unknown': 'Unbekannt: <%= this["spell"]["description"] %>'
+			},
 			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Stapelbar (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Kann entzaubert werden (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Kann nicht entzaubert werden<% } %>',
@@ -495,7 +536,12 @@ DarkTip.registerModule('wow.item', {
 				'47': 'Equipé: augmente la pénétration des sorts de <%= this["amount"] %>.',
 				'49': 'Equipé: augmente votre score maîtrise de <%= this["amount"] %>.'
 			},
-			'itemSpell'        : 'Equipé / Utilisé / Chance lorsque vous touchez: <%= this["spell"]["description"] %>',
+			'itemSpell'        : {
+				'onEquip': 'Equipé : <%= this["spell"]["description"] %>',
+				'onUse'  : 'Utilisé : <%= this["spell"]["description"] %>',
+				'onProc' : 'Chances quand vous touchez : <%= this["spell"]["description"] %>',
+				'unknown': 'Inconnu : <%= this["spell"]["description"] %>'
+			},
 			'sellPrice'        : 'Prix de vente: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Empilable (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Peut être désenchanté (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Ne peut pas être désenchanté<% } %>',
@@ -586,7 +632,12 @@ DarkTip.registerModule('wow.item', {
 				'47': 'Equipar: Aumenta la penetración de hechizos en <%= this["amount"] %>.',
 				'49': 'Equipar: Aumenta tu índice de maestría en <%= this["amount"] %>.'
 			},
-			'itemSpell'        : 'Equipar / Uso / Probabilidad al golpear: <%= this["spell"]["description"] %>',
+			'itemSpell'        : {
+				'onEquip': 'Equipar: <%= this["spell"]["description"] %>',
+				'onUse'  : 'Uso: <%= this["spell"]["description"] %>',
+				'onProc' : 'Probabilidad al acertar: <%= this["spell"]["description"] %>',
+				'unknown': 'Desconocido: <%= this["spell"]["description"] %>'
+			},
 			'sellPrice'        : 'Precio de venta: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Se puede apilar (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Se puede desencantar (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>No se puede desencantar<% } %>',

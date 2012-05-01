@@ -248,6 +248,18 @@ DarkTip.registerModule('wow.item.equipped', {
 			}
 		}
 		
+		if(DarkTip.compareRule(state['data'], ('character.items.'+slot+'.tooltipParams.set')))
+		{
+			var set_equipped = state['data']['character']['items'][slot]['tooltipParams']['set'];
+			
+			if(typeof state['data']['item']['itemSet'] !== 'undefined')
+			{
+				state['data']['item']['itemSet']['equipped'] = set_equipped.length;
+			}
+		}
+		
+		console.log(['prepareData end:', state['data']]);
+		
 		return state['data'];
 	},
 	
