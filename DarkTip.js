@@ -952,7 +952,7 @@ window.DarkTip = {
 				'viewport': this.jq(window),
 				'effect'  : false
 			},
-			'hide' :'mouseout',
+			'hide' :'mouseleave',
 			'style': {
 				'width'  : width+'px',
 				'classes': ('ui-tooltip-cluetip darktip-tooltip ' + cssclass)
