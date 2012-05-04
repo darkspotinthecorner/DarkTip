@@ -37,7 +37,6 @@ DarkTip.registerModule('google.plus.user', {
 	},
 	
 	'prepareData': function(state) {
-		console.log(['prepareData'], state);
 		if(Object.keys(state['data']).length === 0)
 		{
 			return false;

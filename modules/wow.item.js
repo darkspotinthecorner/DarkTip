@@ -22,7 +22,8 @@ DarkTip.registerModule('wow.item', {
 				var mediahost     = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
 				var icon_item     = 'http://' + mediahost + '/wow/icons/18/' + data['item']['icon'] + '.jpg';
 				
-				DarkTip.jq(element).css({'color': color_quality, 'background-color': 'rgba(0,0,0,0.9)', 'padding': '2px 4px', 'display': 'inline-block', 'margin': '1px', 'border-radius': '4px', 'text-decoration': 'none'});
+				DarkTip.jq(element).css(DarkTip['data']['settings']['decorativeMode']['default']);
+				DarkTip.jq(element).css({'color': color_quality});
 				DarkTip.jq(element).prepend('<img src="' + icon_item + '" style="vertical-align: middle;" /> ');
 			}
 		}

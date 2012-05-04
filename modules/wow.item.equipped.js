@@ -258,8 +258,6 @@ DarkTip.registerModule('wow.item.equipped', {
 			}
 		}
 		
-		console.log(['prepareData end:', state['data']]);
-		
 		return state['data'];
 	},
 	

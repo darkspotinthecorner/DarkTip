@@ -65,7 +65,17 @@ window.DarkTip = {
 				'explicit': true,
 				'implicit': true
 			},
-			'decorativeMode': false,
+			'decorativeMode': {
+				'active' : false,
+				'default': {
+					'background-color': 'rgba(0,0,0,0.9)',
+					'padding'         : '2px 4px',
+					'display'         : 'inline-block',
+					'margin'          : '1px',
+					'border-radius'   : '4px',
+					'text-decoration' : 'none'
+				}
+			},
 			'extendedMode'  : {
 				'active'      : true,
 				'keyCode'     : 16,
@@ -260,8 +270,6 @@ window.DarkTip = {
 		
 		'modules': {}
 	},
-	
-	'activeTooltips': [],
 	
 	'cacheStorage': {},
 	
@@ -561,27 +569,10 @@ window.DarkTip = {
 	
 	'startUp': function()
 	{
-		var filesToLoad = [];
-		
-		if(!window.jQuery.qtip)
-		{
-			var files = this.setting('resources.qtip2');
-			
-			for(var i = 0; i < files.length; i++)
-			{
-				filesToLoad.push(files[i]);
-			}
-		}
-		
-		var files = this.setting('resources.extras');
-		
-		for (var i = 0; i < files.length; i++)
-		{
-			filesToLoad.push(files[i]);
-		}
-		
 		yepnope({
-			'load': filesToLoad,	
+			'test'    : window.jQuery.qtip,
+			'nope'    : this.setting('resources.qtip2'),
+			'both'    : this.setting('resources.extras'),
 			'complete': function()
 			{
 				DarkTip.jq = jQuery.noConflict(DarkTip.setting('unbindJQuery'));
@@ -609,14 +600,14 @@ window.DarkTip = {
 					
 					if(DarkTip.setting('applyTo.explicit'))
 					{
-						DarkTip.jq('[data-darktip]').live('mouseover', function() {
+						DarkTip.jq('[data-darktip]').live('mouseenter', function() {
 							DarkTip.handleHover('explicit', this);
 						});
 					}
 					
 					if(DarkTip.setting('applyTo.implicit'))
 					{
-						DarkTip.jq('[href]').live('mouseover', function() {
+						DarkTip.jq('[href]').live('mouseenter', function() {
 							DarkTip.handleHover('implicit', this);
 						});
 					}
@@ -627,11 +618,7 @@ window.DarkTip = {
 	
 	'handleHover': function(type, element)
 	{
-		if(typeof this.jq(element).data('qtip') === 'object')
-		{
-			this.jq(element).qtip('show');
-		}
-		else
+		if(typeof this.jq(element).data('qtip') !== 'object')
 		{
 			var triggers = this._read(this.route('', 'triggers.' + type));
 			
@@ -934,7 +921,7 @@ window.DarkTip = {
 				data = enhanceDataFunc(module, params, data);
 			}
 			
-			if(this['data']['settings']['decorativeMode'])
+			if(this['data']['settings']['decorativeMode']['active'])
 			{
 				var decorateFunc = this.read(module, ('triggers.' + type + '.decorate'));
 				
@@ -975,19 +962,9 @@ window.DarkTip = {
 		}
 		this.jq(element).qtip({
 			'overwrite': false,
-			'show': {
+			'show'     : {
+				'solo' : true,
 				'ready': true
-			},
-			'events': {
-				'render':function(event, api){
-					var tooltip = api['elements']['tooltip'];
-					tooltip.bind('tooltipshow', function(event, api) {
-						DarkTip.addToActiveTooltips(api['id']);
-					});
-					tooltip.bind('tooltiphide', function(event, api) {
-						DarkTip.removeFromActiveTooltips(api['id']);
-					});
-				}
 			},
 			'content': {
 				'text': content
@@ -999,7 +976,7 @@ window.DarkTip = {
 				'viewport': this.jq(window),
 				'effect'  : false
 			},
-			'hide' :'mouseout',
+			'hide' :'mouseleave',
 			'style': {
 				'width'  : width+'px',
 				'classes': ('ui-tooltip-cluetip darktip-tooltip ' + cssclass)
@@ -1007,44 +984,9 @@ window.DarkTip = {
 		});
 	},
 	
-	'addToActiveTooltips': function(id)
-	{
-		var found = false;
-		for (var i = 0; i < this.activeTooltips.length; i++)
-		{
-			if(this.activeTooltips[i] === id)
-			{
-				found = true;
-			}
-		}
-		if(found === false)
-		{
-			this.activeTooltips.push(id);
-		}
-	},
-	
-	'removeFromActiveTooltips': function(id)
-	{
-		var found = false;
-		for (var i = 0; i < this['activeTooltips'].length; i++)
-		{
-			if(this['activeTooltips'][i] === id)
-			{
-				found = i;
-			}
-		}
-		if(found !== false)
-		{
-			this['activeTooltips'].splice(found, 1);
-		}
-	},
-	
 	'repositionActiveTooltips': function()
 	{
-		for (var i = 0; i < this.activeTooltips.length; i++)
-		{
-			this.jq('#ui-tooltip-' + this['activeTooltips'][i]).qtip('reposition');
-		}
+		this.jq('body:first > div.qtip:visible').qtip('reposition');
 	},
 	
 	'getTemplateTools': function(module, locale) {
