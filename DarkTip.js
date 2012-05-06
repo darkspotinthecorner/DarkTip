@@ -56,8 +56,8 @@ window.DarkTip = {
 			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
 				'qtip2' : [
-					'qtip2/jquery.qtip.min.js',
-					'qtip2/jquery.qtip.min.css'
+					'ext/qtip2/jquery.qtip.min.js',
+					'ext/qtip2/jquery.qtip.min.css'
 				],
 				'extras': []
 			},
