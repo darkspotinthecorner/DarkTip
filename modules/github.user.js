@@ -19,8 +19,7 @@ DarkTip.registerModule('github.user', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('github.user', 'triggers.explicit.params')));
-			return params;
+			return DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('github.user', 'triggers.explicit.params')));
 		}
 		/*
 		'implicit': function(result) {

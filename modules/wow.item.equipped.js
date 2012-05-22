@@ -163,7 +163,7 @@ DarkTip.registerModule('wow.item.equipped', {
 		{
 			state['data']['item']['socketInfo']['mismatchedGems'] = state['data']['item']['socketInfo']['sockets'].length;
 			
-			for(i = 0; i < state['data']['item']['socketInfo']['sockets'].length; i++)
+			for(var i = 0; i < state['data']['item']['socketInfo']['sockets'].length; i++)
 			{
 				var gemkey = 'gem' + i;
 				
@@ -207,7 +207,7 @@ DarkTip.registerModule('wow.item.equipped', {
 			var index_target  = -1;
 			var reforgeamount = 0;
 			
-			for(i = 0; i < state['data']['item']['bonusStats'].length; i++)
+			for(var i = 0; i < state['data']['item']['bonusStats'].length; i++)
 			{
 				if(state['data']['item']['bonusStats'][i]['stat'] == reforgemap['source'])
 				{

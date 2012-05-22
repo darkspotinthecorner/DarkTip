@@ -79,19 +79,11 @@ DarkTip.registerModule('wow.wowhead.item', {
 		'tools': {
 			'_isStatPrimary': function(statid) {
 				var result = DarkTip.map(this['_meta']['module'], 'maps.stats.primary', statid);
-				if(result !== undefined)
-				{
-					return true;
-				}
-				return false;
+				return (result !== undefined);
 			},
 			'_isStatSecondary': function(statid) {
 				var result = DarkTip.map(this['_meta']['module'], 'maps.stats.secondary', statid);
-				if(result !== undefined)
-				{
-					return true;
-				}
-				return false;
+				return (result !== undefined);
 			},
 			'_renderCoins': function(total) {
 				var temp   = total.toString();

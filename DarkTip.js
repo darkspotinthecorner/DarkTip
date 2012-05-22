@@ -273,8 +273,6 @@ window.DarkTip = {
 	
 	'cacheStorage': {},
 	
-	'dataCollectStates': [],
-	
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
 		{
@@ -601,14 +599,14 @@ window.DarkTip = {
 					if(DarkTip.setting('applyTo.explicit'))
 					{
 						DarkTip.jq('[data-darktip]').live('mouseenter', function() {
-							DarkTip.handleHover('explicit', this);
+							DarkTip.handleHover('explicit', DarkTip.jq(this));
 						});
 					}
 					
 					if(DarkTip.setting('applyTo.implicit'))
 					{
-						DarkTip.jq('[href]').live('mouseenter', function() {
-							DarkTip.handleHover('implicit', this);
+						DarkTip.jq('a[href]').live('mouseenter', function() {
+							DarkTip.handleHover('implicit', DarkTip.jq(this));
 						});
 					}
 				});
@@ -618,34 +616,33 @@ window.DarkTip = {
 	
 	'handleHover': function(type, element)
 	{
-		if(typeof this.jq(element).data('qtip') !== 'object')
+		if(typeof element.data('qtip') !== 'object')
 		{
-			var triggers = this._read(this.route('', 'triggers.' + type));
+			var triggers = this._read(this.route('', 'triggers.' + type)),
+                testme = '';
 			
-			if(triggers !== undefined)
+			if(triggers !== undefined && (type === 'explicit' || type === 'implicit'))
 			{
-				for(var i = 0; i < triggers.length; i++)
+                if(type === 'explicit')
+                {
+                    testme = new String(element.data('darktip'));
+                }
+                else
+                {
+                    testme = element.attr('href');
+                }
+
+                for(var i = 0; i < triggers.length; i++)
 				{
-					if(type === 'explicit')
-					{
-						var testme = new String(this.jq(element).data('darktip'));
-					}
-					if(type === 'implicit')
-					{
-						var testme = new String(this.jq(element).attr('href'));
-					}
 					var result = testme.match(triggers[i]['pattern']['match']);
-					
-					if(result)
+
+                    if(result)
 					{
-						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type));
+						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type)),
+                            params = {};
 						if(paramFunc)
 						{
-							var params = paramFunc(result);
-						}
-						else
-						{
-							var params = {};
+							params = paramFunc(result);
 						}
 						this.initTooltip(triggers[i]['module'], type, params, element);
 						break;
@@ -664,17 +661,13 @@ window.DarkTip = {
 		var content = this.localize(module, params['locale'], 'loading');
 		
 		this.attachTooltip(element, content, module);
-		
-		this.startDataCollect(module, params, element, type);
+
+        this.startDataCollect(module, params, element, type);
 	},
 	
 	'initDataCollectState': function(module, params, element, type)
 	{
-		var id = this['dataCollectStates'].length;
-		
-		this['dataCollectStates'][id] = {
-			
-			'id'  : id,
+		var collectionState = {
 			
 			'repo': {
 				'module'       : module,
@@ -698,88 +691,75 @@ window.DarkTip = {
 			
 			'awakenQuery': function(key)
 			{
-				if(typeof this['queries']['sleeping'][key] !== 'undefined')
+				if(typeof this.queries.sleeping[key] !== 'undefined')
 				{
-					this['queries']['running'][key] = this['queries']['sleeping'][key];
-					return delete this['queries']['sleeping'][key];
+					this.queries.running[key] = this.queries.sleeping[key];
+					return delete this.queries.sleeping[key];
 				}
 				return false;
 			},
 			
 			'awakenCachedQuery': function(key)
 			{
-				if(typeof this['queries']['sleeping'][key] !== 'undefined')
+				if(typeof this.queries.sleeping[key] !== 'undefined')
 				{
-					this['queries']['done'][key] = this['queries']['sleeping'][key];
-					return delete this['queries']['sleeping'][key];
+					this.queries.done[key] = this.queries.sleeping[key];
+					return delete this.queries.sleeping[key];
 				}
 				return false;
 			},
 			
 			'completeQuery': function(key)
 			{
-				if(typeof this['queries']['running'][key] !== 'undefined')
+				if(typeof this.queries.running[key] !== 'undefined')
 				{
-					this['queries']['done'][key] = this['queries']['running'][key];
-					return delete this['queries']['running'][key];
+					this.queries.done[key] = this.queries.running[key];
+					return delete this.queries.running[key];
 				}
 				return false;
 			},
 			
-			'buildCallbackQuerySuccess': function(id, key, apicall)
+			'buildCallbackQuerySuccess': function(key, apicall)
 			{
+                var state = this;
 				return function(data, options)
 				{
-					state = DarkTip.getDataCollectionState(id);
-					
 					DarkTip.cache(apicall, data);
-					
-					state['data'][key] = data;
-					
+					state.data[key] = data;
 					state.completeQuery(key);
-					
 					state.run();
-					
 					state.finish();
 				}
 			},
 			
-			'buildCallbackQueryError': function(id, key)
+			'buildCallbackQueryError': function(key)
 			{
+                var state = this;
 				return function(options)
 				{
-					state = DarkTip.getDataCollectionState(id);
-					
-					if(state['queries']['running'][key]['required'])
+					if(state.queries.running[key]['required'])
 					{
-						state['status'] = 'error';
+						state.status = 'error';
 					}
 					
 					state.completeQuery(key);
-					
 					state.run();
-					
 					state.finish();
 				}
 			},
 			
 			'done': function()
 			{
-				if(Object.keys(this['queries']['running']).length === 0)
-				{
-					return true;
-				}
-				return false;
+				return DarkTip.jq.isEmptyObject(this.queries.running);
 			},
 			
 			'finish': function()
 			{
 				if(this.done())
 				{
-					if((this['status'] === 'error') || (this['status'] === 'pending'))
+					if((this.status === 'error') || (this.status === 'pending'))
 					{
-						this['status'] = 'done';
-						
+						this.status = 'done';
 						DarkTip.renderTooltip(this);
 					}
 				}
@@ -789,20 +769,19 @@ window.DarkTip = {
 			{
 				var state = this;
 				
-				DarkTip.jq.each(this['queries']['sleeping'], function(key, query) {
+				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
+                    var condition = query.condition;
 					
-					if(DarkTip.isTemplateString(query['condition']))
+					if(DarkTip.isTemplateString(condition))
 					{
-						var result = DarkTip.compareRule(state['data'], DarkTip.jq.jqote(query['condition'], DarkTip.jq.extend(true, {}, state['repo']['params'], state['repo']['templateTools'])));
+						condition = DarkTip.jq.jqote(condition, DarkTip.jq.extend(true, {}, state.repo.params, state.repo.templateTools));
 					}
-					else
-					{
-						var result = DarkTip.compareRule(state['data'], query['condition']);
-					}
+
+                    condition = DarkTip.compareRule(state.data, condition);
 					
-					if(typeof result !== 'undefined')
+					if(typeof condition !== 'undefined')
 					{
-						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state['repo']['params'], {'condition': result}, state['repo']['templateTools']));
+						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {'condition': condition}, state.repo.templateTools));
 						var cache   = DarkTip.cache(apicall);
 						
 						if(cache)
@@ -817,9 +796,9 @@ window.DarkTip = {
 							
 							DarkTip.jq.jsonp({
 								'url'              : apicall,
-								'callbackParameter': state['repo']['callbackParam'],
-								'success'          : state.buildCallbackQuerySuccess(id, key, apicall),
-								'error'            : state.buildCallbackQueryError(id, key)
+								'callbackParameter': state.repo.callbackParam,
+								'success'          : state.buildCallbackQuerySuccess(key, apicall),
+								'error'            : state.buildCallbackQueryError(key)
 							});				
 						}
 					}
@@ -832,68 +811,61 @@ window.DarkTip = {
 		};
 		
 		var apicalls    = this._read(this.route(module, 'queries'));
-		var apicallback = this.read(module, 'triggers.apiParams.callback');
-		
+
 		this.jq.each(apicalls, function(key, payload)
 		{
 			if(typeof payload === 'object')
 			{
 				if(typeof payload['required'] === 'undefined')
 				{
-					payload['required'] = true;
+					payload.required = true;
 				}
 				
 				if(typeof payload['condition'] === 'undefined')
 				{
-					payload['condition'] = true;
+					payload.condition = true;
 				}
-				
-				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
-					'required' : payload['required'] == true,
-					'condition': payload['condition'],
-					'call'     : payload['call']
+
+                collectionState.queries.sleeping[key] = {
+					'required' : (payload.required == true),
+					'condition': payload.condition,
+					'call'     : payload.call
 				};
 			}
 			else
 			{
-				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
+                collectionState.queries.sleeping[key] = {
 					'required' : true,
 					'condition': true,
 					'call'     : payload
 				};
 			}
 			
-			if(DarkTip['dataCollectStates'][id]['queries']['sleeping'][key]['required'])
+			if(collectionState.queries.sleeping[key].required)
 			{
-				DarkTip['dataCollectStates'][id]['repo']['requiredData'].push(key);
+                collectionState.repo.requiredData.push(key);
 			}
 			
 		});
 		
-		return this.getDataCollectionState(id);
-	},
-	
-	'getDataCollectionState': function(id)
-	{
-		return this['dataCollectStates'][id] || false;
+		return collectionState;
 	},
 	
 	'startDataCollect': function(module, params, element, type)
 	{
 		var state = this.initDataCollectState(module, params, element, type);
-		
-		state.run();
-	},
+        state.run();
+    },
 	
 	'renderTooltip': function(state)
 	{
-		var module  = state['repo']['module'];
-		var type    = state['repo']['type'];
-		var params  = state['repo']['params'];
-		var element = state['repo']['element'];
-		var data    = state['data'];
-		var error   = false;
-		var content = '';
+		var module  = state.repo.module,
+            type    = state.repo.type,
+            params  = state.repo.params,
+            element = state.repo.element,
+            data    = state.data,
+            error   = false,
+            content = '';
 		
 		DarkTip.jq.each(state['repo']['requiredData'], function(nothing, key) {
 			
@@ -927,11 +899,11 @@ window.DarkTip = {
 				
 				if (typeof decorateFunc !== 'undefined')
 				{
-					decorateFunc(element, params, data);
+					decorateFunc(element.get(0), params, data);
 				}
 			}
 			
-			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
+			element.qtip('api').set('style.width', this.read(module, 'layout.width.core'));
 			
 			content = this.jq.jqote(
 				this.read(module, 'templates.core'),
@@ -940,7 +912,7 @@ window.DarkTip = {
 		}
 		else
 		{
-			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.404'));
+			element.qtip('api').set('style.width', this.read(module, 'layout.width.404'));
 			
 			content = this.jq.jqote(
 				this.read(module, 'templates.404'),
@@ -948,19 +920,19 @@ window.DarkTip = {
 			);
 		}
 		
-		this.jq(element).qtip('api').set('content.text', content);
+		element.qtip('api').set('content.text', content);
 	},
 	
 	'attachTooltip': function(element, content, module){
-		var width    = this.read(module, 'layout.width.core');
+		var width    = this.read(module, 'layout.width.core'),
+            cssclass = this.read(module, 'layout.css.class');
 		if(width == undefined) {
 			width = 300;
 		}
-		var cssclass = this.read(module, 'layout.css.class');
 		if(cssclass == undefined) {
 			cssclass = '';
 		}
-		this.jq(element).qtip({
+		element.qtip({
 			'overwrite': false,
 			'show'     : {
 				'solo' : true,
@@ -986,19 +958,19 @@ window.DarkTip = {
 	
 	'repositionActiveTooltips': function()
 	{
-		this.jq('body:first > div.qtip:visible').qtip('reposition');
+		this.jq('body > div.qtip:visible').qtip('reposition');
 	},
 	
 	'getTemplateTools': function(module, locale) {
-		var tools = {
-			'_meta': {
-				'extendedActive'      : this.setting('extendedMode.active'),
-				'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
-				'locale'              : locale,
-				'module'              : module
-			}
-		}
-		var collection = this.collect(module, 'templates.tools');
+		var collection = this.collect(module, 'templates.tools'),
+            tools = {
+                '_meta': {
+                    'extendedActive'      : this.setting('extendedMode.active'),
+                    'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
+                    'locale'              : locale,
+                    'module'              : module
+                }
+            };
 		if(collection)
 		{
 			this.jq.extend(true, tools, collection);
@@ -1060,7 +1032,7 @@ window.DarkTip = {
 			}
 			
 			// Recursively jump into the submodules and register them
-			for (module in submodules) {
+			for (var module in submodules) {
 				this.registerModule((moduleKey + '.' + module), submodules[module]);
 			}
 		}
@@ -1071,16 +1043,9 @@ window.DarkTip = {
 		this.startUp();
 	}
 	
-}
+};
 
-if(window.jQuery)
-{
-	window.___DarkTipSettings['unbindJQuery'] = true;
-}
-else
-{
-	window.___DarkTipSettings['unbindJQuery'] = false;
-}
+window.___DarkTipSettings['unbindJQuery'] = (window.jQuery ? true : false);
 
 yepnope([{
 	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',

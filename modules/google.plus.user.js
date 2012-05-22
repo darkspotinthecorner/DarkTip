@@ -12,7 +12,7 @@ DarkTip.registerModule('google.plus.user', {
 			'params': {
 				'2': 'userid'
 			}
-		},
+		}
 	},
 	
 	'queries': {
@@ -86,7 +86,7 @@ DarkTip.registerModule('google.plus.user', {
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading Google+ user ...',
-			'not-found': 'Google+ user not found',
+			'not-found': 'Google+ user not found'
 		}
 	}
 	
