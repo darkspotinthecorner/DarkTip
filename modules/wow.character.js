@@ -183,12 +183,12 @@ DarkTip.registerModule('wow.character', {
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement personnage...',
-			'not-found'     : 'Aucun personnage trouvée',
+			'not-found'     : 'Aucun personnage trouv&eacute;e',
 			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de niveau <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Niveau moyen des objets (<%= this["averageItemLevel"] %>)',
 			'mounts'        : 'Montures: <%= this["character"]["mounts"].length %>',
 			'companions'    : 'Mascottes: <%= this["character"]["companions"].length %>',
-			'lastModified'  : 'Dernière mise à jour: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
+			'lastModified'  : 'Derni&egrave;re mise à jour: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_ES': {
 			'loading'       : 'Cargando personaje...',
@@ -196,8 +196,8 @@ DarkTip.registerModule('wow.character', {
 			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de nivel <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> nivel medio de objeto (<%= this["averageItemLevel"] %>)',
 			'mounts'        : 'Monturas: <%= this["character"]["mounts"].length %>',
-			'companions'    : 'Compañeros: <%= this["character"]["companions"].length %>',
-			'lastModified'  : 'Última modificación: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
+			'companions'    : 'Compa&ntilde;eros: <%= this["character"]["companions"].length %>',
+			'lastModified'  : '&Uacute;ltima modificaci&oacute;n: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_MX': {
 			'classification': '<%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, nivel <%= this["character"]["level"] %>'

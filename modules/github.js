@@ -35,11 +35,11 @@ DarkTip.registerModule('github', {
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading GitHub data...',
-			'not-found': 'GitHub data not found',
+			'not-found': 'GitHub data not found'
 		},
 		'de_DE': {
 			'loading'  : 'Lade GitHub Daten...',
-			'not-found': 'Keine GitHub Daten gefunden',
+			'not-found': 'Keine GitHub Daten gefunden'
 		}
 	}
 	

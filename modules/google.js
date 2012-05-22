@@ -34,7 +34,7 @@ DarkTip.registerModule('google', {
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading data from Google...',
-			'not-found': 'Google data not found',
+			'not-found': 'Google data not found'
 		}
 	}
 	
