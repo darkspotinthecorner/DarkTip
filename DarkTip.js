@@ -234,20 +234,20 @@ window.DarkTip = {
 			'de_DE': {
 				'loading'         : 'Laden...',
 				'not-found'       : 'Nichts gefunden',
-				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln',
+				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt halten um den Modus zu wechseln',
 				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
 			},
 			'fr_FR': {
 				'loading'         : 'Chargement...',
-				'not-found'       : 'Aucun résultat',
+				'not-found'       : 'Aucun r&eacute;sultat',
 				'extendedInactive': 'Appuyer [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
 				'extendedActive'  : 'Relacher [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode'
 			},
 			'es_ES': {
 				'loading'         : 'Cargando...',
 				'not-found'       : 'No he encontrado nada',
-				'extendedInactive': '¡Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
-				'extendedActive'  : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
+				'extendedInactive': '&iexcl;Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
+				'extendedActive'  : '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
 			},
 			'es_MX': {
 				'meta': {

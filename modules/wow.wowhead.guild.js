@@ -71,7 +71,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement Guilde...',
-			'not-found'     : 'Aucune Guilde trouvée',
+			'not-found'     : 'Aucune Guilde trouv&eacute;e',
 			'classification': 'Niveau <%= this["guild"]["level"] %> Faction <%= this._loc("factionSide." + this["guild"]["side"]) %> , <%= this["guild"]["realm"] %>',
 			'members'       : '<%= this["guild"]["members"].length %> membres'
 		},

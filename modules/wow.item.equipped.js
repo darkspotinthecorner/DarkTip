@@ -448,7 +448,7 @@ DarkTip.registerModule('wow.item.equipped', {
 		'fr_FR': {
 			'loading'    : 'Chargement Objets...',
 			'not-found'  : 'Objets introuvable',
-			'transmogged': 'Transmogrifié(e) en : <%= this["transmog"]["name"] %>',
+			'transmogged': 'Transmogrifi&eacute;(e) en : <%= this["transmog"]["name"] %>',
 			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)'
 		},
 		'es_ES': {
