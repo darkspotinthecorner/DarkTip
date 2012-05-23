@@ -619,27 +619,27 @@ window.DarkTip = {
 		if(typeof element.data('qtip') !== 'object')
 		{
 			var triggers = this._read(this.route('', 'triggers.' + type)),
-                testme = '';
+				testme = '';
 			
 			if(triggers !== undefined && (type === 'explicit' || type === 'implicit'))
 			{
-                if(type === 'explicit')
-                {
-                    testme = new String(element.data('darktip'));
-                }
-                else
-                {
-                    testme = element.attr('href');
-                }
+				if(type === 'explicit')
+				{
+					testme = new String(element.data('darktip'));
+				}
+				else
+				{
+					testme = element.attr('href');
+				}
 
-                for(var i = 0; i < triggers.length; i++)
+				for(var i = 0; i < triggers.length; i++)
 				{
 					var result = testme.match(triggers[i]['pattern']['match']);
 
-                    if(result)
+					if(result)
 					{
 						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type)),
-                            params = {};
+							params = {};
 						if(paramFunc)
 						{
 							params = paramFunc(result);
@@ -659,10 +659,8 @@ window.DarkTip = {
 			params['locale'] = 'en_US';
 		}
 		var content = this.localize(module, params['locale'], 'loading');
-		
 		this.attachTooltip(element, content, module);
-
-        this.startDataCollect(module, params, element, type);
+		this.startDataCollect(module, params, element, type);
 	},
 	
 	'initDataCollectState': function(module, params, element, type)
@@ -721,7 +719,7 @@ window.DarkTip = {
 			
 			'buildCallbackQuerySuccess': function(key, apicall)
 			{
-                var state = this;
+				var state = this;
 				return function(data, options)
 				{
 					DarkTip.cache(apicall, data);
@@ -734,7 +732,7 @@ window.DarkTip = {
 			
 			'buildCallbackQueryError': function(key)
 			{
-                var state = this;
+				var state = this;
 				return function(options)
 				{
 					if(state.queries.running[key]['required'])
@@ -770,14 +768,14 @@ window.DarkTip = {
 				var state = this;
 				
 				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
-                    var condition = query.condition;
+					var condition = query.condition;
 					
 					if(DarkTip.isTemplateString(condition))
 					{
 						condition = DarkTip.jq.jqote(condition, DarkTip.jq.extend(true, {}, state.repo.params, state.repo.templateTools));
 					}
 
-                    condition = DarkTip.compareRule(state.data, condition);
+					condition = DarkTip.compareRule(state.data, condition);
 					
 					if(typeof condition !== 'undefined')
 					{
@@ -826,7 +824,7 @@ window.DarkTip = {
 					payload.condition = true;
 				}
 
-                collectionState.queries.sleeping[key] = {
+				collectionState.queries.sleeping[key] = {
 					'required' : (payload.required == true),
 					'condition': payload.condition,
 					'call'     : payload.call
@@ -834,7 +832,7 @@ window.DarkTip = {
 			}
 			else
 			{
-                collectionState.queries.sleeping[key] = {
+				collectionState.queries.sleeping[key] = {
 					'required' : true,
 					'condition': true,
 					'call'     : payload
@@ -843,7 +841,7 @@ window.DarkTip = {
 			
 			if(collectionState.queries.sleeping[key].required)
 			{
-                collectionState.repo.requiredData.push(key);
+				collectionState.repo.requiredData.push(key);
 			}
 			
 		});
@@ -854,18 +852,18 @@ window.DarkTip = {
 	'startDataCollect': function(module, params, element, type)
 	{
 		var state = this.initDataCollectState(module, params, element, type);
-        state.run();
-    },
+		state.run();
+	},
 	
 	'renderTooltip': function(state)
 	{
 		var module  = state.repo.module,
-            type    = state.repo.type,
-            params  = state.repo.params,
-            element = state.repo.element,
-            data    = state.data,
-            error   = false,
-            content = '';
+			type    = state.repo.type,
+			params  = state.repo.params,
+			element = state.repo.element,
+			data    = state.data,
+			error   = false,
+			content = '';
 		
 		DarkTip.jq.each(state['repo']['requiredData'], function(nothing, key) {
 			
@@ -925,7 +923,8 @@ window.DarkTip = {
 	
 	'attachTooltip': function(element, content, module){
 		var width    = this.read(module, 'layout.width.core'),
-            cssclass = this.read(module, 'layout.css.class');
+			cssclass = this.read(module, 'layout.css.class');
+
 		if(width == undefined) {
 			width = 300;
 		}
@@ -963,14 +962,14 @@ window.DarkTip = {
 	
 	'getTemplateTools': function(module, locale) {
 		var collection = this.collect(module, 'templates.tools'),
-            tools = {
-                '_meta': {
-                    'extendedActive'      : this.setting('extendedMode.active'),
-                    'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
-                    'locale'              : locale,
-                    'module'              : module
-                }
-            };
+			tools = {
+				'_meta': {
+					'extendedActive'      : this.setting('extendedMode.active'),
+					'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
+					'locale'              : locale,
+					'module'              : module
+				}
+			};
 		if(collection)
 		{
 			this.jq.extend(true, tools, collection);

@@ -153,8 +153,8 @@ DarkTip.registerModule('wow.item', {
 		},
 		'core': (
 			'<div class="tooltip-item">' +
-	    		'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
-		    	 // --- START simple mode -----------------------------------
+				'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
+				 // --- START simple mode -----------------------------------
 				'<div class="col-70 darktip-only-s">' +
 					'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
 					'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
@@ -202,11 +202,11 @@ DarkTip.registerModule('wow.item', {
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
 					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
-			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
-			    '<% if(this["_meta"]["extendedActive"]) { %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="col-70 darktip-only-x">' +
 						'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
 						'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
@@ -217,8 +217,8 @@ DarkTip.registerModule('wow.item', {
 						'<% if(this["item"]["stackable"] > 1) { %><div class="darktip-row"><%= this._loc("stackable") %></div><% } %>' +
 						'<div class="darktip-row"><%= this._loc("sellPrice") %></div>' +
 						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
-			    	'</div>' +
-		    	'<% } %>' +
+					'</div>' +
+				'<% } %>' +
 				// --- END extended mode -----------------------------------
 			'</div>'
 		),
@@ -227,7 +227,7 @@ DarkTip.registerModule('wow.item', {
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.item") %></span> <span class="value"><%= this["itemid"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		),
 		'fragments': {
 			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',

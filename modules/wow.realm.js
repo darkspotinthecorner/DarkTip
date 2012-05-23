@@ -56,7 +56,7 @@ DarkTip.registerModule('wow.realm', {
 				'</div>' +
 				'<div class="darktip-row"><%= this._loc("population." + this["population"]) %></div>' +
 				'<%= this._sub("templates.fragments.worldPvpZones") %>' +
-		    	'<% if(this["_meta"]["extendedActive"]) { %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="darktip-row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div>' +
 					'<div class="darktip-row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div>' +
 				'<% } %>' +
@@ -67,7 +67,7 @@ DarkTip.registerModule('wow.realm', {
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		),
 		'fragments': {
 			'worldPvpZones': (

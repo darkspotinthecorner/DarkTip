@@ -72,7 +72,7 @@ DarkTip.registerModule('github.user', {
 			'<div class="tooltip-github-user tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.username") %></span> <span class="value"><%= this["username"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		)
 	},
 	
