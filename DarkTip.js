@@ -271,8 +271,6 @@ window.DarkTip = {
 		'modules': {}
 	},
 	
-	'cacheStorage': {},
-	
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
 		{
@@ -503,27 +501,7 @@ window.DarkTip = {
 		}
 		return false;
 	},
-	
-	'cache': function(apicall, data)
-	{
-		if(typeof data === 'undefined')
-		{
-			// read mode
-			if(typeof this['cacheStorage'][apicall] !== 'undefined')
-			{
-				return this['cacheStorage'][apicall];
-			}
-			return undefined;
-		}
-		else
-		{
-			// write mode
-			this['cacheStorage'][apicall] = data;
-			
-			return true;
-		}
-	},
-	
+
 	'buildSettings': function() {
 		jQuery.extend(true, this['data']['settings'], window.___DarkTipSettings);
 	},
@@ -692,19 +670,8 @@ window.DarkTip = {
 				if(typeof this.queries.sleeping[key] !== 'undefined')
 				{
 					this.queries.running[key] = this.queries.sleeping[key];
-					return delete this.queries.sleeping[key];
+					delete this.queries.sleeping[key];
 				}
-				return false;
-			},
-			
-			'awakenCachedQuery': function(key)
-			{
-				if(typeof this.queries.sleeping[key] !== 'undefined')
-				{
-					this.queries.done[key] = this.queries.sleeping[key];
-					return delete this.queries.sleeping[key];
-				}
-				return false;
 			},
 			
 			'completeQuery': function(key)
@@ -712,9 +679,11 @@ window.DarkTip = {
 				if(typeof this.queries.running[key] !== 'undefined')
 				{
 					this.queries.done[key] = this.queries.running[key];
-					return delete this.queries.running[key];
+					delete this.queries.running[key];
 				}
-				return false;
+
+				this.run();
+				this.finish()
 			},
 			
 			'buildCallbackQuerySuccess': function(key, apicall)
@@ -722,11 +691,8 @@ window.DarkTip = {
 				var state = this;
 				return function(data, options)
 				{
-					DarkTip.cache(apicall, data);
 					state.data[key] = data;
 					state.completeQuery(key);
-					state.run();
-					state.finish();
 				}
 			},
 			
@@ -741,8 +707,6 @@ window.DarkTip = {
 					}
 					
 					state.completeQuery(key);
-					state.run();
-					state.finish();
 				}
 			},
 			
@@ -780,25 +744,15 @@ window.DarkTip = {
 					if(typeof condition !== 'undefined')
 					{
 						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {'condition': condition}, state.repo.templateTools));
-						var cache   = DarkTip.cache(apicall);
-						
-						if(cache)
-						{
-							state.awakenCachedQuery(key);
-							
-							state['data'][key] = cache;
-						}
-						else
-						{
-							state.awakenQuery(key);
-							
-							DarkTip.jq.jsonp({
-								'url'              : apicall,
-								'callbackParameter': state.repo.callbackParam,
-								'success'          : state.buildCallbackQuerySuccess(key, apicall),
-								'error'            : state.buildCallbackQueryError(key)
-							});				
-						}
+						state.awakenQuery(key);
+
+						DarkTip.jq.jsonp({
+							'pageCache'        : true,
+							'url'              : apicall,
+							'callbackParameter': state.repo.callbackParam,
+							'success'          : state.buildCallbackQuerySuccess(key, apicall),
+							'error'            : state.buildCallbackQueryError(key)
+						});
 					}
 					
 				});
