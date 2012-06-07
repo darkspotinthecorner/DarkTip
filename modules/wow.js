@@ -209,7 +209,7 @@ DarkTip.registerModule('wow', {
 				'character'  : 'Charakter:',
 				'guild'      : 'Gilde:',
 				'teamname'   : 'Teamname:',
-				'teamsize'   : 'Teamgr&ouml;&szlig;e:'
+				'teamsize'   : 'Teamgr&ouml;&szlig;e:',
 				'achievement': 'Erfolg:'
 			},
 			'factionSide': {
