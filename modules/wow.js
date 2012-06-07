@@ -279,7 +279,7 @@ DarkTip.registerModule('wow', {
 				'character'  : 'Personnage :',
 				'guild'      : 'Guilde :',
 				'teamname'   : 'Nom :',
-				'teamsize'   : 'Taille :'
+				'teamsize'   : 'Taille :',
 				'achievement': 'Avantage :'
 			},
 			'factionSide': {
@@ -349,7 +349,7 @@ DarkTip.registerModule('wow', {
 				'character'  : 'Personaje:',
 				'guild'      : 'Hermandad:',
 				'teamname'   : 'Nombre:',
-				'teamsize'   : 'Tama&ntilde;o:'
+				'teamsize'   : 'Tama&ntilde;o:',
 				'achievement': 'Ventaja:'
 			},
 			'factionSide': {
