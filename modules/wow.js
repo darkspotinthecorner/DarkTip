@@ -131,15 +131,16 @@ DarkTip.registerModule('wow', {
 			'not-found': 'Data not found',
 			'not-used' : 'Not used',
 			'label'    : {
-				'slot'     : 'Slot:',
-				'realm'    : 'Realm:',
-				'quest'    : 'Quest:',
-				'region'   : 'Region:',
-				'item'     : 'Item:',
-				'character': 'Character:',
-				'guild'    : 'Guild:',
-				'teamname' : 'Team name:',
-				'teamsize' : 'Team size:'
+				'slot'       : 'Slot:',
+				'realm'      : 'Realm:',
+				'quest'      : 'Quest:',
+				'region'     : 'Region:',
+				'item'       : 'Item:',
+				'character'  : 'Character:',
+				'guild'      : 'Guild:',
+				'teamname'   : 'Team name:',
+				'teamsize'   : 'Team size:',
+				'achievement': 'Achievement:'
 			},
 			'factionSide'   : {
 				'0'       : 'Alliance',
@@ -200,15 +201,16 @@ DarkTip.registerModule('wow', {
 			'not-found': 'Keine Daten gefunden',
 			'not-used' : 'Ungenutzt',
 			'label'    : {
-				'slot'     : 'Slot:',
-				'realm'    : 'Realm:',
-				'quest'    : 'Quest:',
-				'region'   : 'Region:',
-				'item'     : 'Gegenstand:',
-				'character': 'Charakter:',
-				'guild'    : 'Gilde:',
-				'teamname' : 'Teamname:',
-				'teamsize' : 'Teamgr&ouml;&szlig;e:'
+				'slot'       : 'Slot:',
+				'realm'      : 'Realm:',
+				'quest'      : 'Quest:',
+				'region'     : 'Region:',
+				'item'       : 'Gegenstand:',
+				'character'  : 'Charakter:',
+				'guild'      : 'Gilde:',
+				'teamname'   : 'Teamname:',
+				'teamsize'   : 'Teamgr&ouml;&szlig;e:'
+				'achievement': 'Erfolg:'
 			},
 			'factionSide': {
 				'0'       :'Allianz',
@@ -269,15 +271,16 @@ DarkTip.registerModule('wow', {
 			'not-found': 'WoW Aucune donn&eacute;e trouv&eacute;e',
 			'not-used' : 'Inutilis&eacute;es',
 			'label'    : {
-				'slot'     : 'Slot:',
-				'realm'    : 'Royaume:',
-				'quest'    : 'Qu&ecirc;te:',
-				'region'   : 'R&eacute;gion:',
-				'item'     : 'Objet:',
-				'character': 'Personnage:',
-				'guild'    : 'Guilde:',
-				'teamname' : 'Nom:',
-				'teamsize' : 'Taille:'
+				'slot'       : 'Slot :',
+				'realm'      : 'Royaume :',
+				'quest'      : 'Qu&ecirc;te :',
+				'region'     : 'R&eacute;gion :',
+				'item'       : 'Objet :',
+				'character'  : 'Personnage :',
+				'guild'      : 'Guilde :',
+				'teamname'   : 'Nom :',
+				'teamsize'   : 'Taille :'
+				'achievement': 'Avantage :'
 			},
 			'factionSide': {
 				'0'       : 'Alliance',
@@ -338,15 +341,16 @@ DarkTip.registerModule('wow', {
 			'not-found': 'No se encontraron datos',
 			'not-used' : 'Sin usar',
 			'label'    : {
-				'slot'     : 'Ranura:',
-				'realm'    : 'Reinos:',
-				'quest'    : 'Misi&oacute;n:',
-				'region'   : 'Regi&oacute;n:',
-				'item'     : 'Objeto:',
-				'character': 'Personaje:',
-				'guild'    : 'Hermandad:',
-				'teamname' : 'Nombre:',
-				'teamsize' : 'Tama&ntilde;o:'
+				'slot'       : 'Ranura:',
+				'realm'      : 'Reinos:',
+				'quest'      : 'Misi&oacute;n:',
+				'region'     : 'Regi&oacute;n:',
+				'item'       : 'Objeto:',
+				'character'  : 'Personaje:',
+				'guild'      : 'Hermandad:',
+				'teamname'   : 'Nombre:',
+				'teamsize'   : 'Tama&ntilde;o:'
+				'achievement': 'Ventaja:'
 			},
 			'factionSide': {
 				'0'       : 'Alianza',

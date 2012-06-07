@@ -24,6 +24,11 @@ DarkTip.registerModule('wow.item.equipped', {
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
 		},
+		/* 'itemset': {
+			'required' : false,
+			'condition': 'item.itemSet',
+			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
+		}, */
 		'gem0': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem0',
@@ -159,7 +164,7 @@ DarkTip.registerModule('wow.item.equipped', {
 		var slot = DarkTip.map("wow.item.equipped", "maps.slot", state['repo']['params']['slot'].toLowerCase());
 		
 		// check for socket bonus
-		if((typeof state['data']['item'] !== 'undefined') && (typeof state['data']['item']['socketInfo']['socketBonus'] !== 'undefined'))
+		if((typeof state['data']['item'] !== 'undefined') && (typeof state['data']['item']['socketInfo'] !== 'undefined') && (typeof state['data']['item']['socketInfo']['socketBonus'] !== 'undefined'))
 		{
 			state['data']['item']['socketInfo']['mismatchedGems'] = state['data']['item']['socketInfo']['sockets'].length;
 			
@@ -255,6 +260,14 @@ DarkTip.registerModule('wow.item.equipped', {
 			if(typeof state['data']['item']['itemSet'] !== 'undefined')
 			{
 				state['data']['item']['itemSet']['equipped'] = set_equipped.length;
+				
+				for(var i = 0; i < state['data']['item']['itemSet']['setBonuses'].length; i++)
+				{
+					if(state['data']['item']['itemSet']['equipped'] >= state['data']['item']['itemSet']['setBonuses'][i]['threshold'])
+					{
+						state['data']['item']['itemSet']['setBonuses'][i]['active'] = true;
+					}
+				}
 			}
 		}
 		
@@ -324,7 +337,11 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
 					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row padded-above">' +
+						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %> (<%= this["item"]["itemSet"]["equipped"] %>/X)</div>' +
+						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
+					'</div><% } %>' +
+			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
@@ -355,14 +372,6 @@ DarkTip.registerModule('wow.item.equipped', {
 			'</div>'
 		),
 		'fragments': {
-			'allowableClass': '<span class="cclass-<%= this["_value"] %>"><%= this._loc("characterClass." + this["_value"] + ".0")%></span>',
-			'allowableRace' : '<span class="crace-<%= this["_value"] %>"><%= this._loc("characterRace." + this["_value"] + ".0")%></span>',
-			'coins'         : (
-				'<% if(this["gold"] > -1) { %><span class="icon-gold"><%= this["gold"] %></span><% } %>' +
-				'<% if(this["silver"] > -1) { %><span class="icon-silver"><%= this["silver"] %></span><% } %>' +
-				'<% if(this["copper"]) { %><span class="icon-copper"><%= this["copper"] %></span><% } else { %>' +
-				'<span class="icon-copper">0</span><% } %>'
-			),
 			'iLevelDiff': (
 				'<% this["item"]["iLevelDiff"] = (this["item"]["itemLevel"] - this["character"]["items"]["averageItemLevelEquipped"]); %>' +
 				'<% if(this["item"]["iLevelDiff"] < -19) { %>' +
@@ -377,27 +386,6 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<div class="darktip-row darktip-ilvl-2high"><%= this._loc("iLevelDiff.veryhigh") %></div>' +
 				'<% } %>'
 			),
-			'stat': {
-				'primary'  : (
-					'<% if(this._isStatPrimary(this["stat"])) { %>' +
-						'<div class="darktip-row">' +
-							'<% if(this["amount"] >= 0) { %>+<% } %><%= this["amount"] %> <%= this._loc("itemStat." + this["stat"]) %>' +
-						'</div>' +
-					'<% }'
-				),
-				'secondary': (
-					'<% if(this._isStatSecondary(this["stat"])) { %>' +
-						'<div class="darktip-row highlight-custom">' +
-							'<%= this._loc("itemStat." + this["stat"]) %>' +
-						'</div>' +
-					'<% }'
-				),
-				'spell'    : (
-					'<% if(this["spell"]["description"]) { %>' +
-						'<div class="darktip-row highlight-custom"><%= this._loc("itemSpell") %></div>' +
-					'<% } %>'
-				)
-			},
 			'socket': (
 				'<% if(this["item"]) { %>' +
 					'<div class="darktip-row socket">' +

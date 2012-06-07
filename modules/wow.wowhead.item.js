@@ -177,7 +177,11 @@ DarkTip.registerModule('wow.wowhead.item', {
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
 					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row padded-above">' +
+						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %></div>' +
+						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
+					'</div><% } %>' +
+			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
@@ -242,7 +246,8 @@ DarkTip.registerModule('wow.wowhead.item', {
 							'<% } %>' +
 						'</div>' +
 					'<% } %>'
-				)
+				),
+				'setBonus' : '<div class="darktip-row <% if(this["active"]) { %>highlight-custom<% } else { %>highlight-reduced<% } %>"><%= this._loc("setBonus") %></div>'
 			},
 			'socket': (
 				'<div class="darktip-row socket highlight-reduced">' +
@@ -318,6 +323,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onProc' : 'Chance on hit: <%= this["spell"]["description"] %>',
 				'unknown': 'Unknown: <%= this["spell"]["description"] %>'
 			},
+			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Stackable (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Can be disenchanted (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Cannot be disenchanted<% } %>',
@@ -414,6 +420,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onProc' : 'Trefferchance: <%= this["spell"]["description"] %>',
 				'unknown': 'Unbekannt: <%= this["spell"]["description"] %>'
 			},
+			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Stapelbar (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Kann entzaubert werden (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Kann nicht entzaubert werden<% } %>',
@@ -510,6 +517,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onProc' : 'Chances quand vous touchez : <%= this["spell"]["description"] %>',
 				'unknown': 'Inconnu : <%= this["spell"]["description"] %>'
 			},
+			'setBonus'         : '(<%= this["threshold"] %>) Ensemble : <%= this["description"] %>',
 			'sellPrice'        : 'Prix de vente: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Empilable (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Peut &ecirc;tre d&eacute;senchant&eacute; (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>Ne peut pas &ecirc;tre d&eacute;senchant&eacute;<% } %>',
@@ -606,6 +614,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onProc' : 'Probabilidad al acertar: <%= this["spell"]["description"] %>',
 				'unknown': 'Desconocido: <%= this["spell"]["description"] %>'
 			},
+			'setBonus'         : '(<%= this["threshold"] %>) Conjunto: <%= this["description"] %>',
 			'sellPrice'        : 'Precio de venta: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
 			'stackable'        : 'Se puede apilar (<%= this["item"]["stackable"] %>)',
 			'disenchantable'   : '<% if(this["item"]["disenchantingSkillRank"]) { %>Se puede desencantar (<%= this["item"]["disenchantingSkillRank"] %>)<% } else { %>No se puede desencantar<% } %>',
