@@ -219,6 +219,10 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 	padding: 2px 4px;
 }
 
+.darktip-tooltip-wow .darktip-row.padded-above {
+	padding-top: 5px;
+}
+
 .darktip-tooltip-wow div {
 	position: relative;
 }

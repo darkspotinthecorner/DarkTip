@@ -48,16 +48,16 @@ window.DarkTip = {
 	'version': {
 		'major': 1,
 		'minor': 1,
-		'patch': 1
+		'patch': 3
 	},
 	
 	'data': {
 		'settings': {
 			'jquery'   : 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
-				'qtip2'  : [
-					'qtip2/jquery.qtip.min.js',
-					'qtip2/jquery.qtip.min.css'
+				'qtip2' : [
+					'ext/qtip2/jquery.qtip.min.js',
+					'ext/qtip2/jquery.qtip.min.css'
 				],
 				'extras': []
 			},
@@ -65,7 +65,18 @@ window.DarkTip = {
 				'explicit': true,
 				'implicit': true
 			},
-			'extendedMode': {
+			'decorativeMode': {
+				'active' : false,
+				'default': {
+					'background-color': 'rgba(0,0,0,0.9)',
+					'padding'         : '2px 4px',
+					'display'         : 'inline-block',
+					'margin'          : '1px',
+					'border-radius'   : '4px',
+					'text-decoration' : 'none'
+				}
+			},
+			'extendedMode'  : {
 				'active'      : true,
 				'keyCode'     : 16,
 				'keyCodeLabel': 'SHIFT'
@@ -223,20 +234,20 @@ window.DarkTip = {
 			'de_DE': {
 				'loading'         : 'Laden...',
 				'not-found'       : 'Nichts gefunden',
-				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedrückt halten um den Modus zu wechseln',
+				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt halten um den Modus zu wechseln',
 				'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
 			},
 			'fr_FR': {
 				'loading'         : 'Chargement...',
-				'not-found'       : 'Aucun résultat',
+				'not-found'       : 'Aucun r&eacute;sultat',
 				'extendedInactive': 'Appuyer [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
 				'extendedActive'  : 'Relacher [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode'
 			},
 			'es_ES': {
 				'loading'         : 'Cargando...',
 				'not-found'       : 'No he encontrado nada',
-				'extendedInactive': '¡Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
-				'extendedActive'  : '¡Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
+				'extendedInactive': '&iexcl;Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
+				'extendedActive'  : '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
 			},
 			'es_MX': {
 				'meta': {
@@ -259,12 +270,6 @@ window.DarkTip = {
 		
 		'modules': {}
 	},
-	
-	'activeTooltips': [],
-	
-	'cacheStorage': {},
-	
-	'dataCollectStates': [],
 	
 	'log': function(message) {
 		if((typeof this['debug'] !== 'undefined') && (this['debug'] === true))
@@ -496,27 +501,7 @@ window.DarkTip = {
 		}
 		return false;
 	},
-	
-	'cache': function(apicall, data)
-	{
-		if(typeof data === 'undefined')
-		{
-			// read mode
-			if(typeof this['cacheStorage'][apicall] !== 'undefined')
-			{
-				return this['cacheStorage'][apicall];
-			}
-			return undefined;
-		}
-		else
-		{
-			// write mode
-			this['cacheStorage'][apicall] = data;
-			
-			return true;
-		}
-	},
-	
+
 	'buildSettings': function() {
 		jQuery.extend(true, this['data']['settings'], window.___DarkTipSettings);
 	},
@@ -558,22 +543,14 @@ window.DarkTip = {
 		return false;
 	},
 	
-	'startUp': function() {
-		var filesToLoad = [];
-		if(!window.jQuery.qtip) {
-			var files = this.setting('resources.qtip2');
-			for(var i = 0; i < files.length; i++) {
-				filesToLoad.push(files[i]);
-			}
-		}
-		var files = this.setting('resources.extras');
-		for (var i = 0; i < files.length; i++) {
-			filesToLoad.push(files[i]);
-		}
+	'startUp': function()
+	{
 		yepnope({
-			'load': filesToLoad,	
-			'complete': function() {
-				
+			'test'    : window.jQuery.qtip,
+			'nope'    : this.setting('resources.qtip2'),
+			'both'    : this.setting('resources.extras'),
+			'complete': function()
+			{
 				DarkTip.jq = jQuery.noConflict(DarkTip.setting('unbindJQuery'));
 				
 				DarkTip.jq(function() {
@@ -599,15 +576,15 @@ window.DarkTip = {
 					
 					if(DarkTip.setting('applyTo.explicit'))
 					{
-						DarkTip.jq('[data-darktip]').live('mouseover', function() {
-							DarkTip.handleHover('explicit', this);
+						DarkTip.jq('[data-darktip]').live('mouseenter', function() {
+							DarkTip.handleHover('explicit', DarkTip.jq(this));
 						});
 					}
 					
 					if(DarkTip.setting('applyTo.implicit'))
 					{
-						DarkTip.jq('[href]').live('mouseover', function() {
-							DarkTip.handleHover('implicit', this);
+						DarkTip.jq('a[href]').live('mouseenter', function() {
+							DarkTip.handleHover('implicit', DarkTip.jq(this));
 						});
 					}
 				});
@@ -617,38 +594,33 @@ window.DarkTip = {
 	
 	'handleHover': function(type, element)
 	{
-		if(typeof this.jq(element).data('qtip') === 'object')
+		if(typeof element.data('qtip') !== 'object')
 		{
-			this.jq(element).qtip('show');
-		}
-		else
-		{
-			var triggers = this._read(this.route('', 'triggers.' + type));
+			var triggers = this._read(this.route('', 'triggers.' + type)),
+				testme = '';
 			
-			if(triggers !== undefined)
+			if(triggers !== undefined && (type === 'explicit' || type === 'implicit'))
 			{
+				if(type === 'explicit')
+				{
+					testme = new String(element.data('darktip'));
+				}
+				else
+				{
+					testme = element.attr('href');
+				}
+
 				for(var i = 0; i < triggers.length; i++)
 				{
-					if(type === 'explicit')
-					{
-						var testme = new String(this.jq(element).data('darktip'));
-					}
-					if(type === 'implicit')
-					{
-						var testme = new String(this.jq(element).attr('href'));
-					}
 					var result = testme.match(triggers[i]['pattern']['match']);
-					
+
 					if(result)
 					{
-						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type));
+						var paramFunc = this._read(this.route(triggers[i]['module'], 'getParams.' + type)),
+							params = {};
 						if(paramFunc)
 						{
-							var params = paramFunc(result);
-						}
-						else
-						{
-							var params = {};
+							params = paramFunc(result);
 						}
 						this.initTooltip(triggers[i]['module'], type, params, element);
 						break;
@@ -665,22 +637,17 @@ window.DarkTip = {
 			params['locale'] = 'en_US';
 		}
 		var content = this.localize(module, params['locale'], 'loading');
-		
 		this.attachTooltip(element, content, module);
-		
-		this.startDataCollect(module, params, element);
+		this.startDataCollect(module, params, element, type);
 	},
 	
-	'initDataCollectState': function(module, params, element)
+	'initDataCollectState': function(module, params, element, type)
 	{
-		var id = this['dataCollectStates'].length;
-		
-		this['dataCollectStates'][id] = {
-			
-			'id'  : id,
+		var collectionState = {
 			
 			'repo': {
 				'module'       : module,
+				'type'         : type,
 				'params'       : params,
 				'element'      : element,
 				'templateTools': this.getTemplateTools(module, params['locale']),
@@ -700,88 +667,61 @@ window.DarkTip = {
 			
 			'awakenQuery': function(key)
 			{
-				if(typeof this['queries']['sleeping'][key] !== 'undefined')
+				if(typeof this.queries.sleeping[key] !== 'undefined')
 				{
-					this['queries']['running'][key] = this['queries']['sleeping'][key];
-					return delete this['queries']['sleeping'][key];
+					this.queries.running[key] = this.queries.sleeping[key];
+					delete this.queries.sleeping[key];
 				}
-				return false;
-			},
-			
-			'awakenCachedQuery': function(key)
-			{
-				if(typeof this['queries']['sleeping'][key] !== 'undefined')
-				{
-					this['queries']['done'][key] = this['queries']['sleeping'][key];
-					return delete this['queries']['sleeping'][key];
-				}
-				return false;
 			},
 			
 			'completeQuery': function(key)
 			{
-				if(typeof this['queries']['running'][key] !== 'undefined')
+				if(typeof this.queries.running[key] !== 'undefined')
 				{
-					this['queries']['done'][key] = this['queries']['running'][key];
-					return delete this['queries']['running'][key];
+					this.queries.done[key] = this.queries.running[key];
+					delete this.queries.running[key];
 				}
-				return false;
+
+				this.run();
+				this.finish()
 			},
 			
-			'buildCallbackQuerySuccess': function(id, key, apicall)
+			'buildCallbackQuerySuccess': function(key, apicall)
 			{
+				var state = this;
 				return function(data, options)
 				{
-					state = DarkTip.getDataCollectionState(id);
-					
-					DarkTip.cache(apicall, data);
-					
-					state['data'][key] = data;
-					
+					state.data[key] = data;
 					state.completeQuery(key);
-					
-					state.run();
-					
-					state.finish();
 				}
 			},
 			
-			'buildCallbackQueryError': function(id, key)
+			'buildCallbackQueryError': function(key)
 			{
+				var state = this;
 				return function(options)
 				{
-					state = DarkTip.getDataCollectionState(id);
-					
-					if(state['queries']['running'][key]['required'])
+					if(state.queries.running[key]['required'])
 					{
-						state['status'] = 'error';
+						state.status = 'error';
 					}
 					
 					state.completeQuery(key);
-					
-					state.run();
-					
-					state.finish();
 				}
 			},
 			
 			'done': function()
 			{
-				if(Object.keys(this['queries']['running']).length === 0)
-				{
-					return true;
-				}
-				return false;
+				return DarkTip.jq.isEmptyObject(this.queries.running);
 			},
 			
 			'finish': function()
 			{
 				if(this.done())
 				{
-					if((this['status'] === 'error') || (this['status'] === 'pending'))
+					if((this.status === 'error') || (this.status === 'pending'))
 					{
-						this['status'] = 'done';
-						
+						this.status = 'done';
 						DarkTip.renderTooltip(this);
 					}
 				}
@@ -791,39 +731,28 @@ window.DarkTip = {
 			{
 				var state = this;
 				
-				DarkTip.jq.each(this['queries']['sleeping'], function(key, query) {
+				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
+					var condition = query.condition;
 					
-					if(DarkTip.isTemplateString(query['condition']))
+					if(DarkTip.isTemplateString(condition))
 					{
-						var result = DarkTip.compareRule(state['data'], DarkTip.jq.jqote(query['condition'], DarkTip.jq.extend(true, {}, state['repo']['params'], state['repo']['templateTools'])));
+						condition = DarkTip.jq.jqote(condition, DarkTip.jq.extend(true, {}, state.repo.params, state.repo.templateTools));
 					}
-					else
-					{
-						var result = DarkTip.compareRule(state['data'], query['condition']);
-					}
+
+					condition = DarkTip.compareRule(state.data, condition);
 					
-					if(typeof result !== 'undefined')
+					if(typeof condition !== 'undefined')
 					{
-						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state['repo']['params'], {'condition': result}, state['repo']['templateTools']));
-						var cache   = DarkTip.cache(apicall);
-						
-						if(cache)
-						{
-							state.awakenCachedQuery(key);
-							
-							state['data'][key] = cache;
-						}
-						else
-						{
-							state.awakenQuery(key);
-							
-							DarkTip.jq.jsonp({
-								'url'              : apicall,
-								'callbackParameter': state['repo']['callbackParam'],
-								'success'          : state.buildCallbackQuerySuccess(id, key, apicall),
-								'error'            : state.buildCallbackQueryError(id, key)
-							});				
-						}
+						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {'condition': condition}, state.repo.templateTools));
+						state.awakenQuery(key);
+
+						DarkTip.jq.jsonp({
+							'pageCache'        : true,
+							'url'              : apicall,
+							'callbackParameter': state.repo.callbackParam,
+							'success'          : state.buildCallbackQuerySuccess(key, apicall),
+							'error'            : state.buildCallbackQueryError(key)
+						});
 					}
 					
 				});
@@ -834,67 +763,61 @@ window.DarkTip = {
 		};
 		
 		var apicalls    = this._read(this.route(module, 'queries'));
-		var apicallback = this.read(module, 'triggers.apiParams.callback');
-		
+
 		this.jq.each(apicalls, function(key, payload)
 		{
 			if(typeof payload === 'object')
 			{
 				if(typeof payload['required'] === 'undefined')
 				{
-					payload['required'] = true;
+					payload.required = true;
 				}
 				
 				if(typeof payload['condition'] === 'undefined')
 				{
-					payload['condition'] = true;
+					payload.condition = true;
 				}
-				
-				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
-					'required' : payload['required'] == true,
-					'condition': payload['condition'],
-					'call'     : payload['call']
+
+				collectionState.queries.sleeping[key] = {
+					'required' : (payload.required == true),
+					'condition': payload.condition,
+					'call'     : payload.call
 				};
 			}
 			else
 			{
-				DarkTip['dataCollectStates'][id]['queries']['sleeping'][key] = {
+				collectionState.queries.sleeping[key] = {
 					'required' : true,
 					'condition': true,
 					'call'     : payload
 				};
 			}
 			
-			if(DarkTip['dataCollectStates'][id]['queries']['sleeping'][key]['required'])
+			if(collectionState.queries.sleeping[key].required)
 			{
-				DarkTip['dataCollectStates'][id]['repo']['requiredData'].push(key);
+				collectionState.repo.requiredData.push(key);
 			}
 			
 		});
 		
-		return this.getDataCollectionState(id);
+		return collectionState;
 	},
 	
-	'getDataCollectionState': function(id)
+	'startDataCollect': function(module, params, element, type)
 	{
-		return this['dataCollectStates'][id] || false;
-	},
-	
-	'startDataCollect': function(module, params, element)
-	{
-		var state = this.initDataCollectState(module, params, element);
-		
+		var state = this.initDataCollectState(module, params, element, type);
 		state.run();
 	},
 	
 	'renderTooltip': function(state)
 	{
-		var module  = state['repo']['module'];
-		var params  = state['repo']['params'];
-		var element = state['repo']['element'];
-		var data    = state['data'];
-		var error   = false;
-		var content = '';
+		var module  = state.repo.module,
+			type    = state.repo.type,
+			params  = state.repo.params,
+			element = state.repo.element,
+			data    = state.data,
+			error   = false,
+			content = '';
 		
 		DarkTip.jq.each(state['repo']['requiredData'], function(nothing, key) {
 			
@@ -922,7 +845,17 @@ window.DarkTip = {
 				data = enhanceDataFunc(module, params, data);
 			}
 			
-			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.core'));
+			if(this['data']['settings']['decorativeMode']['active'])
+			{
+				var decorateFunc = this.read(module, ('triggers.' + type + '.decorate'));
+				
+				if (typeof decorateFunc !== 'undefined')
+				{
+					decorateFunc(element.get(0), params, data);
+				}
+			}
+			
+			element.qtip('api').set('style.width', this.read(module, 'layout.width.core'));
 			
 			content = this.jq.jqote(
 				this.read(module, 'templates.core'),
@@ -931,7 +864,7 @@ window.DarkTip = {
 		}
 		else
 		{
-			this.jq(element).qtip('api').set('style.width', this.read(module, 'layout.width.404'));
+			element.qtip('api').set('style.width', this.read(module, 'layout.width.404'));
 			
 			content = this.jq.jqote(
 				this.read(module, 'templates.404'),
@@ -939,33 +872,24 @@ window.DarkTip = {
 			);
 		}
 		
-		this.jq(element).qtip('api').set('content.text', content);
+		element.qtip('api').set('content.text', content);
 	},
 	
 	'attachTooltip': function(element, content, module){
-		var width    = this.read(module, 'layout.width.core');
+		var width    = this.read(module, 'layout.width.core'),
+			cssclass = this.read(module, 'layout.css.class');
+
 		if(width == undefined) {
 			width = 300;
 		}
-		var cssclass = this.read(module, 'layout.css.class');
 		if(cssclass == undefined) {
 			cssclass = '';
 		}
-		this.jq(element).qtip({
+		element.qtip({
 			'overwrite': false,
-			'show': {
+			'show'     : {
+				'solo' : true,
 				'ready': true
-			},
-			'events': {
-				'render':function(event, api){
-					var tooltip = api['elements']['tooltip'];
-					tooltip.bind('tooltipshow', function(event, api) {
-						DarkTip.addToActiveTooltips(api['id']);
-					});
-					tooltip.bind('tooltiphide', function(event, api) {
-						DarkTip.removeFromActiveTooltips(api['id']);
-					});
-				}
 			},
 			'content': {
 				'text': content
@@ -977,7 +901,7 @@ window.DarkTip = {
 				'viewport': this.jq(window),
 				'effect'  : false
 			},
-			'hide' :'mouseout',
+			'hide' :'mouseleave',
 			'style': {
 				'width'  : width+'px',
 				'classes': ('ui-tooltip-cluetip darktip-tooltip ' + cssclass)
@@ -985,56 +909,21 @@ window.DarkTip = {
 		});
 	},
 	
-	'addToActiveTooltips': function(id)
-	{
-		var found = false;
-		for (var i = 0; i < this.activeTooltips.length; i++)
-		{
-			if(this.activeTooltips[i] === id)
-			{
-				found = true;
-			}
-		}
-		if(found === false)
-		{
-			this.activeTooltips.push(id);
-		}
-	},
-	
-	'removeFromActiveTooltips': function(id)
-	{
-		var found = false;
-		for (var i = 0; i < this['activeTooltips'].length; i++)
-		{
-			if(this['activeTooltips'][i] === id)
-			{
-				found = i;
-			}
-		}
-		if(found !== false)
-		{
-			this['activeTooltips'].splice(found, 1);
-		}
-	},
-	
 	'repositionActiveTooltips': function()
 	{
-		for (var i = 0; i < this.activeTooltips.length; i++)
-		{
-			this.jq('#ui-tooltip-' + this['activeTooltips'][i]).qtip('reposition');
-		}
+		this.jq('body > div.qtip:visible').qtip('reposition');
 	},
 	
 	'getTemplateTools': function(module, locale) {
-		var tools = {
-			'_meta': {
-				'extendedActive'      : this.setting('extendedMode.active'),
-				'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
-				'locale'              : locale,
-				'module'              : module
-			}
-		}
-		var collection = this.collect(module, 'templates.tools');
+		var collection = this.collect(module, 'templates.tools'),
+			tools = {
+				'_meta': {
+					'extendedActive'      : this.setting('extendedMode.active'),
+					'extendedKeyCodeLabel': this.setting('extendedMode.keyCodeLabel'),
+					'locale'              : locale,
+					'module'              : module
+				}
+			};
 		if(collection)
 		{
 			this.jq.extend(true, tools, collection);
@@ -1096,7 +985,7 @@ window.DarkTip = {
 			}
 			
 			// Recursively jump into the submodules and register them
-			for (module in submodules) {
+			for (var module in submodules) {
 				this.registerModule((moduleKey + '.' + module), submodules[module]);
 			}
 		}
@@ -1107,16 +996,9 @@ window.DarkTip = {
 		this.startUp();
 	}
 	
-}
+};
 
-if(window.jQuery)
-{
-	window.___DarkTipSettings['unbindJQuery'] = true;
-}
-else
-{
-	window.___DarkTipSettings['unbindJQuery'] = false;
-}
+window.___DarkTipSettings['unbindJQuery'] = (window.jQuery ? true : false);
 
 yepnope([{
 	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',

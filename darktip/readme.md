@@ -28,6 +28,7 @@ darkspotinthecorner (at) gmail (dot) com
 
 Special thanks
 --------------
+* [eXochron](https://github.com/exochron) for providing a very helpful pull request and pointing out some bugs in the project!
 * [seanwcom](https://github.com/seanwcom) for providing some interesting test cases that helped my build a more robust integration model.
 * [dazer](https://github.com/dazer) for providing "es_ES" localization.
 * [nicolasbernard](https://github.com/nicolasbernard) for fixing some bugs in the "fr_FR" localization.
