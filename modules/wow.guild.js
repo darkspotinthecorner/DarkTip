@@ -56,8 +56,8 @@ DarkTip.registerModule('wow.guild', {
 		'core': (
 			'<div class="tooltip-guild">' +
 				'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["guild"]["achievementPoints"] %></span></div>' +
-    			'<div class="darktip-row headline cside-<%= this["guild"]["side"] %>"><%= this["guild"]["name"] %></div>' +
-	    		'<div class="darktip-row highlight-medium"><%= this._loc("classification") %></div>' +
+				'<div class="darktip-row headline cside-<%= this["guild"]["side"] %>"><%= this["guild"]["name"] %></div>' +
+				'<div class="darktip-row highlight-medium"><%= this._loc("classification") %></div>' +
 				'<% if(this["guild"]["members"]) { %><div class="darktip-row"><%= this._loc("members") %></div><% } %>' +
 			'</div>'
 		),
@@ -67,7 +67,7 @@ DarkTip.registerModule('wow.guild', {
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.guild") %></span> <span class="value"><%= this["guild"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		)
 	},
 
@@ -86,7 +86,7 @@ DarkTip.registerModule('wow.guild', {
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement Guilde...',
-			'not-found'     : 'Aucune Guilde trouvée',
+			'not-found'     : 'Aucune Guilde trouv&eacute;e',
 			'classification': 'Niveau <%= this["guild"]["level"] %> Faction <%= this._loc("factionSide." + this["guild"]["side"]) %> , <%= this["guild"]["realm"] %>',
 			'members'       : '<%= this["guild"]["members"].length %> membres'
 		},

@@ -56,7 +56,7 @@ DarkTip.registerModule('wow.realm', {
 				'</div>' +
 				'<div class="darktip-row"><%= this._loc("population." + this["population"]) %></div>' +
 				'<%= this._sub("templates.fragments.worldPvpZones") %>' +
-		    	'<% if(this["_meta"]["extendedActive"]) { %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="darktip-row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div>' +
 					'<div class="darktip-row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div>' +
 				'<% } %>' +
@@ -67,7 +67,7 @@ DarkTip.registerModule('wow.realm', {
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		),
 		'fragments': {
 			'worldPvpZones': (
@@ -146,9 +146,9 @@ DarkTip.registerModule('wow.realm', {
 				'true' : 'Online'
 			},
 			'population': {
-				'low'   : 'Geringe Bevölkerung',
-				'medium': 'Mittlere Bevölkerung',
-				'high'  : 'Hohe Bevölkerung'
+				'low'   : 'Geringe Bev&ouml;lkerung',
+				'medium': 'Mittlere Bev&ouml;lkerung',
+				'high'  : 'Hohe Bev&ouml;lkerung'
 			},
 			'zones': {
 				'wintergrasp': 'Tausendwintersee', 
@@ -159,14 +159,14 @@ DarkTip.registerModule('wow.realm', {
 				'0' : { '0': 'In Besitz der Allianz', '1': 'In Besitz der Horde' },
 				'1' : { '0': 'Horde greift an',       '1': 'Allianz greift an' },
 				'2' : { '0': 'Horde greift an',       '1': 'Allianz greift an' },
-				'3' : { '0': 'In Besitz der Allianz', '1': 'In Besitz der Horde' },
+				'3' : { '0': 'In Besitz der Allianz', '1': 'In Besitz der Horde' }
 			},
 			'world-pvp-zone-status'     : 'Status der Welt-PvP Gebiete',
-			'world-pvp-zone-next-battle': 'Nächste Schlacht'
+			'world-pvp-zone-next-battle': 'N&auml;chste Schlacht'
 		},
 		'fr_FR': {
 			'loading': 'Chargement...',
-			'not-found': 'Aucun résultat',
+			'not-found': 'Aucun r&eacute;sultat',
 			'type': {
 				'pve'  : 'JcE',
 				'pvp'  : 'JcJ',
@@ -184,7 +184,7 @@ DarkTip.registerModule('wow.realm', {
 			'population': {
 				'low'   : 'Population faible',
 				'medium': 'Population moyenne',
-				'high'  : 'Population élevée'
+				'high'  : 'Population &eacute;lev&eacute;e'
 			},
 			'zones': {
 				'wintergrasp': 'Joug-d\'hiver', 
@@ -218,9 +218,9 @@ DarkTip.registerModule('wow.realm', {
 				'true' : 'conectado'
 			},
 			'population': {
-				'low'   : 'baja población',
-				'medium': 'población media',
-				'high'  : 'alta población'
+				'low'   : 'baja poblaci&oacute;n',
+				'medium': 'poblaci&oacute;n media',
+				'high'  : 'alta poblaci&oacute;n'
 			},
 			'zones': {
 				'wintergrasp': 'Conquista del Invierno', 

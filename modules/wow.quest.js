@@ -49,7 +49,7 @@ DarkTip.registerModule('wow.quest', {
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.quest") %></span> <span class="value"><%= this["questid"] %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		)
 	},
 	
@@ -63,20 +63,20 @@ DarkTip.registerModule('wow.quest', {
 		'de_DE': {
 			'loading'              : 'Lade Quest...',
 			'not-found'            : 'Quest nicht gefunden',
-			'reqLevel'             : 'Benötigt Stufe <%= this["quest"]["reqLevel"] %>',
+			'reqLevel'             : 'Ben&ouml;tigt Stufe <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Gruppenquest (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},
 		'fr_FR': {
 			'loading'              : 'Chargement...',
-			'not-found'            : 'Aucun résultat',
+			'not-found'            : 'Aucun r&eacute;sultat',
 			'reqLevel'             : 'Niveau requis <%= this["quest"]["reqLevel"] %>',
-			'suggestedPartyMembers': 'Quête de groupe (<%= this["quest"]["suggestedPartyMembers"] %>)'
+			'suggestedPartyMembers': 'Qu&ecirc;te de groupe (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},
 		'es_ES': {
-			'loading'              : 'Cargando misión...',
-			'not-found'            : 'Misión no encontrada',
+			'loading'              : 'Cargando misi&oacute;n...',
+			'not-found'            : 'Misi&oacute;n no encontrada',
 			'reqLevel'             : 'Requiere nivel <%= this["quest"]["reqLevel"] %>',
-			'suggestedPartyMembers': 'Misión de Grupo (<%= this["quest"]["suggestedPartyMembers"] %>)'
+			'suggestedPartyMembers': 'Misi&oacute;n de Grupo (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		}
 	}
 	

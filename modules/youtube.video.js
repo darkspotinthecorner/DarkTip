@@ -25,12 +25,10 @@ DarkTip.registerModule('youtube.video', {
 	
 	'getParams': {
 		'explicit': function(result) {
-			var params = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('youtube.video', 'triggers.explicit.params')));
-			return params;
+			return DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('youtube.video', 'triggers.explicit.params')));
 		},
 		'implicit': function(result) {
-			var params = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('youtube.video', 'triggers.implicit.params')));
-			return params;
+			return DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('youtube.video', 'triggers.implicit.params')));
 		}
 	},
 	
@@ -62,7 +60,7 @@ DarkTip.registerModule('youtube.video', {
 			'<div class="tooltip-youtube-video tooltip-404">' +
 				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
 				'<div class="darktip-row"><span class="label"><%= this._loc("label.video") %></span> <span class="value"><%= this["videoid"] %></span></div>' +
-		    '</div>'
+			'</div>'
 		)
 	},
 	
