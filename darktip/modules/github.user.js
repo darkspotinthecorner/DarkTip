@@ -1,14 +1,36 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('github.user', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /^github\-user:(.+)$/i,
+			'match' : /^github\.user:(.+)$/i,
 			'params': {
 				'1': 'username'
 			}
 		}
 	},
-	
+
 	'queries': {
 		'user': {
 			'required' : true,
@@ -16,7 +38,7 @@ DarkTip.registerModule('github.user', {
 			'call'     : 'https://api.github.com/users/<%= this["username"] %>'
 		}
 	},
-	
+
 	'getParams': {
 		'explicit': function(result) {
 			return DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('github.user', 'triggers.explicit.params')));
@@ -28,7 +50,7 @@ DarkTip.registerModule('github.user', {
 		}
 		*/
 	},
-	
+
 	'prepareData': function(state) {
 		if(Object.keys(state['data']).length === 0) {
 			return false;
@@ -38,13 +60,13 @@ DarkTip.registerModule('github.user', {
 		}
 		return false;
 	},
-	
+
 	'layout': {
 		'width': {
 			'core': 350
 		}
 	},
-	
+
 	'templates': {
 		'core':(
 			'<div class="tooltip-github-user">' +
@@ -66,7 +88,7 @@ DarkTip.registerModule('github.user', {
 					'</div>' +
 				'</div>' +
 				'<% if(this["bio"]) { %><div class="darktip-row bio"><%= this["bio"] %></div><% } %>' +
-			'</div>'				
+			'</div>'
 		),
 		'404':(
 			'<div class="tooltip-github-user tooltip-404">' +
@@ -75,7 +97,7 @@ DarkTip.registerModule('github.user', {
 			'</div>'
 		)
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading GitHub user...',
@@ -108,5 +130,5 @@ DarkTip.registerModule('github.user', {
 			}
 		}
 	}
-	
+
 });

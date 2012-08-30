@@ -2,20 +2,20 @@
  * The DarkTip plugin is a javascript based tooltip framework that enables
  * quick and easy development of modules that hook into specific aspects of a
  * webpage and display context sensitive tooltips.
- * 
- * Copyright (C) 2011  Martin Gelder
+ *
+ * Copyright (C) 2012  Martin Gelder
  * (darkspotinthecorner {at} gmail {dot} com)
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
@@ -118,16 +118,16 @@
 .darktip-tooltip-wow .icon-socket.socket-PRISMATIC .empty { background-color: #29292A; }
 .darktip-tooltip-wow .icon-socket.socket-HYDRAULIC .empty { background-color: #FF0000; }
 .darktip-tooltip-wow .icon-socket.socket-COGWHEEL  .empty { background-color: #29292A; }
-.darktip-tooltip-wow .icon-socket.socket-META      .frame { background-position:  -45px   0; }
-.darktip-tooltip-wow .icon-socket.socket-RED       .frame { background-position:      0   0; }
-.darktip-tooltip-wow .icon-socket.socket-YELLOW    .frame { background-position:  -15px   0; }
-.darktip-tooltip-wow .icon-socket.socket-BLUE      .frame { background-position:  -30px   0; }
-.darktip-tooltip-wow .icon-socket.socket-ORANGE    .frame { background-position:  -90px   0; }
-.darktip-tooltip-wow .icon-socket.socket-PURPLE    .frame { background-position:  -75px   0; }
-.darktip-tooltip-wow .icon-socket.socket-GREEN     .frame { background-position: -105px   0; }
-.darktip-tooltip-wow .icon-socket.socket-PRISMATIC .frame { background-position:  -60px   0; }
-.darktip-tooltip-wow .icon-socket.socket-HYDRAULIC .frame { background-position:      0   0; }
-.darktip-tooltip-wow .icon-socket.socket-COGWHEEL  .frame { background-position:  -45px   0; }
+.darktip-tooltip-wow .icon-socket.socket-META      .frame { background-position: -45px 0; }
+.darktip-tooltip-wow .icon-socket.socket-RED       .frame { background-position:     0 0; }
+.darktip-tooltip-wow .icon-socket.socket-YELLOW    .frame { background-position: -15px 0; }
+.darktip-tooltip-wow .icon-socket.socket-BLUE      .frame { background-position: -30px 0; }
+.darktip-tooltip-wow .icon-socket.socket-ORANGE    .frame { background-position: -90px 0; }
+.darktip-tooltip-wow .icon-socket.socket-PURPLE    .frame { background-position: -75px 0; }
+.darktip-tooltip-wow .icon-socket.socket-GREEN     .frame { background-position: 105px 0; }
+.darktip-tooltip-wow .icon-socket.socket-PRISMATIC .frame { background-position: -60px 0; }
+.darktip-tooltip-wow .icon-socket.socket-HYDRAULIC .frame { background-position:     0 0; }
+.darktip-tooltip-wow .icon-socket.socket-COGWHEEL  .frame { background-position: -45px 0; }
 
 /* --------------------------------------------------------------------------
  *  Generic Tooltips
@@ -223,6 +223,10 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 	padding-top: 5px;
 }
 
+.darktip-tooltip-wow .darktip-row.padded-below {
+	padding-bottom: 5px;
+}
+
 .darktip-tooltip-wow div {
 	position: relative;
 }
@@ -244,6 +248,15 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 
 .darktip-tooltip-wow .block {
 	padding-left: 5px;
+}
+
+.darktip-tooltip-wow .spec .role {
+	font-size: 80%;
+}
+
+.darktip-tooltip-wow .spec .talent {
+	padding-left: 2em;
+	font-size: 80%;
 }
 
 .darktip-tooltip-wow .icon {

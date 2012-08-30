@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.item.equipped', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /item\-equipped:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.(head|neck|shoulder|back|chest|shirt|tabard|wrist|hands|waist|legs|feet|finger1|finger2|trinket1|trinket2|mainhand|offhand|ranged)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.item\.equipped:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.(head|neck|shoulder|back|chest|shirt|tabard|wrist|hands|waist|legs|feet|finger1|finger2|trinket1|trinket2|mainhand|offhand|ranged)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',
@@ -12,7 +34,7 @@ DarkTip.registerModule('wow.item.equipped', {
 			}
 		}
 	},
-	
+
 	'queries': {
 		'character': {
 			'required' : true,
@@ -60,9 +82,9 @@ DarkTip.registerModule('wow.item.equipped', {
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.reforge',
 			'call'   : 'http://<%= this["host"] %>/api/wow/reforge/<%= this["condition"] %>?locale=<%= this["locale"] %>'
 		}
-		// */		
+		// */
 	},
-	
+
 	'maps': {
 		'slot': {
 			'head'    : 'head',
@@ -150,32 +172,32 @@ DarkTip.registerModule('wow.item.equipped', {
 			'165': { 'source': 49, 'target': 31 }, // Mastery => Hit Rating
 			'166': { 'source': 49, 'target': 32 }, // Mastery => Crit Rating
 			'167': { 'source': 49, 'target': 36 }, // Mastery => Haste Rating
-			'168': { 'source': 49, 'target': 37 }  // Mastery => Expertise Rating			
+			'168': { 'source': 49, 'target': 37 }  // Mastery => Expertise Rating
 		}
 	},
-	
+
 	'prepareData': function(state) {
-		
+
 		if(Object.keys(state['data']).length === 0)
 		{
 			return false;
 		}
-		
+
 		var slot = DarkTip.map("wow.item.equipped", "maps.slot", state['repo']['params']['slot'].toLowerCase());
-		
+
 		// check for socket bonus
 		if((typeof state['data']['item'] !== 'undefined') && (typeof state['data']['item']['socketInfo'] !== 'undefined') && (typeof state['data']['item']['socketInfo']['socketBonus'] !== 'undefined'))
 		{
 			state['data']['item']['socketInfo']['mismatchedGems'] = state['data']['item']['socketInfo']['sockets'].length;
-			
+
 			for(var i = 0; i < state['data']['item']['socketInfo']['sockets'].length; i++)
 			{
 				var gemkey = 'gem' + i;
-				
+
 				if(typeof state['data'][gemkey] !== 'undefined')
 				{
 					var matchinggems = DarkTip.map("wow.item.equipped", "maps.match.socket2gem", state['data']['item']['socketInfo']['sockets'][i]['type']);
-					
+
 					if(typeof matchinggems !== 'undefined')
 					{
 						if(DarkTip.jq.inArray(state['data'][gemkey]['gemInfo']['type']['type'], matchinggems) !== -1)
@@ -186,7 +208,7 @@ DarkTip.registerModule('wow.item.equipped', {
 				}
 			}
 		}
-		
+
 		if(DarkTip.compareRule(state['data'], ('character.items.'+slot+'.tooltipParams.extraSocket')))
 		{
 			if(typeof state['data']['item']['socketInfo'] === 'undefined')
@@ -198,20 +220,20 @@ DarkTip.registerModule('wow.item.equipped', {
 				state['data']['item']['socketInfo']['sockets'].push({ 'type': 'PRISMATIC' });
 			}
 		}
-		
+
 		if(typeof state['data']['gem0'] !== 'undefined') state['data']['item']['socketInfo']['sockets'][0]['item'] = state['data']['gem0'];
 		if(typeof state['data']['gem1'] !== 'undefined') state['data']['item']['socketInfo']['sockets'][1]['item'] = state['data']['gem1'];
 		if(typeof state['data']['gem2'] !== 'undefined') state['data']['item']['socketInfo']['sockets'][2]['item'] = state['data']['gem2'];
-		
+
 		var reforgeid = DarkTip.compareRule(state['data'], ('character.items.'+slot+'.tooltipParams.reforge'));
-		
+
 		if(reforgeid)
 		{
 			var reforgemap    = DarkTip.map("wow.item.equipped", "maps.reforge", reforgeid);
 			var index_source  = -1;
 			var index_target  = -1;
 			var reforgeamount = 0;
-			
+
 			for(var i = 0; i < state['data']['item']['bonusStats'].length; i++)
 			{
 				if(state['data']['item']['bonusStats'][i]['stat'] == reforgemap['source'])
@@ -223,14 +245,14 @@ DarkTip.registerModule('wow.item.equipped', {
 					index_target = i;
 				}
 			}
-			
+
 			if((index_source >= 0))
 			{
 				reforgeamount = Math.floor(parseInt(state['data']['item']['bonusStats'][index_source]['amount']) * 0.4);
-				
+
 				state['data']['item']['bonusStats'][index_source]['amount']   = state['data']['item']['bonusStats'][index_source]['amount'] - reforgeamount;
 				state['data']['item']['bonusStats'][index_source]['reforged'] = true;
-				
+
 				if(index_target >= 0)
 				{
 					state['data']['item']['bonusStats'][index_target]['amount']   = state['data']['item']['bonusStats'][index_target]['amount'] + reforgeamount;
@@ -244,7 +266,7 @@ DarkTip.registerModule('wow.item.equipped', {
 						'amount'  : reforgeamount
 					});
 				}
-				
+
 				state['data']['item']['reforge'] = {
 					'source': reforgemap['source'],
 					'target': reforgemap['target'],
@@ -252,15 +274,15 @@ DarkTip.registerModule('wow.item.equipped', {
 				}
 			}
 		}
-		
+
 		if(DarkTip.compareRule(state['data'], ('character.items.'+slot+'.tooltipParams.set')))
 		{
 			var set_equipped = state['data']['character']['items'][slot]['tooltipParams']['set'];
-			
+
 			if(typeof state['data']['item']['itemSet'] !== 'undefined')
 			{
 				state['data']['item']['itemSet']['equipped'] = set_equipped.length;
-				
+
 				for(var i = 0; i < state['data']['item']['itemSet']['setBonuses'].length; i++)
 				{
 					if(state['data']['item']['itemSet']['equipped'] >= state['data']['item']['itemSet']['setBonuses'][i]['threshold'])
@@ -270,10 +292,10 @@ DarkTip.registerModule('wow.item.equipped', {
 				}
 			}
 		}
-		
+
 		return state['data'];
 	},
-	
+
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item.equipped', 'triggers.explicit.params')));
@@ -282,7 +304,7 @@ DarkTip.registerModule('wow.item.equipped', {
 			return params;
 		}
 	},
-	
+
 	'templates': {
 		'core': (
 			'<div class="tooltip-item">' +
@@ -349,6 +371,7 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<div class="col-70 darktip-only-x">' +
 						'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
 						'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
+						'<div class="darktip-row padded-below ownerInfo"><%= this._loc("wornBy") %></div>' +
 						'<% if(this["character"]["items"]) { %><%= this._sub("templates.fragments.iLevelDiff") %><% } %>' +
 						'<div class="darktip-row highlight-strong"><%= this._loc("itemId") %></div>' +
 						'<% if(this["item"]["maxDurability"]) { %><div class="darktip-row"><%= this._loc("maxDurability") %></div><% } %>' +
@@ -372,6 +395,12 @@ DarkTip.registerModule('wow.item.equipped', {
 			'</div>'
 		),
 		'fragments': {
+			'ownerInfo': (
+				'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +
+				'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/class_<%= this["character"]["class"] %>.jpg" /> ' +
+				'<span class="cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></span> <span class="sub highlight-reduced">(<%= this["character"]["level"] %>)</span> ' +
+				'@ <span><%= this["character"]["realm"] %></span>'
+			),
 			'iLevelDiff': (
 				'<% this["item"]["iLevelDiff"] = (this["item"]["itemLevel"] - this["character"]["items"]["averageItemLevelEquipped"]); %>' +
 				'<% if(this["item"]["iLevelDiff"] < -19) { %>' +
@@ -405,13 +434,14 @@ DarkTip.registerModule('wow.item.equipped', {
 			)
 		}
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading'    : 'Loading item...',
 			'not-found'  : 'Item not found',
 			'transmogged': 'Transmogrified to: <%= this["transmog"]["name"] %>',
 			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)',
+			'wornBy'     : 'Worn by: <%= this._sub("templates.fragments.ownerInfo") %>',
 			'iLevelDiff' : {
 				'verylow' : 'This item is much below it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
 				'lower'   : 'This item is slightly below it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
@@ -425,6 +455,7 @@ DarkTip.registerModule('wow.item.equipped', {
 			'not-found'  : 'Gegenstand nicht gefunden',
 			'transmogged': 'Transmogrifiziert zu: <%= this["transmog"]["name"] %>',
 			'reforged'   : 'Umgeschmiedet (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)',
+			'wornBy'     : 'Getragen von: <%= this._sub("templates.fragments.ownerInfo") %>',
 			'iLevelDiff' : {
 				'verylow' : 'Dieser Gegenstand ist deutlich unterhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> unterhalb)',
 				'lower'   : 'Dieser Gegenstand ist unterhalb der durchschnittlichen Gegenstandsstufe seines Besitzers. (<%= Math.abs(this["item"]["iLevelDiff"]) %> Gegenstandsstufe<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>n<% } %> unterhalb)',
@@ -446,5 +477,5 @@ DarkTip.registerModule('wow.item.equipped', {
 			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStatName." + this["item"]["reforge"]["target"]) %>)'
 		}
 	}
-	
+
 });

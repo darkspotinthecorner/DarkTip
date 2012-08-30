@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.achievement', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /achievement:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.achievement:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'achievementid',
@@ -10,7 +32,7 @@ DarkTip.registerModule('wow.achievement', {
 			}
 		}
 	},
-	
+
 	'queries': {
 		'achievement': {
 			'required' : true,
@@ -23,12 +45,6 @@ DarkTip.registerModule('wow.achievement', {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
-			return params;
-		},
-		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.implicit.params')));
-			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
@@ -78,5 +94,5 @@ DarkTip.registerModule('wow.achievement', {
 			'not-found'     : 'Ventaja no encontrada'
 		}
 	}
-	
+
 });

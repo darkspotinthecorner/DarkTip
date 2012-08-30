@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.item', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'itemid',
@@ -17,18 +39,18 @@ DarkTip.registerModule('wow.item', {
 				'3': 'itemid'
 			},
 			'decorate': function(element, params, data) {
-				
+
 				var color_quality = DarkTip.map('wow.item', 'maps.quality.color', data['item']['quality']);
 				var mediahost     = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
 				var icon_item     = 'http://' + mediahost + '/wow/icons/18/' + data['item']['icon'] + '.jpg';
-				
+
 				DarkTip.jq(element).css(DarkTip['data']['settings']['decorativeMode']['default']);
 				DarkTip.jq(element).css({'color': color_quality});
 				DarkTip.jq(element).prepend('<img src="' + icon_item + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},
-	
+
 	'queries': {
 		'item': {
 			'required' : true,
@@ -41,11 +63,11 @@ DarkTip.registerModule('wow.item', {
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
 		}*/
 	},
-	
+
 	'patterns': {
 		'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
 	},
-	
+
 	'maps': {
 		'quality': {
 			'color': {
@@ -72,18 +94,19 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Parry rating',
 				'31': 'Hit rating',
 				'32': 'Critical strike rating',
-				'35': 'Resilience rating',
+				'35': 'PvP resilence rating',
 				'36': 'Haste rating',
 				'37': 'Expertise rating',
 				'38': 'Attack power',
 				'46': 'Health regeneration',
 				'45': 'Spell power',
 				'47': 'Spell penetration',
-				'49': 'Mastery rating'
+				'49': 'Mastery rating',
+				'57': 'PvP power rating'
 			}
 		}
 	},
-	
+
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.item', 'triggers.explicit.params')));
@@ -98,13 +121,13 @@ DarkTip.registerModule('wow.item', {
 			return params;
 		}
 	},
-	
+
 	'layout': {
 		'width': {
 			'core': 425
 		}
 	},
-	
+
 	'templates': {
 		'tools': {
 			'_isStatPrimary': function(statid) {
@@ -289,7 +312,7 @@ DarkTip.registerModule('wow.item', {
 			)
 		}
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading'          : 'Loading item...',
@@ -319,14 +342,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Parry Rating',
 				'31': 'Hit Rating',
 				'32': 'Critical Strike Rating',
-				'35': 'Resilience Rating',
+				'35': 'PvP Resilience Rating',
 				'36': 'Haste Rating',
 				'37': 'Expertise Rating',
 				'38': 'Attack Power',
 				'46': 'Health Regeneration',
 				'45': 'Spell Power',
 				'47': 'Spell Penetration',
-				'49': 'Mastery Rating'
+				'49': 'Mastery Rating',
+				'57': 'PvP Power Rating'
 			},
 			'itemStat'         : {
 				'3' : 'Agility',
@@ -338,14 +362,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Equip: Increases your parry rating by <%= this["amount"] %>.',
 				'31': 'Equip: Increases your hit rating by <%= this["amount"] %>.',
 				'32': 'Equip: Increases your critical strike rating by <%= this["amount"] %>.',
-				'35': 'Equip: Increases your resilience rating by <%= this["amount"] %>.',
+				'35': 'Equip: Increases your pvp resilience rating by <%= this["amount"] %>.',
 				'36': 'Equip: Increases your haste rating by <%= this["amount"] %>.',
 				'37': 'Equip: Increases your expertise rating by <%= this["amount"] %>.',
 				'38': 'Equip: Increases your attack power by <%= this["amount"] %>.',
 				'46': 'Equip: Increases your health regeneration by <%= this["amount"] %>.',
 				'45': 'Equip: Increases spell power by <%= this["amount"] %>.',
 				'47': 'Equip: Increases spell penetration by <%= this["amount"] %>.',
-				'49': 'Equip: Increases your mastery rating by <%= this["amount"] %>.'
+				'49': 'Equip: Increases your mastery rating by <%= this["amount"] %>.',
+				'57': 'Equip: Increases your pvp power rating by <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equip: <%= this["spell"]["description"] %>',
@@ -416,14 +441,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Parrierwertung',
 				'31': 'Trefferwertung',
 				'32': 'Kritische Trefferwertung',
-				'35': 'Abh&auml;rtungswertung',
+				'35': 'PvP Abh&auml;rtungswertung',
 				'36': 'Tempowertung',
 				'37': 'Waffenkundewertung',
 				'38': 'Angriffskraft',
 				'46': 'Gesundheitsregenartion',
 				'45': 'Zaubermacht',
 				'47': 'Zauberdurchschlagskraft',
-				'49': 'Meisterschaftswertung'
+				'49': 'Meisterschaftswertung',
+				'57': 'PvP Machtwertung'
 			},
 			'itemStat'         : {
 				'3' : 'Beweglichkeit',
@@ -435,14 +461,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Anlegen: Erh&ouml;ht eure Parrierwertung um <%= this["amount"] %>.',
 				'31': 'Anlegen: Erh&ouml;ht eure Trefferwertung um <%= this["amount"] %>.',
 				'32': 'Anlegen: Erh&ouml;ht eure kritische Trefferwertung um <%= this["amount"] %>.',
-				'35': 'Anlegen: Erh&ouml;ht eure Abh&auml;rtungswertung um <%= this["amount"] %>.',
+				'35': 'Anlegen: Erh&ouml;ht eure PvP Abh&auml;rtungswertung um <%= this["amount"] %>.',
 				'36': 'Anlegen: Erh&ouml;ht eure Tempowertung um <%= this["amount"] %>.',
 				'37': 'Anlegen: Erh&ouml;ht eure Waffenkundewertung um <%= this["amount"] %>.',
 				'38': 'Anlegen: Erh&ouml;ht eure Angriffswertung um <%= this["amount"] %>.',
 				'46': 'Anlegen: Erh&ouml;ht eure Gesundheitsregenartion um <%= this["amount"] %>.',
 				'45': 'Anlegen: Erh&ouml;ht Zaubermacht um <%= this["amount"] %>.',
 				'47': 'Anlegen: Erh&ouml;ht Zauberdurchschlagskraft um <%= this["amount"] %>.',
-				'49': 'Anlegen: Erh&ouml;ht eure Meisterschaftswertung um <%= this["amount"] %>.'
+				'49': 'Anlegen: Erh&ouml;ht eure Meisterschaftswertung um <%= this["amount"] %>.',
+				'57': 'Anlegen: Erh&ouml;ht eure PvP Machtwertung um <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Anlegen: <%= this["spell"]["description"] %>',
@@ -513,14 +540,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Score de parade',
 				'31': 'Score de toucher',
 				'32': 'Score de coup critique',
-				'35': 'Score de resilience',
+				'35': 'Score de pvp resilience',
 				'36': 'Score de h&acirc;te',
 				'37': 'Score d\'expertise',
 				'38': 'Puissance d\'attaque',
 				'46': 'R&eacute;g&eacute;n&eacute;ration de vie',
 				'45': 'Puissance des sorts',
 				'47': 'P&eacute;n&eacute;tration des sorts',
-				'49': 'Score maîtrise'
+				'49': 'Score maîtrise',
+				'57': 'Score de pvp power'
 			},
 			'itemStat'         : {
 				'3' : 'Agilit&eacute;',
@@ -532,14 +560,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Equip&eacute;: augmente le score de parade de <%= this["amount"] %>.',
 				'31': 'Equip&eacute;: augmente votre score de toucher de <%= this["amount"] %>.',
 				'32': 'Equip&eacute;: augmente votre score de coup critique de <%= this["amount"] %>.',
-				'35': 'Equip&eacute;: augmente votre score de resilience de <%= this["amount"] %>.',
+				'35': 'Equip&eacute;: augmente votre score de pvp resilience de <%= this["amount"] %>.',
 				'36': 'Equip&eacute;: augmente votre score de h&acirc;te de <%= this["amount"] %>.',
 				'37': 'Equip&eacute;: augmente votre score d\'expertise de <%= this["amount"] %>.',
 				'38': 'Equip&eacute;: augmente de <%= this["amount"] %> la puissance d\'attaque.',
 				'46': 'Equip&eacute;: augmente votre r&eacute;g&eacute;n&eacute;ration de vie de <%= this["amount"] %>.',
 				'45': 'Equip&eacute;: augmente votre puissance des sorts de <%= this["amount"] %>.',
 				'47': 'Equip&eacute;: augmente la p&eacute;n&eacute;tration des sorts de <%= this["amount"] %>.',
-				'49': 'Equip&eacute;: augmente votre score maîtrise de <%= this["amount"] %>.'
+				'49': 'Equip&eacute;: augmente votre score maîtrise de <%= this["amount"] %>.',
+				'57': 'Equip&eacute;: augmente votre score pvp power de <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equip&eacute; : <%= this["spell"]["description"] %>',
@@ -610,14 +639,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'de parada',
 				'31': 'de golpe',
 				'32': 'de golpe cr&iacute;tico',
-				'35': 'de temple',
+				'35': 'de pvp temple',
 				'36': 'de celeridad',
 				'37': 'de pericia',
 				'38': 'poder de ataque',
 				'46': 'regeneraci&oacute;n de salud',
 				'45': 'poder con hechizos',
 				'47': 'penetraci&oacute;n de hechizos',
-				'49': '&iacute;ndice de maestr&iacute;a'
+				'49': '&iacute;ndice de maestr&iacute;a',
+				'57': 'de pvp power'
 			},
 			'itemStat'         : {
 				'3' : 'de agilidad',
@@ -629,14 +659,15 @@ DarkTip.registerModule('wow.item', {
 				'14': 'Equipar: Aumenta tu &iacute;ndice de parada en <%= this["amount"] %>.',
 				'31': 'Equipar: Aumenta tu &iacute;ndice de golpe en <%= this["amount"] %>.',
 				'32': 'Equipar: Aumenta tu &iacute;ndice de golpe cr&iacute;tico en <%= this["amount"] %>.',
-				'35': 'Equipar: Aumenta tu &iacute;ndice de temple en <%= this["amount"] %>.',
+				'35': 'Equipar: Aumenta tu &iacute;ndice de pvp temple en <%= this["amount"] %>.',
 				'36': 'Equipar: Aumenta tu &iacute;ndice de celeridad en <%= this["amount"] %>.',
 				'37': 'Equipar: Aumenta tu &iacute;ndice de pericia en <%= this["amount"] %>.',
 				'38': 'Equipar: Aumenta el poder de ataque en <%= this["amount"] %>.',
 				'46': 'Equipar: Aumenta la regeneraci&oacute;n de salud en <%= this["amount"] %>.',
 				'45': 'Equipar: Aumenta el poder con hechizos en <%= this["amount"] %>.',
 				'47': 'Equipar: Aumenta la penetraci&oacute;n de hechizos en <%= this["amount"] %>.',
-				'49': 'Equipar: Aumenta tu &iacute;ndice de maestr&iacute;a en <%= this["amount"] %>.'
+				'49': 'Equipar: Aumenta tu &iacute;ndice de maestr&iacute;a en <%= this["amount"] %>.',
+				'57': 'Equipar: Aumenta tu &iacute;ndice de pvp power en <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equipar: <%= this["spell"]["description"] %>',
@@ -680,5 +711,5 @@ DarkTip.registerModule('wow.item', {
 			'inventoryType'    : { '1': 'Cabeza', '2': 'Cuello', '3': 'Hombros', '4': 'Camisa', '5': 'Pecho', '6': 'Cintura', '7': 'Piernas', '8': 'Pies', '9': 'Mu&ntilde;equeras', '10': 'Manos', '11': 'Dedo', '12': 'Abalorio', '13': 'Una mano', '15': 'A distancia' /* Bow */, '16': 'Espalda', '17': 'Dos manos', '18': 'Bolsa', '21': 'Mano derecha', '22': 'Mano izquierda', '23': 'Sostener en mano izquierda', '25': 'Arrojadizas' /* Thrown */, '26': 'Arma a distancia' /* Gun,Crossbow,Wand */ }
 		}
 	}
-	
+
 });

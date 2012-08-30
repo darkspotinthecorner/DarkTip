@@ -1,11 +1,33 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow', {
-	
+
 	'triggers': {
 		'apiParams': {
 			'callback': 'jsonp'
 		}
 	},
-	
+
 	'maps': {
 		'host': {
 			'region': {
@@ -51,20 +73,20 @@ DarkTip.registerModule('wow', {
 			}
 		}
 	},
-	
+
 	'layout': {
 		'css': {
 			'class': 'darktip-tooltip-wow'
 		}
 	},
-	
+
 	'prepareData': function(state) {
 		if(Object.keys(state['data']).length === 0) {
 			return false;
 		}
 		return state['data'];
 	},
-	
+
 	'enhanceData': function(module, params, data) {
 		var add = {
 			'_meta': {
@@ -78,7 +100,7 @@ DarkTip.registerModule('wow', {
 		DarkTip.jq.extend(true, data, add);
 		return data;
 	},
-	
+
 	'templates': {
 		'tools': {
 			'_renderDateTime': function(datetime) {
@@ -124,7 +146,7 @@ DarkTip.registerModule('wow', {
 			}
 		}
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading'  : 'Loading wow data...',
@@ -172,7 +194,10 @@ DarkTip.registerModule('wow', {
 				'9' : { '0': 'Goblin',    '1': 'Goblin' },
 				'10': { '0': 'Blood Elf', '1': 'Blood Elf' },
 				'11': { '0': 'Draenei',   '1': 'Draenei' },
-				'22': {	'0': 'Worgen',	  '1': 'Worgen' }
+				'22': {	'0': 'Worgen',    '1': 'Worgen' },
+				'24': {	'0': 'Pandaren',  '1': 'Pandaren' },
+				'25': {	'0': 'Pandaren',  '1': 'Pandaren' },
+				'26': {	'0': 'Pandaren',  '1': 'Pandaren' }
 			},
 			'characterSkill'   : {
 				'129': 'First Aid',
@@ -231,18 +256,21 @@ DarkTip.registerModule('wow', {
 				'11': { '0': 'Druide',       '1': 'Druidin' }
 			},
 			'characterRace': {
-				'1' : { '0': 'Mensch',   '1': 'Mensch' },
-				'2' : { '0': 'Orc',      '1': 'Orc' },
-				'3' : { '0': 'Zwerg',    '1': 'Zwerg' },
-				'4' : { '0': 'Nachtelf', '1': 'Nachtelfe' },
-				'5' : { '0': 'Untoter',  '1': 'Untote' },
-				'6' : { '0': 'Tauren',   '1': 'Tauren' },
-				'7' : { '0': 'Gnom',     '1': 'Gnom' },
-				'8' : { '0': 'Troll',    '1': 'Troll' },
-				'9' : { '0': 'Goblin',   '1': 'Goblin' },
-				'10': { '0': 'Blutelf',  '1': 'Blutelfe' },
-				'11': { '0': 'Draenei',  '1': 'Draenei' },
-				'22': { '0': 'Worgen',   '1': 'Worgen' }
+				'1' : { '0': 'Mensch',    '1': 'Mensch' },
+				'2' : { '0': 'Orc',       '1': 'Orc' },
+				'3' : { '0': 'Zwerg',     '1': 'Zwerg' },
+				'4' : { '0': 'Nachtelf',  '1': 'Nachtelfe' },
+				'5' : { '0': 'Untoter',   '1': 'Untote' },
+				'6' : { '0': 'Tauren',    '1': 'Tauren' },
+				'7' : { '0': 'Gnom',      '1': 'Gnom' },
+				'8' : { '0': 'Troll',     '1': 'Troll' },
+				'9' : { '0': 'Goblin',    '1': 'Goblin' },
+				'10': { '0': 'Blutelf',   '1': 'Blutelfe' },
+				'11': { '0': 'Draenei',   '1': 'Draenei' },
+				'22': { '0': 'Worgen',    '1': 'Worgen' },
+				'24': {	'0': 'Pandaren',  '1': 'Pandarin' },
+				'25': {	'0': 'Pandaren',  '1': 'Pandarin' },
+				'26': {	'0': 'Pandaren',  '1': 'Pandarin' }
 			},
 			'characterSkill'   : {
 				'129': 'Erste Hilfe',
@@ -312,7 +340,10 @@ DarkTip.registerModule('wow', {
 				'9' : { '0': 'Gobelin',         '1': 'Gobeline' },
 				'10': { '0': 'Elfe de sang',    '1': 'Elfe de sang' },
 				'11': { '0': 'Draeneï',         '1': 'Draeneï' },
-				'22': { '0': 'Worgen',          '1': 'Worgen' }
+				'22': { '0': 'Worgen',          '1': 'Worgen' },
+				'24': {	'0': 'Pandaren',        '1': 'Pandaren' },
+				'25': {	'0': 'Pandaren',        '1': 'Pandaren' },
+				'26': {	'0': 'Pandaren',        '1': 'Pandaren' }
 			},
 			'characterSkill': {
 				'129': 'Secourisme',
@@ -382,7 +413,10 @@ DarkTip.registerModule('wow', {
 				'9' : { '0': 'Goblin',           '1': 'Goblin' },
 				'10': { '0': 'Elfo de sangre',   '1': 'Elfa de sangre' },
 				'11': { '0': 'Draenei',          '1': 'Draenei' },
-				'22': { '0': 'Huargen',          '1': 'Huargen' }
+				'22': { '0': 'Huargen',          '1': 'Huargen' },
+				'24': {	'0': 'Pandaren',         '1': 'Pandaren' },
+				'25': {	'0': 'Pandaren',         '1': 'Pandaren' },
+				'26': {	'0': 'Pandaren',         '1': 'Pandaren' }
 			},
 			'characterSkill': {
 				'129': 'Primeros auxilios',
@@ -407,5 +441,5 @@ DarkTip.registerModule('wow', {
 			'time'    : '<%= this._padZero(this["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %>'
 		}
 	}
-	
+
 });
