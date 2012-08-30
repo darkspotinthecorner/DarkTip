@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.character', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',
@@ -19,19 +41,19 @@ DarkTip.registerModule('wow.character', {
 				'4': 'character'
 			},
 			'decorate': function(element, params, data) {
-				
+
 				var color_class     = DarkTip.map('wow.character', 'maps.class.color', data['character']['class']);
 				var mediahost       = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
 				var icon_racegender = 'http://' + mediahost + '/wow/icons/18/race_' + data['character']['race'] + '_' + data['character']['gender'] + '.jpg';
 				var icon_class      = 'http://' + mediahost + '/wow/icons/18/class_' + data['character']['class'] + '.jpg';
-				
+
 				DarkTip.jq(element).css(DarkTip['data']['settings']['decorativeMode']['default']);
 				DarkTip.jq(element).css({'color': color_class});
 				DarkTip.jq(element).prepend('<img src="' + icon_racegender + '" style="vertical-align: middle;" /> <img src="' + icon_class + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},
-	
+
 	'queries': {
 		'character': {
 			'required' : true,
@@ -51,7 +73,7 @@ DarkTip.registerModule('wow.character', {
 		},
 		// */
 	},
-	
+
 	'maps': {
 		'class': {
 			'color': {
@@ -94,7 +116,7 @@ DarkTip.registerModule('wow.character', {
 		'core': (
 			'<div class="tooltip-character">' +
 				'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
-				 /* --- START simple mode -------------------------------- */
+				/* --- START simple mode -------------------------------- */
 				'<div class="col-98 darktip-only-s">' +
 					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
 					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
@@ -105,8 +127,8 @@ DarkTip.registerModule('wow.character', {
 					'<% if(this["character"]["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
 					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
-				 /* --- END simple mode ---------------------------------- */
-				 /* --- START extended mode ------------------------------ */
+				/* --- END simple mode ---------------------------------- */
+				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="col-98 darktip-only-x">' +
 						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
@@ -123,7 +145,7 @@ DarkTip.registerModule('wow.character', {
 						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
-				 /* --- END extended mode -------------------------------- */
+				/* --- END extended mode -------------------------------- */
 			'</div>'
 		),
 		'404': (
@@ -136,9 +158,20 @@ DarkTip.registerModule('wow.character', {
 		),
 		'fragments': {
 			'talentSpec': (
-				'<div class="block darktip-row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
-					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
-					'<% if(this["name"]) { %><%= this["name"] %><% } else { %><%= this._loc("not-used") %><% } %>' +
+				'<% if(this["spec"]) { %>' +
+					'<div class="block spec darktip-row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
+						'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+						'<%= this["spec"]["name"] %> <span class="role">(<%= this["spec"]["role"] %>)</span>' +
+						'<% if(this["talents"].length > 0) { %>' +
+							'<%= this._subLoop("templates.fragments.talent", this["talents"]) %>' +
+						'<% } %>' +
+					'</div>' +
+				'<% } %>'
+			),
+			'talent': (
+				'<div class="block talent">' +
+					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+					'<%= this["spell"]["name"] %>' +
 				'</div>'
 			),
 			'profession': {
@@ -203,5 +236,5 @@ DarkTip.registerModule('wow.character', {
 			'classification': '<%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, nivel <%= this["character"]["level"] %>'
 		}
 	}
-	
+
 });

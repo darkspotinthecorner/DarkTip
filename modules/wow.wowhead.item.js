@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.wowhead.item', {
-	
+
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/item=([^\.#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/item=([^\.#\/]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'itemid'
@@ -12,14 +34,14 @@ DarkTip.registerModule('wow.wowhead.item', {
 				var color_quality = DarkTip.map('wow.item', 'maps.quality.color', data['item']['quality']);
 				var mediahost     = DarkTip.map('wow', 'maps.region.mediahost', params['region']);
 				var icon_item     = 'http://' + mediahost + '/wow/icons/18/' + data['item']['icon'] + '.jpg';
-				
+
 				DarkTip.jq(element).css(DarkTip['data']['settings']['decorativeMode']['default']);
 				DarkTip.jq(element).css({'color': color_quality});
 				DarkTip.jq(element).prepend('<img src="' + icon_item + '" style="vertical-align: middle;" /> ');
 			}
 		}
 	},
-	
+
 	'queries': {
 		'item': {
 			'required' : true,
@@ -27,11 +49,11 @@ DarkTip.registerModule('wow.wowhead.item', {
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>'
 		}
 	},
-	
+
 	'patterns': {
 		'money': /^([0-9]+)([0-9]{2})([0-9]{2})$|([0-9]{1,2})([0-9]{2})$|([0-9]{1,2})$/i
 	},
-	
+
 	'maps': {
 		'stats': {
 			'primary': {
@@ -57,7 +79,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 			}
 		}
 	},
-	
+
 	'getParams': {
 		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.item', 'triggers.implicit.params')));
@@ -68,13 +90,13 @@ DarkTip.registerModule('wow.wowhead.item', {
 			return params;
 		}
 	},
-	
+
 	'layout': {
 		'width': {
 			'core': 425
 		}
 	},
-	
+
 	'templates': {
 		'tools': {
 			'_isStatPrimary': function(statid) {
@@ -259,7 +281,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 			)
 		}
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading'          : 'Loading item...',
@@ -650,5 +672,5 @@ DarkTip.registerModule('wow.wowhead.item', {
 			'inventoryType'    : { '1': 'Cabeza', '2': 'Cuello', '3': 'Hombros', '4': 'Camisa', '5': 'Pecho', '6': 'Cintura', '7': 'Piernas', '8': 'Pies', '9': 'Mu&ntilde;equeras', '10': 'Manos', '11': 'Dedo', '12': 'Abalorio', '13': 'Una mano', '15': 'A distancia' /* Bow */, '16': 'Espalda', '17': 'Dos manos', '18': 'Bolsa', '21': 'Mano derecha', '22': 'Mano izquierda', '23': 'Sostener en mano izquierda', '25': 'Arrojadizas' /* Thrown */, '26': 'Arma a distancia' /* Gun,Crossbow,Wand */ }
 		}
 	}
-	
+
 });

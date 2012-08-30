@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.arena', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /arena:(us|eu|kr|tw|cn)\.([^\.]+)\.(2v2|3v3|5v5)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.arena:(us|eu|kr|tw|cn)\.([^\.]+)\.(2v2|3v3|5v5)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',
@@ -22,7 +44,7 @@ DarkTip.registerModule('wow.arena', {
 			}
 		}
 	},
-	
+
 	'queries': {
 		'arena': {
 			'required' : true,
@@ -159,5 +181,5 @@ DarkTip.registerModule('wow.arena', {
 			'extendedActive'       : '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estad&iacute;sticas de la temporada!'
 		}
 	}
-	
+
 });

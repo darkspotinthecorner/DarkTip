@@ -20,20 +20,37 @@
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
 
-DarkTip.registerModule('wow.achievement', {
+DarkTip.registerModule('wow.achievement.character', {
 
 	'triggers': {
 		'explicit': {
-			'match' : /wow\.achievement:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.achievement\.character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
-				'2': 'achievementid',
-				'3': 'lang'
+				'2': 'realm',
+				'3': 'character',
+				'4': 'achievementid',
+				'5': 'lang'
+			}
+		},
+		'implicit': {
+			'match' : /http:\/\/(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/character\/([^\/]+)\/([^\/]+)\/achievement#[0-9]+:a([0-9]+)/i,
+			'params': {
+				'1': 'host',
+				'2': 'lang',
+				'3': 'realm',
+				'4': 'character',
+				'5': 'achievementid'
 			}
 		}
 	},
 
 	'queries': {
+		'character': {
+			'required' : true,
+			'condition': true,
+			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=achievements&locale=<%= this["locale"] %>'
+		},
 		'achievement': {
 			'required' : true,
 			'condition': true,
@@ -41,10 +58,26 @@ DarkTip.registerModule('wow.achievement', {
 		}
 	},
 
+	'prepareData': function(state) {
+
+		if(Object.keys(state['data']).length === 0)
+		{
+			return false;
+		}
+
+		return state['data'];
+	},
+
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
+			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			return params;
+		},
+		'implicit': function(result) {
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.implicit.params')));
+			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}

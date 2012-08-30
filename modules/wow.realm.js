@@ -1,8 +1,30 @@
+/* **************************************************************************
+ * The DarkTip plugin is a javascript based tooltip framework that enables
+ * quick and easy development of modules that hook into specific aspects of a
+ * webpage and display context sensitive tooltips.
+ *
+ * Copyright (C) 2012  Martin Gelder
+ * (darkspotinthecorner {at} gmail {dot} com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
+ * ************************************************************************** */
+
 DarkTip.registerModule('wow.realm', {
-	
+
 	'triggers': {
 		'explicit': {
-			'match' : /realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.realm:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',
@@ -10,7 +32,7 @@ DarkTip.registerModule('wow.realm', {
 			}
 		}
 	},
-	
+
 	'queries': {
 		'realm': {
 			'required' : true,
@@ -18,7 +40,7 @@ DarkTip.registerModule('wow.realm', {
 			'call'     : 'http://<%= this["host"] %>/api/wow/realm/status?realm=<%= this["realm"] %>&locale=<%= this["locale"] %>'
 		}
 	},
-	
+
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.realm', 'triggers.explicit.params')));
@@ -27,13 +49,13 @@ DarkTip.registerModule('wow.realm', {
 			return params;
 		}
 	},
-	
+
 	'layout': {
 		'width': {
 			'core': 350
 		}
 	},
-	
+
 	'prepareData': function(state) {
 		if(Object.keys(state['data']).length === 0) {
 			return false;
@@ -43,7 +65,7 @@ DarkTip.registerModule('wow.realm', {
 		}
 		return false;
 	},
-	
+
 	'templates': {
 		'core': (
 			'<div class="tooltip-realm">' +
@@ -90,7 +112,7 @@ DarkTip.registerModule('wow.realm', {
 			)
 		}
 	},
-	
+
 	'i18n': {
 		'en_US': {
 			'loading': 'Loading realm...',
@@ -115,7 +137,7 @@ DarkTip.registerModule('wow.realm', {
 				'high'  : 'High population'
 			},
 			'zones': {
-				'wintergrasp': 'Wintergrasp', 
+				'wintergrasp': 'Wintergrasp',
 				'tol-barad'  : 'Tol Barad'
 			},
 			'worldpvpstatus': {
@@ -151,7 +173,7 @@ DarkTip.registerModule('wow.realm', {
 				'high'  : 'Hohe Bev&ouml;lkerung'
 			},
 			'zones': {
-				'wintergrasp': 'Tausendwintersee', 
+				'wintergrasp': 'Tausendwintersee',
 				'tol-barad'  : 'Tol Barad'
 			},
 			'worldpvpstatus': {
@@ -187,7 +209,7 @@ DarkTip.registerModule('wow.realm', {
 				'high'  : 'Population &eacute;lev&eacute;e'
 			},
 			'zones': {
-				'wintergrasp': 'Joug-d\'hiver', 
+				'wintergrasp': 'Joug-d\'hiver',
 				'tol-barad'  : 'Tol Barad'
 			},
 			'worldpvpstatus': {
@@ -223,7 +245,7 @@ DarkTip.registerModule('wow.realm', {
 				'high'  : 'alta poblaci&oacute;n'
 			},
 			'zones': {
-				'wintergrasp': 'Conquista del Invierno', 
+				'wintergrasp': 'Conquista del Invierno',
 				'tol-barad'  : 'Tol Barad'
 			},
 			'worldpvpstatus': {
@@ -237,5 +259,5 @@ DarkTip.registerModule('wow.realm', {
 			'world-pvp-zone-next-battle': 'Next battle'
 		}
 	}
-	
+
 });
