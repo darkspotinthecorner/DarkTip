@@ -109,7 +109,7 @@
 			border: 3px solid #ddd;
 			width: 500px;
 			height: 30px;
-			font-size: 22px;
+			font-size: 14px;
 			padding: 1px 3px;
 			color: #666;
 		}
@@ -120,7 +120,7 @@
 			border: 3px solid #ccc;
 			width: 140px;
 			height: 38px;
-			font-size: 18px;
+			font-size: 14px;
 			font-weight: bold;
 			background-color: #ddd;
 			color: #999;
@@ -197,7 +197,7 @@
 			border-radius: 3px;
 			background-color: #aaa;
 			padding: 3px 9px 3px 6px;
-			margin-right: 4px;
+			margin: 0 4px 4px 0;
 			font-style: italic;
 		}
 
@@ -257,20 +257,23 @@
       'extras': [
         'darktip/modules/wow.css',
         'darktip/modules/wow.js',
-        '<a href="#demo-realm" title="Jump to WoW realm demos">darktip/modules/wow.realm.js</a>',
-        '<a href="#demo-quest" title="Jump to WoW quest demos">darktip/modules/wow.quest.js</a>',
-        '<a href="#demo-item" title="Jump to WoW item demos">darktip/modules/wow.item.js</a>',
-        '<a href="#demo-item-equipped" title="Jump to WoW equipped item demos">darktip/modules/wow.item.equipped.js</a>',
-        '<a href="#demo-character" title="Jump to WoW character demos">darktip/modules/wow.character.js</a>',
-        '<a href="#demo-character-pvp" title="Jump to WoW character pvp demos">darktip/modules/wow.character.pvp.js</a>',
-        '<a href="#demo-guild" title="Jump to WoW guild demos">darktip/modules/wow.guild.js</a>',
-        '<a href="#demo-arena" title="Jump to WoW arena demos">darktip/modules/wow.arena.js</a>',
-        '<a href="#demo-achievement" title="Jump to WoW achievement demos">darktip/modules/wow.achievement.js</a>',
+        '<a href="#demo-wow-realm" title="Jump to WoW realm demos">darktip/modules/wow.realm.js</a>',
+        '<a href="#demo-wow-quest" title="Jump to WoW quest demos">darktip/modules/wow.quest.js</a>',
+        '<a href="#demo-wow-item" title="Jump to WoW item demos">darktip/modules/wow.item.js</a>',
+        '<a href="#demo-wow-item-equipped" title="Jump to WoW equipped item demos">darktip/modules/wow.item.equipped.js</a>',
+        '<a href="#demo-wow-character" title="Jump to WoW character demos">darktip/modules/wow.character.js</a>',
+        '<a href="#demo-wow-character-pvp" title="Jump to WoW character pvp demos">darktip/modules/wow.character.pvp.js</a>',
+        '<a href="#demo-wow-guild" title="Jump to WoW guild demos">darktip/modules/wow.guild.js</a>',
+        '<a href="#demo-wow-arena" title="Jump to WoW arena demos">darktip/modules/wow.arena.js</a>',
+        '<a href="#demo-wow-achievement" title="Jump to WoW achievement demos">darktip/modules/wow.achievement.js</a>',
         'darktip/modules/wow.wowhead.js',
-        '<a href="#demo-wowhead-character" title="Jump to WoW character demos via Wowhead links">darktip/modules/wow.wowhead.character.js</a>',
-        '<a href="#demo-wowhead-guild" title="Jump to WoW guild demos via Wowhead links">darktip/modules/wow.wowhead.guild.js</a>',
-        '<a href="#demo-wowhead-item" title="Jump to WoW item demos via Wowhead links">darktip/modules/wow.wowhead.item.js</a>',
-        '<a href="#demo-wowhead-quest" title="Jump to WoW quest demos via Wowhead links">darktip/modules/wow.wowhead.quest.js</a>'
+        '<a href="#demo-wow-wowhead-character" title="Jump to WoW character demos via Wowhead links">darktip/modules/wow.wowhead.character.js</a>',
+        '<a href="#demo-wow-wowhead-guild" title="Jump to WoW guild demos via Wowhead links">darktip/modules/wow.wowhead.guild.js</a>',
+        '<a href="#demo-wow-wowhead-item" title="Jump to WoW item demos via Wowhead links">darktip/modules/wow.wowhead.item.js</a>',
+        '<a href="#demo-wow-wowhead-quest" title="Jump to WoW quest demos via Wowhead links">darktip/modules/wow.wowhead.quest.js</a>',
+        'darktip/modules/d3.css',
+        'darktip/modules/d3.js',
+        '<a href="#demo-d3-profile" title="Jump to D3 profile demos">darktip/modules/d3.profile.js</a>'
       ]
 
     }
@@ -287,7 +290,7 @@
 
 		<h2>Demos</h2>
 		<p>
-			<a name="demo-realm"></a>
+			<a name="demo-wow-realm"></a>
 			<h1 class="subsection">Realm <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -303,7 +306,7 @@
 				<li><span data-darktip="realm:eu.gilnssseas(es)">&lt;span data-darktip="realm:eu.gilnssseas(es)"&gt;</span></li>
 			</ul>
 
-			<a name="demo-quest"></a>
+			<a name="demo-wow-quest"></a>
 			<h1 class="subsection">Quest <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox explicit">
 				<li><h1>Explicit</h1></li>
@@ -319,7 +322,7 @@
 				<li><span data-darktip="quest:eu.10blubb781(es)">&lt;span data-darktip="quest:eu.10blubb781(es)"&gt;</span></li>
 			</ul>
 
-			<a name="demo-item"></a>
+			<a name="demo-wow-item"></a>
 			<h1 class="subsection">Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -346,7 +349,7 @@
 				<li><a href="http://eu.battle.net/wow/es/item/34160288">&lt;a href="http://eu.battle.net/wow/es/item/34160288"&gt;</a></li>
 			</ul>
 
-			<a name="demo-item-equipped"></a>
+			<a name="demo-wow-item-equipped"></a>
 			<h1 class="subsection">Equipped Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -368,7 +371,7 @@
 				<li><span data-darktip="item-equipped:eu.gilneas.rhilthesecond.mainhand(es)">&lt;span data-darktip=&quot;item-equipped:eu.gilneas.rhilthesecond.mainhand(es)&quot;&gt;...&lt;/span&gt;</span></li>
 			</ul>
 
-			<a name="demo-character"></a>
+			<a name="demo-wow-character"></a>
 			<h1 class="subsection">Character <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -395,7 +398,7 @@
 				<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashayayaaaaah/simple"&gt;</a></li>
 			</ul>
 
-			<a name="demo-character-pvp"></a>
+			<a name="demo-wow-character-pvp"></a>
 			<h1 class="subsection">Character PvP <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -422,7 +425,7 @@
 				<li><a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/GrimzieNoWai/pvp"&gt;</a></li>
 			</ul>
 
-			<a name="demo-guild"></a>
+			<a name="demo-wow-guild"></a>
 			<h1 class="subsection">Guild <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -449,7 +452,7 @@
 				<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Rangers/"&gt;</a></li>
 			</ul>
 
-			<a name="demo-arena"></a>
+			<a name="demo-wow-arena"></a>
 			<h1 class="subsection">Arena Team <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -476,7 +479,7 @@
 				<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugsRightNow/"&gt;</a></li>
 			</ul>
 
-			<a name="demo-achievement"></a>
+			<a name="demo-wow-achievement"></a>
 			<h1 class="subsection">Achievement <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Explicit</h1></li>
@@ -492,7 +495,7 @@
 				<li><span data-darktip="achievement:eu.124423434(es)">&lt;span data-darktip="achievement:eu.124423434(es)"&gt;</span></li>
 			</ul>
 
-			<a name="demo-wowhead-character"></a>
+			<a name="demo-wow-wowhead-character"></a>
 			<h1 class="subsection">Wowhead Character Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
@@ -508,7 +511,7 @@
 				<li><a href="http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory">http://es.wowhead.com/profile=eu.gilneas.rhileublubbb#inventory</a></li>
 			</ul>
 
-			<a name="demo-wowhead-guild"></a>
+			<a name="demo-wow-wowhead-guild"></a>
 			<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
@@ -524,7 +527,7 @@
 				<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters">http://es.wowhead.com/guild=eu.gilneas.ascensioooon#characters</a></li>
 			</ul>
 
-			<a name="demo-wowhead-item"></a>
+			<a name="demo-wow-wowhead-item"></a>
 			<h1 class="subsection">Wowhead Item Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
@@ -540,7 +543,7 @@
 				<li><a href="http://es.wowhead.com/item=4696023443#comments">http://es.wowhead.com/item=4696023443#comments</a></li>
 			</ul>
 
-			<a name="demo-wowhead-quest"></a>
+			<a name="demo-wow-wowhead-quest"></a>
 			<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
 				<li><h1>Implicit</h1></li>
@@ -556,6 +559,34 @@
 				<li><a href="http://es.wowhead.com/quest=262482331#screenshots">http://es.wowhead.com/quest=262482331#screenshots</a></li>
 			</ul>
 
+			<a name="demo-d3-profile"></a>
+			<h1 class="subsection">Diablo III Profiles <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://us.battle.net/d3/en/profile/Poutine-1541/">http://us.battle.net/d3/en/profile/Poutine-1541/</a></li>
+				<li><a href="http://eu.battle.net/d3/en/profile/DSitC-2530/">http://eu.battle.net/d3/en/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/de/profile/DSitC-2530/">http://eu.battle.net/d3/de/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/fr/profile/DSitC-2530/">http://eu.battle.net/d3/fr/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/es/profile/DSitC-2530/">http://eu.battle.net/d3/es/profile/DSitC-2530/</a></li>
+				<li><h2>404</h2></li>
+				<li><a href="http://eu.battle.net/d3/en/profile/DSitC-9876/">http://eu.battle.net/d3/en/profile/DSitC-9876/</a></li>
+				<li><a href="http://eu.battle.net/d3/de/profile/DSitC-9876/">http://eu.battle.net/d3/de/profile/DSitC-9876/</a></li>
+				<li><a href="http://eu.battle.net/d3/fr/profile/DSitC-9876/">http://eu.battle.net/d3/fr/profile/DSitC-9876/</a></li>
+				<li><a href="http://eu.battle.net/d3/es/profile/DSitC-9876/">http://eu.battle.net/d3/es/profile/DSitC-9876/</a></li>
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(en)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-2530(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(de)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-2530(de)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(fr)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-2530(fr)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(es)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-2530(es)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><h2>404</h2></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-9876(en)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-9876(en)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-9876(de)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-9876(de)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-9876(fr)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-9876(fr)&quot;&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-9876(es)">&lt;span data-darktip=&quot;d3.profile:eu.dsitc-9876(es)&quot;&gt;...&lt;/span&gt;</span></li>
+			</ul>
+
 			<a name="demo-own-links"></a>
 			<h1 class="subsection">Custom <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
 			<ul class="testbox">
@@ -564,15 +595,16 @@
 					<div id="custom-explicit-templates">
 						<h2>Templates</h2>
 						<ul id="custom-explicit-templates-list">
-							<li data-template="realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
-							<li data-template="quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
-							<li data-template="item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
-							<li data-template="item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
-							<li data-template="character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
-							<li data-template="character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
-							<li data-template="guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
-							<li data-template="arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
-							<li data-template="achievement:{REGION}.{ACHIEVEMENT ID}({LANGUAGE})">Achievement</li>
+							<li data-template="wow.realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
+							<li data-template="wow.quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
+							<li data-template="wow.item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
+							<li data-template="wow.item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
+							<li data-template="wow.character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
+							<li data-template="wow.character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
+							<li data-template="wow.guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
+							<li data-template="wow.arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
+							<li data-template="wow.achievement:{REGION}.{ACHIEVEMENT ID}({LANGUAGE})">Achievement</li>
+							<li data-template="d3.profile:{REGION}.{BATTLETAGNAME}-{BATTLETAGCODE}({LANGUAGE})">Diablo III Profile</li>
 						</ul>
 					</div>
 				</li>
@@ -655,7 +687,10 @@
 					'darktip/modules/wow.wowhead.character.js',
 					'darktip/modules/wow.wowhead.guild.js',
 					'darktip/modules/wow.wowhead.item.js',
-					'darktip/modules/wow.wowhead.quest.js'
+					'darktip/modules/wow.wowhead.quest.js',
+					'darktip/modules/d3.css',
+					'darktip/modules/d3.js',
+					'darktip/modules/d3.profile.js'
 				]
 			}
 		};
