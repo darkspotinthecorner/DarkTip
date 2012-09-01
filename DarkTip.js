@@ -44,7 +44,7 @@ window.DarkTip = {
 	'version': {
 		'major': 1,
 		'minor': 1,
-		'patch': 5
+		'patch': 6
 	},
 
 	'data': {
