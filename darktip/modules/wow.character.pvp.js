@@ -49,18 +49,6 @@ DarkTip.registerModule('wow.character.pvp', {
 			'condition': true,
 			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,pvp&locale=<%= this["locale"] %>'
 		}
-		/*
-		'races'    : {
-			'required' : false,
-			'condition': 'character.race',
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>'
-		},
-		'classes'  : {
-			'required' : false,
-			'condition': 'character.class',
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>'
-		},
-		// */
 	},
 
 	'getParams': {
@@ -115,14 +103,6 @@ DarkTip.registerModule('wow.character.pvp', {
 					'</div>' +
 				'<% } %>' +
 				 /* --- END extended mode -------------------------------- */
-			'</div>'
-		),
-		'404': (
-			'<div class="tooltip-character tooltip-pvp tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {

@@ -46,6 +46,11 @@ DarkTip.registerModule('wow.item.equipped', {
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
 		},
+		'itemclass': {
+			'required' : true,
+			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
+			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>'
+		},
 		/* 'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
@@ -104,8 +109,7 @@ DarkTip.registerModule('wow.item.equipped', {
 			'trinket1': 'trinket1',
 			'trinket2': 'trinket2',
 			'mainhand': 'mainHand',
-			'offhand' : 'offHand',
-			'ranged'  : 'ranged'
+			'offhand' : 'offHand'
 		},
 		'match': {
 			'socket2gem':{
@@ -181,6 +185,33 @@ DarkTip.registerModule('wow.item.equipped', {
 		if(Object.keys(state['data']).length === 0)
 		{
 			return false;
+		}
+
+		if(
+			(typeof state['data']['item'] !== 'undefined') &&
+			(typeof state['data']['item']['itemClass'] !== 'undefined') &&
+			(typeof state['data']['item']['itemSubClass'] !== 'undefined') &&
+			(typeof state['data']['itemclass'] !== 'undefined') &&
+			(typeof state['data']['itemclass']['classes'] !== 'undefined')
+		)
+		{
+			for(var i = 0; i < state['data']['itemclass']['classes'].length; i++)
+			{
+				var citemclass = state['data']['itemclass']['classes'][i];
+
+				if(citemclass['class'] == state['data']['item']['itemClass'])
+				{
+					for (var i = 0; i < citemclass['subclasses'].length; i++)
+					{
+						var citemsubclass = citemclass['subclasses'][i];
+
+						if(citemsubclass['subclass'] == state['data']['item']['itemSubClass'])
+						{
+							state['data']['item']['itemClassLoc'] = citemsubclass['name'];
+						}
+					}
+				}
+			}
 		}
 
 		var slot = DarkTip.map("wow.item.equipped", "maps.slot", state['repo']['params']['slot'].toLowerCase());
@@ -332,9 +363,9 @@ DarkTip.registerModule('wow.item.equipped', {
 						'<% } else { %>' +
 							'<% if(this["item"]["equippable"]) { %>' +
 								'<%= this._loc("inventoryType." + this["item"]["inventoryType"]) %>' +
-								'<div class="pos-right"><%= this._loc("itemClass." + this["item"]["itemClass"] + "." + this["item"]["itemSubClass"]) %></div>' +
+								'<div class="pos-right"><%= this["item"]["itemClassLoc"] %></div>' +
 							'<% } else { %>' +
-								'<%= this._loc("itemClass." + this["item"]["itemClass"] + "." + this["item"]["itemSubClass"]) %>' +
+								'<%= this["item"]["itemClassLoc"] %>' +
 							'<% } %>' +
 						'<% } %>' +
 					'</div>' +

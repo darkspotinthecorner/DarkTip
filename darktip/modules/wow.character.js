@@ -91,6 +91,60 @@ DarkTip.registerModule('wow.character', {
 		}
 	},
 
+	'prepareData': function(state) {
+
+		if(Object.keys(state['data']).length === 0)
+		{
+			return false;
+		}
+
+		state['data']['character']['talentSpecCount'] = 0;
+
+		if((typeof state['data']['character'] !== 'undefined') && (typeof state['data']['character']['talents'] !== 'undefined'))
+		{
+			for(var i = 0; i < state['data']['character']['talents'].length; i++)
+			{
+				var cspec   = state['data']['character']['talents'][i];
+				var temp    = {};
+				var maxtier = -1;
+				var ordered = [];
+
+				if(typeof cspec['spec'] !== 'undefined')
+				{
+					state['data']['character']['talentSpecCount'] = state['data']['character']['talentSpecCount'] + 1;
+				}
+
+				if((typeof cspec['talents'] !== 'undefined') && (cspec['talents'].length > 0))
+				{
+					for(var j = 0; j < cspec['talents'].length; j++)
+					{
+						temp[cspec['talents'][j]['tier']] = cspec['talents'][j];
+
+						if(cspec['talents'][j]['tier'] > maxtier)
+						{
+							maxtier = cspec['talents'][j]['tier'];
+						}
+					}
+				}
+
+				if(maxtier >= 0)
+				{
+					for(var j = 0; j <= maxtier; j++)
+					{
+						if(typeof temp[j] !== 'undefined')
+						{
+							ordered.push(temp[j]);
+						}
+					}
+				}
+
+				cspec['talents_ordered'] = ordered;
+			}
+		}
+
+		return state['data'];
+	},
+
 	'getParams': {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character', 'triggers.explicit.params')));
@@ -163,7 +217,7 @@ DarkTip.registerModule('wow.character', {
 						'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 						'<%= this["spec"]["name"] %> <span class="role">(<%= this["spec"]["role"] %>)</span>' +
 						'<% if(this["talents"].length > 0) { %>' +
-							'<%= this._subLoop("templates.fragments.talent", this["talents"]) %>' +
+							'<%= this._subLoop("templates.fragments.talent", this["talents_ordered"]) %>' +
 						'<% } %>' +
 					'</div>' +
 				'<% } %>'
