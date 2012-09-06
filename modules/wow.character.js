@@ -98,6 +98,8 @@ DarkTip.registerModule('wow.character', {
 			return false;
 		}
 
+		state['data']['character']['talentSpecCount'] = 0;
+
 		if((typeof state['data']['character'] !== 'undefined') && (typeof state['data']['character']['talents'] !== 'undefined'))
 		{
 			for(var i = 0; i < state['data']['character']['talents'].length; i++)
@@ -106,6 +108,11 @@ DarkTip.registerModule('wow.character', {
 				var temp    = {};
 				var maxtier = -1;
 				var ordered = [];
+
+				if(typeof cspec['spec'] !== 'undefined')
+				{
+					state['data']['character']['talentSpecCount'] = state['data']['character']['talentSpecCount'] + 1;
+				}
 
 				if((typeof cspec['talents'] !== 'undefined') && (cspec['talents'].length > 0))
 				{

@@ -254,9 +254,14 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 	font-size: 80%;
 }
 
-.darktip-tooltip-wow .spec .talent {
-	padding-left: 2em;
-	font-size: 80%;
+.darktip-tooltip-wow .spec .talent,
+.darktip-tooltip-wow .spec .glyph {
+	padding-left: 10px;
+	font-size: 87%;
+}
+
+.darktip-tooltip-wow .tooltip-spec .spec {
+	padding-top: 4px;
 }
 
 .darktip-tooltip-wow .icon {
