@@ -162,7 +162,8 @@ DarkTip.registerModule('wow', {
 				'guild'      : 'Guild:',
 				'teamname'   : 'Team name:',
 				'teamsize'   : 'Team size:',
-				'achievement': 'Achievement:'
+				'achievement': 'Achievement:',
+				'spell'      : 'Spell:'
 			},
 			'factionSide'   : {
 				'0'       : 'Alliance',
@@ -180,6 +181,7 @@ DarkTip.registerModule('wow', {
 				'7' : { '0': 'Shaman',       '1': 'Shaman' },
 				'8' : { '0': 'Mage',         '1': 'Mage' },
 				'9' : { '0': 'Warlock',      '1': 'Warlock' },
+				'10': { '0': 'Monk',         '1': 'Monk' },
 				'11': { '0': 'Druid',        '1': 'Druid' }
 			},
 			'characterRace' : {
@@ -235,7 +237,8 @@ DarkTip.registerModule('wow', {
 				'guild'      : 'Gilde:',
 				'teamname'   : 'Teamname:',
 				'teamsize'   : 'Teamgr&ouml;&szlig;e:',
-				'achievement': 'Erfolg:'
+				'achievement': 'Erfolg:',
+				'spell'      : 'Zauber:'
 			},
 			'factionSide': {
 				'0'       :'Allianz',
@@ -253,6 +256,7 @@ DarkTip.registerModule('wow', {
 				'7' : { '0': 'Schamane',     '1': 'Schamanin' },
 				'8' : { '0': 'Magier',       '1': 'Magierin' },
 				'9' : { '0': 'Hexenmeister', '1': 'Hexenmeisterin' },
+				'10': { '0': 'Mönch',        '1': 'Mönch' },
 				'11': { '0': 'Druide',       '1': 'Druidin' }
 			},
 			'characterRace': {
@@ -308,7 +312,8 @@ DarkTip.registerModule('wow', {
 				'guild'      : 'Guilde :',
 				'teamname'   : 'Nom :',
 				'teamsize'   : 'Taille :',
-				'achievement': 'Avantage :'
+				'achievement': 'Avantage :',
+				'spell'      : 'Sorts :'
 			},
 			'factionSide': {
 				'0'       : 'Alliance',
@@ -326,6 +331,7 @@ DarkTip.registerModule('wow', {
 				'7' : { '0': 'Chaman',               '1': 'Chamane' },
 				'8' : { '0': 'Mage',                 '1': 'Mage' },
 				'9' : { '0': 'D&eacute;moniste',     '1': 'D&eacute;moniste' },
+				'10': { '0': 'Moine',                '1': 'Moniale' },
 				'11': { '0': 'Druide',               '1': 'Druidesse' }
 			},
 			'characterRace': {
@@ -341,9 +347,9 @@ DarkTip.registerModule('wow', {
 				'10': { '0': 'Elfe de sang',    '1': 'Elfe de sang' },
 				'11': { '0': 'Draeneï',         '1': 'Draeneï' },
 				'22': { '0': 'Worgen',          '1': 'Worgen' },
-				'24': {	'0': 'Pandaren',        '1': 'Pandaren' },
-				'25': {	'0': 'Pandaren',        '1': 'Pandaren' },
-				'26': {	'0': 'Pandaren',        '1': 'Pandaren' }
+				'24': {	'0': 'Pandaren',        '1': 'Pandarène' },
+				'25': {	'0': 'Pandaren',        '1': 'Pandarène' },
+				'26': {	'0': 'Pandaren',        '1': 'Pandarène' }
 			},
 			'characterSkill': {
 				'129': 'Secourisme',
@@ -381,7 +387,8 @@ DarkTip.registerModule('wow', {
 				'guild'      : 'Hermandad:',
 				'teamname'   : 'Nombre:',
 				'teamsize'   : 'Tama&ntilde;o:',
-				'achievement': 'Ventaja:'
+				'achievement': 'Ventaja:',
+				'spell'      : 'Hechizos:'
 			},
 			'factionSide': {
 				'0'       : 'Alianza',
@@ -399,6 +406,7 @@ DarkTip.registerModule('wow', {
 				'7' : { '0': 'Chamán',                 '1': 'Chamán' },
 				'8' : { '0': 'Mago',                   '1': 'Maga' },
 				'9' : { '0': 'Brujo',                  '1': 'Bruja' },
+				'10': { '0': 'Monje',                  '1': 'Monje' },
 				'11': { '0': 'Druida',                 '1': 'Druida' }
 			},
 			'characterRace': {

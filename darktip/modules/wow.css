@@ -53,6 +53,7 @@
 .darktip-tooltip-wow .cclass-7  { /* Shaman       */ color: #0070DE !important; }
 .darktip-tooltip-wow .cclass-8  { /* Mage         */ color: #69CCF0 !important; }
 .darktip-tooltip-wow .cclass-9  { /* Warlock      */ color: #9482C9 !important; }
+.darktip-tooltip-wow .cclass-10 { /* Monk         */ color: #00FFBA !important; }
 .darktip-tooltip-wow .cclass-11 { /* Druid        */ color: #FF7D0A !important; }
 
 .darktip-tooltip-wow .cside-0, .darktip-tooltip-wow .cside-alliance { color: #80BBFF !important; }
@@ -314,6 +315,10 @@ body.darktip-extended-mode .darktip-tooltip-wow span.darktip-only-x {
 
 .darktip-tooltip-wow .sub {
 	font-size: 85%;
+}
+
+.darktip-tooltip-wow .split-row {
+	position: relative;
 }
 
 /* --------------------------------------------------------------------------

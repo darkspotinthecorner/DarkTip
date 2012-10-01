@@ -106,9 +106,9 @@ DarkTip.registerModule('wow.wowhead.item', {
 
 				if(citemclass['class'] == state['data']['item']['itemClass'])
 				{
-					for (var i = 0; i < citemclass['subclasses'].length; i++)
+					for (var j = 0; j < citemclass['subclasses'].length; j++)
 					{
-						var citemsubclass = citemclass['subclasses'][i];
+						var citemsubclass = citemclass['subclasses'][j];
 
 						if(citemsubclass['subclass'] == state['data']['item']['itemSubClass'])
 						{

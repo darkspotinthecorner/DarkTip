@@ -44,7 +44,7 @@ window.DarkTip = {
 	'version': {
 		'major': 1,
 		'minor': 1,
-		'patch': 7
+		'patch': 8
 	},
 
 	'data': {
@@ -610,6 +610,8 @@ window.DarkTip = {
 			'run': function() {
 				var state = this;
 
+				// console.log(['run data collection state', state]);
+
 				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
 					var condition = query.condition;
 
@@ -722,12 +724,17 @@ window.DarkTip = {
 			element.qtip('api').set('style.width', this.read(module, 'layout.width.core'));
 
 			content = this.jq.jqote(
-			this.read(module, 'templates.core'), this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), data));
+				this.read(module, 'templates.core'),
+				this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), data)
+			);
+
 		} else {
 			element.qtip('api').set('style.width', this.read(module, 'layout.width.404'));
 
 			content = this.jq.jqote(
-			this.read(module, 'templates.404'), this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), params));
+				this.read(module, 'templates.404'),
+				this.jq.extend(true, {}, this.getTemplateTools(module, params['locale']), params)
+			);
 		}
 
 		element.qtip('api').set('content.text', content);

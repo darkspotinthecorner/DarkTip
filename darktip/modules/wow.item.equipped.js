@@ -51,11 +51,11 @@ DarkTip.registerModule('wow.item.equipped', {
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
 			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>'
 		},
-		/* 'itemset': {
+		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
-		}, */
+		},
 		'gem0': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem0',
@@ -201,9 +201,9 @@ DarkTip.registerModule('wow.item.equipped', {
 
 				if(citemclass['class'] == state['data']['item']['itemClass'])
 				{
-					for (var i = 0; i < citemclass['subclasses'].length; i++)
+					for (var j = 0; j < citemclass['subclasses'].length; j++)
 					{
-						var citemsubclass = citemclass['subclasses'][i];
+						var citemsubclass = citemclass['subclasses'][j];
 
 						if(citemsubclass['subclass'] == state['data']['item']['itemSubClass'])
 						{
@@ -391,7 +391,7 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
 					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
 					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row padded-above">' +
-						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %> (<%= this["item"]["itemSet"]["equipped"] %>/X)</div>' +
+						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %> (<%= this["item"]["itemSet"]["equipped"] %>/<%= this["itemset"]["items"].length %>)</div>' +
 						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
 					'</div><% } %>' +
 			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
