@@ -58,7 +58,7 @@ DarkTip.registerModule('wow.character', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,companions,mounts&locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,pets,mounts&locale=<%= this["locale"] %>'
 		}
 		/*
 		'races'    : {
@@ -194,7 +194,7 @@ DarkTip.registerModule('wow.character', {
 							'</div>' +
 						'<% } %>' +
 						'<% if(this["character"]["mounts"]) { %><div class="darktip-row"><%= this._loc("mounts") %></div><% } %>' +
-						'<% if(this["character"]["companions"]) { %><div class="darktip-row"><%= this._loc("companions") %></div><% } %>' +
+						'<% if(this["character"]["pets"]) { %><div class="darktip-row"><%= this._loc("pets") %></div><% } %>' +
 						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
 						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
@@ -255,8 +255,8 @@ DarkTip.registerModule('wow.character', {
 			'not-found'     : 'Character not found',
 			'classification': '<%= this["character"]["level"] %> <%= this._loc("characterRace." + this["character"]["race"] + ".0") %> <%= this._loc("characterClass." + this["character"]["class"] + ".0") %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> average item level (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Mounts: <%= this["character"]["mounts"].length %>',
-			'companions'    : 'Companions: <%= this["character"]["companions"].length %>',
+			'mounts'        : 'Mounts: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
+			'pets'          : 'Pets: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : 'Last modified: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'de_DE': {
@@ -264,8 +264,8 @@ DarkTip.registerModule('wow.character', {
 			'not-found'     : 'Charakter nicht gefunden',
 			'classification': '<%= this["character"]["level"] %>, <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Durchschnittliche Gegenstandsstufe (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Reittiere: <%= this["character"]["mounts"].length %>',
-			'companions'    : 'Begleiter: <%= this["character"]["companions"].length %>',
+			'mounts'        : 'Reittiere: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
+			'pets'          : 'Haustiere: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : 'Stand vom <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'fr_FR': {
@@ -273,8 +273,8 @@ DarkTip.registerModule('wow.character', {
 			'not-found'     : 'Aucun personnage trouv&eacute;e',
 			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de niveau <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Niveau moyen des objets (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Montures: <%= this["character"]["mounts"].length %>',
-			'companions'    : 'Mascottes: <%= this["character"]["companions"].length %>',
+			'mounts'        : 'Montures: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
+			'pets'          : 'Mascottes: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : 'Derni&egrave;re mise à jour: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_ES': {
@@ -282,8 +282,8 @@ DarkTip.registerModule('wow.character', {
 			'not-found'     : 'Personaje no encontrado',
 			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de nivel <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> nivel medio de objeto (<%= this["averageItemLevel"] %>)',
-			'mounts'        : 'Monturas: <%= this["character"]["mounts"].length %>',
-			'companions'    : 'Compa&ntilde;eros: <%= this["character"]["companions"].length %>',
+			'mounts'        : 'Monturas: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
+			'pets'          : 'Compa&ntilde;eros: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : '&Uacute;ltima modificaci&oacute;n: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		},
 		'es_MX': {

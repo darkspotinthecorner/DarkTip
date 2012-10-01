@@ -61,12 +61,12 @@ DarkTip.registerModule('wow.item', {
 			'required' : true,
 			'condition': true,
 			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>'
-		}/* ,
+		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
 			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>'
-		}*/
+		}
 	},
 
 	'patterns': {
@@ -133,9 +133,9 @@ DarkTip.registerModule('wow.item', {
 
 				if(citemclass['class'] == state['data']['item']['itemClass'])
 				{
-					for (var i = 0; i < citemclass['subclasses'].length; i++)
+					for (var j = 0; j < citemclass['subclasses'].length; j++)
 					{
-						var citemsubclass = citemclass['subclasses'][i];
+						var citemsubclass = citemclass['subclasses'][j];
 
 						if(citemsubclass['subclass'] == state['data']['item']['itemSubClass'])
 						{
@@ -276,7 +276,7 @@ DarkTip.registerModule('wow.item', {
 						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %></div>' +
 						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
 					'</div><% } %>' +
-			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
@@ -418,7 +418,7 @@ DarkTip.registerModule('wow.item', {
 				'onEquip': 'Equip: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Use: <%= this["spell"]["description"] %>',
 				'onProc' : 'Chance on hit: <%= this["spell"]["description"] %>',
-				'unknown': 'Unknown: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -504,7 +504,7 @@ DarkTip.registerModule('wow.item', {
 				'onEquip': 'Anlegen: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Benutzen: <%= this["spell"]["description"] %>',
 				'onProc' : 'Trefferchance: <%= this["spell"]["description"] %>',
-				'unknown': 'Unbekannt: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -590,7 +590,7 @@ DarkTip.registerModule('wow.item', {
 				'onEquip': 'Equip&eacute; : <%= this["spell"]["description"] %>',
 				'onUse'  : 'Utilis&eacute; : <%= this["spell"]["description"] %>',
 				'onProc' : 'Chances quand vous touchez : <%= this["spell"]["description"] %>',
-				'unknown': 'Inconnu : <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Ensemble : <%= this["description"] %>',
 			'sellPrice'        : 'Prix de vente: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -676,7 +676,7 @@ DarkTip.registerModule('wow.item', {
 				'onEquip': 'Equipar: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Uso: <%= this["spell"]["description"] %>',
 				'onProc' : 'Probabilidad al acertar: <%= this["spell"]["description"] %>',
-				'unknown': 'Desconocido: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Conjunto: <%= this["description"] %>',
 			'sellPrice'        : 'Precio de venta: <%= this._renderCoins(this["item"]["sellPrice"]) %>',

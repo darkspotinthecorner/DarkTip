@@ -86,7 +86,7 @@ DarkTip.registerModule('wow.character.spec', {
 					'<% if(this["_meta"]["extendedActive"] && (this["character"]["talentSpecCount"] > 1)) { %>' +
 						'<div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div>' +
 					'<% } else { %>' +
-						'<div class="darktip-row info-meta">No alternate spec available</div>' +
+						'<div class="darktip-row info-meta"><%= this._loc("extendedNotAvailable") %></div>' +
 					'<% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
@@ -166,44 +166,48 @@ DarkTip.registerModule('wow.character.spec', {
 
 	'i18n': {
 		'en_US': {
-			'loading'         : 'Loading character...',
-			'not-found'       : 'Character not found',
-			'extendedInactive': 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] for inactive spec',
-			'extendedActive'  : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] for active spec',
-			'glyphMajor'      : 'Major glyphs:',
-			'glyphMinor'      : 'Minor glyphs:',
-			'glyphMajorEmpty' : 'No major glyphs used',
-			'glyphMinorEmpty' : 'No minor glyphs used'
+			'loading'             : 'Loading character...',
+			'not-found'           : 'Character not found',
+			'extendedInactive'    : 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] for inactive spec',
+			'extendedActive'      : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] for active spec',
+			'extendedNotAvailable': 'No alternate spec available',
+			'glyphMajor'          : 'Major glyphs:',
+			'glyphMinor'          : 'Minor glyphs:',
+			'glyphMajorEmpty'     : 'No major glyphs used',
+			'glyphMinorEmpty'     : 'No minor glyphs used'
 		},
 		'de_DE': {
-			'loading'         : 'Lade Charakter...',
-			'not-found'       : 'Charakter nicht gefunden',
-			'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt für inaktive Skillung',
-			'extendedActive'  : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen für aktive Skillung',
-			'glyphMajor'      : 'Erhebliche Glyphen:',
-			'glyphMinor'      : 'Geringe Glyphen:',
-			'glyphMajorEmpty' : 'Keine erheblichen Glyphen',
-			'glyphMinorEmpty' : 'Keine geringen Glyphen'
+			'loading'             : 'Lade Charakter...',
+			'not-found'           : 'Charakter nicht gefunden',
+			'extendedInactive'    : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt für inaktive Skillung',
+			'extendedActive'      : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen für aktive Skillung',
+			'extendedNotAvailable': 'Keine alternative Skillung vorhanden',
+			'glyphMajor'          : 'Erhebliche Glyphen:',
+			'glyphMinor'          : 'Geringe Glyphen:',
+			'glyphMajorEmpty'     : 'Keine erheblichen Glyphen',
+			'glyphMinorEmpty'     : 'Keine geringen Glyphen'
 		},
 		'fr_FR': {
-			'loading'         : 'Chargement personnage...',
-			'not-found'       : 'Aucun personnage trouv&eacute;e',
-			'extendedInactive': 'Maintenez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec inactive',
-			'extendedActive'  : 'Relâchez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec actif',
-			'glyphMajor'      : 'Glyphes majeurs:',
-			'glyphMinor'      : 'Glyphes mineurs:',
-			'glyphMajorEmpty' : 'Pas de glyphes majeurs utilisés',
-			'glyphMinorEmpty' : 'Pas de glyphes mineurs utilisés'
+			'loading'             : 'Chargement personnage...',
+			'not-found'           : 'Aucun personnage trouv&eacute;e',
+			'extendedInactive'    : 'Maintenez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec inactive',
+			'extendedActive'      : 'Relâchez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec actif',
+			'extendedNotAvailable': 'Sans spécialisation remplacement disponible',
+			'glyphMajor'          : 'Glyphes majeurs:',
+			'glyphMinor'          : 'Glyphes mineurs:',
+			'glyphMajorEmpty'     : 'Pas de glyphes majeurs utilisés',
+			'glyphMinorEmpty'     : 'Pas de glyphes mineurs utilisés'
 		},
 		'es_ES': {
-			'loading'         : 'Cargando personaje...',
-			'not-found'       : 'Personaje no encontrado',
-			'extendedInactive': 'Mantenga pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para spec inactivo',
-			'extendedActive'  : 'Suelte [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para spec activo',
-			'glyphMajor'      : 'Glifos sublimes:',
-			'glyphMinor'      : 'Glifos menores:',
-			'glyphMajorEmpty' : 'No hay glifos sublimes',
-			'glyphMinorEmpty' : 'No hay glifos menores'
+			'loading'             : 'Cargando personaje...',
+			'not-found'           : 'Personaje no encontrado',
+			'extendedInactive'    : 'Mantenga pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para spec inactivo',
+			'extendedActive'      : 'Suelte [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para spec activo',
+			'extendedNotAvailable': 'No disponible especialización alternativo',
+			'glyphMajor'          : 'Glifos sublimes:',
+			'glyphMinor'          : 'Glifos menores:',
+			'glyphMajorEmpty'     : 'No hay glifos sublimes',
+			'glyphMinorEmpty'     : 'No hay glifos menores'
 		}
 	}
 
