@@ -265,7 +265,7 @@ DarkTip.registerModule('wow.item', {
 					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row highlight-reduced"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
 					'<% if(this["item"]["allowableClasses"]) { %><div class="darktip-row"><%= this._loc("allowableClasses") %></div><% } %>' +
 					'<% if(this["item"]["allowableRaces"]) { %><div class="darktip-row"><%= this._loc("allowableRaces") %></div><% } %>' +
-					'<% if(this["item"]["requiredLevel"]) { %><div class="darktip-row"><%= this._loc("requiredLevel") %></div><% } %>' +
+					'<% if(this["item"]["requiredLevel"] > 1) { %><div class="darktip-row"><%= this._loc("requiredLevel") %></div><% } %>' +
 					'<% if(this["item"]["requiredSkill"]) { %><div class="darktip-row"><%= this._loc("requiredSkill") %></div><% } %>' +
 					'<% if(this["item"]["requiredAbility"]) { %><div class="darktip-row"><%= this._loc("requiredAbility") %></div><% } %>' +
 					'<% if(this["item"]["minFactionId"]) { %><div class="darktip-row"><%= this._loc("minFactionId") %></div><% } %>' +
@@ -369,7 +369,7 @@ DarkTip.registerModule('wow.item', {
 			'baseArmor'        : '<%= this["item"]["baseArmor"] %> Armor',
 			'maxDurability'    : 'Durability <%= this["item"]["maxDurability"] %> / <%= this["item"]["maxDurability"] %>',
 			'requiredLevel'    : 'Requires Level <%= this["item"]["requiredLevel"] %>',
-			'requiredSkill'    : 'Requires <%= this._loc("characterSkill." + this["item"]["requiredSkill"]) %> (<%= this["requiredSkillRank"] %>)',
+			'requiredSkill'    : 'Requires <%= this._loc("characterSkill." + this["item"]["requiredSkill"]) %> (<%= this["item"]["requiredSkillRank"] %>)',
 			'requiredAbility'  : 'Requires <%= this["item"]["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Requires Faction ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
@@ -455,7 +455,7 @@ DarkTip.registerModule('wow.item', {
 			'baseArmor'        : '<%= this["item"]["baseArmor"] %> R&uuml;stung',
 			'maxDurability'    : 'Haltbarkeit <%= this["item"]["maxDurability"] %> / <%= this["item"]["maxDurability"] %>',
 			'requiredLevel'    : 'Erfordert Stufe <%= this["item"]["requiredLevel"] %>',
-			'requiredSkill'    : 'Erfordert <%= this._loc("characterSkill." + this["item"]["requiredSkill"]) %> (<%= this["item"][requiredSkillRank] %>)',
+			'requiredSkill'    : 'Erfordert <%= this._loc("characterSkill." + this["item"]["requiredSkill"]) %> (<%= this["item"]["requiredSkillRank"] %>)',
 			'requiredAbility'  : 'Erfordert <%= this["item"]["requiredAbility"]["name"] %>',
 			'minFactionId'     : 'Erfordert Fraktion ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Klassen: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
@@ -463,7 +463,7 @@ DarkTip.registerModule('wow.item', {
 			'itemStatName'     : {
 				'3' : 'Beweglichkeit',
 				'4' : 'St&auml;rke',
-				'5' : 'Intellekt',
+				'5' : 'Intelligenz',
 				'6' : 'Willenskraft',
 				'7' : 'Ausdauer',
 				'13': 'Ausweichwertung',
@@ -483,7 +483,7 @@ DarkTip.registerModule('wow.item', {
 			'itemStat'         : {
 				'3' : 'Beweglichkeit',
 				'4' : 'St&auml;rke',
-				'5' : 'Intellekt',
+				'5' : 'Intelligenz',
 				'6' : 'Willenskraft',
 				'7' : 'Ausdauer',
 				'13': 'Anlegen: Erh&ouml;ht eure Ausweichwertung um <%= this["amount"] %>.',
