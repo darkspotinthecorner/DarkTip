@@ -20,15 +20,14 @@
  * along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
  * ************************************************************************** */
 
-DarkTip.registerModule('wow.spell', {
+DarkTip.registerModule('wow.wowhead.spell', {
 
 	'triggers': {
-		'explicit': {
-			'match' : /wow\.spell:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+		'implicit': {
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/spell=([^\.#]+).*/i,
 			'params': {
-				'1': 'region',
-				'2': 'spellid',
-				'3': 'lang'
+				'1': 'wowheadhost',
+				'2': 'spellid'
 			}
 		}
 	},
@@ -53,14 +52,10 @@ DarkTip.registerModule('wow.spell', {
 
 	'getParams': {
 		'explicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.spell', 'triggers.explicit.params')));
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.spell', 'triggers.implicit.params')));
+			params['region'] = 'eu';
+			params['lang']   = DarkTip.map('wow.wowhead', 'maps.wowheadhost.lang', params['wowheadhost']);
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
-			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
-			return params;
-		},
-		'implicit': function(result) {
-			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.spell', 'triggers.implicit.params')));
-			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
