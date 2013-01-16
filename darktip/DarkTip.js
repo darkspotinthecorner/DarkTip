@@ -44,12 +44,12 @@ window.DarkTip = {
 	'version': {
 		'major': 1,
 		'minor': 1,
-		'patch': 8
+		'patch': 10
 	},
 
 	'data': {
 		'settings': {
-			'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+			'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
 			'resources': {
 				'qtip2': [
 					'ext/qtip2/jquery.qtip.min.js',
@@ -482,13 +482,15 @@ window.DarkTip = {
 					}
 
 					if (DarkTip.setting('applyTo.explicit')) {
-						DarkTip.jq('[data-darktip]').live('mouseenter', function() {
+						// DarkTip.jq('[data-darktip]').live('mouseenter', function() {
+						DarkTip.jq('body').on('mouseenter', '[data-darktip]', function() {
 							DarkTip.handleHover('explicit', DarkTip.jq(this));
 						});
 					}
 
 					if (DarkTip.setting('applyTo.implicit')) {
-						DarkTip.jq('a[href]').live('mouseenter', function() {
+						// DarkTip.jq('a[href]').live('mouseenter', function() {
+						DarkTip.jq('body').on('mouseenter', 'a[href]', function() {
 							DarkTip.handleHover('implicit', DarkTip.jq(this));
 						});
 					}
@@ -854,7 +856,7 @@ window.DarkTip = {
 };
 
 window.___DarkTipSettings['unbindJQuery'] = (window.jQuery ? true : false);yepnope([{
-	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
+	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
 	'complete': function() {
 
 		if(!window.jQuery.jsonp){

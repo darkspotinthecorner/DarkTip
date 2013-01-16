@@ -284,15 +284,13 @@
 	font-family: Arial, Verdana, sans-serif;
 	font-size: 12px;
 	line-height: 15px;
+	background-color: transparent;
+	border-color: #333;
 }
 
-.darktip-tooltip-d3 .ui-tooltip-titlebar,
-.darktip-tooltip-d3 .ui-tooltip-content {
+.darktip-tooltip-d3 .qtip-content {
 	border-color: #333;
 	color: #F3E6D0;
-}
-
-.darktip-tooltip-d3 .ui-tooltip-content {
 	background-color: #000;
 	background-color: rgba(0, 0, 0, 0.85);
 }
