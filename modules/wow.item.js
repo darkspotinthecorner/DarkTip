@@ -261,6 +261,7 @@ DarkTip.registerModule('wow.item', {
 						'</div>' +
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["item"]["bonusStats"]) %>' +
+					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<% if(this["item"]["gemInfo"]) { %><div class="darktip-row"><%= this["item"]["gemInfo"]["bonus"]["name"] %></div><% } %>' +
 					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row highlight-reduced"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
 					'<% if(this["item"]["allowableClasses"]) { %><div class="darktip-row"><%= this._loc("allowableClasses") %></div><% } %>' +
@@ -269,7 +270,6 @@ DarkTip.registerModule('wow.item', {
 					'<% if(this["item"]["requiredSkill"]) { %><div class="darktip-row"><%= this._loc("requiredSkill") %></div><% } %>' +
 					'<% if(this["item"]["requiredAbility"]) { %><div class="darktip-row"><%= this._loc("requiredAbility") %></div><% } %>' +
 					'<% if(this["item"]["minFactionId"]) { %><div class="darktip-row"><%= this._loc("minFactionId") %></div><% } %>' +
-					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
 					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
 					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row padded-above">' +
@@ -323,7 +323,7 @@ DarkTip.registerModule('wow.item', {
 				'secondary': (
 					'<% if(this._isStatSecondary(this["stat"])) { %>' +
 						'<div class="darktip-row highlight-custom">' +
-							'<%= this._loc("itemStat." + this["stat"]) %>' +
+							'<% if(this["amount"] >= 0) { %>+<% } %><%= this["amount"] %> <%= this._loc("itemStat." + this["stat"]) %>' +
 						'</div>' +
 					'<% }'
 				),
@@ -374,45 +374,31 @@ DarkTip.registerModule('wow.item', {
 			'minFactionId'     : 'Requires Faction ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Races: <%= this._subLoop("templates.fragments.allowableRace", this["item"]["allowableRaces"], ", ") %>',
-			'itemStatName'     : {
-				'3' : 'Agility',
-				'4' : 'Strength',
-				'5' : 'Intellect',
-				'6' : 'Spirit',
-				'7' : 'Stamina',
-				'13': 'Dodge Rating',
-				'14': 'Parry Rating',
-				'31': 'Hit Rating',
-				'32': 'Critical Strike Rating',
-				'35': 'PvP Resilience Rating',
-				'36': 'Haste Rating',
-				'37': 'Expertise Rating',
-				'38': 'Attack Power',
-				'46': 'Health Regeneration',
-				'45': 'Spell Power',
-				'47': 'Spell Penetration',
-				'49': 'Mastery Rating',
-				'57': 'PvP Power Rating'
-			},
 			'itemStat'         : {
 				'3' : 'Agility',
 				'4' : 'Strength',
 				'5' : 'Intellect',
 				'6' : 'Spirit',
 				'7' : 'Stamina',
-				'13': 'Equip: Increases your dodge rating by <%= this["amount"] %>.',
-				'14': 'Equip: Increases your parry rating by <%= this["amount"] %>.',
-				'31': 'Equip: Increases your hit rating by <%= this["amount"] %>.',
-				'32': 'Equip: Increases your critical strike rating by <%= this["amount"] %>.',
-				'35': 'Equip: Increases your pvp resilience rating by <%= this["amount"] %>.',
-				'36': 'Equip: Increases your haste rating by <%= this["amount"] %>.',
-				'37': 'Equip: Increases your expertise rating by <%= this["amount"] %>.',
-				'38': 'Equip: Increases your attack power by <%= this["amount"] %>.',
-				'46': 'Equip: Increases your health regeneration by <%= this["amount"] %>.',
-				'45': 'Equip: Increases spell power by <%= this["amount"] %>.',
-				'47': 'Equip: Increases spell penetration by <%= this["amount"] %>.',
-				'49': 'Equip: Increases your mastery rating by <%= this["amount"] %>.',
-				'57': 'Equip: Increases your pvp power rating by <%= this["amount"] %>.'
+				'25': 'Arcane Resistance',
+				'26': 'Fire Resistance',
+				'27': 'Nature Resistance',
+				'28': 'Frost Resistance',
+				'29': 'Shadow Resistance',
+				'30': 'Holy Resistance',
+				'13': 'Dodge',
+				'14': 'Parry',
+				'31': 'Hit',
+				'32': 'Critical Strike',
+				'35': 'Pvp Resilience',
+				'36': 'Haste',
+				'37': 'Expertise',
+				'38': 'Attack Power',
+				'46': 'Health Regeneration',
+				'45': 'Spell Power',
+				'49': 'Mastery',
+				'50': 'Armor',
+				'57': 'Pvp Power'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equip: <%= this["spell"]["description"] %>',
@@ -440,7 +426,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'socketBonus'      : 'Socket Bonus: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Hated', '1': 'Hostile', '2': 'Unfriendly', '3': 'Neutral', '4': 'Friendly', '5': 'Honored', '6': 'Revered', '7': 'Exalted' },
-			'inventoryType'   : { '1': 'Head', '2': 'Neck', '3': 'Shoulder', '4': 'Shirt', '5': 'Chest', '6': 'Waist', '7': 'Legs', '8': 'Feet', '9': 'Wrist', '10': 'Hands', '11': 'Finger', '12': 'Trinket', '13': 'One-Hand', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'Two-Hand', '18': 'Bag', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
+			'inventoryType'   : { '1': 'Head', '2': 'Neck', '3': 'Shoulder', '4': 'Shirt', '5': 'Chest', '6': 'Waist', '7': 'Legs', '8': 'Feet', '9': 'Wrist', '10': 'Hands', '11': 'Finger', '12': 'Trinket', '13': 'One-Hand', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'Two-Hand', '18': 'Bag', '20': 'Chest', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
 		},
 		'de_DE': {
 			'loading'          : 'Lade Gegenstand...',
@@ -460,45 +446,31 @@ DarkTip.registerModule('wow.item', {
 			'minFactionId'     : 'Erfordert Fraktion ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Klassen: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Rassen: <%= this._subLoop("templates.fragments.allowableRace", this["item"]["allowableRaces"], ", ") %>',
-			'itemStatName'     : {
-				'3' : 'Beweglichkeit',
-				'4' : 'St&auml;rke',
-				'5' : 'Intelligenz',
-				'6' : 'Willenskraft',
-				'7' : 'Ausdauer',
-				'13': 'Ausweichwertung',
-				'14': 'Parrierwertung',
-				'31': 'Trefferwertung',
-				'32': 'Kritische Trefferwertung',
-				'35': 'PvP Abh&auml;rtungswertung',
-				'36': 'Tempowertung',
-				'37': 'Waffenkundewertung',
-				'38': 'Angriffskraft',
-				'46': 'Gesundheitsregenartion',
-				'45': 'Zaubermacht',
-				'47': 'Zauberdurchschlagskraft',
-				'49': 'Meisterschaftswertung',
-				'57': 'PvP Machtwertung'
-			},
 			'itemStat'         : {
 				'3' : 'Beweglichkeit',
 				'4' : 'St&auml;rke',
 				'5' : 'Intelligenz',
 				'6' : 'Willenskraft',
 				'7' : 'Ausdauer',
-				'13': 'Anlegen: Erh&ouml;ht eure Ausweichwertung um <%= this["amount"] %>.',
-				'14': 'Anlegen: Erh&ouml;ht eure Parrierwertung um <%= this["amount"] %>.',
-				'31': 'Anlegen: Erh&ouml;ht eure Trefferwertung um <%= this["amount"] %>.',
-				'32': 'Anlegen: Erh&ouml;ht eure kritische Trefferwertung um <%= this["amount"] %>.',
-				'35': 'Anlegen: Erh&ouml;ht eure PvP Abh&auml;rtungswertung um <%= this["amount"] %>.',
-				'36': 'Anlegen: Erh&ouml;ht eure Tempowertung um <%= this["amount"] %>.',
-				'37': 'Anlegen: Erh&ouml;ht eure Waffenkundewertung um <%= this["amount"] %>.',
-				'38': 'Anlegen: Erh&ouml;ht eure Angriffswertung um <%= this["amount"] %>.',
-				'46': 'Anlegen: Erh&ouml;ht eure Gesundheitsregenartion um <%= this["amount"] %>.',
-				'45': 'Anlegen: Erh&ouml;ht Zaubermacht um <%= this["amount"] %>.',
-				'47': 'Anlegen: Erh&ouml;ht Zauberdurchschlagskraft um <%= this["amount"] %>.',
-				'49': 'Anlegen: Erh&ouml;ht eure Meisterschaftswertung um <%= this["amount"] %>.',
-				'57': 'Anlegen: Erh&ouml;ht eure PvP Machtwertung um <%= this["amount"] %>.'
+				'25': 'Arkanwiderstand',
+				'26': 'Feuerwiderstand',
+				'27': 'Naturwiderstand',
+				'28': 'Frostwiderstand',
+				'29': 'Schattenwiderstand',
+				'30': 'Heiligwiderstand',
+				'13': 'Ausweichwen',
+				'14': 'Parrieren',
+				'31': 'Treffer',
+				'32': 'Kritische Treffer',
+				'35': 'PvP Abh&auml;rtung',
+				'36': 'Tempo',
+				'37': 'Waffenkunde',
+				'38': 'Angriffskraft',
+				'46': 'Gesundheitsregenartion',
+				'45': 'Zaubermacht',
+				'49': 'Meisterschaftswertung',
+				'50': 'R&uml;stung',
+				'57': 'PvP Macht'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Anlegen: <%= this["spell"]["description"] %>',
@@ -526,7 +498,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'socketBonus'      : 'Sockelbonus: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Haßerf&szlig;uuml;llt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrf&uuml;rchtig' },
-			'inventoryType'    : { '1': 'Kopf', '2': 'Nacken', '3': 'Schulter', '4': 'Hemd', '5': 'Brust', '6': 'Taille', '7': 'Beine', '8': 'F&uuml;&szlig;e', '9': 'Handgelenke', '10': 'H&auml;nde', '11': 'Finger', '12': 'Schmuckst&uuml;ck', '13': 'Einh&auml;ndig', '15': 'Distanz' /* Bogen */, '16': 'R&uuml;cken', '17': 'Zweih&auml;ndig', '18': 'Tasche', '21': 'Waffenhand', '22': 'Schildhand', '23': 'In Schildhand gef&uuml;hrt', '25': 'Distanz' /* Wurfwaffe */, '26': 'Distanz' /* Gewehr, Armbrust, Zauberstab */ }
+			'inventoryType'    : { '1': 'Kopf', '2': 'Nacken', '3': 'Schulter', '4': 'Hemd', '5': 'Brust', '6': 'Taille', '7': 'Beine', '8': 'F&uuml;&szlig;e', '9': 'Handgelenke', '10': 'H&auml;nde', '11': 'Finger', '12': 'Schmuckst&uuml;ck', '13': 'Einh&auml;ndig', '15': 'Distanz' /* Bogen */, '16': 'R&uuml;cken', '17': 'Zweih&auml;ndig', '18': 'Tasche', '20': 'Brust', '21': 'Waffenhand', '22': 'Schildhand', '23': 'In Schildhand gef&uuml;hrt', '25': 'Distanz' /* Wurfwaffe */, '26': 'Distanz' /* Gewehr, Armbrust, Zauberstab */ }
 		},
 		'fr_FR': {
 			'loading'          : 'Chargement Objets...',
@@ -546,12 +518,18 @@ DarkTip.registerModule('wow.item', {
 			'minFactionId'     : 'Requiert Faction ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Classes: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Races: <%= this._subLoop("templates.fragments.allowableRace", this["item"]["allowableRaces"], ", ") %>',
-			'itemStatName'     : {
+			'itemStat'         : {
 				'3' : 'Agilit&eacute;',
 				'4' : 'Force',
 				'5' : 'Intelligence',
 				'6' : 'Esprit',
 				'7' : 'Endurance',
+				'25': 'Arcane Resistance',
+				'26': 'Fire Resistance',
+				'27': 'Nature Resistance',
+				'28': 'Frost Resistance',
+				'29': 'Shadow Resistance',
+				'30': 'Holy Resistance',
 				'13': 'Score d\'esquive',
 				'14': 'Score de parade',
 				'31': 'Score de toucher',
@@ -562,29 +540,9 @@ DarkTip.registerModule('wow.item', {
 				'38': 'Puissance d\'attaque',
 				'46': 'R&eacute;g&eacute;n&eacute;ration de vie',
 				'45': 'Puissance des sorts',
-				'47': 'P&eacute;n&eacute;tration des sorts',
 				'49': 'Score maîtrise',
+				'50': 'Armor',
 				'57': 'Score de pvp power'
-			},
-			'itemStat'         : {
-				'3' : 'Agilit&eacute;',
-				'4' : 'Force',
-				'5' : 'Intelligence',
-				'6' : 'Esprit',
-				'7' : 'Endurance',
-				'13': 'Equip&eacute;: augmente le score d\'esquive de <%= this["amount"] %>.',
-				'14': 'Equip&eacute;: augmente le score de parade de <%= this["amount"] %>.',
-				'31': 'Equip&eacute;: augmente votre score de toucher de <%= this["amount"] %>.',
-				'32': 'Equip&eacute;: augmente votre score de coup critique de <%= this["amount"] %>.',
-				'35': 'Equip&eacute;: augmente votre score de pvp resilience de <%= this["amount"] %>.',
-				'36': 'Equip&eacute;: augmente votre score de h&acirc;te de <%= this["amount"] %>.',
-				'37': 'Equip&eacute;: augmente votre score d\'expertise de <%= this["amount"] %>.',
-				'38': 'Equip&eacute;: augmente de <%= this["amount"] %> la puissance d\'attaque.',
-				'46': 'Equip&eacute;: augmente votre r&eacute;g&eacute;n&eacute;ration de vie de <%= this["amount"] %>.',
-				'45': 'Equip&eacute;: augmente votre puissance des sorts de <%= this["amount"] %>.',
-				'47': 'Equip&eacute;: augmente la p&eacute;n&eacute;tration des sorts de <%= this["amount"] %>.',
-				'49': 'Equip&eacute;: augmente votre score maîtrise de <%= this["amount"] %>.',
-				'57': 'Equip&eacute;: augmente votre score pvp power de <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equip&eacute; : <%= this["spell"]["description"] %>',
@@ -612,7 +570,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'socketBonus'      : 'Bonues de sertissage: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Haï', '1': 'Hostile', '2': 'Inamical', '3': 'Neutre', '4': 'Amical', '5': 'Honor&eacute;', '6': 'R&eacute;v&eacute;r&eacute;', '7': 'Exalt&eacute;' },
-			'inventoryType'   : { '1': 'T&ecirc;te', '2': 'Cou', '3': 'Epaule', '4': 'Chemise', '5': 'Torse', '6': 'Taille', '7': 'Jambes', '8': 'Pieds', '9': 'Poignets', '10': 'Mains', '11': 'Doigt', '12': 'Bijou', '13': 'A une mains', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'A deux mains', '18': 'Sac', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
+			'inventoryType'   : { '1': 'T&ecirc;te', '2': 'Cou', '3': 'Epaule', '4': 'Chemise', '5': 'Torse', '6': 'Taille', '7': 'Jambes', '8': 'Pieds', '9': 'Poignets', '10': 'Mains', '11': 'Doigt', '12': 'Bijou', '13': 'A une mains', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'A deux mains', '18': 'Sac', '20': 'Torse', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
 		},
 		'es_ES': {
 			'loading'          : 'Cargando objeto...',
@@ -632,12 +590,18 @@ DarkTip.registerModule('wow.item', {
 			'minFactionId'     : 'Requiere facci&oacute;n con ID <%= this["item"]["minFactionId"] %> - <%= this._loc("reputationLevel." + this["item"]["minReputation"]) %>',
 			'allowableClasses' : 'Clases: <%= this._subLoop("templates.fragments.allowableClass", this["item"]["allowableClasses"], ", ") %>',
 			'allowableRaces'   : 'Razas: <%= this._subLoop("templates.fragments.allowableRace", this["item"]["allowableRaces"], ", ") %>',
-			'itemStatName'     : {
+			'itemStat'         : {
 				'3' : 'de agilidad',
 				'4' : 'de fuerza',
 				'5' : 'de intelecto',
 				'6' : 'de esp&iacute;ritu',
 				'7' : 'de aguante',
+				'25': 'Arcane Resistance',
+				'26': 'Fire Resistance',
+				'27': 'Nature Resistance',
+				'28': 'Frost Resistance',
+				'29': 'Shadow Resistance',
+				'30': 'Holy Resistance',
 				'13': 'de esquivar',
 				'14': 'de parada',
 				'31': 'de golpe',
@@ -648,29 +612,9 @@ DarkTip.registerModule('wow.item', {
 				'38': 'poder de ataque',
 				'46': 'regeneraci&oacute;n de salud',
 				'45': 'poder con hechizos',
-				'47': 'penetraci&oacute;n de hechizos',
 				'49': '&iacute;ndice de maestr&iacute;a',
+				'50': 'Armor',
 				'57': 'de pvp power'
-			},
-			'itemStat'         : {
-				'3' : 'de agilidad',
-				'4' : 'de fuerza',
-				'5' : 'de intelecto',
-				'6' : 'de esp&iacute;ritu',
-				'7' : 'de aguante',
-				'13': 'Equipar: Aumenta tu &iacute;ndice de esquivar en <%= this["amount"] %>.',
-				'14': 'Equipar: Aumenta tu &iacute;ndice de parada en <%= this["amount"] %>.',
-				'31': 'Equipar: Aumenta tu &iacute;ndice de golpe en <%= this["amount"] %>.',
-				'32': 'Equipar: Aumenta tu &iacute;ndice de golpe cr&iacute;tico en <%= this["amount"] %>.',
-				'35': 'Equipar: Aumenta tu &iacute;ndice de pvp temple en <%= this["amount"] %>.',
-				'36': 'Equipar: Aumenta tu &iacute;ndice de celeridad en <%= this["amount"] %>.',
-				'37': 'Equipar: Aumenta tu &iacute;ndice de pericia en <%= this["amount"] %>.',
-				'38': 'Equipar: Aumenta el poder de ataque en <%= this["amount"] %>.',
-				'46': 'Equipar: Aumenta la regeneraci&oacute;n de salud en <%= this["amount"] %>.',
-				'45': 'Equipar: Aumenta el poder con hechizos en <%= this["amount"] %>.',
-				'47': 'Equipar: Aumenta la penetraci&oacute;n de hechizos en <%= this["amount"] %>.',
-				'49': 'Equipar: Aumenta tu &iacute;ndice de maestr&iacute;a en <%= this["amount"] %>.',
-				'57': 'Equipar: Aumenta tu &iacute;ndice de pvp power en <%= this["amount"] %>.'
 			},
 			'itemSpell'        : {
 				'onEquip': 'Equipar: <%= this["spell"]["description"] %>',
@@ -698,7 +642,7 @@ DarkTip.registerModule('wow.item', {
 			},
 			'socketBonus'      : 'Bonus ranura: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Odiado', '1': 'Hostil', '2': 'Adverso', '3': 'Neutral', '4': 'Amistoso', '5': 'Honorable', '6': 'Venerado', '7': 'Exaltado' },
-			'inventoryType'    : { '1': 'Cabeza', '2': 'Cuello', '3': 'Hombros', '4': 'Camisa', '5': 'Pecho', '6': 'Cintura', '7': 'Piernas', '8': 'Pies', '9': 'Mu&ntilde;equeras', '10': 'Manos', '11': 'Dedo', '12': 'Abalorio', '13': 'Una mano', '15': 'A distancia' /* Bow */, '16': 'Espalda', '17': 'Dos manos', '18': 'Bolsa', '21': 'Mano derecha', '22': 'Mano izquierda', '23': 'Sostener en mano izquierda', '25': 'Arrojadizas' /* Thrown */, '26': 'Arma a distancia' /* Gun,Crossbow,Wand */ }
+			'inventoryType'    : { '1': 'Cabeza', '2': 'Cuello', '3': 'Hombros', '4': 'Camisa', '5': 'Pecho', '6': 'Cintura', '7': 'Piernas', '8': 'Pies', '9': 'Mu&ntilde;equeras', '10': 'Manos', '11': 'Dedo', '12': 'Abalorio', '13': 'Una mano', '15': 'A distancia' /* Bow */, '16': 'Espalda', '17': 'Dos manos', '18': 'Bolsa', '20': 'Pecho', '21': 'Mano derecha', '22': 'Mano izquierda', '23': 'Sostener en mano izquierda', '25': 'Arrojadizas' /* Thrown */, '26': 'Arma a distancia' /* Gun,Crossbow,Wand */ }
 		}
 	}
 
