@@ -659,7 +659,7 @@
 							<li data-template="wow.realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
 							<li data-template="wow.quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
 							<li data-template="wow.item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
-							<li data-template="wow.item-equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
+							<li data-template="wow.item.equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
 							<li data-template="wow.character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
 							<li data-template="wow.character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
 							<li data-template="wow.guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
@@ -703,7 +703,7 @@
 		jQuery(function () {
 
 			jQuery('#custom-implicit-button').bind('click', function() {
-				var url = jQuery('#custom-implicit-input').attr('value');
+				var url = jQuery('#custom-implicit-input').val();
 				if(url != '')
 				{
 					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt;</a></li>');
@@ -711,7 +711,7 @@
 			});
 
 			jQuery('#custom-explicit-button').bind('click', function() {
-				var code = jQuery('#custom-explicit-input').attr('value');
+				var code = jQuery('#custom-explicit-input').val();
 				if(code != '')
 				{
 					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt;</span></li>');
@@ -720,7 +720,7 @@
 
 			jQuery('#custom-explicit-templates-list li').bind('click', function() {
 				template = jQuery(this).data('template');
-				jQuery('#custom-explicit-input').attr('value', template);
+				jQuery('#custom-explicit-input').val(template);
 			});
 
 		});
