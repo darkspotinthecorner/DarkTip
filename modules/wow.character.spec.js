@@ -60,7 +60,6 @@ DarkTip.registerModule('wow.character.spec', {
 		},
 		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.character.spec', 'triggers.implicit.params')));
-			console.log(params);
 			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
