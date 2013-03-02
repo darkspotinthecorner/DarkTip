@@ -49,7 +49,7 @@ window.DarkTip = {
 
 	'data': {
 		'settings': {
-			'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
+			'jquery': 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 			'resources': {
 				'qtip2': [
 					'ext/qtip2/jquery.qtip.min.js',
@@ -855,8 +855,10 @@ window.DarkTip = {
 
 };
 
-window.___DarkTipSettings['unbindJQuery'] = (window.jQuery ? true : false);yepnope([{
-	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js',
+window.___DarkTipSettings['unbindJQuery'] = (window.jQuery ? true : false);
+
+yepnope([{
+	'load'    : window.___DarkTipSettings['jquery'] || 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js',
 	'complete': function() {
 
 		if(!window.jQuery.jsonp){
