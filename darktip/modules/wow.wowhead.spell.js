@@ -51,7 +51,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 	},
 
 	'getParams': {
-		'explicit': function(result) {
+		'implicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.wowhead.spell', 'triggers.implicit.params')));
 			params['region'] = 'eu';
 			params['lang']   = DarkTip.map('wow.wowhead', 'maps.wowheadhost.lang', params['wowheadhost']);
