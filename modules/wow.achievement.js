@@ -30,6 +30,14 @@ DarkTip.registerModule('wow.achievement', {
 				'2': 'achievementid',
 				'3': 'lang'
 			}
+		},
+		'implicit': {
+			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/(?:character|guild)\/[^\/]+\/[^\/]+\/achievement#(?:[0-9]+:)+a([0-9]+).*/i,
+			'params': {
+				'1': 'host',
+				'2': 'lang',
+				'3': 'achievementid',
+			},
 		}
 	},
 
@@ -45,6 +53,12 @@ DarkTip.registerModule('wow.achievement', {
 		'explicit': function(result) {
 			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.explicit.params')));
 			params['host']   = DarkTip.map('wow', 'maps.region.host', params['region']);
+			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
+			return params;
+		},
+		'implicit': function(result) {
+			var params       = DarkTip.mapRegex(result, DarkTip._read(DarkTip.route('wow.achievement', 'triggers.implicit.params')));
+			params['region'] = DarkTip.map('wow', 'maps.host.region', params['host']);
 			params['locale'] = DarkTip.map('wow', 'maps.region+lang.locale', (params['region'] + '+' + params['lang']));
 			return params;
 		}
