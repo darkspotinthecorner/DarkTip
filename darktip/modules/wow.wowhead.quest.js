@@ -36,7 +36,8 @@ DarkTip.registerModule('wow.wowhead.quest', {
 		'quest': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
 

@@ -47,7 +47,8 @@ DarkTip.registerModule('wow.character.spec', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents&locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents&locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 1)
 		}
 	},
 

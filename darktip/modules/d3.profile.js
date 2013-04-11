@@ -47,7 +47,8 @@ DarkTip.registerModule('d3.profile', {
 		'profile': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/d3/profile/<%= this["battletag_name"] %>-<%= this["battletag_code"] %>/?locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/d3/profile/<%= this["battletag_name"] %>-<%= this["battletag_code"] %>/?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 4)
 		}
 	},
 

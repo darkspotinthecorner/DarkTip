@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/spell=([^\.#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/spell=([0-9]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'spellid'
@@ -36,7 +36,8 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'spell': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
 

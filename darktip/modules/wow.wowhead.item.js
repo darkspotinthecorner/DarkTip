@@ -46,12 +46,20 @@ DarkTip.registerModule('wow.wowhead.item', {
 		'item': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 90)
+		},
+		'itemset': {
+			'required' : false,
+			'condition': 'item.itemSet',
+			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
 
@@ -60,6 +68,18 @@ DarkTip.registerModule('wow.wowhead.item', {
 	},
 
 	'maps': {
+		'quality': {
+			'color': {
+				'0': '#9D9D9D',
+				'1': '#FFFFFF',
+				'2': '#1EFF00',
+				'3': '#0070FF',
+				'4': '#C600FF',
+				'5': '#FF8000',
+				'6': '#E6CC80',
+				'7': '#E6CC80'
+			}
+		},
 		'stats': {
 			'primary': {
 				'3': 'Agility',
@@ -73,14 +93,15 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'14': 'Parry rating',
 				'31': 'Hit rating',
 				'32': 'Critical strike rating',
-				'35': 'Resilience rating',
+				'35': 'PvP resilence rating',
 				'36': 'Haste rating',
 				'37': 'Expertise rating',
 				'38': 'Attack power',
 				'46': 'Health regeneration',
 				'45': 'Spell power',
 				'47': 'Spell penetration',
-				'49': 'Mastery rating'
+				'49': 'Mastery rating',
+				'57': 'PvP power rating'
 			}
 		}
 	},
@@ -245,7 +266,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %></div>' +
 						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
 					'</div><% } %>' +
-			    	'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
@@ -373,7 +394,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onEquip': 'Equip: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Use: <%= this["spell"]["description"] %>',
 				'onProc' : 'Chance on hit: <%= this["spell"]["description"] %>',
-				'unknown': 'Unknown: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Sell Price: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -445,7 +466,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onEquip': 'Anlegen: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Benutzen: <%= this["spell"]["description"] %>',
 				'onProc' : 'Trefferchance: <%= this["spell"]["description"] %>',
-				'unknown': 'Unbekannt: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Set: <%= this["description"] %>',
 			'sellPrice'        : 'Verkaufspreis: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -466,7 +487,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'COGWHEEL' : 'Zahnrad Sockel'
 			},
 			'socketBonus'      : 'Sockelbonus: <%= this["item"]["socketInfo"]["socketBonus"] %>',
-			'reputationLevel'  : { '0': 'Ha&szlig;erf&uuml;llt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrf&uuml;rchtig' },
+			'reputationLevel'  : { '0': 'Haßerf&szlig;uuml;llt', '1': 'Feindselig', '2': 'Unfreundlich', '3': 'Neutral', '4': 'Freundlich', '5': 'Wohlwollend', '6': 'Respektvoll', '7': 'Ehrf&uuml;rchtig' },
 			'inventoryType'    : { '1': 'Kopf', '2': 'Nacken', '3': 'Schulter', '4': 'Hemd', '5': 'Brust', '6': 'Taille', '7': 'Beine', '8': 'F&uuml;&szlig;e', '9': 'Handgelenke', '10': 'H&auml;nde', '11': 'Finger', '12': 'Schmuckst&uuml;ck', '13': 'Einh&auml;ndig', '15': 'Distanz' /* Bogen */, '16': 'R&uuml;cken', '17': 'Zweih&auml;ndig', '18': 'Tasche', '20': 'Brust', '21': 'Waffenhand', '22': 'Schildhand', '23': 'In Schildhand gef&uuml;hrt', '25': 'Distanz' /* Wurfwaffe */, '26': 'Distanz' /* Gewehr, Armbrust, Zauberstab */ }
 		},
 		'fr_FR': {
@@ -517,7 +538,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onEquip': 'Equip&eacute; : <%= this["spell"]["description"] %>',
 				'onUse'  : 'Utilis&eacute; : <%= this["spell"]["description"] %>',
 				'onProc' : 'Chances quand vous touchez : <%= this["spell"]["description"] %>',
-				'unknown': 'Inconnu : <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Ensemble : <%= this["description"] %>',
 			'sellPrice'        : 'Prix de vente: <%= this._renderCoins(this["item"]["sellPrice"]) %>',
@@ -589,7 +610,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 				'onEquip': 'Equipar: <%= this["spell"]["description"] %>',
 				'onUse'  : 'Uso: <%= this["spell"]["description"] %>',
 				'onProc' : 'Probabilidad al acertar: <%= this["spell"]["description"] %>',
-				'unknown': 'Desconocido: <%= this["spell"]["description"] %>'
+				'unknown': '<%= this["spell"]["description"] %>'
 			},
 			'setBonus'         : '(<%= this["threshold"] %>) Conjunto: <%= this["description"] %>',
 			'sellPrice'        : 'Precio de venta: <%= this._renderCoins(this["item"]["sellPrice"]) %>',

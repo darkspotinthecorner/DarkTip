@@ -47,7 +47,8 @@ DarkTip.registerModule('wow.character.pvp', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,pvp&locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,pvp&locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 1)
 		}
 	},
 
@@ -81,7 +82,6 @@ DarkTip.registerModule('wow.character.pvp', {
 					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
 					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
-					'<%= this._subLoop("templates.fragments.talentSpec", this["character"]["talents"]) %>' +
 					'<% if(this["character"]["pvp"]) { %>' +
 						'<div class="darktip-row highlight-medium"><%= this._loc("totalHonorableKills", this["character"]["pvp"]) %></div>' +
 						'<%= this._sub("templates.fragments.arenaTeams") %>' +
