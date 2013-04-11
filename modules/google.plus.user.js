@@ -41,7 +41,8 @@ DarkTip.registerModule('google.plus.user', {
 		'user': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'https://www.googleapis.com/plus/v1/people/<%= this["userid"] %>?key=<%= this["apikey"] %>'
+			'call'     : 'https://www.googleapis.com/plus/v1/people/<%= this["userid"] %>?key=<%= this["apikey"] %>',
+			'caching'  : (60 * 60 * 24 * 5)
 		}
 	},
 

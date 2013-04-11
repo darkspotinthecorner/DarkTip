@@ -41,7 +41,8 @@ DarkTip.registerModule('youtube.video', {
 		'video': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q=%22<%= this["videoid"] %>%22&max-results=1&safesearch=strict'
+			'call'     : 'http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q=%22<%= this["videoid"] %>%22&max-results=1&safesearch=strict',
+			'caching'  : (60 * 60 * 1)
 		}
 	},
 

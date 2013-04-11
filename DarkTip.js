@@ -44,7 +44,7 @@ window.DarkTip = {
 	'version': {
 		'major': 1,
 		'minor': 1,
-		'patch': 10
+		'patch': 11
 	},
 
 	'data': {
@@ -232,6 +232,9 @@ window.DarkTip = {
 			},
 			'zh_CN': {
 			}
+		},
+		'cache': {
+			'apicall': {}
 		},
 		'modules': {}
 	},
@@ -455,6 +458,62 @@ window.DarkTip = {
 		return false;
 	},
 
+	'isLocalStorageUseable': function() {
+		return (typeof window.localStorage !== 'undefined');
+	},
+
+	'readFromLocalStorage': function(key) {
+		var item = window.localStorage.getItem(key);
+		if (typeof item !== 'undefined') {
+			return JSON.parse(item);
+		}
+		return undefined;
+	},
+
+	'writeToLocalStorage': function(key, data) {
+		try {
+			window.localStorage.setItem(key, JSON.stringify(data));
+		} catch (e) {
+			if (e == QUOTA_EXCEEDED_ERR) {
+				this.log('Writing to localStorage failes, quote exeeded for key "' + key + '".');
+			}
+			return false;
+		}
+		return true;
+	},
+
+	'getCache': function(region, key) {
+		var result = undefined;
+		if (this.isLocalStorageUseable()) {
+			var maxtime = this.readFromLocalStorage('darktip_cache_maxtime_' + region + '_' + key);
+			var curtime = Math.round((new Date()).getTime() / 1000);
+			if ((maxtime === null) || (curtime < maxtime)) {
+				result = this.readFromLocalStorage('darktip_cache_' + region + '_' + key);
+			}
+		} else {
+			if (typeof this['data']['cache'][region][key] !== 'undefined') {
+				result = this['data']['cache'][region][key];
+			}
+		}
+		if (result === null) {
+			result = undefined;
+		}
+		return result;
+	},
+
+	'setCache': function(region, key, data, cache_lifetime) {
+		cache_lifetime = cache_lifetime || 0;
+		if (this.isLocalStorageUseable()) {
+			var maxtime = Math.round((new Date()).getTime() / 1000) + cache_lifetime;
+			if ((cache_lifetime == 0) || (this.writeToLocalStorage(('darktip_cache_maxtime_' + region + '_' + key), maxtime))) {
+				return this.writeToLocalStorage(('darktip_cache_' + region + '_' + key), data);
+			}
+			return false;
+		}
+		this['data']['cache']['region'][key] = data;
+		return true;
+	},
+
 	'startUp': function() {
 		yepnope({
 			'test': window.jQuery.qtip,
@@ -572,15 +631,15 @@ window.DarkTip = {
 					this.queries.done[key] = this.queries.running[key];
 					delete this.queries.running[key];
 				}
-
 				this.run();
-				this.finish()
+				this.finish();
 			},
 
-			'buildCallbackQuerySuccess': function(key, apicall) {
+			'buildCallbackQuerySuccess': function(key, apicall, cache_lifetime) {
 				var state = this;
 				return function(data, options) {
 					state.data[key] = data;
+					DarkTip.setCache('apicall', apicall, data, cache_lifetime);
 					state.completeQuery(key);
 				}
 			},
@@ -591,7 +650,6 @@ window.DarkTip = {
 					if (state.queries.running[key]['required']) {
 						state.status = 'error';
 					}
-
 					state.completeQuery(key);
 				}
 			},
@@ -612,8 +670,6 @@ window.DarkTip = {
 			'run': function() {
 				var state = this;
 
-				// console.log(['run data collection state', state]);
-
 				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
 					var condition = query.condition;
 
@@ -627,15 +683,21 @@ window.DarkTip = {
 						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
 							'condition': condition
 						}, state.repo.templateTools));
+
 						state.awakenQuery(key);
 
-						DarkTip.jq.jsonp({
-							'pageCache': true,
-							'url': apicall,
-							'callbackParameter': state.repo.callbackParam,
-							'success': state.buildCallbackQuerySuccess(key, apicall),
-							'error': state.buildCallbackQueryError(key)
-						});
+						var cache = DarkTip.getCache('apicall', apicall);
+
+						if (typeof cache !== 'undefined') {
+							state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
+						} else {
+							DarkTip.jq.jsonp({
+								'url': apicall,
+								'callbackParameter': state.repo.callbackParam,
+								'success': state.buildCallbackQuerySuccess(key, apicall, query['caching']),
+								'error': state.buildCallbackQueryError(key)
+							});
+						}
 					}
 
 				});
@@ -647,26 +709,30 @@ window.DarkTip = {
 
 		var apicalls = this._read(this.route(module, 'queries'));
 
+		DarkTip.log({'apicalls': apicalls});
+
 		this.jq.each(apicalls, function(key, payload) {
 			if (typeof payload === 'object') {
 				if (typeof payload['required'] === 'undefined') {
-					payload.required = true;
+					payload['required'] = true;
 				}
 
 				if (typeof payload['condition'] === 'undefined') {
-					payload.condition = true;
+					payload['condition'] = true;
 				}
 
 				collectionState.queries.sleeping[key] = {
-					'required': (payload.required == true),
-					'condition': payload.condition,
-					'call': payload.call
+					'required': (payload['required'] == true),
+					'condition': payload['condition'],
+					'call': payload['call'],
+					'caching': payload['caching']
 				};
 			} else {
 				collectionState.queries.sleeping[key] = {
 					'required': true,
 					'condition': true,
-					'call': payload
+					'call': payload,
+					'caching': 0
 				};
 			}
 

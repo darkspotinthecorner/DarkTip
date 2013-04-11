@@ -35,7 +35,8 @@ DarkTip.registerModule('github.user', {
 		'user': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'https://api.github.com/users/<%= this["username"] %>'
+			'call'     : 'https://api.github.com/users/<%= this["username"] %>',
+			'caching'  : (60 * 60 * 24 * 5)
 		}
 	},
 

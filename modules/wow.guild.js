@@ -47,7 +47,8 @@ DarkTip.registerModule('wow.guild', {
 		'guild': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>'
+			'call'     : 'http://<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>',
+			'caching'  : (60 * 60 * 24 * 3)
 		}
 	},
 
