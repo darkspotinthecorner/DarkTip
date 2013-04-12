@@ -709,8 +709,6 @@ window.DarkTip = {
 
 		var apicalls = this._read(this.route(module, 'queries'));
 
-		DarkTip.log({'apicalls': apicalls});
-
 		this.jq.each(apicalls, function(key, payload) {
 			if (typeof payload === 'object') {
 				if (typeof payload['required'] === 'undefined') {
