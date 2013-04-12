@@ -154,16 +154,16 @@ DarkTip.registerModule('wow.arena', {
 			'not-found'            : 'Aucune team d\'ar&egrave;nes trouv&eacute;e',
 			'view-mode-current'    : 'Voir la semaine en cours',
 			'view-mode-season'     : 'Voir la saison',
-			'classification'       : '<%= this["arena"]["teamsize"] %>v<%= this["arena"]["teamsize"] %> <%= this._loc("factionSide." + this["arena"]["side"]) %> team d&rsquo;ar&egrave;nes, <%= this["arena"]["realm"] %>',
-			'rating-team'          : 'Cote: <%= this["arena"]["rating"] %>',
+			'classification'       : 'Equipe d\'arène <%= this["arena"]["teamsize"] %>v<%= this["arena"]["teamsize"] %>, <%= this._loc("factionSide." + this["arena"]["side"]) %> (<%= this["arena"]["realm"] %>)',
+			'rating-team'          : 'Côte: <%= this["arena"]["rating"] %>',
 			'rank-current'         : 'Classement #<%= this["arena"]["ranking"] %>',
 			'rank-previous'        : 'Classement semaine derni&egrave;re: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>None<% } %>',
 			'matches-current'      : 'Matches: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
 			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'matches-season'       : 'Matches: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
 			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
-			'extendedInactive'     : 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view current statistics',
-			'extendedActive'       : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view seasonal statistics'
+			'extendedInactive'     : 'Appyuez sur [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour voir les statistiques actuelles',
+			'extendedActive'       : 'Relâchez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour voir les statistiques de la saison'
 		},
 		'es_ES': {
 			'loading'              : 'Cargando equipo de arenas...',

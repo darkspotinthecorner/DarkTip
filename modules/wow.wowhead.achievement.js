@@ -89,7 +89,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement Avantage...',
-			'not-found'     : 'Aucune Avantage trouvée'
+			'not-found'     : 'Haut fait introuvable'
 		},
 		'es_ES': {
 			'loading'       : 'Cargando ventaja...',

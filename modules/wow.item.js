@@ -505,7 +505,7 @@ DarkTip.registerModule('wow.item', {
 		},
 		'fr_FR': {
 			'loading'          : 'Chargement Objets...',
-			'not-found'        : 'Objets introuvable',
+			'not-found'        : 'Objet introuvable',
 			'itemId'           : 'ID Objets: <%= this["item"]["id"] %>',
 			'heroic'           : 'H&eacute;roïc',
 			'maxCount'         : 'Unique<% if(this["item"]["maxCount"] > 1) { %> (<%= this["item"]["maxCount"] %>)<% } %>',
@@ -571,7 +571,7 @@ DarkTip.registerModule('wow.item', {
 				'HYDRAULIC': 'Ch&acirc;sse Hydraulique',
 				'COGWHEEL' : 'Chambre de roue dent&eacute;e'
 			},
-			'socketBonus'      : 'Bonues de sertissage: <%= this["item"]["socketInfo"]["socketBonus"] %>',
+			'socketBonus'      : 'Bonus de sertissage: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Haï', '1': 'Hostile', '2': 'Inamical', '3': 'Neutre', '4': 'Amical', '5': 'Honor&eacute;', '6': 'R&eacute;v&eacute;r&eacute;', '7': 'Exalt&eacute;' },
 			'inventoryType'   : { '1': 'T&ecirc;te', '2': 'Cou', '3': 'Epaule', '4': 'Chemise', '5': 'Torse', '6': 'Taille', '7': 'Jambes', '8': 'Pieds', '9': 'Poignets', '10': 'Mains', '11': 'Doigt', '12': 'Bijou', '13': 'A une mains', '15': 'Ranged' /* Bow */, '16': 'Back', '17': 'A deux mains', '18': 'Sac', '20': 'Torse', '21': 'Main-hand', '22': 'Off-hand', '23': 'Held in off-hand', '25': 'Ranged' /* Thrown */, '26': 'Ranged' /* Gun, Crossbow, Wand */ }
 		},

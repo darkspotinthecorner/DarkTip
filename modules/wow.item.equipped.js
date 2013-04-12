@@ -455,10 +455,18 @@ DarkTip.registerModule('wow.item.equipped', {
 		},
 		'fr_FR': {
 			'loading'    : 'Chargement Objets...',
-			'not-found'  : 'Objets introuvable',
+			'not-found'  : 'Objet introuvable',
 			'upgradeInfo': 'Niveau d\'am&eacute;lioration: <%= this["item"]["upgradeInfo"]["current"] %>/<%= this["item"]["upgradeInfo"]["total"] %>',
 			'transmogged': 'Transmogrifi&eacute;(e) en : <%= this["transmog"]["name"] %>',
-			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["target"]) %>)'
+			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["target"]) %>)',
+			'wornBy'     : 'Porté par: <%= this._sub("templates.fragments.ownerInfo") %>',
+			'iLevelDiff' : {
+				'verylow' : 'This item is much below it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
+				'lower'   : 'Cet objet est légèrement inférieur au niveau d\'objet moyen du personnage. (<%= Math.abs(this["item"]["iLevelDiff"]) %> point<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> en-dessous)',
+				'match'   : 'This item matches it\'s owner\'s average item level.',
+				'higher'  : 'This item is slightly above it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)',
+				'veryhigh': 'This item is much above it\'s owner\'s average item level. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)'
+			}
 		},
 		'es_ES': {
 			'loading'    : 'Cargando objeto...',

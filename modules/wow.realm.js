@@ -189,7 +189,7 @@ DarkTip.registerModule('wow.realm', {
 		},
 		'fr_FR': {
 			'loading': 'Chargement...',
-			'not-found': 'Aucun r&eacute;sultat',
+			'not-found': 'Royaume introuvable',
 			'type': {
 				'pve'  : 'JcE',
 				'pvp'  : 'JcJ',
@@ -214,14 +214,14 @@ DarkTip.registerModule('wow.realm', {
 				'tol-barad'  : 'Tol Barad'
 			},
 			'worldpvpstatus': {
-				'-1': { '0': 'Unknown',             '1': 'Unknown' },
-				'0' : { '0': 'Alliance controlled', '1': 'Horde controlled' },
-				'1' : { '0': 'Horde attacking',     '1': 'Alliance attacking' },
-				'2' : { '0': 'Horde attacking',     '1': 'Alliance attacking' },
-				'3' : { '0': 'Alliance controlled', '1': 'Horde controlled' }
+				'-1': { '0': 'Unknown',                  '1': 'Unknown' },
+				'0' : { '0': 'Contrôlé par l\'Alliance', '1': 'Contrôlé par la Horde' },
+				'1' : { '0': 'Horde attacking',          '1': 'Alliance attacking' },
+				'2' : { '0': 'Horde attacking',          '1': 'Alliance attacking' },
+				'3' : { '0': 'Contrôlé par l\'Alliance', '1': 'Contrôlé par la Horde' }
 			},
 			'world-pvp-zone-status'     : 'World PvP zone status',
-			'world-pvp-zone-next-battle': 'Next battle'
+			'world-pvp-zone-next-battle': 'Prochaine bataille'
 		},
 		'es_ES': {
 			'loading': 'Cargando reino...',

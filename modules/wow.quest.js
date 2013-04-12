@@ -91,7 +91,7 @@ DarkTip.registerModule('wow.quest', {
 		},
 		'fr_FR': {
 			'loading'              : 'Chargement...',
-			'not-found'            : 'Aucun r&eacute;sultat',
+			'not-found'            : 'Quête introuvable',
 			'reqLevel'             : 'Niveau requis <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Qu&ecirc;te de groupe (<%= this["quest"]["suggestedPartyMembers"] %>)'
 		},

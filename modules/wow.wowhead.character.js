@@ -242,7 +242,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 		},
 		'fr_FR': {
 			'loading'       : 'Chargement personnage...',
-			'not-found'     : 'Aucun personnage trouv&eacute;e',
+			'not-found'     : 'Aucun personnage trouv&eacute;',
 			'classification': '<%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %> <%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de niveau <%= this["character"]["level"] %>',
 			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> Niveau moyen des objets (<%= this["averageItemLevel"] %>)',
 			'mounts'        : 'Montures: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',

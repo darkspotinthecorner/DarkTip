@@ -79,7 +79,7 @@ DarkTip.registerModule('wow.character.spec', {
 				'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
 				/* --- START simple mode -------------------------------- */
 				'<div class="col-98<% if(this["character"]["talentSpecCount"] > 1) { %> darktip-only-s<% } %>">' +
-					'<div class="headline-right">Active Spec</div>' +
+					'<div class="headline-right"><%= this._loc("specActive") %></div>' +
 					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<%= this._subLoop("templates.fragments.talentSpecActive", this["character"]["talents"]) %>' +
@@ -93,7 +93,7 @@ DarkTip.registerModule('wow.character.spec', {
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"] && (this["character"]["talentSpecCount"] > 1)) { %>' +
 					'<div class="col-98 darktip-only-x">' +
-						'<div class="headline-right">Inactive Spec</div>' +
+						'<div class="headline-right"><%= this._loc("specInactive") %></div>' +
 						'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 						'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 						'<%= this._subLoop("templates.fragments.talentSpecInactive", this["character"]["talents"]) %>' +
@@ -174,7 +174,9 @@ DarkTip.registerModule('wow.character.spec', {
 			'glyphMajor'          : 'Major glyphs:',
 			'glyphMinor'          : 'Minor glyphs:',
 			'glyphMajorEmpty'     : 'No major glyphs used',
-			'glyphMinorEmpty'     : 'No minor glyphs used'
+			'glyphMinorEmpty'     : 'No minor glyphs used',
+			'specActive'          : 'Active spec',
+			'specInactive'        : 'Inactive spec'
 		},
 		'de_DE': {
 			'loading'             : 'Lade Charakter...',
@@ -185,18 +187,22 @@ DarkTip.registerModule('wow.character.spec', {
 			'glyphMajor'          : 'Erhebliche Glyphen:',
 			'glyphMinor'          : 'Geringe Glyphen:',
 			'glyphMajorEmpty'     : 'Keine erheblichen Glyphen',
-			'glyphMinorEmpty'     : 'Keine geringen Glyphen'
+			'glyphMinorEmpty'     : 'Keine geringen Glyphen',
+			'specActive'          : 'Aktive Skillung',
+			'specInactive'        : 'Inaktive Skillung'
 		},
 		'fr_FR': {
 			'loading'             : 'Chargement personnage...',
-			'not-found'           : 'Aucun personnage trouv&eacute;e',
+			'not-found'           : 'Aucun personnage trouv&eacute;',
 			'extendedInactive'    : 'Maintenez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec inactive',
 			'extendedActive'      : 'Relâchez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour spec actif',
 			'extendedNotAvailable': 'Sans spécialisation remplacement disponible',
 			'glyphMajor'          : 'Glyphes majeurs:',
 			'glyphMinor'          : 'Glyphes mineurs:',
 			'glyphMajorEmpty'     : 'Pas de glyphes majeurs utilisés',
-			'glyphMinorEmpty'     : 'Pas de glyphes mineurs utilisés'
+			'glyphMinorEmpty'     : 'Pas de glyphes mineurs utilisés',
+			'specActive'          : 'Spéc active',
+			'specInactive'        : 'Spéc inactive'
 		},
 		'es_ES': {
 			'loading'             : 'Cargando personaje...',
@@ -207,7 +213,9 @@ DarkTip.registerModule('wow.character.spec', {
 			'glyphMajor'          : 'Glifos sublimes:',
 			'glyphMinor'          : 'Glifos menores:',
 			'glyphMajorEmpty'     : 'No hay glifos sublimes',
-			'glyphMinorEmpty'     : 'No hay glifos menores'
+			'glyphMinorEmpty'     : 'No hay glifos menores',
+			'specActive'          : 'Active spec',
+			'specInactive'        : 'Inactive spec'
 		}
 	}
 

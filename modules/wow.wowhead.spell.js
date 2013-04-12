@@ -108,7 +108,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		},
 		'fr_FR': {
 			'loading'          : 'Chargement Sorts...',
-			'not-found'        : 'Sorts introuvable'
+			'not-found'        : 'Sort introuvable'
 		},
 		'es_ES': {
 			'loading'          : 'Cargando Hechizos...',

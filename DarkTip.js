@@ -210,7 +210,7 @@ window.DarkTip = {
 			'fr_FR': {
 				'loading': 'Chargement...',
 				'not-found': 'Aucun r&eacute;sultat',
-				'extendedInactive': 'Appuyer [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
+				'extendedInactive': 'Appuyez sur [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode',
 				'extendedActive': 'Relacher [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour changer de mode'
 			},
 			'es_ES': {
