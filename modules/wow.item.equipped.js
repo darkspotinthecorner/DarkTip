@@ -39,62 +39,62 @@ DarkTip.registerModule('wow.item.equipped', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=items&locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=items&locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 1)
 		},
 		'item': {
 			'required' : true,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : 'http://<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem0': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem0',
-			'call'    : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem1': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem1',
-			'call'   : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'   : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem2': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem2',
-			'call'   : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'transmog': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.transmogItem',
-			'call'   : 'http://<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		/*
 		'enchant': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.enchant',
-			'call'   : 'http://<%= this["host"] %>/api/wow/spell/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'reforge': {
 			'required' : false,
 			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.reforge',
-			'call'   : 'http://<%= this["host"] %>/api/wow/reforge/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/reforge/<%= this["condition"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		// */

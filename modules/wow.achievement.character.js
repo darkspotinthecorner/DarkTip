@@ -49,13 +49,13 @@ DarkTip.registerModule('wow.achievement.character', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=achievements&locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=achievements&locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 1)
 		},
 		'achievement': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/achievement/<%= this["achievementid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/achievement/<%= this["achievementid"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},

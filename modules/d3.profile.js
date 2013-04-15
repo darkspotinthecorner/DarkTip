@@ -33,7 +33,7 @@ DarkTip.registerModule('d3.profile', {
 			}
 		},
 		'implicit': {
-			'match' : /http:\/\/(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/d3\/(en|de|it|fr|es|pt|pl|ru|ko|zh)\/profile\/([^\-]+)\-(\d+).*/i,
+			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/d3\/(en|de|it|fr|es|pt|pl|ru|ko|zh)\/profile\/([^\-]+)\-(\d+).*/i,
 			'params': {
 				'1': 'host',
 				'2': 'lang',
@@ -47,7 +47,7 @@ DarkTip.registerModule('d3.profile', {
 		'profile': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/d3/profile/<%= this["battletag_name"] %>-<%= this["battletag_code"] %>/?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/d3/profile/<%= this["battletag_name"] %>-<%= this["battletag_code"] %>/?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 4)
 		}
 	},

@@ -36,7 +36,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'spell': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},

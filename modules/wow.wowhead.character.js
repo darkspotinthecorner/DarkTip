@@ -49,20 +49,20 @@ DarkTip.registerModule('wow.wowhead.character', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,pets,mounts&locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,pets,mounts&locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 1)
 		}
 		/*
 		'races'    : {
 			'required' : false,
 			'condition': 'character.race',
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'classes'  : {
 			'required' : false,
 			'condition': 'character.class',
-			'call'     : 'http://<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		// */

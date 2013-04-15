@@ -49,7 +49,7 @@ DarkTip.registerModule('wow.arena', {
 		'arena': {
 			'required' : true,
 			'condition': true,
-			'call'     : 'http://<%= this["host"] %>/api/wow/arena/<%= this["realm"] %>/<%= this["teamsize"] %>/<%= this["teamname"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//<%= this["host"] %>/api/wow/arena/<%= this["realm"] %>/<%= this["teamsize"] %>/<%= this["teamname"] %>?locale=<%= this["locale"] %>',
 			'caching'  : (60 * 60 * 24 * 1)
 		}
 	},
