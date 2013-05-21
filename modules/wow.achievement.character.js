@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.achievement.character', {
 
 	'triggers': {
 		'explicit': {
-			'match' : /wow\.achievement\.character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.achievement\.character:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.([^\(]+)\((en|de|fr|es|ru|pt|it|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',
@@ -34,7 +34,7 @@ DarkTip.registerModule('wow.achievement.character', {
 			}
 		},
 		'implicit': {
-			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/character\/([^\/]+)\/([^\/]+)\/achievement#[0-9]+:a([0-9]+)/i,
+			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|pt|it|ko|zh)\/character\/([^\/]+)\/([^\/]+)\/achievement#[0-9]+:a([0-9]+)/i,
 			'params': {
 				'1': 'host',
 				'2': 'lang',

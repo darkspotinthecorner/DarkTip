@@ -59,17 +59,20 @@ DarkTip.registerModule('wow', {
 			'locale': {
 				'us+en': 'en_US',
 				'us+es': 'es_MX',
+				'us+pt': 'pt_BR',
 				'eu+en': 'en_GB',
 				'eu+es': 'es_ES',
 				'eu+fr': 'fr_FR',
 				'eu+ru': 'ru_RU',
 				'eu+de': 'de_DE',
+				'eu+pt': 'pt_PT',
+				'eu+it': 'it_IT',
 				'kr+ko': 'ko_KR',
 				'kr+en': 'en_US',
 				'tw+zh': 'zh_TW',
 				'tw+en': 'en_US',
-				'cn+zh': 'zh_CN',
-				'cn+en': 'en_US'
+				'cn+en': 'en_US',
+				'cn+zh': 'zh_CN'
 			}
 		}
 	},

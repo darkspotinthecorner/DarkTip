@@ -219,9 +219,18 @@ window.DarkTip = {
 				'extendedInactive': '&iexcl;Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!',
 				'extendedActive': '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para cambiar de modo!'
 			},
+			'pt_PT': {
+			},
+			'it_IT': {
+			},
 			'es_MX': {
 				'meta': {
 					'fallback': 'es_ES'
+				}
+			},
+			'pt_BR': {
+				'meta': {
+					'fallback': 'pt_PT'
 				}
 			},
 			'ru_RU': {

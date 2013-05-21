@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|ru\.wowhead\.com)\/achievement=([0-9]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/achievement=([0-9]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'achievementid'

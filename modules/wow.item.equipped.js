@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.item.equipped', {
 
 	'triggers': {
 		'explicit': {
-			'match' : /wow\.item\.equipped:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.(head|neck|shoulder|back|chest|shirt|tabard|wrist|hands|waist|legs|feet|finger1|finger2|trinket1|trinket2|mainhand|offhand)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.item\.equipped:(us|eu|kr|tw|cn)\.([^\.]+)\.([^\.]+)\.(head|neck|shoulder|back|chest|shirt|tabard|wrist|hands|waist|legs|feet|finger1|finger2|trinket1|trinket2|mainhand|offhand)\((en|de|fr|es|ru|pt|it|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'realm',

@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.item', {
 
 	'triggers': {
 		'explicit': {
-			'match' : /wow\.item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|ko|zh)\)/i,
+			'match' : /wow\.item:(us|eu|kr|tw|cn)\.([^\(]+)\((en|de|fr|es|ru|pt|it|ko|zh)\)/i,
 			'params': {
 				'1': 'region',
 				'2': 'itemid',
@@ -32,7 +32,7 @@ DarkTip.registerModule('wow.item', {
 			}
 		},
 		'implicit': {
-			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|ko|zh)\/item\/([^\/#]+).*/i,
+			'match' : /(?:https?:\/\/)?(us\.battle\.net|eu\.battle\.net|kr\.battle\.net|tw\.battle\.net|cn\.battle\.net|www\.battlenet\.com\.cn)\/wow\/(en|de|fr|es|ru|pt|it|ko|zh)\/item\/([^\/#]+).*/i,
 			'params': {
 				'1': 'host',
 				'2': 'lang',

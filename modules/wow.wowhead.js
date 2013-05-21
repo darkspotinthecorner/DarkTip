@@ -29,6 +29,7 @@ DarkTip.registerModule('wow.wowhead', {
 				'de.wowhead.com' : 'de',
 				'es.wowhead.com' : 'es',
 				'fr.wowhead.com' : 'fr',
+				'pt.wowhead.com' : 'pt',
 				'ru.wowhead.com' : 'ru'
 			}
 		}
