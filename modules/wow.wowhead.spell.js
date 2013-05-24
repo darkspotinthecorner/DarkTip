@@ -75,12 +75,12 @@ DarkTip.registerModule('wow.wowhead.spell', {
 				'<div class="col-70">' +
 					'<div class="darktip-row headline"><%= this["spell"]["name"] %></div>' +
 					'<div class="split-row">' +
-						'<div class="darktip-row"><%= this["spell"]["powerCost"] %></div>' +
-						'<div class="pos-right"><%= this["spell"]["range"] %></div>' +
+						'<div class="darktip-row"><% if(this["spell"]["powerCost"]) { %><%= this["spell"]["powerCost"] %><% } %></div>' +
+						'<div class="pos-right"><% if(this["spell"]["range"]) { %><%= this["spell"]["range"] %><% } %></div>' +
 					'</div>' +
 					'<div class="split-row">' +
-						'<div class="darktip-row"><%= this["spell"]["castTime"] %></div>' +
-						'<% if(this["spell"]["cooldown"]) { %><div class="pos-right"><%= this["spell"]["cooldown"] %></div><% } %>' +
+						'<div class="darktip-row"><% if(this["spell"]["castTime"]) { %><%= this["spell"]["castTime"] %><% } %></div>' +
+						'<div class="pos-right"><% if(this["spell"]["cooldown"]) { %><%= this["spell"]["cooldown"] %><% } %></div>' +
 					'</div>' +
 					'<div class="darktip-row highlight-medium"><%= this["spell"]["description"] %></div>' +
 				'</div>' +
