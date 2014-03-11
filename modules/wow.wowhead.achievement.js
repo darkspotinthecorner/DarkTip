@@ -94,7 +94,11 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		'es_ES': {
 			'loading'       : 'Cargando ventaja...',
 			'not-found'     : 'Ventaja no encontrada'
-		}
+		},
+		'it_IT': {
+			'loading'       : 'Caricamento Impresa...',
+			'not-found'     : 'Impresa non trovata'
+		}			
 	}
 
 });

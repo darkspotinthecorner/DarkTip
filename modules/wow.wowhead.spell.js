@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/spell=([0-9]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|it\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/spell=([0-9]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'spellid'
@@ -113,7 +113,11 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'es_ES': {
 			'loading'          : 'Cargando Hechizos...',
 			'not-found'        : 'Hechizos no encontrado'
-		}
+		},
+		'it_IT': {
+			'loading'          : 'Caricamento incantesimo...',
+			'not-found'        : 'Incantesimo non trovato'
+		}		
 	}
 
 });

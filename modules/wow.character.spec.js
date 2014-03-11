@@ -216,6 +216,19 @@ DarkTip.registerModule('wow.character.spec', {
 			'glyphMinorEmpty'     : 'No hay glifos menores',
 			'specActive'          : 'Active spec',
 			'specInactive'        : 'Inactive spec'
+		},
+		'it_IT': {
+			'loading'             : 'Caricamento personaggio...',
+			'not-found'           : 'Personaggio non trovato',
+			'extendedInactive'    : 'Tieni premuto [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per visualizzare la specializzazione inattiva',
+			'extendedActive'      : 'Rilascia [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per visualizzare la specializzazione attiva',
+			'extendedNotAvailable': 'Nessuna specializzazione alternativa disponibile',
+			'glyphMajor'          : 'Glifi maggiori:',
+			'glyphMinor'          : 'Glifi minori:',
+			'glyphMajorEmpty'     : 'Nessun glifo maggiore utilizzato',
+			'glyphMinorEmpty'     : 'Nessun glifo minore utilizzato',
+			'specActive'          : 'Specializzazione attiva',
+			'specInactive'        : 'Specializzazione inattiva'
 		}
 	}
 

@@ -118,6 +118,12 @@ DarkTip.registerModule('wow.guild', {
 			'not-found'     : 'Hermandad no encontrada',
 			'classification': 'Hermandad (<%= this._loc("factionSide." + this["guild"]["side"]) %>), nivel <%= this["guild"]["level"] %>, <%= this["guild"]["realm"] %>',
 			'members'       : '<%= this["guild"]["members"].length %> miembros'
+		},
+		'it_IT': {
+			'loading'       : 'Caricamento Gilda...',
+			'not-found'     : 'Gilda non trovata',
+			'classification': 'Gilda (<%= this._loc("factionSide." + this["guild"]["side"]) %>) livello <%= this["guild"]["level"] %>, <%= this["guild"]["realm"] %>',
+			'members'       : '<%= this["guild"]["members"].length %> membri'
 		}
 	}
 

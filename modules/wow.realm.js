@@ -258,6 +258,42 @@ DarkTip.registerModule('wow.realm', {
 			},
 			'world-pvp-zone-status'     : 'World PvP zone status',
 			'world-pvp-zone-next-battle': 'Next battle'
+		},
+		'it_IT': {
+			'loading': 'Caricamento...',
+			'not-found': 'Non trovato',
+			'type': {
+				'pve'  : 'PvA',
+				'pvp'  : 'PvP',
+				'rp'   : 'GR',
+				'rppvp': 'GR PvA'
+			},
+			'queue': {
+				'false': 'Nessuna coda',
+				'true' : 'Coda'
+			},
+			'status': {
+				'false': 'Offline',
+				'true' : 'Online'
+			},
+			'population': {
+				'low'   : 'Popolazione Bassa',
+				'medium': 'Popolazione Media',
+				'high'  : 'Popolazione Alta'
+			},
+			'zones': {
+				'wintergrasp': 'Lungoinverno',
+				'tol-barad'  : 'Tol Barad'
+			},
+			'worldpvpstatus': {
+				'-1': { '0': 'Sconosciuto',             '1': 'Sconosciuto' },
+				'0' : { '0': 'Controllato dall\'Alleanza', '1': 'Controllato dall\'Orda' },
+				'1' : { '0': 'Attaccato dall\'Orda',     '1': 'Attaccato dall\'Alleanza' },
+				'2' : { '0': 'Attaccato dall\'Orda',     '1': 'Attaccato dall\'Alleanza' },
+				'3' : { '0': 'Controllato dall\'Alleanza', '1': 'Controllato dall\'Orda' }
+			},
+			'world-pvp-zone-status'     : 'Status del PvP esterno',
+			'world-pvp-zone-next-battle': 'Prossima Battaglia'
 		}
 	}
 
