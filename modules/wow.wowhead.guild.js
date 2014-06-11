@@ -63,18 +63,18 @@ DarkTip.registerModule('wow.wowhead.guild', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-guild">' +
-				'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["guild"]["achievementPoints"] %></span></div>' +
-				'<div class="darktip-row headline cside-<%= this["guild"]["side"] %>"><%= this["guild"]["name"] %></div>' +
-				'<div class="darktip-row highlight-medium"><%= this._loc("classification") %></div>' +
+				'<div class="darktip-headline-right"><span class="darktip-icon-achievenemtpoints"><%= this["guild"]["achievementPoints"] %></span></div>' +
+				'<div class="darktip-row darktip-headline darkstip-cside-<%= this["guild"]["side"] %>"><%= this["guild"]["name"] %></div>' +
+				'<div class="darktip-row darktip-highlight-medium"><%= this._loc("classification") %></div>' +
 				'<% if(this["guild"]["members"]) { %><div class="darktip-row"><%= this._loc("members") %></div><% } %>' +
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-guild tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.guild") %></span> <span class="value"><%= this["guild"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-guild darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.guild") %></span> <span class="value"><%= this["guild"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		)
 	},

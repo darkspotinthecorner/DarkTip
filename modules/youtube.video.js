@@ -80,9 +80,9 @@ DarkTip.registerModule('youtube.video', {
 			'</div>'
 		),
 		'404':(
-			'<div class="tooltip-youtube-video tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.video") %></span> <span class="value"><%= this["videoid"] %></span></div>' +
+			'<div class="tooltip-youtube-video darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.video") %></span> <span class="value"><%= this["videoid"] %></span></div>' +
 			'</div>'
 		)
 	},

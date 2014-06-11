@@ -76,30 +76,30 @@ DarkTip.registerModule('wow.character.pvp', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-character tooltip-pvp">' +
-				'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
+				'<img class="darktip-icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
 				 /* --- START simple mode -------------------------------- */
-				'<div class="col-98 darktip-only-s">' +
-					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
-					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+				'<div class="darktip-col-98 darktip-only-s">' +
+					'<div class="darktip-headline-right"><span class="darktip-icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+					'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<% if(this["character"]["pvp"]) { %>' +
-						'<div class="darktip-row highlight-medium"><%= this._loc("totalHonorableKills", this["character"]["pvp"]) %></div>' +
+						'<div class="darktip-row darktip-highlight-medium"><%= this._loc("totalHonorableKills", this["character"]["pvp"]) %></div>' +
 						'<%= this._sub("templates.fragments.arenaTeams") %>' +
 						'<%= this._sub("templates.fragments.ratedBattlegrounds", this["character"]["pvp"]["ratedBattlegrounds"]) %>' +
 					'<% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				 /* --- END simple mode ---------------------------------- */
 				 /* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="col-98 darktip-only-x">' +
-						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
-						'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+					'<div class="darktip-col-98 darktip-only-x">' +
+						'<div class="darktip-headline-right"><span class="darktip-icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+						'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 						'<div class="darktip-row"><%= this["character"]["realm"] %></div>' +
-						'<% if(this["character"]["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["character"]["guild"]["name"] %>&gt;<% if(this["character"]["guild"]["level"]) { %> (<%= this["character"]["guild"]["level"] %>)<% } %></div><% } %>' +
-						'<% if(this["character"]["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
-						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<% if(this["character"]["guild"]) { %><div class="darktip-row darktip-highlight-medium">&lt;<%= this["character"]["guild"]["name"] %>&gt;<% if(this["character"]["guild"]["level"]) { %> (<%= this["character"]["guild"]["level"] %>)<% } %></div><% } %>' +
+						'<% if(this["character"]["items"]) { %><div class="darktip-row darktip-highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
+						'<div class="darktip-row darktip-highlight-reduced"><%= this._loc("lastModified") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				 /* --- END extended mode -------------------------------- */
@@ -107,28 +107,28 @@ DarkTip.registerModule('wow.character.pvp', {
 		),
 		'fragments': {
 			'arenaTeams': (
-				'<div class="highlight-weak"><%= this._loc("arenaTeams") %></div>' +
-				'<div class="block padded">' +
+				'<div class="darktip-highlight-weak"><%= this._loc("arenaTeams") %></div>' +
+				'<div class="darktip-block darktip-padded">' +
 					'<%= this._subLoop("templates.fragments.arenaTeam", this["character"]["pvp"]["arenaTeams"]) %>' +
 				'</div>'
 			),
 			'ratedBattlegrounds': (
-				'<div class="highlight-weak"><%= this._loc("ratedBattlegrounds") %></div>' +
-				'<div class="block padded">' +
+				'<div class="darktip-highlight-weak"><%= this._loc("ratedBattlegrounds") %></div>' +
+				'<div class="darktip-block darktip-padded">' +
 					'<%= this._subLoop("templates.fragments.ratedBattleground", this["battlegrounds"]) %>' +
 				'</div>'
 			),
 			'arenaTeam': (
-				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
-					'<div class="pos-right highlight-weak"><%= this["personalRating"] %></div>' +
-					'<span><span class="sub highlight-strong"><%= this["size"] %></span> <%= this["name"] %></span> <span class="sub highlight-reduced">(<%= this["teamRating"] %>)</span>' +
+				'<div class="darktip-row darktip-padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+					'<div class="darktip-pos-right darktip-highlight-weak"><%= this["personalRating"] %></div>' +
+					'<span><span class="sub darktip-highlight-strong"><%= this["size"] %></span> <%= this["name"] %></span> <span class="sub darktip-highlight-reduced">(<%= this["teamRating"] %>)</span>' +
 				'</div>'
 			),
 			'ratedBattleground': (
-				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
-					'<div class="pos-right">' +
-						'<span class="highlight-won"><%= this["won"] %></span> - <span class="highlight-lost"><%= this["played"] - this["won"] %></span>' +
-						'<% if(this["played"] > 0) { %> | <span class="highlight-weak"><%= ((this["won"] / this["played"])*100).toFixed(0) %>%</span><% } %>' +
+				'<div class="darktip-row darktip-padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+					'<div class="darktip-pos-right">' +
+						'<span class="darktip-highlight-won"><%= this["won"] %></span> - <span class="darktip-highlight-lost"><%= this["played"] - this["won"] %></span>' +
+						'<% if(this["played"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["won"] / this["played"])*100).toFixed(0) %>%</span><% } %>' +
 					'</div>' +
 					'<span><%= this["name"] %></span>' +
 				'</div>'

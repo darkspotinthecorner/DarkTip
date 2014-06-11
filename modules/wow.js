@@ -168,7 +168,7 @@ DarkTip.registerModule('wow', {
 				'achievement': 'Achievement:',
 				'spell'      : 'Spell:'
 			},
-			'factionSide'   : {
+			'factionSide': {
 				'0'       : 'Alliance',
 				'1'       : 'Horde',
 				'alliance': 'Alliance',
@@ -187,7 +187,7 @@ DarkTip.registerModule('wow', {
 				'10': { '0': 'Monk',         '1': 'Monk' },
 				'11': { '0': 'Druid',        '1': 'Druid' }
 			},
-			'characterRace' : {
+			'characterRace': {
 				'1' : { '0': 'Human',     '1': 'Human' },
 				'2' : { '0': 'Orc',       '1': 'Orc' },
 				'3' : { '0': 'Dwarf',     '1': 'Dwarf' },
@@ -204,7 +204,7 @@ DarkTip.registerModule('wow', {
 				'25': {	'0': 'Pandaren',  '1': 'Pandaren' },
 				'26': {	'0': 'Pandaren',  '1': 'Pandaren' }
 			},
-			'characterSkill'   : {
+			'characterSkill': {
 				'129': 'First Aid',
 				'164': 'Blacksmithing',
 				'165': 'Leatherworking',
@@ -279,7 +279,7 @@ DarkTip.registerModule('wow', {
 				'25': {	'0': 'Pandaren',  '1': 'Pandarin' },
 				'26': {	'0': 'Pandaren',  '1': 'Pandarin' }
 			},
-			'characterSkill'   : {
+			'characterSkill': {
 				'129': 'Erste Hilfe',
 				'164': 'Schmiedekunst',
 				'165': 'Lederverarbeitung',

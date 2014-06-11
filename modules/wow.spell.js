@@ -76,26 +76,26 @@ DarkTip.registerModule('wow.spell', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-spell">' +
-				'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
-				'<div class="col-70">' +
-					'<div class="darktip-row headline"><%= this["spell"]["name"] %></div>' +
-					'<div class="split-row">' +
+				'<img class="darktip-icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
+				'<div class="darktip-col-70">' +
+					'<div class="darktip-row darktip-headline"><%= this["spell"]["name"] %></div>' +
+					'<div class="darktip-split-row">' +
 						'<div class="darktip-row"><% if(this["spell"]["powerCost"]) { %><%= this["spell"]["powerCost"] %><% } %></div>' +
-						'<div class="pos-right"><% if(this["spell"]["range"]) { %><%= this["spell"]["range"] %><% } %></div>' +
+						'<div class="darktip-pos-right"><% if(this["spell"]["range"]) { %><%= this["spell"]["range"] %><% } %></div>' +
 					'</div>' +
-					'<div class="split-row">' +
+					'<div class="darktip-split-row">' +
 						'<div class="darktip-row"><% if(this["spell"]["castTime"]) { %><%= this["spell"]["castTime"] %><% } %></div>' +
-						'<div class="pos-right"><% if(this["spell"]["cooldown"]) { %><%= this["spell"]["cooldown"] %><% } %></div>' +
+						'<div class="darktip-pos-right"><% if(this["spell"]["cooldown"]) { %><%= this["spell"]["cooldown"] %><% } %></div>' +
 					'</div>' +
-					'<div class="darktip-row highlight-medium"><%= this["spell"]["description"] %></div>' +
+					'<div class="darktip-row darktip-highlight-medium"><%= this["spell"]["description"] %></div>' +
 				'</div>' +
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-spell tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.spell") %></span> <span class="value"><%= this["spellid"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-spell darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.spell") %></span> <span class="value"><%= this["spellid"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {

@@ -141,53 +141,53 @@ DarkTip.registerModule('wow.wowhead.character', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-character">' +
-				'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
+				'<img class="darktip-icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
 				/* --- START simple mode -------------------------------- */
-				'<div class="col-98 darktip-only-s">' +
-					'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
-					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+				'<div class="darktip-col-98 darktip-only-s">' +
+					'<div class="darktip-headline-right"><span class="darktip-icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+					'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<%= this._subLoop("templates.fragments.talentSpec", this["character"]["talents"]) %>' +
-					'<% if(this["character"]["guild"]) { %><div class="darktip-row highlight-medium">&lt;<%= this["character"]["guild"]["name"] %>&gt;<% if(this["character"]["guild"]["level"]) { %> (<%= this["character"]["guild"]["level"] %>)<% } %></div><% } %>' +
+					'<% if(this["character"]["guild"]) { %><div class="darktip-row darktip-highlight-medium">&lt;<%= this["character"]["guild"]["name"] %>&gt;<% if(this["character"]["guild"]["level"]) { %> (<%= this["character"]["guild"]["level"] %>)<% } %></div><% } %>' +
 					'<div class="darktip-row"><%= this["character"]["realm"] %></div>' +
-					'<% if(this["character"]["items"]) { %><div class="darktip-row highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["character"]["items"]) { %><div class="darktip-row darktip-highlight-weak"><%= this._loc("itemLevel", this["character"]["items"]) %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="col-98 darktip-only-x">' +
-						'<div class="headline-right"><span class="icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
-						'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+					'<div class="darktip-col-98 darktip-only-x">' +
+						'<div class="darktip-headline-right"><span class="darktip-icon-achievenemtpoints"><%= this["character"]["achievementPoints"] %></span></div>' +
+						'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 						'<% if(this["character"]["professions"]) { %>' +
-							'<div class="block">' +
+							'<div class="darktip-block">' +
 								'<%= this._subLoop("templates.fragments.profession.primary", this["character"]["professions"]["primary"]) %>' +
 								'<%= this._subLoop("templates.fragments.profession.secondary", this["character"]["professions"]["secondary"]) %>' +
 							'</div>' +
 						'<% } %>' +
 						'<% if(this["character"]["mounts"]) { %><div class="darktip-row"><%= this._loc("mounts") %></div><% } %>' +
 						'<% if(this["character"]["pets"]) { %><div class="darktip-row"><%= this._loc("pets") %></div><% } %>' +
-						'<div class="darktip-row highlight-reduced"><%= this._loc("lastModified") %></div>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<div class="darktip-row darktip-highlight-reduced"><%= this._loc("lastModified") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				/* --- END extended mode -------------------------------- */
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-character tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-character darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
 			'talentSpec': (
 				'<% if(this["spec"]) { %>' +
-					'<div class="block spec darktip-row<% if(this["selected"]) { %> highlight-strong<% } else { %> highlight-reduced<% } %>">' +
-						'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
-						'<%= this["spec"]["name"] %> <span class="role">(<%= this["spec"]["role"] %>)</span>' +
+					'<div class="darktip-block darktip-spec darktip-row<% if(this["selected"]) { %> darktip-highlight-strong<% } else { %> darktip-highlight-reduced<% } %>">' +
+						'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+						'<%= this["spec"]["name"] %> <span class="darktip-role">(<%= this["spec"]["role"] %>)</span>' +
 						'<% if(this["talents"].length > 0) { %>' +
 							'<%= this._subLoop("templates.fragments.talent", this["talents_ordered"]) %>' +
 						'<% } %>' +
@@ -195,24 +195,24 @@ DarkTip.registerModule('wow.wowhead.character', {
 				'<% } %>'
 			),
 			'talent': (
-				'<div class="block talent">' +
-					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+				'<div class="darktip-block darktip-talent">' +
+					'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 					'<%= this["spell"]["name"] %>' +
 				'</div>'
 			),
 			'profession': {
 				'primary'  : (
 					'<% if(this["rank"] > 0) { %>' +
-						'<div class="darktip-row highlight-medium">' +
-							'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+						'<div class="darktip-row darktip-highlight-medium">' +
+							'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 							'<%= this["name"] %>: <%= this["rank"] %>' +
 						'</div>' +
 					'<% } %>'
 				),
 				'secondary': (
 					'<% if(this["rank"] > 0) { %>' +
-						'<div class="darktip-row highlight-weak">' +
-							'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+						'<div class="darktip-row darktip-highlight-weak">' +
+							'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 							'<%= this["name"] %>: <%= this["rank"] %>' +
 						'</div>' +
 					'<% } %>'

@@ -99,9 +99,9 @@ DarkTip.registerModule('google.plus.user', {
 			'</div>'
 		),
 		'404':(
-			'<div class="tooltip-gplus-user tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.userid") %></span> <span class="value"><%= this["userid"] %></span></div>' +
+			'<div class="tooltip-gplus-user darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.userid") %></span> <span class="value"><%= this["userid"] %></span></div>' +
 			'</div>'
 		)
 	},

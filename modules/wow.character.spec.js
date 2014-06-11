@@ -76,28 +76,28 @@ DarkTip.registerModule('wow.character.spec', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-character tooltip-spec">' +
-				'<img class="icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
+				'<img class="darktip-icon" src="<%= this["_meta"]["path_host"] %>/static-render/<%= this["_meta"]["region"] %>/<%= this["character"]["thumbnail"] %>?alt=/wow/static/images/2d/avatar/<%= this["character"]["race"] %>-<%= this["character"]["gender"] %>.jpg" />' +
 				/* --- START simple mode -------------------------------- */
-				'<div class="col-98<% if(this["character"]["talentSpecCount"] > 1) { %> darktip-only-s<% } %>">' +
-					'<div class="headline-right"><%= this._loc("specActive") %></div>' +
-					'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+				'<div class="darktip-col-98<% if(this["character"]["talentSpecCount"] > 1) { %> darktip-only-s<% } %>">' +
+					'<div class="darktip-headline-right"><%= this._loc("specActive") %></div>' +
+					'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 					'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 					'<%= this._subLoop("templates.fragments.talentSpecActive", this["character"]["talents"]) %>' +
 					'<% if(this["_meta"]["extendedActive"] && (this["character"]["talentSpecCount"] > 1)) { %>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div>' +
 					'<% } else { %>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedNotAvailable") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedNotAvailable") %></div>' +
 					'<% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"] && (this["character"]["talentSpecCount"] > 1)) { %>' +
-					'<div class="col-98 darktip-only-x">' +
-						'<div class="headline-right"><%= this._loc("specInactive") %></div>' +
-						'<div class="darktip-row headline cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
+					'<div class="darktip-col-98 darktip-only-x">' +
+						'<div class="darktip-headline-right"><%= this._loc("specInactive") %></div>' +
+						'<div class="darktip-row darktip-headline darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></div>' +
 						'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 						'<%= this._subLoop("templates.fragments.talentSpecInactive", this["character"]["talents"]) %>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				/* --- END extended mode -------------------------------- */
@@ -116,9 +116,9 @@ DarkTip.registerModule('wow.character.spec', {
 			),
 			'talentSpec': (
 				'<% if(this["spec"]) { %>' +
-					'<div class="darktip-row spec block">' +
-						'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
-						'<%= this["spec"]["name"] %> <span class="role">(<%= this["spec"]["role"] %>)</span>' +
+					'<div class="darktip-row darktip-spec darktip-block">' +
+						'<img class="darktip-icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spec"]["icon"]) { %><%= this["spec"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+						'<%= this["spec"]["name"] %> <span class="darktip-role">(<%= this["spec"]["role"] %>)</span>' +
 						'<% if(this["talents"].length > 0) { %>' +
 							'<%= this._subLoop("templates.fragments.talent", this["talents_ordered"]) %>' +
 						'<% } %>' +
@@ -130,34 +130,34 @@ DarkTip.registerModule('wow.character.spec', {
 				'<% } %>'
 			),
 			'talent': (
-				'<div class="block talent">' +
-					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+				'<div class="darktip-block darktip-talent">' +
+					'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["spell"]["icon"]) { %><%= this["spell"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 					'<%= this["spell"]["name"] %>' +
 				'</div>'
 			),
 			'talentSpecGlyphMajor': (
-				'<div class="darktip-row spec block">' +
+				'<div class="darktip-row darktip-spec darktip-block">' +
 					'<% if((this["major"]) && (this["major"].length)) { %>' +
-						'<div class="highlight-weak"><%= this._loc("glyphMajor") %></div>' +
+						'<div class="darktip-highlight-weak"><%= this._loc("glyphMajor") %></div>' +
 						'<%= this._subLoop("templates.fragments.glyph", this["major"]) %>' +
 					'<% } else { %>' +
-						'<span class="highlight-weak"><%= this._loc("glyphMajorEmpty") %></span>' +
+						'<span class="darktip-highlight-weak"><%= this._loc("glyphMajorEmpty") %></span>' +
 					'<% } %>' +
 				'</div>'
 			),
 			'talentSpecGlyphMinor': (
-				'<div class="darktip-row spec block">' +
+				'<div class="darktip-row darktip-spec darktip-block">' +
 					'<% if((this["minor"]) && (this["minor"].length)) { %>' +
-						'<div class="highlight-weak"><%= this._loc("glyphMinor") %></div>' +
+						'<div class="darktip-highlight-weak"><%= this._loc("glyphMinor") %></div>' +
 						'<%= this._subLoop("templates.fragments.glyph", this["minor"]) %>' +
 					'<% } else { %>' +
-						'<span class="highlight-weak"><%= this._loc("glyphMinorEmpty") %></span>' +
+						'<span class="darktip-highlight-weak"><%= this._loc("glyphMinorEmpty") %></span>' +
 					'<% } %>' +
 				'</div>'
 			),
 			'glyph': (
-				'<div class="block glyph">' +
-					'<img class="icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
+				'<div class="darktip-block darktip-glyph">' +
+					'<img class="darktip-icon-10x10" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/<% if(this["icon"]) { %><%= this["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg"/> ' +
 					'<%= this["name"] %>' +
 				'</div>'
 			)

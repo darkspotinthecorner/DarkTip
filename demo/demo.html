@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset='utf-8' />
+
+	<title>darkspotinthecorner/DarkTip @ GitHub</title>
+
+	<style type="text/css">
+
+		body {
+			margin-top: 1.0em;
+			background-color: #ffffff;
+			font-family: Helvetica, Arial, FreeSans, san-serif;
+			color: #000000;
+		}
+
+		#container {
+			margin: 0 auto;
+			width: 700px;
+		}
+
+		h1 {
+			font-size: 3.8em;
+			color: #000000;
+			margin-bottom: 3px;
+		}
+
+		h1 .small {
+			font-size: 0.4em;
+		}
+
+		h1 a {
+			text-decoration: none;
+		}
+
+		h2 {
+			font-size: 1.5em;
+			color: #000000;
+		}
+
+		h3 {
+			text-align: center;
+			color: #000000;
+		}
+
+		a {
+			color: #000000;
+		}
+
+		pre a {
+			color: #3399DD;
+			text-decoration: none;
+		}
+
+		.description {
+			font-size: 1.2em;
+			margin-bottom: 30px;
+			margin-top: 30px;
+			font-style: italic;
+		}
+
+		.download {
+			float: right;
+		}
+
+		pre {
+			background: #000;
+			color: #fff;
+			padding: 15px;
+		}
+
+		hr {
+			border: 0;
+			width: 80%;
+			border-bottom: 1px solid #aaa;
+		}
+
+		.footer {
+			text-align: center;
+			padding-top: 30px;
+			font-style: italic;
+		}
+
+		.testbox {
+			border-radius: 6px;
+			background-color: #ddd;
+			list-style: none;
+			padding: 8px;
+		}
+
+
+		.testbox ul {
+			list-style: none;
+		}
+
+		#demo-custom-implicit,
+		#demo-custom-explicit {
+			border-radius: 6px;
+			background-color: #fff;
+			clear: both;
+			padding: 8px;
+			text-align: center;
+		}
+
+		#custom-implicit-input,
+		#custom-explicit-input {
+			border-radius: 6px;
+			border: 3px solid #ddd;
+			width: 500px;
+			height: 30px;
+			font-size: 14px;
+			padding: 1px 3px;
+			color: #666;
+		}
+
+		#custom-implicit-button,
+		#custom-explicit-button {
+			border-radius: 6px;
+			border: 3px solid #ccc;
+			width: 140px;
+			height: 38px;
+			font-size: 14px;
+			font-weight: bold;
+			background-color: #ddd;
+			color: #999;
+			vertical-align: top;
+		}
+
+		#custom-implicit-button:hover,
+		#custom-explicit-button:hover {
+			border-color: #bbb;
+			background-color: #ccc;
+			color: #333;
+		}
+
+		.testbox h1 {
+			padding-top: 0;
+			margin-top: 0;
+			font-size: 2em;
+			color: #999;
+			float: right;
+		}
+
+		.testbox h2 {
+			font-size: 1.2em;
+		}
+
+		.testbox li {
+			font-size: 90%;
+		}
+
+		.testbox li p {
+			padding: 0.5em 2em 1em 2em;
+			color: #666;
+			font-weight: bold;
+			font-style: italic;
+			line-height: 1.6em;
+		}
+
+		.testbox li p em {
+			background-color: #666;
+			color: #ddd;
+			font-weight: normal;
+			font-style: normal;
+			padding: 2px 4px;
+			border-radius: 4px;
+		}
+
+		.testbox a {
+			color: #71D5FF;
+			display: inline-block;
+			margin: 5px 0;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #036;
+		}
+
+		.testbox span[data-darktip] {
+			color: #71D5FF;
+			display: inline-block;
+			margin: 5px 0;
+			padding: 10px;
+			border-radius: 5px;
+			background-color: #306;
+		}
+
+		h1.subsection {
+			text-align: right;
+			font-size: 2.5em;
+			color: #888;
+		}
+
+		#custom-implicit-list,
+		#custom-explicit-list {
+			list-style: none;
+			padding: 0;
+			margin: 6px 10px;
+		}
+
+		#custom-explicit-templates {
+			clear: both;
+			margin: 6px;
+		}
+
+		#custom-explicit-templates-list {
+			overflow: hidden;
+			padding: 0;
+		}
+
+		#custom-explicit-templates-list li {
+			cursor: pointer;
+			float: left;
+			border-radius: 3px;
+			background-color: #aaa;
+			padding: 3px 9px 3px 6px;
+			margin: 0 4px 4px 0;
+			font-style: italic;
+		}
+
+		#custom-explicit-templates-list li:hover {
+			background-color: #333;
+			color: #fff;
+		}
+
+	</style>
+</head>
+<body>
+	<a href="http://github.com/darkspotinthecorner/DarkTip">
+		<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+	</a>
+
+	<div id="container">
+		<div class="download">
+			<a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master"><img border="0" width="90" src="http://github.com/images/modules/download/zip.png" /></a>
+			<a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master"><img border="0" width="90" src="http://github.com/images/modules/download/tar.png" /></a>
+		</div>
+
+    	<h1>
+			<a href="http://github.com/darkspotinthecorner/DarkTip"><img src="darktip_logo.png" alt="DarkTip" title="DarkTip" /></a>
+			<span class="small">by <a href="http://github.com/darkspotinthecorner">darkspotinthecorner</a></span>
+		</h1>
+
+		<div class="description">
+			The DarkTip plugin is a javascript based tooltip framework that enables quick and easy development of modules that hook into specific aspects of a webpage and display context sensitive tooltips.
+		</div>
+
+		<h2>Authors</h2>
+		<p>darkspotinthecorner [darkspotinthecorner (at) gmail (dot) com]</p>
+
+		<h2>Contact</h2>
+		<p>[darkspotinthecorner (at) gmail (dot) com]</p>
+		<p><a href="https://plus.google.com/109019720443407643481" rel="publisher">Google+</a></p>
+		<a name="code-index"></a>
+		<h2>Using DarkTip</h2>
+		<p>
+			<ol>
+				<li><a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">Download</a> and extract the DarkTip files.</li>
+				<li>Upload the files to a directory on your webserver that is accessible by the public.</li>
+				<li>On any webpage where you want to have DarkTip active, include the following code:
+					<pre>
+&lt;script type="text/javascript"&gt;
+
+  window.___DarkTipSettings = {
+
+    'resources': {
+
+      'qtip2'  : [
+        '/darktip/ext/qtip2/jquery.qtip.min.js',
+        '/darktip/ext/qtip2/jquery.qtip.min.css'
+      ],
+
+      'extras': [
+        '/darktip/modules/wow.css',
+        '/darktip/modules/wow.js',
+        '<a href="#demo-wow-realm" title="Jump to WoW realm demos">/darktip/modules/wow.realm.js</a>',
+        '<a href="#demo-wow-quest" title="Jump to WoW quest demos">/darktip/modules/wow.quest.js</a>',
+        '<a href="#demo-wow-item" title="Jump to WoW item demos">/darktip/modules/wow.item.js</a>',
+        '<a href="#demo-wow-item-equipped" title="Jump to WoW equipped item demos">/darktip/modules/wow.item.equipped.js</a>',
+        '<a href="#demo-wow-character" title="Jump to WoW character demos">/darktip/modules/wow.character.js</a>',
+        '<a href="#demo-wow-character-spec" title="Jump to WoW character spec demos">/darktip/modules/wow.character.spec.js</a>',
+        '<a href="#demo-wow-character-pvp" title="Jump to WoW character pvp demos">/darktip/modules/wow.character.pvp.js</a>',
+        '<a href="#demo-wow-guild" title="Jump to WoW guild demos">/darktip/modules/wow.guild.js</a>',
+        '<a href="#demo-wow-arena" title="Jump to WoW arena demos">/darktip/modules/wow.arena.js</a>',
+        '<a href="#demo-wow-achievement" title="Jump to WoW achievement demos">/darktip/modules/wow.achievement.js</a>',
+        '<a href="#demo-wow-spell" title="Jump to WoW spell demos">/darktip/modules/wow.spell.js</a>',
+        '/darktip/modules/wow.wowhead.js',
+        '<a href="#demo-wow-wowhead-achievement" title="Jump to WoW achievement demos via Wowhead links">/darktip/modules/wow.wowhead.achievement.js</a>',
+        '<a href="#demo-wow-wowhead-character" title="Jump to WoW character demos via Wowhead links">/darktip/modules/wow.wowhead.character.js</a>',
+        '<a href="#demo-wow-wowhead-guild" title="Jump to WoW guild demos via Wowhead links">/darktip/modules/wow.wowhead.guild.js</a>',
+        '<a href="#demo-wow-wowhead-item" title="Jump to WoW item demos via Wowhead links">/darktip/modules/wow.wowhead.item.js</a>',
+        '<a href="#demo-wow-wowhead-quest" title="Jump to WoW quest demos via Wowhead links">/darktip/modules/wow.wowhead.quest.js</a>',
+        '<a href="#demo-wow-wowhead-spell" title="Jump to WoW spell demos via Wowhead links">/darktip/modules/wow.wowhead.spell.js</a>',
+        '/darktip/modules/d3.css',
+        '/darktip/modules/d3.js',
+        '<a href="#demo-d3-profile" title="Jump to D3 profile demos">/darktip/modules/d3.profile.js</a>'
+      ]
+
+    }
+
+  };
+
+&lt;/script&gt;
+&lt;script type="text/javascript" src="darktip/DarkTip.js"&gt;&lt;/script&gt;
+</pre>
+				</li>
+				<li>IMPORTANT: Replace the example paths with your own valid paths that fit your server directory!</li>
+			</ol>
+		</p>
+
+		<h2>Demos</h2>
+		<p>
+			<a name="demo-wow-realm"></a>
+			<h1 class="subsection">Realm <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.realm:eu.gilneas(en)">&lt;span data-darktip="wow.realm:eu.gilneas(en)"&gt;</span></li>
+				<li><span data-darktip="wow.realm:eu.gilneas(de)">&lt;span data-darktip="wow.realm:eu.gilneas(de)"&gt;</li>
+				<li><span data-darktip="wow.realm:eu.gilneas(fr)">&lt;span data-darktip="wow.realm:eu.gilneas(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.realm:eu.gilneas(es)">&lt;span data-darktip="wow.realm:eu.gilneas(es)"&gt;</span></li>
+			</ul>
+
+			<a name="demo-wow-quest"></a>
+			<h1 class="subsection">Quest <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox explicit">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.quest:eu.10781(en)">&lt;span data-darktip="wow.quest:eu.10781(en)"&gt;</span></li>
+				<li><span data-darktip="wow.quest:eu.10781(de)">&lt;span data-darktip="wow.quest:eu.10781(de)"&gt;</span></li>
+				<li><span data-darktip="wow.quest:eu.10781(fr)">&lt;span data-darktip="wow.quest:eu.10781(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.quest:eu.10781(es)">&lt;span data-darktip="wow.quest:eu.10781(es)"&gt;</span></li>
+			</ul>
+
+			<a name="demo-wow-item"></a>
+			<h1 class="subsection">Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.item:eu.49623(en)">&lt;span data-darktip="wow.item:eu.49623(en)"&gt;</span></li>
+				<li><span data-darktip="wow.item:eu.49623(de)">&lt;span data-darktip="wow.item:eu.49623(de)"&gt;</span></li>
+				<li><span data-darktip="wow.item:eu.49623(fr)">&lt;span data-darktip="wow.item:eu.49623(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.item:eu.49623(es)">&lt;span data-darktip="wow.item:eu.49623(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/item/60288">&lt;a href="http://eu.battle.net/wow/en/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/item/60288">&lt;a href="http://eu.battle.net/wow/de/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/item/60288">&lt;a href="http://eu.battle.net/wow/fr/item/60288"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/item/60288">&lt;a href="http://eu.battle.net/wow/es/item/60288"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-item-equipped"></a>
+			<h1 class="subsection">Equipped Item <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><p>Valid slot keys: <em>head</em> <em>neck</em> <em>shoulder</em> <em>back</em> <em>chest</em> <em>shirt</em> <em>tabard</em> <em>wrist</em> <em>hands</em> <em>waist</em> <em>legs</em> <em>feet</em> <em>finger1</em> <em>finger2</em> <em>trinket1</em> <em>trinket2</em> <em>mainhand</em> <em>offhand</em></p></li>
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.mainhand(en)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.mainhand(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.back(en)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.back(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.die-aldor.deex.waist(en)">&lt;span data-darktip="wow.item.equipped:eu.die-aldor.deex.waist(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.blackhand.nightstalker.waist(en)">&lt;span data-darktip="wow.item.equipped:eu.blackhand.nightstalker.waist(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.die-aldor.vedra.shoulder(en)">&lt;span data-darktip="wow.item.equipped:eu.die-aldor.vedra.shoulder(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(en)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(de)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(de)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(fr)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(fr)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(es)">&lt;span data-darktip="wow.item.equipped:eu.gilneas.rancora.legs(es)"&gt;...&lt;/span&gt;</span></li>
+			</ul>
+
+			<a name="demo-wow-character"></a>
+			<h1 class="subsection">Character <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.character:eu.gilneas.rancora(en)">&lt;span data-darktip="wow.character:eu.gilneas.rancora(en)"&gt;</span></li>
+				<li><span data-darktip="wow.character:eu.gilneas.rancora(de)">&lt;span data-darktip="wow.character:eu.gilneas.rancora(de)"&gt;</span></li>
+				<li><span data-darktip="wow.character:eu.gilneas.rancora(fr)">&lt;span data-darktip="wow.character:eu.gilneas.rancora(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.character:eu.gilneas.rancora(es)">&lt;span data-darktip="wow.character:eu.gilneas.rancora(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-character-spec"></a>
+			<h1 class="subsection">Character Specs <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.character.spec:eu.gilneas.rancora(en)">&lt;span data-darktip="wow.character.spec:eu.gilneas.rancora(en)"&gt;</span></li>
+				<li><span data-darktip="wow.character.spec:eu.gilneas.rancora(de)">&lt;span data-darktip="wow.character.spec:eu.gilneas.rancora(de)"&gt;</span></li>
+				<li><span data-darktip="wow.character.spec:eu.gilneas.rancora(fr)">&lt;span data-darktip="wow.character.spec:eu.gilneas.rancora(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.character.spec:eu.gilneas.rancora(es)">&lt;span data-darktip="wow.character.spec:eu.gilneas.rancora(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple#talents">&lt;a href="http://eu.battle.net/wow/en/character/gilneas/Mashaya/simple#talents"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple#talents">&lt;a href="http://eu.battle.net/wow/de/character/gilneas/Mashaya/simple#talents"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple#talents">&lt;a href="http://eu.battle.net/wow/fr/character/gilneas/Mashaya/simple#talents"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple#talents">&lt;a href="http://eu.battle.net/wow/es/character/gilneas/Mashaya/simple#talents"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-character-pvp"></a>
+			<h1 class="subsection">Character PvP <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.character.pvp:eu.khadgar.gebru(en)">&lt;span data-darktip="wow.character.pvp:eu.khadgar.gebru(en)"&gt;</span></li>
+				<li><span data-darktip="wow.character.pvp:eu.khadgar.gebru(de)">&lt;span data-darktip="wow.character.pvp:eu.khadgar.gebru(de)"&gt;</span></li>
+				<li><span data-darktip="wow.character.pvp:eu.khadgar.gebru(fr)">&lt;span data-darktip="wow.character.pvp:eu.khadgar.gebru(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.character.pvp:eu.khadgar.gebru(es)">&lt;span data-darktip="wow.character.pvp:eu.khadgar.gebru(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/en/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/de/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/fr/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp">&lt;a href="http://eu.battle.net/wow/es/character/talnivarr/Grimzie/pvp"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-guild"></a>
+			<h1 class="subsection">Guild <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.guild:eu.gilneas.ascension(en)">&lt;span data-darktip="wow.guild:eu.gilneas.ascension(en)"&gt;</span></li>
+				<li><span data-darktip="wow.guild:eu.gilneas.ascension(de)">&lt;span data-darktip="wow.guild:eu.gilneas.ascension(de)"&gt;</span></li>
+				<li><span data-darktip="wow.guild:eu.gilneas.ascension(fr)">&lt;span data-darktip="wow.guild:eu.gilneas.ascension(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.guild:eu.gilneas.ascension(es)">&lt;span data-darktip="wow.guild:eu.gilneas.ascension(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/en/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/de/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/fr/guild/gilneas/Out of Range/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/">&lt;a href="http://eu.battle.net/wow/es/guild/gilneas/Out of Range/"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-arena"></a>
+			<h1 class="subsection">Arena Team <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)">&lt;span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(en)"&gt;</span></li>
+				<li><span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)">&lt;span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(de)"&gt;</span></li>
+				<li><span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)">&lt;span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)">&lt;span data-darktip="wow.arena:eu.khadgar.5v5.MostOfUsDontDoDrugs(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/en/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/de/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/fr/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/">&lt;a href="http://eu.battle.net/wow/es/arena/khadgar/5v5/MostOfUsDontDoDrugs/"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-achievement"></a>
+			<h1 class="subsection">Achievement <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.achievement:eu.134(en)">&lt;span data-darktip="wow.achievement:eu.134(en)"&gt;</span></li>
+				<li><span data-darktip="wow.achievement:eu.134(de)">&lt;span data-darktip="wow.achievement:eu.134(de)"&gt;</span></li>
+				<li><span data-darktip="wow.achievement:eu.134(fr)">&lt;span data-darktip="wow.achievement:eu.134(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.achievement:eu.134(es)">&lt;span data-darktip="wow.achievement:eu.134(es)"&gt;</span></li>
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing - Character</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/character/blackhand/Ashirin/achievement#81:a8249">&lt;a href="http://eu.battle.net/wow/en/character/blackhand/Ashirin/achievement#81:a8249"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/character/blackhand/Ashirin/achievement#81:a8249">&lt;a href="http://eu.battle.net/wow/de/character/blackhand/Ashirin/achievement#81:a8249"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/character/blackhand/Ashirin/achievement#81:a8249">&lt;a href="http://eu.battle.net/wow/fr/character/blackhand/Ashirin/achievement#81:a8249"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/character/blackhand/Ashirin/achievement#81:a8249">&lt;a href="http://eu.battle.net/wow/es/character/blackhand/Ashirin/achievement#81:a8249"&gt;</a></li>
+				<li><h2>Existing - Guild</h2></li>
+				<li><a href="http://eu.battle.net/wow/en/guild/blackhand/pwniez/achievement#15079:15154:a8140">&lt;a href="http://eu.battle.net/wow/en/guild/blackhand/pwniez/achievement#15079:15154:a8140"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/de/guild/blackhand/pwniez/achievement#15079:15154:a8140">&lt;a href="http://eu.battle.net/wow/de/guild/blackhand/pwniez/achievement#15079:15154:a8140"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/fr/guild/blackhand/pwniez/achievement#15079:15154:a8140">&lt;a href="http://eu.battle.net/wow/fr/guild/blackhand/pwniez/achievement#15079:15154:a8140"&gt;</a></li>
+				<li><a href="http://eu.battle.net/wow/es/guild/blackhand/pwniez/achievement#15079:15154:a8140">&lt;a href="http://eu.battle.net/wow/es/guild/blackhand/pwniez/achievement#15079:15154:a8140"&gt;</a></li>
+			</ul>
+
+			<a name="demo-wow-spell"></a>
+			<h1 class="subsection">Spell <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="wow.spell:eu.8056(en)">&lt;span data-darktip="wow.spell:eu.8056(en)"&gt;</span></li>
+				<li><span data-darktip="wow.spell:eu.8056(de)">&lt;span data-darktip="wow.spell:eu.8056(de)"&gt;</span></li>
+				<li><span data-darktip="wow.spell:eu.8056(fr)">&lt;span data-darktip="wow.spell:eu.8056(fr)"&gt;</span></li>
+				<li><span data-darktip="wow.spell:eu.8056(es)">&lt;span data-darktip="wow.spell:eu.8056(es)"&gt;</span></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-achievement"></a>
+			<h1 class="subsection">Wowhead Achievement Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/achievement=6838">http://www.wowhead.com/achievement=6838</a></li>
+				<li><a href="http://de.wowhead.com/achievement=6838">http://de.wowhead.com/achievement=6838</a></li>
+				<li><a href="http://fr.wowhead.com/achievement=6838">http://fr.wowhead.com/achievement=6838</a></li>
+				<li><a href="http://es.wowhead.com/achievement=6838">http://es.wowhead.com/achievement=6838</a></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-character"></a>
+			<h1 class="subsection">Wowhead Character Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/profile=eu.gilneas.rancora#inventory">http://www.wowhead.com/profile=eu.gilneas.rancora#inventory</a></li>
+				<li><a href="http://de.wowhead.com/profile=eu.gilneas.rancora#inventory">http://de.wowhead.com/profile=eu.gilneas.rancora#inventory</a></li>
+				<li><a href="http://fr.wowhead.com/profile=eu.gilneas.rancora#inventory">http://fr.wowhead.com/profile=eu.gilneas.rancora#inventory</a></li>
+				<li><a href="http://es.wowhead.com/profile=eu.gilneas.rancora#inventory">http://es.wowhead.com/profile=eu.gilneas.rancora#inventory</a></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-guild"></a>
+			<h1 class="subsection">Wowhead Guild Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/guild=eu.gilneas.ascension#characters">http://www.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://de.wowhead.com/guild=eu.gilneas.ascension#characters">http://de.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://fr.wowhead.com/guild=eu.gilneas.ascension#characters">http://fr.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+				<li><a href="http://es.wowhead.com/guild=eu.gilneas.ascension#characters">http://es.wowhead.com/guild=eu.gilneas.ascension#characters</a></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-item"></a>
+			<h1 class="subsection">Wowhead Item Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/item=46960#comments">http://www.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://de.wowhead.com/item=46960#comments">http://de.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://fr.wowhead.com/item=46960#comments">http://fr.wowhead.com/item=46960#comments</a></li>
+				<li><a href="http://es.wowhead.com/item=46960#comments">http://es.wowhead.com/item=46960#comments</a></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-quest"></a>
+			<h1 class="subsection">Wowhead Quest Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/quest=26248#screenshots">http://www.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://de.wowhead.com/quest=26248#screenshots">http://de.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://fr.wowhead.com/quest=26248#screenshots">http://fr.wowhead.com/quest=26248#screenshots</a></li>
+				<li><a href="http://es.wowhead.com/quest=26248#screenshots">http://es.wowhead.com/quest=26248#screenshots</a></li>
+			</ul>
+
+			<a name="demo-wow-wowhead-spell"></a>
+			<h1 class="subsection">Wowhead Spell Pickup <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://www.wowhead.com/spell=110309#screenshots">http://www.wowhead.com/spell=110309#screenshots</a></li>
+				<li><a href="http://de.wowhead.com/spell=110309#screenshots">http://de.wowhead.com/spell=110309#screenshots</a></li>
+				<li><a href="http://fr.wowhead.com/spell=110309#screenshots">http://fr.wowhead.com/spell=110309#screenshots</a></li>
+				<li><a href="http://es.wowhead.com/spell=110309#screenshots">http://es.wowhead.com/spell=110309#screenshots</a></li>
+			</ul>
+
+			<a name="demo-d3-profile"></a>
+			<h1 class="subsection">Diablo III Profiles <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Implicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><a href="http://us.battle.net/d3/en/profile/Poutine-1541/">http://us.battle.net/d3/en/profile/Poutine-1541/</a></li>
+				<li><a href="http://eu.battle.net/d3/en/profile/DSitC-2530/">http://eu.battle.net/d3/en/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/de/profile/DSitC-2530/">http://eu.battle.net/d3/de/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/fr/profile/DSitC-2530/">http://eu.battle.net/d3/fr/profile/DSitC-2530/</a></li>
+				<li><a href="http://eu.battle.net/d3/es/profile/DSitC-2530/">http://eu.battle.net/d3/es/profile/DSitC-2530/</a></li>
+				<li><h1>Explicit</h1></li>
+				<li><h2>Existing</h2></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(en)">&lt;span data-darktip="d3.profile:eu.dsitc-2530(en)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(de)">&lt;span data-darktip="d3.profile:eu.dsitc-2530(de)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(fr)">&lt;span data-darktip="d3.profile:eu.dsitc-2530(fr)"&gt;...&lt;/span&gt;</span></li>
+				<li><span data-darktip="d3.profile:eu.dsitc-2530(es)">&lt;span data-darktip="d3.profile:eu.dsitc-2530(es)"&gt;...&lt;/span&gt;</span></li>
+			</ul>
+
+			<a name="demo-own-links"></a>
+			<h1 class="subsection">Custom <a href="#code-index" title="Jumpt to index">&uArr;</a></h1>
+			<ul class="testbox">
+				<li><h1>Try your own data-darktip code</h1></li>
+				<li>
+					<div id="custom-explicit-templates">
+						<h2>Templates</h2>
+						<ul id="custom-explicit-templates-list">
+							<li data-template="wow.realm:{REGION}.{REALM}({LANGUAGE})">Realm</li>
+							<li data-template="wow.quest:{REGION}.{QUEST ID}({LANGUAGE})">Quest</li>
+							<li data-template="wow.item:{REGION}.{ITEM ID}({LANGUAGE})">Item</li>
+							<li data-template="wow.item.equipped:{REGION}.{REALM}.{CHARACTER NAME}.{SLOT}({LANGUAGE})">Equipped Item</li>
+							<li data-template="wow.character:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character</li>
+							<li data-template="wow.character-pvp:{REGION}.{REALM}.{CHARACTER NAME}({LANGUAGE})">Character PvP</li>
+							<li data-template="wow.guild:{REGION}.{REALM}.{GUILD NAME}({LANGUAGE})">Guild</li>
+							<li data-template="wow.arena:{REGION}.{REALM}.{BRACKET}.{ARENA TEAM NAME}({LANGUAGE})">Arena Team</li>
+							<li data-template="wow.achievement:{REGION}.{ACHIEVEMENT ID}({LANGUAGE})">Achievement</li>
+							<li data-template="wow.spell:{REGION}.{SPELL ID}({LANGUAGE})">Spell</li>
+							<li data-template="d3.profile:{REGION}.{BATTLETAGNAME}-{BATTLETAGCODE}({LANGUAGE})">Diablo III Profile</li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<div id="demo-custom-explicit">
+						<input id="custom-explicit-input" value="" /> <input type="button" id="custom-explicit-button" value="Generate!" />
+					</div>
+					<ul id="custom-explicit-list"></ul>
+				</li>
+				<li><h1 class="padded">Try your own url</h1></li>
+				<li>
+					<div id="demo-custom-implicit">
+						<input id="custom-implicit-input" value="" /> <input type="button" id="custom-implicit-button" value="Generate!" />
+					</div>
+					<ul id="custom-implicit-list"></ul>
+				</li>
+			</ul>
+		</p>
+
+		<h2>Download</h2>
+		<p>You can download this project in either <a href="http://github.com/darkspotinthecorner/DarkTip/zipball/master">zip</a> or <a href="http://github.com/darkspotinthecorner/DarkTip/tarball/master">tar</a> formats.</p>
+		<p>You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
+			<pre>$ git clone git://github.com/darkspotinthecorner/DarkTip</pre>
+		</p>
+
+		<div class="footer">
+			get the source code on GitHub : <a href="http://github.com/darkspotinthecorner/DarkTip">darkspotinthecorner/DarkTip</a>
+		</div>
+	</div>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript">
+
+		jQuery(function () {
+
+			jQuery('#custom-implicit-button').bind('click', function() {
+				var url = jQuery('#custom-implicit-input').val();
+				if(url != '')
+				{
+					jQuery('#custom-implicit-list').append('<li><a href="'+url+'">&lt;a href="'+url+'"&gt;</a></li>');
+				}
+			});
+
+			jQuery('#custom-explicit-button').bind('click', function() {
+				var code = jQuery('#custom-explicit-input').val();
+				if(code != '')
+				{
+					jQuery('#custom-explicit-list').append('<li><span data-darktip="'+code+'">&lt;span data-darktip="'+code+'"&gt;</span></li>');
+				}
+			});
+
+			jQuery('#custom-explicit-templates-list li').bind('click', function() {
+				template = jQuery(this).data('template');
+				jQuery('#custom-explicit-input').val(template);
+			});
+
+		});
+
+	</script>
+	<script type="text/javascript">
+		window.___DarkTipSettings = {
+			'resources': {
+				'qtip2': [
+					'../ext/qtip2/jquery.qtip.min.js',
+					'../ext/qtip2/jquery.qtip.min.css'
+				],
+				'extras': [
+					'../modules/wow.css',
+					'../modules/wow.js',
+					'../modules/wow.realm.js',
+					'../modules/wow.quest.js',
+					'../modules/wow.item.js',
+					'../modules/wow.item.equipped.js',
+					'../modules/wow.character.js',
+					'../modules/wow.character.pvp.js',
+					'../modules/wow.character.spec.js',
+					'../modules/wow.guild.js',
+					'../modules/wow.arena.js',
+					'../modules/wow.achievement.js',
+					'../modules/wow.spell.js',
+					'../modules/wow.wowhead.js',
+					'../modules/wow.wowhead.achievement.js',
+					'../modules/wow.wowhead.character.js',
+					'../modules/wow.wowhead.guild.js',
+					'../modules/wow.wowhead.item.js',
+					'../modules/wow.wowhead.quest.js',
+					'../modules/wow.wowhead.spell.js',
+					'../modules/d3.css',
+					'../modules/d3.js',
+					'../modules/d3.profile.js'
+				]
+			}
+		};
+	</script>
+	<script type="text/javascript" src="../DarkTip.js"></script>
+
+</body>
+</html>

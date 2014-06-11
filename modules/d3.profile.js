@@ -233,69 +233,69 @@ DarkTip.registerModule('d3.profile', {
 			'<div class="tooltip-profile">' +
 				/* --- START simple mode -------------------------------- */
 				'<div class="darktip-only-s">' +
-					'<div class="headline-right"><span class="icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
-					'<div class="darktip-row headline"><span class="battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
+					'<div class="darktip-headline-right"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
+					'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
 					'<% if((this["profile"]["heroes"]) && (this["profile"]["heroes"].length > 0)) { %>' +
-						'<div class="darktip-row heroes-highlighted">' +
+						'<div class="darktip-row darktip-heroes-highlighted">' +
 							'<%= this._subLoop("templates.fragments.hero_deco", this["profile"]["heroes"]) %>' +
 						'</div>' +
 					'<% } %>' +
-					'<div class="darktip-row progression">' +
-						'<div class="progression-bar"><div class="progress normal dif-<%= this["profile"]["farthestProgression"]["normal"]["difficulty"] %> act-<%= this["profile"]["farthestProgression"]["normal"]["act"] %>"><div class="pin dif-normal"></div><div class="pin dif-nightmare"></div><div class="pin dif-hell"></div><div class="pin dif-inferno"></div></div></div>' +
-						'<div class="progression-bar"><div class="progress hardcore dif-<%= this["profile"]["farthestProgression"]["hardcore"]["difficulty"] %> act-<%= this["profile"]["farthestProgression"]["hardcore"]["act"] %>"><div class="pin dif-normal"></div><div class="pin dif-nightmare"></div><div class="pin dif-hell"></div><div class="pin dif-inferno"></div></div></div>' +
+					'<div class="darktip-row darktip-progression">' +
+						'<div class="darktip-progression-bar"><div class="darktip-progress darktip-normal dif-<%= this["profile"]["farthestProgression"]["normal"]["difficulty"] %> darktip-act-<%= this["profile"]["farthestProgression"]["normal"]["act"] %>"><div class="darktip-pin darktip-dif-normal"></div><div class="darktip-pin darktip-dif-nightmare"></div><div class="darktip-pin darktip-dif-hell"></div><div class="darktip-pin darktip-dif-inferno"></div></div></div>' +
+						'<div class="darktip-progression-bar"><div class="darktip-progress darktip-hardcore dif-<%= this["profile"]["farthestProgression"]["hardcore"]["difficulty"] %> darktip-act-<%= this["profile"]["farthestProgression"]["hardcore"]["act"] %>"><div class="darktip-pin darktip-dif-normal"></div><div class="darktip-pin darktip-dif-nightmare"></div><div class="darktip-pin darktip-dif-hell"></div><div class="darktip-pin darktip-dif-inferno"></div></div></div>' +
 					'</div>' +
-					'<% if(this["profile"]["timePlayedPercent"]) { %><div class="darktip-row time-played padded-above">' +
-						'<div class="container"><div class="hero-badge barbarian"><% if(this["profile"]["timePlayedPercent"]["barbarian"] > 0) { %><div class="hero-badge overlay<% if(this["profile"]["timePlayed"]["barbarian"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["barbarian"] * 100 %>%;"></div><% } %></div><div class="label"><%= this["profile"]["timePlayedPercent"]["barbarian"] %>%</div></div>' +
-						'<div class="container"><div class="hero-badge demon-hunter"><% if(this["profile"]["timePlayedPercent"]["demon-hunter"] > 0) { %><div class="hero-badge overlay<% if(this["profile"]["timePlayed"]["demon-hunter"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["demon-hunter"] * 100 %>%;"></div><% } %></div><div class="label"><%= this["profile"]["timePlayedPercent"]["demon-hunter"] %>%</div></div>' +
-						'<div class="container"><div class="hero-badge monk"><% if(this["profile"]["timePlayedPercent"]["monk"] > 0) { %><div class="hero-badge overlay<% if(this["profile"]["timePlayed"]["monk"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["monk"] * 100 %>%;"></div><% } %></div><div class="label"><%= this["profile"]["timePlayedPercent"]["monk"] %>%</div></div>' +
-						'<div class="container"><div class="hero-badge witch-doctor"><% if(this["profile"]["timePlayedPercent"]["witch-doctor"] > 0) { %><div class="hero-badge overlay<% if(this["profile"]["timePlayed"]["witch-doctor"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["witch-doctor"] * 100 %>%;"></div><% } %></div><div class="label"><%= this["profile"]["timePlayedPercent"]["witch-doctor"] %>%</div></div>' +
-						'<div class="container"><div class="hero-badge wizard"><% if(this["profile"]["timePlayedPercent"]["wizard"] > 0) { %><div class="hero-badge overlay<% if(this["profile"]["timePlayed"]["wizard"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["wizard"] * 100 %>%;"></div><% } %></div><div class="label"><%= this["profile"]["timePlayedPercent"]["wizard"] %>%</div></div>' +
+					'<% if(this["profile"]["timePlayedPercent"]) { %><div class="darktip-row darktip-time-played darktip-padded-above">' +
+						'<div class="darktip-container"><div class="darktip-hero-badge darktip-barbarian"><% if(this["profile"]["timePlayedPercent"]["barbarian"] > 0) { %><div class="hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["barbarian"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["barbarian"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["barbarian"] %>%</div></div>' +
+						'<div class="darktip-container"><div class="darktip-hero-badge darktip-demon-hunter"><% if(this["profile"]["timePlayedPercent"]["demon-hunter"] > 0) { %><div class="hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["demon-hunter"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["demon-hunter"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["demon-hunter"] %>%</div></div>' +
+						'<div class="darktip-container"><div class="darktip-hero-badge darktip-monk"><% if(this["profile"]["timePlayedPercent"]["monk"] > 0) { %><div class="hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["monk"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["monk"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["monk"] %>%</div></div>' +
+						'<div class="darktip-container"><div class="darktip-hero-badge darktip-witch-doctor"><% if(this["profile"]["timePlayedPercent"]["witch-doctor"] > 0) { %><div class="hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["witch-doctor"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["witch-doctor"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["witch-doctor"] %>%</div></div>' +
+						'<div class="darktip-container"><div class="darktip-hero-badge darktip-wizard"><% if(this["profile"]["timePlayedPercent"]["wizard"] > 0) { %><div class="hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["wizard"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["wizard"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["wizard"] %>%</div></div>' +
 					'</div><% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="darktip-only-x">' +
-						'<div class="headline-right"><span class="icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
-						'<div class="darktip-row headline"><span class="battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
+						'<div class="darktip-headline-right"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
+						'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
 						'<%= this._subLoop("templates.fragments.artisan_info", this["profile"]["artisan-info"]) %>' +
 						'<% if((this["profile"]["heroes"]) && (this["profile"]["heroes"].length > 0)) { %>' +
-							'<div class="darktip-row heroes-list">' +
+							'<div class="darktip-row darktip-heroes-list">' +
 								'<%= this._subLoop("templates.fragments.hero_list", this["profile"]["heroes"]) %>' +
 							'</div>' +
 						'<% } %>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				/* --- END extended mode -------------------------------- */
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-profile tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.battletag") %></span> <span class="value"><%= this["battletag_name"] %>-<%= this["battletag_code"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-profile darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.battletag") %></span> <span class="value"><%= this["battletag_name"] %>-<%= this["battletag_code"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
 			'hero_deco': (
-				'<% if(this["_loop"] < 3) { %><div class="hero-portrait-frame <% if(this["hardcore"]) { %>hardcore<% } else { %>normal<% } %>">' +
-					'<div class="hero hero-portrait <%= this["class"] %>-<%= this["gender"] %>"></div><div class="textbox"><span class="level"><%= this["level"] %></span><span class="class ccolor-<%= this["class"] %>"><%= this["name"] %></span></div>' +
+				'<% if(this["_loop"] < 3) { %><div class="darktip-hero-portrait-frame <% if(this["hardcore"]) { %>darktip-hardcore<% } else { %>darktip-normal<% } %>">' +
+					'<div class="darktip-hero darktip-hero-portrait darktip-<%= this["class"] %>-<%= this["gender"] %>"></div><div class="darktip-textbox"><span class="darktip-level"><%= this["level"] %></span><span class="class darktip-ccolor-<%= this["class"] %>"><%= this["name"] %></span></div>' +
 				'</div><% } %>'
 			),
 			'hero_list': (
-				'<div class="darktip-row padded <% if(this["hardcore"]) { %>hardcore<% } else { %>normal<% } %><% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
-					'<span class="name"><%= this["name"] %></span>' +
-					'<span class="level"><%= this["level"] %></span>' +
-					'<span class="class ccolor-<%= this["class"] %>"><%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %></span>' +
+				'<div class="darktip-row darktip-padded <% if(this["hardcore"]) { %>hardcore<% } else { %>normal<% } %><% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+					'<span class="darktip-name"><%= this["name"] %></span>' +
+					'<span class="darktip-level"><%= this["level"] %></span>' +
+					'<span class="darktip-class darktip-ccolor-<%= this["class"] %>"><%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %></span>' +
 				'</div>'
 			),
 			'artisan_info': (
-				'<div class="darktip-row artisan-info padded">' +
+				'<div class="darktip-row artisan-info darktip-padded">' +
 					'<span class="name"><%= this._loc(this["slug"]) %>:</span> ' +
-					'<span class="level"><%= this["level-normal"] %></span> ' +
-					'<span class="level dcolor-hardcore">(<%= this._loc("hardcore") %>: <%= this["level-hardcore"] %>)</span>' +
+					'<span class="darktip-level"><%= this["level-normal"] %></span> ' +
+					'<span class="darktip-level darktip-dcolor-hardcore">(<%= this._loc("hardcore") %>: <%= this["level-hardcore"] %>)</span>' +
 				'</div>'
 			)
 		}

@@ -80,37 +80,37 @@ DarkTip.registerModule('wow.arena', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-arena">' +
-				'<div class="headline-right"><%= this._loc("rank-current") %></div>' +
-				'<div class="darktip-row headline cside-<%= this["arena"]["side"] %>"><%= this["arena"]["name"] %></div>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row highlight-strong darktip-only-x"><%= this._loc("view-mode-current") %></div><% } %>' +
-				'<div class="darktip-row highlight-strong darktip-only-s"><%= this._loc("view-mode-season") %></div>' +
+				'<div class="darktip-headline-right"><%= this._loc("rank-current") %></div>' +
+				'<div class="darktip-row darktip-headline darkstip-cside-<%= this["arena"]["side"] %>"><%= this["arena"]["name"] %></div>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-highlight-strong darktip-only-x"><%= this._loc("view-mode-current") %></div><% } %>' +
+				'<div class="darktip-row darktip-highlight-strong darktip-only-s"><%= this._loc("view-mode-season") %></div>' +
 				'<div class="darktip-row"><%= this._loc("classification") %></div>' +
 				'<div class="darktip-row"><%= this._loc("rank-previous") %></div>' +
 				'<div class="darktip-row"><%= this._loc("rating-team") %></div>' +
 				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-only-x"><%= this._loc("matches-current") %></div><% } %>' +
 				'<div class="darktip-row darktip-only-s"><%= this._loc("matches-season") %></div>' +
 				'<div class="members"><%= this._subLoop("templates.fragments.member", this["arena"]["members"]) %></div>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div><% } %>' +
-				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div><% } %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta darktip-only-x"><%= this._loc("extendedActive") %></div><% } %>' +
+				'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div><% } %>' +
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-arena tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.teamname") %></span> <span class="value"><%= this["teamname"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.teamsize") %></span> <span class="value"><%= this["teamsize"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-arena darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.teamname") %></span> <span class="value"><%= this["teamname"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.teamsize") %></span> <span class="value"><%= this["teamsize"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
 			'member': (
-				'<div class="darktip-row padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="pos-right darktip-only-x"><%= this._loc("matches-current-short") %></div><% } %>' +
-					'<div class="pos-right darktip-only-s"><%= this._loc("matches-season-short") %></div>' +
-					'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +
-					'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/class_<%= this["character"]["class"] %>.jpg" /> ' +
-					'<span class="cclass-<%= this["character"]["class"] %><% if(this["rank"]==0) { %> icon-leader-pvp<% } %>"><%= this["character"]["name"] %></span> <span class="sub highlight-reduced">(<%= this["personalRating"] %>)</span>' +
+				'<div class="darktip-row darktip-padded<% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-pos-right darktip-only-x"><%= this._loc("matches-current-short") %></div><% } %>' +
+					'<div class="darktip-pos-right darktip-only-s"><%= this._loc("matches-season-short") %></div>' +
+					'<img class="darktip-icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +
+					'<img class="darktip-icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/class_<%= this["character"]["class"] %>.jpg" /> ' +
+					'<span class="darktip-cclass-<%= this["character"]["class"] %><% if(this["rank"]==0) { %> darktip-icon-leader-pvp<% } %>"><%= this["character"]["name"] %></span> <span class="sub darktip-highlight-reduced">(<%= this["personalRating"] %>)</span>' +
 				'</div>'
 			)
 		}
@@ -126,10 +126,10 @@ DarkTip.registerModule('wow.arena', {
 			'rating-team'          : 'Rating: <%= this["arena"]["rating"] %>',
 			'rank-current'         : 'Rank #<%= this["arena"]["ranking"] %>',
 			'rank-previous'        : 'Last week\'s rank: <% if(this["arena"]["lastSessionRanking"] > 0) { %>#<%= this["arena"]["lastSessionRanking"] %><% } else { %>None<% } %>',
-			'matches-current'      : 'Matches: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
-			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
-			'matches-season'       : 'Matches: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
-			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-current'      : 'Matches: <span class="darktip-highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-current-short': '<span class="darktip-highlight-won"><%= this["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Matches: <span class="darktip-highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-season-short' : '<span class="darktip-highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : 'Hold [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view current statistics',
 			'extendedActive'       : 'Release [<%= this["_meta"]["extendedKeyCodeLabel"] %>] to view seasonal statistics'
 		},
@@ -142,10 +142,10 @@ DarkTip.registerModule('wow.arena', {
 			'rating-team'          : 'Wertung: <%= this["arena"]["rating"] %>',
 			'rank-current'         : 'Rang #<%= this["arena"]["ranking"] %>',
 			'rank-previous'        : 'Rang der letzten Woche: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>Keiner<% } %>',
-			'matches-current'      : 'Spiele: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Gesamt: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
-			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
-			'matches-season'       : 'Spiele: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Gesamt: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
-			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-current'      : 'Spiele: <span class="darktip-highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="darktip-highlight-weak">(Gesamt: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-current-short': '<span class="darktip-highlight-won"><%= this["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Spiele: <span class="darktip-highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="darktip-highlight-weak">(Gesamt: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-season-short' : '<span class="darktip-highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt halten f&uuml;r aktuelle Wochenwerte',
 			'extendedActive'       : '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen f&uuml;r Saisonwerte'
 		},
@@ -158,10 +158,10 @@ DarkTip.registerModule('wow.arena', {
 			'rating-team'          : 'Côte: <%= this["arena"]["rating"] %>',
 			'rank-current'         : 'Classement #<%= this["arena"]["ranking"] %>',
 			'rank-previous'        : 'Classement semaine derni&egrave;re: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>None<% } %>',
-			'matches-current'      : 'Matches: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
-			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
-			'matches-season'       : 'Matches: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
-			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-current'      : 'Matches: <span class="darktip-highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-current-short': '<span class="darktip-highlight-won"><%= this["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Matches: <span class="darktip-highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-season-short' : '<span class="darktip-highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : 'Appyuez sur [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour voir les statistiques actuelles',
 			'extendedActive'       : 'Relâchez [<%= this["_meta"]["extendedKeyCodeLabel"] %>] pour voir les statistiques de la saison'
 		},
@@ -174,10 +174,10 @@ DarkTip.registerModule('wow.arena', {
 			'rating-team'          : 'Puntuaci&oacute;n: <%= this["arena"]["rating"] %>',
 			'rank-current'         : 'Rango #<%= this["arena"]["ranking"] %>',
 			'rank-previous'        : 'Rango de la semana pasada: <% if(this["lastSessionRanking"] > 0) { %>#<%= this["lastSessionRanking"] %><% } else { %>no<% } %>',
-			'matches-current'      : 'Partidas: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
-			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
-			'matches-season'       : 'Partidas: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
-			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-current'      : 'Partidas: <span class="darktip-highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-current-short': '<span class="darktip-highlight-won"><%= this["gamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Partidas: <span class="darktip-highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="darktip-highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% gewonnen<% } %>)</span>',
+			'matches-season-short' : '<span class="darktip-highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : '&iexcl;Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estad&iacute;sticas actuales!',
 			'extendedActive'       : '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estad&iacute;sticas de la temporada!'
 		}

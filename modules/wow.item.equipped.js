@@ -294,13 +294,13 @@ DarkTip.registerModule('wow.item.equipped', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-item">' +
-				'<img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
+				'<img class="darktip-icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" />' +
 				 // --- START simple mode -----------------------------------
-				'<div class="col-70 darktip-only-s">' +
-					'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
-					'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
-					'<% if(this["item"]["upgradeInfo"]) { %><div class="darktip-row highlight-medium"><%= this._loc("upgradeInfo") %></div><% } %>' +
-					'<% if(this["transmog"]) { %><div class="darktip-row highlight-transmog"><%= this._loc("transmogged") %></div><% } %>' +
+				'<div class="darktip-col-70 darktip-only-s">' +
+					'<div class="darktip-headline-right"><%= this["item"]["itemLevel"] %></div>' +
+					'<div class="darktip-row darktip-headline darktip-cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
+					'<% if(this["item"]["upgradeInfo"]) { %><div class="darktip-row darktip-highlight-medium"><%= this._loc("upgradeInfo") %></div><% } %>' +
+					'<% if(this["transmog"]) { %><div class="darktip-row darktip-highlight-transmog"><%= this._loc("transmogged") %></div><% } %>' +
 					'<% if(this["item"]["heroic"]) { %><div class="darktip-row"><%= this._loc("heroic") %></div><% } %>' +
 					'<% if(this["item"]["boundZone"]) { %><div class="darktip-row"><%= this["item"]["boundZone"]["name"] %></div><% } %>' +
 					'<% if(this["item"]["itemBind"]) { %>' +
@@ -319,25 +319,25 @@ DarkTip.registerModule('wow.item.equipped', {
 						'<% } else { %>' +
 							'<% if(this["item"]["equippable"]) { %>' +
 								'<%= this._loc("inventoryType." + this["item"]["inventoryType"]) %>' +
-								'<div class="pos-right"><%= this["item"]["itemClassLoc"] %></div>' +
+								'<div class="darktip-pos-right"><%= this["item"]["itemClassLoc"] %></div>' +
 							'<% } else { %>' +
 								'<%= this["item"]["itemClassLoc"] %>' +
 							'<% } %>' +
 						'<% } %>' +
 					'</div>' +
-					'<% if(this["item"]["reforge"]) { %><div class="darktip-row highlight-custom"><%= this._loc("reforged") %></div><% } %>' +
+					'<% if(this["item"]["reforge"]) { %><div class="darktip-row darktip-highlight-custom"><%= this._loc("reforged") %></div><% } %>' +
 					'<% if(this["item"]["baseArmor"]) { %><div class="darktip-row"><%= this._loc("baseArmor") %></div><% } %>' +
 					'<% if(this["item"]["weaponInfo"]) { %>' +
 						'<div>' +
 							'<div class="darktip-row"><%= this._loc("damage", this["item"]["weaponInfo"]["damage"]) %></div>' +
-							'<div class="pos-right"><%= this._loc("weaponSpeed", this["item"]["weaponInfo"]) %></div>' +
+							'<div class="darktip-pos-right"><%= this._loc("weaponSpeed", this["item"]["weaponInfo"]) %></div>' +
 							'<div class="darktip-row"><%= this._loc("dps", this["item"]["weaponInfo"]) %></div>' +
 						'</div>' +
 					'<% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.primary", this["item"]["bonusStats"]) %>' +
 					'<%= this._subLoop("templates.fragments.stat.secondary", this["item"]["bonusStats"]) %>' +
 					'<% if(this["item"]["gemInfo"]) { %><div class="darktip-row"><%= this["item"]["gemInfo"]["bonus"]["name"] %></div><% } %>' +
-					'<% if(this["item"]["socketInfo"]) { %><div class="block sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row <% if(this["item"]["socketInfo"]["mismatchedGems"] == 0) { %>highlight-custom<% } else { %>highlight-reduced<% } %>"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
+					'<% if(this["item"]["socketInfo"]) { %><div class="darktip-block darktip-sockets"><%= this._subLoop("templates.fragments.socket", this["item"]["socketInfo"]["sockets"]) %></div><% if(this["item"]["socketInfo"]["socketBonus"]) { %><div class="darktip-row <% if(this["item"]["socketInfo"]["mismatchedGems"] == 0) { %>darktip-highlight-custom<% } else { %>darktip-highlight-reduced<% } %>"><%= this._loc("socketBonus") %></div><% } %><% } %>' +
 					'<% if(this["item"]["allowableClasses"]) { %><div class="darktip-row"><%= this._loc("allowableClasses") %></div><% } %>' +
 					'<% if(this["item"]["allowableRaces"]) { %><div class="darktip-row"><%= this._loc("allowableRaces") %></div><% } %>' +
 					'<% if(this["item"]["requiredLevel"]) { %><div class="darktip-row"><%= this._loc("requiredLevel") %></div><% } %>' +
@@ -345,47 +345,47 @@ DarkTip.registerModule('wow.item.equipped', {
 					'<% if(this["item"]["requiredAbility"]) { %><div class="darktip-row"><%= this._loc("requiredAbility") %></div><% } %>' +
 					'<% if(this["item"]["minFactionId"]) { %><div class="darktip-row"><%= this._loc("minFactionId") %></div><% } %>' +
 					'<%= this._subLoop("templates.fragments.stat.spell", this["item"]["itemSpells"]) %>' +
-					'<% if(this["item"]["description"]) { %><div class="darktip-row highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
-					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row padded-above">' +
-						'<div class="darktip-row highlight-medium"><%= this["item"]["itemSet"]["name"] %> (<%= this["item"]["itemSet"]["equipped"] %>/<%= this["itemset"]["items"].length %>)</div>' +
-						'<div class="darktip-row padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
+					'<% if(this["item"]["description"]) { %><div class="darktip-row darktip-highlight-medium">&quot;<%= this["item"]["description"] %>&quot;</div><% } %>' +
+					'<% if(this["item"]["itemSet"]) { %><div class="darktip-row darktip-padded-above">' +
+						'<div class="darktip-row darktip-highlight-medium"><%= this["item"]["itemSet"]["name"] %> (<%= this["item"]["itemSet"]["equipped"] %>/<%= this["itemset"]["items"].length %>)</div>' +
+						'<div class="darktip-row darktip-padded-above"><%= this._subLoop("templates.fragments.stat.setBonus", this["item"]["itemSet"]["setBonuses"]) %></div>' +
 					'</div><% } %>' +
-					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
+					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				// --- END simple mode -------------------------------------
 				// --- START extended mode ---------------------------------
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="col-70 darktip-only-x">' +
-						'<div class="headline-right"><%= this["item"]["itemLevel"] %></div>' +
-						'<div class="darktip-row headline cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
-						'<div class="darktip-row padded-below ownerInfo"><%= this._loc("wornBy") %></div>' +
+					'<div class="darktip-col-70 darktip-only-x">' +
+						'<div class="darktip-headline-right"><%= this["item"]["itemLevel"] %></div>' +
+						'<div class="darktip-row darktip-headline darktip-cquality-<%= this["item"]["quality"] %>"><%= this["item"]["name"] %></div>' +
+						'<div class="darktip-row darktip-padded-below ownerInfo"><%= this._loc("wornBy") %></div>' +
 						'<% if(this["character"]["items"]) { %><%= this._sub("templates.fragments.iLevelDiff") %><% } %>' +
-						'<div class="darktip-row highlight-strong"><%= this._loc("itemId") %></div>' +
+						'<div class="darktip-row darktip-highlight-strong"><%= this._loc("itemId") %></div>' +
 						'<% if(this["item"]["maxDurability"]) { %><div class="darktip-row"><%= this._loc("maxDurability") %></div><% } %>' +
 						'<% if(this["item"]["isAuctionable"]) { %><div class="darktip-row"><%= this._loc("auctionable") %></div><% } %>' +
 						'<div class="darktip-row"><%= this._loc("disenchantable") %></div>' +
 						'<% if(this["item"]["stackable"] > 1) { %><div class="darktip-row"><%= this._loc("stackable") %></div><% } %>' +
 						'<div class="darktip-row"><%= this._loc("sellPrice") %></div>' +
-						'<div class="darktip-row info-meta"><%= this._loc("extendedActive") %></div>' +
+						'<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>' +
 					'</div>' +
 				'<% } %>' +
 				// --- END extended mode -----------------------------------
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-item tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.slot") %></span> <span class="value"><%= this["slot"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-item darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.slot") %></span> <span class="value"><%= this["slot"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.character") %></span> <span class="value"><%= this["character"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
 			'ownerInfo': (
-				'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +
-				'<img class="icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/class_<%= this["character"]["class"] %>.jpg" /> ' +
-				'<span class="cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></span> <span class="sub highlight-reduced">(<%= this["character"]["level"] %>)</span> ' +
+				'<img class="darktip-icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/race_<%= this["character"]["race"] %>_<%= this["character"]["gender"] %>.jpg" /> ' +
+				'<img class="darktip-icon-18x18" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/18/class_<%= this["character"]["class"] %>.jpg" /> ' +
+				'<span class="darktip-cclass-<%= this["character"]["class"] %>"><%= this["character"]["name"] %></span> <span class="sub darktip-highlight-reduced">(<%= this["character"]["level"] %>)</span> ' +
 				'@ <span><%= this["character"]["realm"] %></span>'
 			),
 			'iLevelDiff': (
@@ -404,16 +404,16 @@ DarkTip.registerModule('wow.item.equipped', {
 			),
 			'socket': (
 				'<% if(this["item"]) { %>' +
-					'<div class="darktip-row socket">' +
-						'<span class="icon-socket socket-<%= this["type"] %>">' +
-							'<span class="gem"><img class="icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" /></span><span class="frame"></span>' +
+					'<div class="darktip-row darktip-socket">' +
+						'<span class="darktip-icon-socket darktip-socket-<%= this["type"] %>">' +
+							'<span class="darktip-gem"><img class="darktip-icon" src="<%= this["_meta"]["path_host_media"] %>/wow/icons/56/<% if(this["item"]["icon"]) { %><%= this["item"]["icon"] %><% } else { %>inv_misc_questionmark<% } %>.jpg" /></span><span class="darktip-frame"></span>' +
 						'</span>' +
 						'<%= this["item"]["gemInfo"]["bonus"]["name"] %>' +
 					'</div>' +
 				'<% } else { %>' +
-					'<div class="darktip-row socket highlight-reduced">' +
-						'<span class="icon-socket socket-<%= this["type"] %>">' +
-							'<span class="empty"></span><span class="frame"></span>' +
+					'<div class="darktip-row darktip-socket darktip-highlight-reduced">' +
+						'<span class="darktip-icon-socket darktip-socket-<%= this["type"] %>">' +
+							'<span class="darktip-empty"></span><span class="darktip-frame"></span>' +
 						'</span>' +
 						'<%= this._loc("itemSocket." + this["type"]) %>' +
 					'</div>' +

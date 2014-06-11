@@ -70,41 +70,42 @@ DarkTip.registerModule('wow.realm', {
 	'templates': {
 		'core': (
 			'<div class="tooltip-realm">' +
-				'<div class="headline-right crealmtype-<%= this["type"] %>"><%= this._loc("type." + this["type"]) %></div>' +
-				'<div class="darktip-row headline"><%= this["name"] %></div>' +
-				'<div class="darktip-row highlight-strong"><%= this["battlegroup"] %></div>' +
+				'<div class="darktip-headline-right darktip-crealmtype-<%= this["type"] %>"><%= this._loc("type." + this["type"]) %></div>'+
+				'<div class="darktip-row darktip-headline"><%= this["name"] %> <span class="darktip-sub">(<%= this._loc("locales." + this["locale"]) %>)</span></div>' +
+				'<div class="darktip-row darktip-highlight-strong"><%= this["battlegroup"] %></div>' +
 				'<div class="darktip-row">' +
-					'<span class="crealmstatus-<%= this["status"] %>"><%= this._loc("status." + this["status"]) %></span>' +
-					'<% if(this["queue"]) { %> (<span class="crealmqueue-<%= this["queue"] %>"><%= this._loc("queue." + this["queue"]) %></span>)<% } %>' +
+					'<span class="darktip-crealmstatus-<%= this["status"] %>"><%= this._loc("status." + this["status"]) %></span>' +
+					'<% if(this["queue"]) { %> (<span class="darktip-crealmqueue-<%= this["queue"] %>"><%= this._loc("queue." + this["queue"]) %></span>)<% } %>' +
 				'</div>' +
 				'<div class="darktip-row"><%= this._loc("population." + this["population"]) %></div>' +
+				'<div class="darktip-row"><%= this._loc("timezone") %>: <%= this._loc("timezones." + this["timezone"]) %></div>' +
 				'<%= this._sub("templates.fragments.worldPvpZones") %>' +
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
-					'<div class="darktip-row info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div>' +
-					'<div class="darktip-row info-meta darktip-only-x"><%= this._loc("extendedActive") %></div>' +
+					'<div class="darktip-row darktip-info-meta darktip-only-s"><%= this._loc("extendedInactive") %></div>' +
+					'<div class="darktip-row darktip-info-meta darktip-only-x"><%= this._loc("extendedActive") %></div>' +
 				'<% } %>' +
 			'</div>'
 		),
 		'404': (
-			'<div class="tooltip-realm tooltip-404">' +
-				'<div class="title">404<span class="sub"> / <%= this._loc("not-found") %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
-				'<div class="darktip-row"><span class="label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
+			'<div class="tooltip-realm darktip-tooltip-404">' +
+				'<div class="darktip-title">404<span class="darktip-sub"> / <%= this._loc("not-found") %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.realm") %></span> <span class="value"><%= this["realm"] %></span></div>' +
+				'<div class="darktip-row"><span class="darktip-label"><%= this._loc("label.region") %></span> <span class="value"><%= this["region"] %></span></div>' +
 			'</div>'
 		),
 		'fragments': {
 			'worldPvpZones': (
-				'<div class="block">' +
-				'<% if(this["wintergrasp"]) { %><div class="darktip-row highlight-weak">' +
+				'<div class="darktip-block">' +
+				'<% if(this["wintergrasp"]) { %><div class="darktip-row darktip-highlight-weak">' +
 					'<%= this._loc("zones.wintergrasp") %>: ' +
-					'<span class="cside-<%= this["wintergrasp"]["controlling-faction"] %>">' +
+					'<span class="darkstip-cside-<%= this["wintergrasp"]["controlling-faction"] %>">' +
 						'<span class="darktip-only-s"><%= this._loc("worldpvpstatus."+this["wintergrasp"]["status"]+"."+this["wintergrasp"]["controlling-faction"]) %></span>' +
 						'<span class="darktip-only-x"><%= this._loc("world-pvp-zone-next-battle") %>: <%= this._renderDateTime(this["wintergrasp"]["next"]) %></span>' +
 					'</span>' +
 				'</div><% } %>' +
-				'<% if(this["tol-barad"]) { %><div class="darktip-row highlight-weak">' +
+				'<% if(this["tol-barad"]) { %><div class="darktip-row darktip-highlight-weak">' +
 					'<%= this._loc("zones.tol-barad") %>: ' +
-					'<span class="cside-<%= this["tol-barad"]["controlling-faction"] %>">' +
+					'<span class="darkstip-cside-<%= this["tol-barad"]["controlling-faction"] %>">' +
 						'<span class="darktip-only-s"><%= this._loc("worldpvpstatus."+this["tol-barad"]["status"]+"."+this["tol-barad"]["controlling-faction"]) %></span>' +
 						'<span class="darktip-only-x"><%= this._loc("world-pvp-zone-next-battle") %>: <%= this._renderDateTime(this["tol-barad"]["next"]) %></span>' +
 					'</span>' +
@@ -123,6 +124,29 @@ DarkTip.registerModule('wow.realm', {
 				'pvp'  : 'PvP',
 				'rp'   : 'RP',
 				'rppvp': 'RPPvP'
+			},
+			'locales': {
+				'de_DE': 'German',
+				'en_GB': 'British',
+				'pt_BR': 'Portugese',
+				'fr_FR': 'French',
+				'ru_RU': 'Russian',
+				'es_ES': 'Spanish',
+				'it_IT': 'Italian',
+				'en_US': 'American',
+				'es_MX': 'Mexican',
+				'ko_KR': 'Korean',
+				'zh_TW': 'Taiwan',
+				'zh_CN': 'Chinese'
+			},
+			'timezones': {
+				'Europe/Paris'       : 'Europe, Paris',
+				'America/Los_Angeles': 'America, Los Angeles',
+				'America/Sao_Paulo'  : 'America, Sao Paulo',
+				'Australia/Melbourne': 'Australia, Melbourne',
+				'Asia/Seoul'         : 'Asia, Seoul',
+				'Asia/Taipei'        : 'Asia, Taipei',
+				'Asia/Shanghai'      : 'Asia, Shanghai'
 			},
 			'queue': {
 				'false': 'No queue',
@@ -149,7 +173,8 @@ DarkTip.registerModule('wow.realm', {
 				'3' : { '0': 'Alliance controlled', '1': 'Horde controlled' }
 			},
 			'world-pvp-zone-status'     : 'World PvP zone status',
-			'world-pvp-zone-next-battle': 'Next battle'
+			'world-pvp-zone-next-battle': 'Next battle',
+			'timezone'                  : 'Timezone'
 		},
 		'de_DE': {
 			'loading': 'Lade Realm...',
@@ -159,6 +184,29 @@ DarkTip.registerModule('wow.realm', {
 				'pvp'  : 'PvP',
 				'rp'   : 'RP',
 				'rppvp': 'RPPvP'
+			},
+			'locales': {
+				'de_DE': 'Deutsch',
+				'en_GB': 'Britisch',
+				'pt_BR': 'Portugiesisch',
+				'fr_FR': 'Französisch',
+				'ru_RU': 'Russisch',
+				'es_ES': 'Spanisch',
+				'it_IT': 'Italienisch',
+				'en_US': 'Amerikanisch',
+				'es_MX': 'Mexikanisch',
+				'ko_KR': 'Koreanisch',
+				'zh_TW': 'Taiwanesisch',
+				'zh_CN': 'Chinesisch'
+			},
+			'timezones': {
+				'Europe/Paris'       : 'Europa, Paris',
+				'America/Los_Angeles': 'Amerika, Los Angeles',
+				'America/Sao_Paulo'  : 'Amerika, Sao Paulo',
+				'Australia/Melbourne': 'Australien, Melbourne',
+				'Asia/Seoul'         : 'Asien, Seoul',
+				'Asia/Taipei'        : 'Asien, Taipei',
+				'Asia/Shanghai'      : 'Asien, Shanghai'
 			},
 			'queue': {
 				'false': 'Keine Warteschlange',
@@ -185,7 +233,8 @@ DarkTip.registerModule('wow.realm', {
 				'3' : { '0': 'In Besitz der Allianz', '1': 'In Besitz der Horde' }
 			},
 			'world-pvp-zone-status'     : 'Status der Welt-PvP Gebiete',
-			'world-pvp-zone-next-battle': 'N&auml;chste Schlacht'
+			'world-pvp-zone-next-battle': 'N&auml;chste Schlacht',
+			'timezone'                  : 'Zeitzone'
 		},
 		'fr_FR': {
 			'loading': 'Chargement...',
