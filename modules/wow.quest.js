@@ -100,7 +100,13 @@ DarkTip.registerModule('wow.quest', {
 			'not-found'            : 'Misi&oacute;n no encontrada',
 			'reqLevel'             : 'Requiere nivel <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Misi&oacute;n de Grupo (<%= this["quest"]["suggestedPartyMembers"] %>)'
-		}
+		},
+		'it_IT': {
+			'loading'              : 'Caricamento missione...',
+			'not-found'            : 'Missione non trovata',
+			'reqLevel'             : 'Richiede il livello <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Missione di gruppo (<%= this["quest"]["suggestedPartyMembers"] %>)'
+		}		
 	}
 
 });

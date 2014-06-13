@@ -118,7 +118,11 @@ DarkTip.registerModule('wow.spell', {
 		'es_ES': {
 			'loading'          : 'Cargando Hechizos...',
 			'not-found'        : 'Hechizos no encontrado'
-		}
+		},
+		'it_IT': {
+			'loading'          : 'Caricamento incantesimo...',
+			'not-found'        : 'Incantesimo non trovato'
+		}		
 	}
 
 });

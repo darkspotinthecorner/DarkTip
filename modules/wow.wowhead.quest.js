@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.wowhead.quest', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/quest=([^\.#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|it\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/quest=([^\.#]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'questid'
@@ -101,7 +101,13 @@ DarkTip.registerModule('wow.wowhead.quest', {
 			'not-found'            : 'Misi&oacute;n no encontrada',
 			'reqLevel'             : 'Requiere nivel <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Misi&oacute;n de Grupo (<%= this["quest"]["suggestedPartyMembers"] %>)'
-		}
+		},
+		'it_IT': {
+			'loading'              : 'Caricamento missione...',
+			'not-found'            : 'Missione non trovata',
+			'reqLevel'             : 'Richiede il livello <%= this["quest"]["reqLevel"] %>',
+			'suggestedPartyMembers': 'Missione di gruppo (<%= this["quest"]["suggestedPartyMembers"] %>)'
+		}		
 	}
 
 });

@@ -450,6 +450,81 @@ DarkTip.registerModule('wow', {
 			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
 			'date'    : '<%= this._padZero(this["day"], 2) %>/<%= this._padZero(this["month"], 2) %>/<%= this["year"] %>',
 			'time'    : '<%= this._padZero(this["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %>'
+		},
+		'it_IT': {
+			'loading'  : 'Caricamento dei dati...',
+			'not-found': 'Dati non trovati',
+			'not-used' : 'Non utilizzato',
+			'label'    : {
+				'slot'       : 'Scomparto:',
+				'realm'      : 'Reame:',
+				'quest'      : 'Missione:',
+				'region'     : 'Regione:',
+				'item'       : 'Oggetto:',
+				'character'  : 'Personaggio:',
+				'guild'      : 'Gilda:',
+				'teamname'   : 'Nome Squadra:',
+				'teamsize'   : 'Dimension Squadra:',
+				'achievement': 'Impresa:',
+				'spell'      : 'Incantesimo:'
+			},
+			'factionSide'   : {
+				'0'       : 'Alleanza',
+				'1'       : 'Orda',
+				'alliance': 'Alleanza',
+				'horde'   : 'Orda'
+			},
+			'characterClass': {
+				'1' : { '0': 'Guerriero',      '1': 'Guerriera' },
+				'2' : { '0': 'Paladino',      '1': 'Paladina' },
+				'3' : { '0': 'Cacciatore',       '1': 'Cacciatrice' },
+				'4' : { '0': 'Ladro',        '1': 'Ladra' },
+				'5' : { '0': 'Sacerdote',       '1': 'Sacerdotessa' },
+				'6' : { '0': 'Cavaliere della Morte', '1': 'Cavaliera della Morte' },
+				'7' : { '0': 'Sciamano',       '1': 'Sciamana' },
+				'8' : { '0': 'Mago',         '1': 'Maga' },
+				'9' : { '0': 'Sregone',      '1': 'Strega' },
+				'10': { '0': 'Monaco',         '1': 'Monaca' },
+				'11': { '0': 'Druido',        '1': 'Druida' }
+			},
+			'characterRace' : {
+				'1' : { '0': 'Umano',     '1': 'Umana' },
+				'2' : { '0': 'Orco',       '1': 'Orca' },
+				'3' : { '0': 'Nano',     '1': 'Nana' },
+				'4' : { '0': 'Elfo della Notte', '1': 'Elfa della Notte' },
+				'5' : { '0': 'Non Morto',  '1': 'Non Morta' },
+				'6' : { '0': 'Tauren',    '1': 'Tauren' },
+				'7' : { '0': 'Gnomo',     '1': 'Gnoma' },
+				'8' : { '0': 'Troll',     '1': 'Troll' },
+				'9' : { '0': 'Goblin',    '1': 'Goblin' },
+				'10': { '0': 'Elfo del Sangue', '1': 'Elfa del Sangue' },
+				'11': { '0': 'Draenei',   '1': 'Draenei' },
+				'22': {	'0': 'Worgen',    '1': 'Worgen' },
+				'24': {	'0': 'Pandaren',  '1': 'Pandaren' },
+				'25': {	'0': 'Pandaren',  '1': 'Pandaren' },
+				'26': {	'0': 'Pandaren',  '1': 'Pandaren' }
+			},
+			'characterSkill'   : {
+				'129': 'Primo Soccorso',
+				'164': 'Forgiatura',
+				'165': 'Conciatura',
+				'171': 'Alchimia',
+				'182': 'Erbalismo',
+				'185': 'Cucina',
+				'186': 'Estrazione',
+				'197': 'Sartoria',
+				'202': 'Ingegneria',
+				'333': 'Incantamento',
+				'356': 'Pesca',
+				'393': 'Scuoiatura',
+				'755': 'Oreficeria',
+				'762': 'Cavalcatura',
+				'773': 'Runografia',
+				'794': 'Archeologia'
+			},
+			'datetime': '<%= this._loc("date") %> <%= this._loc("time") %> ',
+			'date'    : '<%= this._padZero(this["month"], 2) %>/<%= this._padZero(this["day"], 2) %>/<%= this["year"] %>',
+			'time'    : '<%= this._padZero(this["ampm"]["hour"], 2) %>:<%= this._padZero(this["minute"], 2) %>:<%= this._padZero(this["second"], 2) %> <%= this["ampm"]["flag"] %>'
 		}
 	}
 

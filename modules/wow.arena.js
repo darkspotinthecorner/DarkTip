@@ -180,6 +180,22 @@ DarkTip.registerModule('wow.arena', {
 			'matches-season-short' : '<span class="darktip-highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="darktip-highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="darktip-highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
 			'extendedInactive'     : '&iexcl;Manten pulsado [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estad&iacute;sticas actuales!',
 			'extendedActive'       : '&iexcl;Suelta [<%= this["_meta"]["extendedKeyCodeLabel"] %>] para ver las estad&iacute;sticas de la temporada!'
+		},
+		'it_IT': {
+			'loading'              : 'Caricamento della squadra arena...',
+			'not-found'            : 'Squadra arena non trovata',
+			'view-mode-current'    : 'Visualizza la settimana corrente',
+			'view-mode-season'     : 'Visualizza la stagione completa',
+			'classification'       : '<%= this["arena"]["teamsize"] %>v<%= this["arena"]["teamsize"] %> <%= this._loc("factionSide." + this["arena"]["side"]) %> Squadra Arena, <%= this["arena"]["realm"] %>',
+			'rating-team'          : 'Indice d\'arena: <%= this["arena"]["rating"] %>',
+			'rank-current'         : 'Posizione #<%= this["arena"]["ranking"] %>',
+			'rank-previous'        : 'Posizione dell\'ultima settimana: <% if(this["arena"]["lastSessionRanking"] > 0) { %>#<%= this["arena"]["lastSessionRanking"] %><% } else { %>None<% } %>',
+			'matches-current'      : 'Partite: <span class="highlight-won"><%= this["arena"]["gamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["gamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["gamesPlayed"] %><% if(this["arena"]["gamesPlayed"] > 0) { %>, <%= ((this["arena"]["gamesWon"] / this["arena"]["gamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-current-short': '<span class="highlight-won"><%= this["gamesWon"] %></span> - <span class="highlight-lost"><%= this["gamesLost"] %></span><% if(this["gamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["gamesWon"] / this["gamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'matches-season'       : 'Partite: <span class="highlight-won"><%= this["arena"]["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["arena"]["sessionGamesLost"] %></span> <span class="highlight-weak">(Total: <%= this["arena"]["sessionGamesPlayed"] %><% if(this["arena"]["sessionGamesPlayed"] > 0) { %>, <%= ((this["arena"]["sessionGamesWon"] / this["arena"]["sessionGamesPlayed"])*100).toFixed(0) %>% won<% } %>)</span>',
+			'matches-season-short' : '<span class="highlight-won"><%= this["sessionGamesWon"] %></span> - <span class="highlight-lost"><%= this["sessionGamesLost"] %></span><% if(this["sessionGamesPlayed"] > 0) { %> | <span class="highlight-weak"><%= ((this["sessionGamesWon"] / this["sessionGamesPlayed"])*100).toFixed(0) %>%</span><% } %>',
+			'extendedInactive'     : 'Tieni premuto [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per visualizzare le statistiche correnti',
+			'extendedActive'       : 'Rilascia [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per visualizzare le statistiche della stagione'
 		}
 	}
 

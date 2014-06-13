@@ -474,6 +474,21 @@ DarkTip.registerModule('wow.item.equipped', {
 			'upgradeInfo': 'Mejorar al nivel: <%= this["item"]["upgradeInfo"]["current"] %>/<%= this["item"]["upgradeInfo"]["total"] %>',
 			'transmogged': 'Transfigurado a: <%= this["transmog"]["name"] %>',
 			'reforged'   : 'Reforged (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["target"]) %>)'
+		},
+		'it_IT': {
+			'loading'    : 'Carico oggetto...',
+			'not-found'  : 'Oggetto non trovato',
+			'upgradeInfo': 'Livello di potenziamento: <%= this["item"]["upgradeInfo"]["current"] %>/<%= this["item"]["upgradeInfo"]["total"] %>',
+			'transmogged': 'Trasmogrificato in: <%= this["transmog"]["name"] %>',
+			'reforged'   : 'Riforgiato (<%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["source"]) %> → <%= this["item"]["reforge"]["amount"] %> <%= this._loc("itemStat." + this["item"]["reforge"]["target"]) %>)',
+			'wornBy'     : 'Indossato da: <%= this._sub("templates.fragments.ownerInfo") %>',
+			'iLevelDiff' : {
+				'verylow' : 'Questo oggetto è molto al di sotto della media dei livelli oggetto del suo proprietario. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
+				'lower'   : 'Questo oggetto è leggermente al di sotto della media dei livelli oggetto del suo proprietario. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> below)',
+				'match'   : 'Questo oggetto è pari alla media dei livelli oggetto del suo proprietario.',
+				'higher'  : 'Questo oggetto è leggermente al di sopra della media dei livelli oggetto del suo proprietario. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)',
+				'veryhigh': 'Questo oggetto è molto al di sopra della media dei livelli oggetto del suo proprietario. (<%= Math.abs(this["item"]["iLevelDiff"]) %> item level<% if(Math.abs(this["item"]["iLevelDiff"]) != 1) { %>s<% } %> above)'
+			}
 		}
 	}
 

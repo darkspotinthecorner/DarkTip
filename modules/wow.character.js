@@ -291,6 +291,15 @@ DarkTip.registerModule('wow.character', {
 		},
 		'es_MX': {
 			'classification': '<%= this._loc("characterClass." + this["character"]["class"] + "." + this["character"]["gender"]) %> de <%= this._loc("characterRace." + this["character"]["race"] + "." + this["character"]["gender"]) %>, nivel <%= this["character"]["level"] %>'
+		},
+		'it_IT': {
+			'loading'       : 'Caricamento personaggio...',
+			'not-found'     : 'Personaggio non trovato',
+			'classification': '<%= this["character"]["level"] %> <%= this._loc("characterRace." + this["character"]["race"] + ".0") %> <%= this._loc("characterClass." + this["character"]["class"] + ".0") %>',
+			'itemLevel'     : '<%= this["averageItemLevelEquipped"] %> media dei livelli oggetto (<%= this["averageItemLevel"] %>)',
+			'mounts'        : 'Cavalcature: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
+			'pets'          : 'Mascotte: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
+			'lastModified'  : 'Ultima modifica: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
 		}
 	}
 

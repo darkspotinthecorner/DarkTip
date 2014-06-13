@@ -127,6 +127,10 @@ DarkTip.registerModule('wow.achievement.character', {
 		'es_ES': {
 			'loading'       : 'Cargando ventaja...',
 			'not-found'     : 'Ventaja no encontrada'
+		},
+		'it_IT': {
+			'loading'       : 'Caricamento Impresa...',
+			'not-found'     : 'Impresa non trovata'
 		}
 	}
 
