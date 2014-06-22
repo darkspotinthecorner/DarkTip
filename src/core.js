@@ -7,11 +7,7 @@ window.DarkTip = {
 
 	'debug': false,
 
-	'version': {
-		'major': 1,
-		'minor': 1,
-		'patch': 16
-	},
+	'version': '@@darktip_version',
 
 	'requirements': {
 		'jquery': '>=1.7'
@@ -42,7 +38,7 @@ window.DarkTip = {
 			'extendedMode': {
 				'active': true,
 				'keyCode': 16,
-				'keyCodeLabel': 'MAIUSC'
+				'keyCodeLabel': 'SHIFT'
 			}
 		},
 
@@ -173,7 +169,7 @@ window.DarkTip = {
 				'not-found': 'Nichts gefunden',
 				'extendedInactive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] gedr&uuml;ckt halten um den Modus zu wechseln',
 				'extendedActive': '[<%= this["_meta"]["extendedKeyCodeLabel"] %>] loslassen um den Modus zu wechseln!'
-			},			
+			},
 			'fr_FR': {
 				'loading': 'Chargement...',
 				'not-found': 'Aucun r&eacute;sultat',
@@ -189,9 +185,9 @@ window.DarkTip = {
 			'it_IT': {
 				'loading': 'Caricamento...',
 				'not-found': 'Non è stato trovato',
-				'extendedActive': 'Rilascia [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per cambiare modalità',		
+				'extendedActive': 'Rilascia [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per cambiare modalità',
 				'extendedInactive': 'Tieni premuto [<%= this["_meta"]["extendedKeyCodeLabel"] %>] per cambiare modalità'
-			},			
+			},
 			'pt_PT': {
 			},
 			'es_MX': {

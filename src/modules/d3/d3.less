@@ -24,6 +24,14 @@
  * --- DarkTip.d3 Styles ---------------------------------------------------
  * ========================================================================== */
 
+@color_class_barbarian   : #AA563D;
+@color_class_demon_hunter: #905966;
+@color_class_monk        : #B16B36;
+@color_class_witch_doctor: #5E6253;
+@color_class_wizard      : #3B5578;
+@color_class_crusader    : #CC8800;
+@color_type_hardcore     : #E60101;
+
 .darktip-tooltip-d3 {
 	max-width: 750px;
 	min-width: 200px;
@@ -33,13 +41,13 @@
 	background-color: transparent;
 	border-color: #333;
 
-	.darktip-ccolor-barbarian    { color: #AA563D; }
-	.darktip-ccolor-demon-hunter { color: #905966; }
-	.darktip-ccolor-monk         { color: #B16B36; }
-	.darktip-ccolor-witch-doctor { color: #5E6253; }
-	.darktip-ccolor-wizard       { color: #3B5578; }
-	.darktip-ccolor-crusader     { color: #3B5578; }
-	.darktip-dcolor-hardcore     { color: #E60101; }
+	.darktip-ccolor-barbarian    { color: @color_class_barbarian; }
+	.darktip-ccolor-demon-hunter { color: @color_class_demon_hunter; }
+	.darktip-ccolor-monk         { color: @color_class_monk; }
+	.darktip-ccolor-witch-doctor { color: @color_class_witch_doctor; }
+	.darktip-ccolor-wizard       { color: @color_class_wizard; }
+	.darktip-ccolor-crusader     { color: @color_class_crusader; }
+	.darktip-dcolor-hardcore     { color: @color_type_hardcore; }
 
 	.darktip-hero-portrait-frame {
 		position: relative;
@@ -48,15 +56,15 @@
 
 		&.darktip-normal {
 			/* Original image: http://eu.battle.net/d3/static/images/profile/hero/hero-nav-frames.png (cropped by me, shrinked by tinypng.org) / (c) 2012 by Blizzard Entertainment */
-			background: url(data:image/png;base64,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) top left no-repeat;
+			background: url('img/d3/frame_hero_normal.png') top left no-repeat;
 		}
 
 		&.darktip-hardcore {
 			/* Original image: http://eu.battle.net/d3/static/images/profile/hero/hero-nav-frames.png (cropped by me, shrinked by tinypng.org) / (c) 2012 by Blizzard Entertainment */
-			background: url(data:image/png;base64,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) top left no-repeat;
+			background: url('img/d3/frame_hero_hardcore.png') top left no-repeat;
 
 			.darktip-textbox .darktip-level {
-				color: #E60101;
+				color: @color_type_hardcore;
 			}
 		}
 
@@ -175,7 +183,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -210px 100%;
-				border-top: 1px solid #AA563D;
+				border-top: 1px solid @color_class_barbarian;
 			}
 		}
 
@@ -184,7 +192,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -245px 100%;
-				border-top: 1px solid #905966;
+				border-top: 1px solid @color_class_demon_hunter;
 			}
 		}
 
@@ -193,7 +201,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -280px 100%;
-				border-top: 1px solid #B16B36;
+				border-top: 1px solid @color_class_monk;
 			}
 		}
 
@@ -202,7 +210,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -315px 100%;
-				border-top: 1px solid #5E6253;
+				border-top: 1px solid @color_class_witch_doctor;
 			}
 		}
 
@@ -211,7 +219,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -350px 100%;
-				border-top: 1px solid #3B5578;
+				border-top: 1px solid @color_class_wizard;
 			}
 		}
 
@@ -220,7 +228,7 @@
 
 			.darktip-hero-badge.darktip-overlay {
 				background-position: -385px 100%;
-				border-top: 1px solid #3B5578;
+				border-top: 1px solid @color_class_crusader;
 			}
 		}
 
@@ -438,7 +446,7 @@
 
 			.darktip-name,
 			.darktip-level {
-				color: #E60101;
+				color: @color_type_hardcore;
 			}
 		}
 
@@ -448,6 +456,61 @@
 			overflow: hidden;
 			white-space: nowrap;
 			text-align: right;
+		}
+	}
+
+	.darktip-icon-progress {
+		height: 135px;
+		width: 120px;
+
+		&.darktip-act1 {
+			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+			background: url('img/d3/boss_act1_locked.png') center left no-repeat;
+
+			&.darktip-completed {
+				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+				background-image: url('img/d3/boss_act1_completed.png');
+			}
+		}
+
+		&.darktip-act2 {
+			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+			background: url('img/d3/boss_act2_locked.png') center left no-repeat;
+
+			&.darktip-completed {
+				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+				background-image: url('img/d3/boss_act2_completed.png');
+			}
+		}
+
+		&.darktip-act3 {
+			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+			background: url('img/d3/boss_act3_locked.png') center left no-repeat;
+
+			&.darktip-completed {
+				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+				background-image: url('img/d3/boss_act3_completed.png');
+			}
+		}
+
+		&.darktip-act4 {
+			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+			background: url('img/d3/boss_act4_locked.png') center left no-repeat;
+
+			&.darktip-completed {
+				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+				background-image: url('img/d3/boss_act4_completed.png');
+			}
+		}
+
+		&.darktip-act5 {
+			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+			background: url('img/d3/boss_act5_locked.png') center left no-repeat;
+
+			&.darktip-completed {
+				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png (cropped and resized by me, shrinked by tinypng.org) / (c) 2014 by Blizzard Entertainment */
+				background-image: url('img/d3/boss_act5_completed.png');
+			}
 		}
 	}
 }

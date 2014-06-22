@@ -76,6 +76,9 @@ DarkTip.registerModule('d3.profile', {
 	'prepareData': function(state) {
 		if((typeof state['data'] === 'object') && (typeof state['data']['profile'] === 'object') && (typeof state['data']['profile']['battleTag'] === 'string'))
 		{
+			var classorder = ['barbarian', 'crusader', 'demon-hunter', 'monk', 'witch-doctor', 'wizard'];
+			var numclasses = classorder.length;
+
 			// #################### BattleTag ####################
 			var parsed = {};
 			var temp   = state['data']['profile']['battleTag'].split('#', 2);
@@ -86,88 +89,52 @@ DarkTip.registerModule('d3.profile', {
 
 			state['data']['profile']['battleTag'] = parsed;
 
+			// ################ Hightlighted heroes ################
+
+			state['data']['profile']['heroesHighlighted'] = [];
+
+			numheroes = Math.min(3, state['data']['profile']['heroes'].length);
+
+			for(var i = 0; i < numheroes; i++)
+			{
+				state['data']['profile']['heroesHighlighted'].push(state['data']['profile']['heroes'][i])
+			}
+
 			// #################### Played time ####################
 			var time_played_total = 0;
 
-			time_played_total += state['data']['profile']['timePlayed']['barbarian'];
-			time_played_total += state['data']['profile']['timePlayed']['demon-hunter'];
-			time_played_total += state['data']['profile']['timePlayed']['monk'];
-			time_played_total += state['data']['profile']['timePlayed']['witch-doctor'];
-			time_played_total += state['data']['profile']['timePlayed']['wizard'];
-			time_played_total += state['data']['profile']['timePlayed']['crusader'];
+			for (var i = 0; i < numclasses; i++)
+			{
+				time_played_total += state['data']['profile']['timePlayed'][classorder[i]] || 0;
+			}
 
 			if(time_played_total > 0)
 			{
-				state['data']['profile']['timePlayed']['total'] = time_played_total;
+				state['data']['profile']['timePlayed']['total']    = time_played_total;
+				state['data']['profile']['timePlayed']['perClass'] = [];
 
-				state['data']['profile']['timePlayedPercent'] = {
-					'barbarian'   : Math.round((state['data']['profile']['timePlayed']['barbarian']    / time_played_total) * 100),
-					'demon-hunter': Math.round((state['data']['profile']['timePlayed']['demon-hunter'] / time_played_total) * 100),
-					'monk'        : Math.round((state['data']['profile']['timePlayed']['monk']         / time_played_total) * 100),
-					'witch-doctor': Math.round((state['data']['profile']['timePlayed']['witch-doctor'] / time_played_total) * 100),
-					'wizard'      : Math.round((state['data']['profile']['timePlayed']['wizard']       / time_played_total) * 100),
-					'crusader'    : Math.round((state['data']['profile']['timePlayed']['crusader']     / time_played_total) * 100)
-				};
-			}
+				var control = 100;
 
-			// #################### Progression ####################
-			state['data']['profile']['farthestProgression'] = {};
-
-			// ******************** Normal ********************
-			var progress = state['data']['profile']['progression'];
-
-			var farthest_dif   = 'normal';
-			var farthest_act   = 'act0';
-			var farthest_quest = '';
-
-			// cycle through diffs
-			for(var difficulty in progress)
-			{
-				// cycle through acts
-				for(var act in progress[difficulty])
+				for (var i = 0; i < numclasses; i++)
 				{
-					if(progress[difficulty][act]['completedQuests'].length > 0)
+					var payload = {
+						'class'   : classorder[i],
+						'relative': state['data']['profile']['timePlayed'][classorder[i]],
+						'absolute': Math.round((state['data']['profile']['timePlayed'][classorder[i]] / time_played_total) * 100)
+					};
+
+					if (i == (numclasses -1))
 					{
-						farthest_dif   = difficulty;
-						farthest_act   = act;
-						farthest_quest = progress[difficulty][act]['completedQuests'][(progress[difficulty][act]['completedQuests'].length - 1)]['name'];
+						payload['absolute'] = control;
 					}
+					else
+					{
+						control -= payload['absolute'];
+					}
+
+					state['data']['profile']['timePlayed']['perClass'].push(payload);
 				}
 			}
-
-			state['data']['profile']['farthestProgression']['normal'] = {
-				'difficulty': farthest_dif,
-				'act'       : farthest_act,
-				'quest'     : farthest_quest
-			};
-
-			// ******************** Hardcore ********************
-			progress = state['data']['profile']['hardcoreProgression'];
-
-			farthest_dif   = 'normal';
-			farthest_act   = 'act0';
-			farthest_quest = '';
-
-			// cycle through diffs
-			for(var difficulty in progress)
-			{
-				// cycle through acts
-				for(var act in progress[difficulty])
-				{
-					if(progress[difficulty][act]['completedQuests'].length > 0)
-					{
-						farthest_dif   = difficulty;
-						farthest_act   = act;
-						farthest_quest = progress[difficulty][act]['completedQuests'][(progress[difficulty][act]['completedQuests'].length - 1)]['name'];
-					}
-				}
-			}
-
-			state['data']['profile']['farthestProgression']['hardcore'] = {
-				'difficulty': farthest_dif,
-				'act'       : farthest_act,
-				'quest'     : farthest_quest
-			};
 
 			// #################### Artisans ####################
 
@@ -237,30 +204,24 @@ DarkTip.registerModule('d3.profile', {
 				'<div class="darktip-only-s">' +
 					'<div class="darktip-headline-right"><span class="darktip-icon-paragon"><%= this["profile"]["paragonLevel"] %> / <span class="darktip-dcolor-hardcore"><%= this["profile"]["paragonLevelHardcore"] %></span></span></div>' +
 					'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
-					'<% if((this["profile"]["heroes"]) && (this["profile"]["heroes"].length > 0)) { %>' +
+					'<% if((this["profile"]["heroesHighlighted"]) && (this["profile"]["heroesHighlighted"].length > 0)) { %>' +
 						'<div class="darktip-row darktip-heroes-highlighted">' +
-							'<%= this._subLoop("templates.fragments.hero_deco", this["profile"]["heroes"]) %>' +
+							'<%= this._subLoop("templates.fragments.hero_deco", this["profile"]["heroesHighlighted"]) %>' +
 						'</div>' +
 					'<% } %>' +
-					'<div class="darktip-row darktip-progression">' +
-						'<div class="darktip-progression-bar"><div class="darktip-progress darktip-normal dif-<%= this["profile"]["farthestProgression"]["normal"]["difficulty"] %> darktip-act-<%= this["profile"]["farthestProgression"]["normal"]["act"] %>"><div class="darktip-pin darktip-dif-normal"></div><div class="darktip-pin darktip-dif-nightmare"></div><div class="darktip-pin darktip-dif-hell"></div><div class="darktip-pin darktip-dif-inferno"></div></div></div>' +
-						'<div class="darktip-progression-bar"><div class="darktip-progress darktip-hardcore dif-<%= this["profile"]["farthestProgression"]["hardcore"]["difficulty"] %> darktip-act-<%= this["profile"]["farthestProgression"]["hardcore"]["act"] %>"><div class="darktip-pin darktip-dif-normal"></div><div class="darktip-pin darktip-dif-nightmare"></div><div class="darktip-pin darktip-dif-hell"></div><div class="darktip-pin darktip-dif-inferno"></div></div></div>' +
-					'</div>' +
-					'<% if(this["profile"]["timePlayedPercent"]) { %><div class="darktip-row darktip-time-played darktip-padded-above">' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-barbarian"><% if(this["profile"]["timePlayedPercent"]["barbarian"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["barbarian"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["barbarian"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["barbarian"] %>%</div></div>' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-demon-hunter"><% if(this["profile"]["timePlayedPercent"]["demon-hunter"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["demon-hunter"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["demon-hunter"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["demon-hunter"] %>%</div></div>' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-monk"><% if(this["profile"]["timePlayedPercent"]["monk"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["monk"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["monk"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["monk"] %>%</div></div>' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-witch-doctor"><% if(this["profile"]["timePlayedPercent"]["witch-doctor"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["witch-doctor"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["witch-doctor"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["witch-doctor"] %>%</div></div>' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-wizard"><% if(this["profile"]["timePlayedPercent"]["wizard"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["wizard"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["wizard"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["wizard"] %>%</div></div>' +
-						'<div class="darktip-container"><div class="darktip-hero-badge darktip-crusader"><% if(this["profile"]["timePlayedPercent"]["crusader"] > 0) { %><div class="darktip-hero-badge darktip-overlay<% if(this["profile"]["timePlayed"]["crusader"] == 1) { %> full<% } %>" style="height: <%= this["profile"]["timePlayed"]["crusader"] * 100 %>%;"></div><% } %></div><div class="darktip-label"><%= this["profile"]["timePlayedPercent"]["crusader"] %>%</div></div>' +
-					'</div><% } %>' +
+					'<div class="darktip-row"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
+					'<% if(this["profile"]["timePlayed"]["perClass"]) { %>' +
+						'<div class="darktip-row darktip-time-played darktip-padded-above">' +
+							'<%= this._subLoop("templates.fragments.timeplayed", this["profile"]["timePlayed"]["perClass"]) %>' +
+						'</div>' +
+					'<% } %>' +
 					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="darktip-only-x">' +
-						'<div class="darktip-headline-right"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
+						'<div class="darktip-headline-right"><span class="darktip-icon-paragon"><%= this["profile"]["paragonLevel"] %> / <span class="darktip-dcolor-hardcore"><%= this["profile"]["paragonLevelHardcore"] %></span></span></div>' +
 						'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
 						'<%= this._subLoop("templates.fragments.artisan_info", this["profile"]["artisan-info"]) %>' +
 						'<% if((this["profile"]["heroes"]) && (this["profile"]["heroes"].length > 0)) { %>' +
@@ -283,9 +244,19 @@ DarkTip.registerModule('d3.profile', {
 		),
 		'fragments': {
 			'hero_deco': (
-				'<% if(this["_loop"] < 3) { %><div class="darktip-hero-portrait-frame <% if(this["hardcore"]) { %>darktip-hardcore<% } else { %>darktip-normal<% } %>">' +
+				'<div class="darktip-hero-portrait-frame darktip-<% if(this["hardcore"]) { %>hardcore<% } else { %>normal<% } %>">' +
 					'<div class="darktip-hero darktip-hero-portrait darktip-<%= this["class"] %>-<%= this["gender"] %>"></div><div class="darktip-textbox"><span class="darktip-level"><%= this["level"] %></span><span class="class darktip-ccolor-<%= this["class"] %>"><%= this["name"] %></span></div>' +
-				'</div><% } %>'
+				'</div>'
+			),
+			'timeplayed': (
+				'<div class="darktip-container">' +
+					'<div class="darktip-hero-badge darktip-<%= this["class"] %>">' +
+						'<% if(this["relative"] > 0) { %>' +
+							'<div class="darktip-hero-badge darktip-overlay<% if(this["relative"] == 1) { %> full<% } %>" style="height: <%= this["relative"] * 100 %>%;"></div>' +
+						'<% } %>' +
+					'</div>' +
+					'<div class="darktip-label"><%= this["absolute"] %>%</div>' +
+				'</div>'
 			),
 			'hero_list': (
 				'<div class="darktip-row darktip-padded <% if(this["hardcore"]) { %>hardcore<% } else { %>normal<% } %><% if(this["_loop"] % 2 == 0) { %> alt<% } %>">' +

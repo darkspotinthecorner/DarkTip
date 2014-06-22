@@ -1,0 +1,61 @@
+<div class="tooltip-profile">
+	<div class="darktip-only-s">
+		{+headline/}
+		{?profile.heroesHighlighted}
+		<div class="darktip-row darktip-heroes-highlighted">
+			{#profile.heroesHighlighted}
+			<div class="darktip-hero-portrait-frame darktip-{#hardcore}hardcore{:else}normal{/hardcore}">
+				<div class="darktip-hero darktip-hero-portrait darktip-{class}-{gender}"></div>
+				<div class="darktip-textbox">
+					<span class="darktip-level">{level}</span><span class="class darktip-ccolor-{class}">{name}</span>
+				</div>
+			</div>
+			{/profile.heroesHighlighted}
+		</div>
+		{/profile.heroesHighlighted}
+		<div class="darktip-row"><span class="darktip-icon-star">{profile.kills.elites}</span></div>
+		{?profile.timePlayed.perClass}
+		<div class="darktip-row darktip-time-played darktip-padded-above">
+			{#profile.timePlayed.perClass}
+			<div class="darktip-container">
+				<div class="darktip-hero-badge darktip-{class}">
+					{@if cond="{relative} > 0"}
+					<div class="darktip-hero-badge darktip-overlay{@if cond="{relative} == 1"} full{/if}" style="height: {@math key=relative method="multiply" operand=100}%;"></div>
+					{/if}
+				</div>
+				<div class="darktip-label">{absolute}%</div>
+			</div>
+			{/profile.timePlayed.perClass}
+		</div>
+		{/profile.timePlayed.perClass}
+
+		{?DarkTip.extendedActive}
+		<div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div>
+		{/DarkTip.extendedActive}
+	</div>
+	{?DarkTip.extendedActive}
+	<div class="darktip-only-x">
+		{+headline/}
+		{?profile.heroes}
+		<div class="darktip-row darktip-heroes-list">
+			{#profile.heroes}
+			<div class="darktip-row darktip-padded darktip-{#hardcore}hardcore{:else}normal{/hardcore}{@math key=$idx method="mod" operand=2}{@eq value=1} alt{/eq}{/math}">
+				<span class="darktip-name">{name}</span>
+				<span class="darktip-level">{level}</span>
+				<span class="darktip-class darktip-ccolor-{class}"><%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %></span>
+			</div>
+			{/profile.heroes}
+		</div>
+		{/profile.heroes}
+		<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>
+	</div>
+	{/DarkTip.extendedActive}
+</div>
+{<headline}
+<div class="darktip-headline-right">
+	<span class="darktip-icon-paragon">{profile.paragonLevel} / <span class="darktip-dcolor-hardcore">{profile.paragonLevelHardcore}</span></span>
+</div>
+<div class="darktip-row darktip-headline">
+	<span class="darktip-battletag-name">{profile.battleTag.name}</span> <span class="battletag-code sub">#{profile.battleTag.code}</span>
+</div>
+{/headline}

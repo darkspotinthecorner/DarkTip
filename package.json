@@ -1,6 +1,6 @@
 {
   "name": "DarkTip",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The DarkTip plugin is a javascript based tooltip framework that enables quick and easy development of modules that hook into specific aspects of a webpage and display context sensitive tooltips.",
   "keywords": [
     "tooltip",
@@ -32,8 +32,11 @@
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-concat": "^0.4.0",
     "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-imagemin": "^0.7.1",
     "grunt-contrib-less": "^0.11.2",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-data-uri": "^0.1.1",
+    "grunt-replace": "^0.7.8"
   },
   "private": true
 }
