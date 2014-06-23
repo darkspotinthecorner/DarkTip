@@ -31,6 +31,7 @@
 @color_class_wizard      : #3B5578;
 @color_class_crusader    : #CC8800;
 @color_type_hardcore     : #E60101;
+@color_low_importance    : #909090;
 
 .darktip-tooltip-d3 {
 	max-width: 750px;
@@ -48,6 +49,7 @@
 	.darktip-ccolor-wizard       { color: @color_class_wizard; }
 	.darktip-ccolor-crusader     { color: @color_class_crusader; }
 	.darktip-dcolor-hardcore     { color: @color_type_hardcore; }
+	.darktip-highlight-reduced   { color: @color_low_importance; }
 
 	.darktip-hero-portrait-frame {
 		position: relative;
@@ -386,7 +388,7 @@
 		.darktip-container {
 			vertical-align: middle;
 			display: inline-block;
-			margin-right: 8px;
+			margin: 0 4px;
 		}
 
 		.darktip-label {
@@ -456,61 +458,6 @@
 			overflow: hidden;
 			white-space: nowrap;
 			text-align: right;
-		}
-	}
-
-	.darktip-icon-progress {
-		height: 135px;
-		width: 120px;
-
-		&.darktip-act1 {
-			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-			background: url('img/d3/boss_act1_locked.png') center left no-repeat;
-
-			&.darktip-completed {
-				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-				background-image: url('img/d3/boss_act1_completed.png');
-			}
-		}
-
-		&.darktip-act2 {
-			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-			background: url('img/d3/boss_act2_locked.png') center left no-repeat;
-
-			&.darktip-completed {
-				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-				background-image: url('img/d3/boss_act2_completed.png');
-			}
-		}
-
-		&.darktip-act3 {
-			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-			background: url('img/d3/boss_act3_locked.png') center left no-repeat;
-
-			&.darktip-completed {
-				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-				background-image: url('img/d3/boss_act3_completed.png');
-			}
-		}
-
-		&.darktip-act4 {
-			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-			background: url('img/d3/boss_act4_locked.png') center left no-repeat;
-
-			&.darktip-completed {
-				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-				background-image: url('img/d3/boss_act4_completed.png');
-			}
-		}
-
-		&.darktip-act5 {
-			/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-			background: url('img/d3/boss_act5_locked.png') center left no-repeat;
-
-			&.darktip-completed {
-				/* Original image: http://eu.battle.net/d3/static/images/profile/bosses.png / (c) 2014 by Blizzard Entertainment */
-				background-image: url('img/d3/boss_act5_completed.png');
-			}
 		}
 	}
 }

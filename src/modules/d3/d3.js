@@ -226,7 +226,7 @@ DarkTip.registerModule('d3', {
 				'monk'        : { '0': 'Mönch',        '1': 'Mönch' },
 				'witch-doctor': { '0': 'Hexendoktor',  '1': 'Hexendoktor' },
 				'wizard'      : { '0': 'Zauberer',     '1': 'Zauberin' },
-				'wizard'      : { '0': 'Kreuzritter',  '1': 'Kreuzritter' }
+				'crusader'    : { '0': 'Kreuzritter',  '1': 'Kreuzritter' }
 			},
 			'followerType': {
 				'templar'    : 'Templer',

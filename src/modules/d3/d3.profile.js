@@ -90,7 +90,6 @@ DarkTip.registerModule('d3.profile', {
 			state['data']['profile']['battleTag'] = parsed;
 
 			// ################ Hightlighted heroes ################
-
 			state['data']['profile']['heroesHighlighted'] = [];
 
 			numheroes = Math.min(3, state['data']['profile']['heroes'].length);
@@ -99,6 +98,9 @@ DarkTip.registerModule('d3.profile', {
 			{
 				state['data']['profile']['heroesHighlighted'].push(state['data']['profile']['heroes'][i])
 			}
+
+			// #################### Last online ####################
+			state['data']['profile']['lastUpdated'] = state['data']['profile']['lastUpdated'] * 1000;
 
 			// #################### Played time ####################
 			var time_played_total = 0;
@@ -136,49 +138,6 @@ DarkTip.registerModule('d3.profile', {
 				}
 			}
 
-			// #################### Artisans ####################
-
-			var artisan_temp = {};
-
-			// ******************** Normal ********************
-			if((typeof state['data']['profile']['artisans'] !== 'undefined') && (state['data']['profile']['artisans'].length > 0))
-			{
-				for(var i = 0; i < state['data']['profile']['artisans'].length; i++)
-				{
-					var c = state['data']['profile']['artisans'][i];
-
-					artisan_temp[c['slug']] = {
-						'slug'        : c['slug'],
-						'level-normal': c['level']
-					};
-				}
-			}
-
-			// ******************** Hardcore ********************
-			if((typeof state['data']['profile']['hardcoreArtisans'] !== 'undefined') && (state['data']['profile']['hardcoreArtisans'].length > 0))
-			{
-				for(var i = 0; i < state['data']['profile']['hardcoreArtisans'].length; i++)
-				{
-					var c = state['data']['profile']['hardcoreArtisans'][i];
-
-					if(typeof artisan_temp[c['slug']] === 'undefined')
-					{
-						artisan_temp[c['slug']] = {
-							'slug': c['slug']
-						};
-					}
-
-					artisan_temp[c['slug']]['level-hardcore'] = c['level'];
-				}
-			}
-
-			state['data']['profile']['artisan-info'] = [];
-
-			for(var artisan in artisan_temp)
-			{
-				state['data']['profile']['artisan-info'].push(artisan_temp[artisan]);
-			}
-
 			// #################### Fin ####################
 			return state['data'];
 		}
@@ -202,28 +161,27 @@ DarkTip.registerModule('d3.profile', {
 			'<div class="tooltip-profile">' +
 				/* --- START simple mode -------------------------------- */
 				'<div class="darktip-only-s">' +
-					'<div class="darktip-headline-right"><span class="darktip-icon-paragon"><%= this["profile"]["paragonLevel"] %> / <span class="darktip-dcolor-hardcore"><%= this["profile"]["paragonLevelHardcore"] %></span></span></div>' +
+					'<div class="darktip-headline-right"><span class="darktip-icon-paragon"><%= this["profile"]["paragonLevel"] %><% if(this["profile"]["paragonLevelHardcore"] > 0) { %> / <span class="darktip-dcolor-hardcore"><%= this["profile"]["paragonLevelHardcore"] %></span><% } %></span></div>' +
 					'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
 					'<% if((this["profile"]["heroesHighlighted"]) && (this["profile"]["heroesHighlighted"].length > 0)) { %>' +
 						'<div class="darktip-row darktip-heroes-highlighted">' +
 							'<%= this._subLoop("templates.fragments.hero_deco", this["profile"]["heroesHighlighted"]) %>' +
 						'</div>' +
 					'<% } %>' +
-					'<div class="darktip-row"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
 					'<% if(this["profile"]["timePlayed"]["perClass"]) { %>' +
 						'<div class="darktip-row darktip-time-played darktip-padded-above">' +
 							'<%= this._subLoop("templates.fragments.timeplayed", this["profile"]["timePlayed"]["perClass"]) %>' +
 						'</div>' +
 					'<% } %>' +
+					'<div class="darktip-row darktip-padded-above darktip-highlight-reduced"><%= this._loc("lastOnline") %></div>' +
 					'<% if(this["_meta"]["extendedActive"]) { %><div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div><% } %>' +
 				'</div>' +
 				/* --- END simple mode ---------------------------------- */
 				/* --- START extended mode ------------------------------ */
 				'<% if(this["_meta"]["extendedActive"]) { %>' +
 					'<div class="darktip-only-x">' +
-						'<div class="darktip-headline-right"><span class="darktip-icon-paragon"><%= this["profile"]["paragonLevel"] %> / <span class="darktip-dcolor-hardcore"><%= this["profile"]["paragonLevelHardcore"] %></span></span></div>' +
+						'<div class="darktip-headline-right"><span class="darktip-icon-star"><%= this["profile"]["kills"]["elites"] %></span></div>' +
 						'<div class="darktip-row darktip-headline"><span class="darktip-battletag-name"><%= this["profile"]["battleTag"]["name"] %></span> <span class="battletag-code sub">#<%= this["profile"]["battleTag"]["code"] %></span></div>' +
-						'<%= this._subLoop("templates.fragments.artisan_info", this["profile"]["artisan-info"]) %>' +
 						'<% if((this["profile"]["heroes"]) && (this["profile"]["heroes"].length > 0)) { %>' +
 							'<div class="darktip-row darktip-heroes-list">' +
 								'<%= this._subLoop("templates.fragments.hero_list", this["profile"]["heroes"]) %>' +
@@ -264,31 +222,22 @@ DarkTip.registerModule('d3.profile', {
 					'<span class="darktip-level"><%= this["level"] %></span>' +
 					'<span class="darktip-class darktip-ccolor-<%= this["class"] %>"><%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %></span>' +
 				'</div>'
-			),
-			'artisan_info': (
-				'<div class="darktip-row artisan-info darktip-padded">' +
-					'<span class="name"><%= this._loc(this["slug"]) %>:</span> ' +
-					'<span class="darktip-level"><%= this["level-normal"] %></span> ' +
-					'<span class="darktip-level darktip-dcolor-hardcore">(<%= this._loc("hardcore") %>: <%= this["level-hardcore"] %>)</span>' +
-				'</div>'
 			)
 		}
 	},
 
 	'i18n': {
 		'en_US': {
-			'loading'        : 'Loading profile...',
-			'not-found'      : 'Profile not found',
-			'hardcore'       : 'Hardcore',
-			'blacksmith'     : 'Blacksmith',
-			'jeweler'        : 'Jeweler'
+			'loading'   : 'Loading profile...',
+			'not-found' : 'Profile not found',
+			'hardcore'  : 'Hardcore',
+			'lastOnline': 'Last online: <%= this._renderDateTime(this["profile"]["lastUpdated"]) %>'
 		},
 		'de_DE': {
-			'loading'        : 'Lade Profil...',
-			'not-found'      : 'Profil nicht gefunden',
-			'hardcore'       : 'Hardcore',
-			'blacksmith'     : 'Schmied',
-			'jeweler'        : 'Juwelier'
+			'loading'   : 'Lade Profil...',
+			'not-found' : 'Profil nicht gefunden',
+			'hardcore'  : 'Hardcore',
+			'lastOnline': 'Zuletzt online: <%= this._renderDateTime(this["profile"]["lastUpdated"]) %>'
 		},
 		'fr_FR': {
 		},
