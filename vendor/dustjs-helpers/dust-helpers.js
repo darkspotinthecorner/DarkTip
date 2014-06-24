@@ -106,16 +106,16 @@ var helpers = {
    Reference resolution rules:
    if value exists in JSON:
     "" or '' will evaluate to false, boolean false, null, or undefined will evaluate to false,
-    numeric 0 evaluates to true, so does, string "0", string "null", string "undefined" and string "false". 
+    numeric 0 evaluates to true, so does, string "0", string "null", string "undefined" and string "false".
     Also note that empty array -> [] is evaluated to false and empty object -> {} and non-empty object are evaluated to true
-    The type of the return value is string ( since we concatenate to support interpolated references 
+    The type of the return value is string ( since we concatenate to support interpolated references
 
    if value does not exist in JSON and the input is a single reference: {x}
-     dust render emits empty string, and we then return false   
-     
+     dust render emits empty string, and we then return false
+
    if values does not exist in JSON and the input is interpolated references : {x} < {y}
-     dust render emits <  and we return the partial output 
-     
+     dust render emits <  and we return the partial output
+
   */
   "tap": function(input, chunk, context) {
     // return given input if there is no dust reference to resolve
@@ -462,7 +462,7 @@ var helpers = {
       params.filterOpType = "gte";
       return filter(chunk, context, bodies, params, function(expected, actual) { return actual >= expected; });
      }
-    return chunk; 
+    return chunk;
   },
 
   // to be used in conjunction with the select helper
@@ -508,8 +508,8 @@ var helpers = {
     }
     return chunk.write(value);
   }
-  
-  
+
+
 };
 
 dust.helpers = helpers;

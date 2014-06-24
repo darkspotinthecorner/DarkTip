@@ -70,8 +70,9 @@ module.exports = function(grunt) {
           '<%= config.dirs.vendor %>/yepnope/yepnope.js',
           '<%= config.dirs.source %>/core.js',
           '<%= config.dirs.source %>/init_open.js',
-          '<%= config.dirs.vendor %>/dustjs/dust-full.min.js',
-          '<%= config.dirs.vendor %>/dustjs-helpers/dustjs-helpers.min.js',
+          '<%= config.dirs.vendor %>/dustjs/dust-full.js',
+          '<%= config.dirs.vendor %>/dustjs-helpers/dust-helpers.min.js',
+          '<%= config.dirs.source %>/dustjs_helpers.js',
           '<%= config.dirs.vendor %>/jquery.jsonp/jquery.jsonp.min.js',
           '<%= config.dirs.vendor %>/jQote2/jquery.jqote2.min.js',
           '<%= config.dirs.vendor %>/qtip2/jquery.qtip.js',
@@ -210,7 +211,7 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('docbuild', [ 'clean:docs', 'concat:license' ]);
-  grunt.registerTask('images',   [ 'clean:images', 'imagemin' ]);
+  grunt.registerTask('images',   [ 'clean:images', 'imagemin:all' ]);
   grunt.registerTask('prepare',  [ 'clean:scripts','clean:styles', 'less:modulesWoW', 'less:modulesD3', 'dataUri:modulesD3', 'dataUri:modulesWoW', 'concat:mainScript', 'concat:mainStyle', 'replace:main', 'concat:modulesWoWScript', 'concat:modulesWoWStyle', 'concat:modulesD3Script', 'concat:modulesD3Style' ]);
   grunt.registerTask('bundle',   [ 'concat:bundleSoloScript', 'concat:bundleSoloStyle', 'concat:bundleWoWScript', 'concat:bundleWoWStyle', 'concat:bundleD3Script', 'concat:bundleD3Style', 'concat:bundleAllScript', 'concat:bundleAllStyle' ]);
   grunt.registerTask('minify',   [ 'cssmin' ]);

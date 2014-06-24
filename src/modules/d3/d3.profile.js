@@ -120,9 +120,10 @@ DarkTip.registerModule('d3.profile', {
 				for (var i = 0; i < numclasses; i++)
 				{
 					var payload = {
-						'class'   : classorder[i],
-						'relative': state['data']['profile']['timePlayed'][classorder[i]],
-						'absolute': Math.round((state['data']['profile']['timePlayed'][classorder[i]] / time_played_total) * 100)
+						'class'          : classorder[i],
+						'relative'       : state['data']['profile']['timePlayed'][classorder[i]],
+						'relativePercent': state['data']['profile']['timePlayed'][classorder[i]] * 100,
+						'absolute'       : Math.round((state['data']['profile']['timePlayed'][classorder[i]] / time_played_total) * 100)
 					};
 
 					if (i == (numclasses -1))
@@ -210,7 +211,7 @@ DarkTip.registerModule('d3.profile', {
 				'<div class="darktip-container">' +
 					'<div class="darktip-hero-badge darktip-<%= this["class"] %>">' +
 						'<% if(this["relative"] > 0) { %>' +
-							'<div class="darktip-hero-badge darktip-overlay<% if(this["relative"] == 1) { %> full<% } %>" style="height: <%= this["relative"] * 100 %>%;"></div>' +
+							'<div class="darktip-hero-badge darktip-overlay" style="height: <%= this["relativePercent"] %>%;"></div>' +
 						'<% } %>' +
 					'</div>' +
 					'<div class="darktip-label"><%= this["absolute"] %>%</div>' +

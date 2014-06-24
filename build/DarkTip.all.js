@@ -899,6 +899,51 @@ window.DarkTip = {
 	'init': function() {
 		this.buildSettings();
 		this.startUp();
+
+		// this.dustTest();
+	},
+
+	'dustTest': function() {
+		var i18n = {
+			'en_US': {
+				'foo'  : 'foo(en)',
+				'one'  : 'One small house',
+				'two'  : 'Two more to go',
+				'three': 'Three are here',
+				'four' : {
+					'A': 'The letter A',
+					'B': 'The letter B',
+					'C': 'The letter C'
+				}
+			},
+			'de_DE': {
+				'foo'  : 'foo(de)',
+				'one'  : 'Ein kleines Haus',
+				'two'  : 'Zwei passen noch rein',
+				'three': 'Drei sind hier',
+				'four' : {
+					'A': 'Der Buchstabe A',
+					'B': 'Der Buchstabe B',
+					'C': 'Der Buchstabe C'
+				}
+			}
+		};
+
+		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}!{/users}', 'intro'));
+		console.log('narf');
+
+		dust.helpers.i18n.context(i18n['de_DE']);
+		dust.render('intro', {
+			'name': 'Fred',
+			'test': 'B',
+			'users': [
+				{ 'name': 'Wilma' },
+				{ 'name': 'Barney' },
+				{ 'name': 'Dino' },
+			]
+		}, function(err, out) {
+			console.log(out);
+		});
 	},
 
 	'checkRequirements': function(requirement, version) {
@@ -989,8 +1034,4170 @@ yepnope([{
 /*! Dust - Asynchronous Templating - v2.4.0
 * http://linkedin.github.io/dustjs/
 * Copyright (c) 2014 Aleksander Williams; Released under the MIT License */
-!function(root){function Context(a,b,c,d){this.stack=a,this.global=b,this.blocks=c,this.templateName=d}function Stack(a,b,c,d){this.tail=b,this.isObject=a&&"object"==typeof a,this.head=a,this.index=c,this.of=d}function Stub(a){this.head=new Chunk(this),this.callback=a,this.out=""}function Stream(){this.head=new Chunk(this)}function Chunk(a,b,c){this.root=a,this.next=b,this.data=[],this.flushable=!1,this.taps=c}function Tap(a,b){this.head=a,this.tail=b}var dust={},NONE="NONE",ERROR="ERROR",WARN="WARN",INFO="INFO",DEBUG="DEBUG",loggingLevels=[DEBUG,INFO,WARN,ERROR,NONE],EMPTY_FUNC=function(){},logger={},originalLog,loggerContext,hasOwnProperty=Object.prototype.hasOwnProperty,getResult;dust.debugLevel=NONE,getResult=function(a,b){return a&&hasOwnProperty.call(a,b)?a[b]:void 0},root&&root.console&&root.console.log&&(loggerContext=root.console,originalLog=root.console.log),logger.log=loggerContext?function(){logger.log="function"==typeof originalLog?function(){originalLog.apply(loggerContext,arguments)}:function(){var a=Array.prototype.slice.apply(arguments).join(" ");originalLog(a)},logger.log.apply(this,arguments)}:function(){},dust.log=function(a,b){b=b||INFO,dust.debugLevel!==NONE&&dust.indexInArray(loggingLevels,b)>=dust.indexInArray(loggingLevels,dust.debugLevel)&&(dust.logQueue||(dust.logQueue=[]),dust.logQueue.push({message:a,type:b}),logger.log("[DUST "+b+"]: "+a))},dust.helpers={},dust.cache={},dust.register=function(a,b){a&&(dust.cache[a]=b)},dust.render=function(a,b,c){var d=new Stub(c).head;try{dust.load(a,d,Context.wrap(b,a)).end()}catch(e){d.setError(e)}},dust.stream=function(a,b){var c=new Stream,d=c.head;return dust.nextTick(function(){try{dust.load(a,c.head,Context.wrap(b,a)).end()}catch(e){d.setError(e)}}),c},dust.renderSource=function(a,b,c){return dust.compileFn(a)(b,c)},dust.compileFn=function(a,b){b=b||null;var c=dust.loadSource(dust.compile(a,b));return function(a,d){var e=d?new Stub(d):new Stream;return dust.nextTick(function(){"function"==typeof c?c(e.head,Context.wrap(a,b)).end():dust.log(new Error("Template ["+b+"] cannot be resolved to a Dust function"),ERROR)}),e}},dust.load=function(a,b,c){var d=dust.cache[a];return d?d(b,c):dust.onLoad?b.map(function(b){dust.onLoad(a,function(d,e){return d?b.setError(d):(dust.cache[a]||dust.loadSource(dust.compile(e,a)),void dust.cache[a](b,c).end())})}):b.setError(new Error("Template Not Found: "+a))},dust.loadSource=function(source,path){return eval(source)},dust.isArray=Array.isArray?Array.isArray:function(a){return"[object Array]"===Object.prototype.toString.call(a)},dust.indexInArray=function(a,b,c){if(c=+c||0,Array.prototype.indexOf)return a.indexOf(b,c);if(void 0===a||null===a)throw new TypeError('cannot call method "indexOf" of null');var d=a.length;for(1/0===Math.abs(c)&&(c=0),0>c&&(c+=d,0>c&&(c=0));d>c;c++)if(a[c]===b)return c;return-1},dust.nextTick=function(){return function(a){setTimeout(a,0)}}(),dust.isEmpty=function(a){return dust.isArray(a)&&!a.length?!0:0===a?!1:!a},dust.filter=function(a,b,c){if(c)for(var d=0,e=c.length;e>d;d++){var f=c[d];"s"===f?b=null:"function"==typeof dust.filters[f]?a=dust.filters[f](a):dust.log("Invalid filter ["+f+"]",WARN)}return b&&(a=dust.filters[b](a)),a},dust.filters={h:function(a){return dust.escapeHtml(a)},j:function(a){return dust.escapeJs(a)},u:encodeURI,uc:encodeURIComponent,js:function(a){return JSON?JSON.stringify(a):(dust.log("JSON is undefined.  JSON stringify has not been used on ["+a+"]",WARN),a)},jp:function(a){return JSON?JSON.parse(a):(dust.log("JSON is undefined.  JSON parse has not been used on ["+a+"]",WARN),a)}},dust.makeBase=function(a){return new Context(new Stack,a)},Context.wrap=function(a,b){return a instanceof Context?a:new Context(new Stack(a),{},null,b)},Context.prototype.get=function(a,b){return"string"==typeof a&&("."===a[0]&&(b=!0,a=a.substr(1)),a=a.split(".")),this._get(b,a)},Context.prototype._get=function(a,b){var c,d,e,f,g=this.stack,h=1;if(d=b[0],e=b.length,a&&0===e)f=g,g=g.head;else{if(a)g&&(g=getResult(g.head,d));else{for(;g&&(!g.isObject||(f=g.head,c=getResult(g.head,d),void 0===c));)g=g.tail;g=void 0!==c?c:getResult(this.global,d)}for(;g&&e>h;)f=g,g=getResult(g,b[h]),h++}return"function"==typeof g?function(){try{return g.apply(f,arguments)}catch(a){return dust.log(a,ERROR)}}:(void 0===g&&dust.log("Cannot find the value for reference [{"+b.join(".")+"}] in template ["+this.getTemplateName()+"]"),g)},Context.prototype.getPath=function(a,b){return this._get(a,b)},Context.prototype.push=function(a,b,c){return new Context(new Stack(a,this.stack,b,c),this.global,this.blocks,this.getTemplateName())},Context.prototype.rebase=function(a){return new Context(new Stack(a),this.global,this.blocks,this.getTemplateName())},Context.prototype.current=function(){return this.stack.head},Context.prototype.getBlock=function(a){if("function"==typeof a){var b=new Chunk;a=a(b,this).data.join("")}var c=this.blocks;if(!c)return void dust.log("No blocks for context[{"+a+"}] in template ["+this.getTemplateName()+"]",DEBUG);for(var d,e=c.length;e--;)if(d=c[e][a])return d},Context.prototype.shiftBlocks=function(a){var b,c=this.blocks;return a?(b=c?c.concat([a]):[a],new Context(this.stack,this.global,b,this.getTemplateName())):this},Context.prototype.getTemplateName=function(){return this.templateName},Stub.prototype.flush=function(){for(var a=this.head;a;){if(!a.flushable)return a.error?(this.callback(a.error),dust.log("Chunk error ["+a.error+"] thrown. Ceasing to render this template.",WARN),void(this.flush=EMPTY_FUNC)):void 0;this.out+=a.data.join(""),a=a.next,this.head=a}this.callback(null,this.out)},Stream.prototype.flush=function(){for(var a=this.head;a;){if(!a.flushable)return a.error?(this.emit("error",a.error),dust.log("Chunk error ["+a.error+"] thrown. Ceasing to render this template.",WARN),void(this.flush=EMPTY_FUNC)):void 0;this.emit("data",a.data.join("")),a=a.next,this.head=a}this.emit("end")},Stream.prototype.emit=function(a,b){if(!this.events)return dust.log("No events to emit",INFO),!1;var c=this.events[a];if(!c)return dust.log("Event type ["+a+"] does not exist",WARN),!1;if("function"==typeof c)c(b);else if(dust.isArray(c))for(var d=c.slice(0),e=0,f=d.length;f>e;e++)d[e](b);else dust.log("Event Handler ["+c+"] is not of a type that is handled by emit",WARN)},Stream.prototype.on=function(a,b){return this.events||(this.events={}),this.events[a]?"function"==typeof this.events[a]?this.events[a]=[this.events[a],b]:this.events[a].push(b):(dust.log("Event type ["+a+"] does not exist. Using just the specified callback.",WARN),b?this.events[a]=b:dust.log("Callback for type ["+a+"] does not exist. Listener not registered.",WARN)),this},Stream.prototype.pipe=function(a){return this.on("data",function(b){try{a.write(b,"utf8")}catch(c){dust.log(c,ERROR)}}).on("end",function(){try{return a.end()}catch(b){dust.log(b,ERROR)}}).on("error",function(b){a.error(b)}),this},Chunk.prototype.write=function(a){var b=this.taps;return b&&(a=b.go(a)),this.data.push(a),this},Chunk.prototype.end=function(a){return a&&this.write(a),this.flushable=!0,this.root.flush(),this},Chunk.prototype.map=function(a){var b=new Chunk(this.root,this.next,this.taps),c=new Chunk(this.root,b,this.taps);return this.next=c,this.flushable=!0,a(c),b},Chunk.prototype.tap=function(a){var b=this.taps;return this.taps=b?b.push(a):new Tap(a),this},Chunk.prototype.untap=function(){return this.taps=this.taps.tail,this},Chunk.prototype.render=function(a,b){return a(this,b)},Chunk.prototype.reference=function(a,b,c,d){return"function"==typeof a&&(a=a.apply(b.current(),[this,b,null,{auto:c,filters:d}]),a instanceof Chunk)?a:dust.isEmpty(a)?this:this.write(dust.filter(a,c,d))},Chunk.prototype.section=function(a,b,c,d){if("function"==typeof a&&(a=a.apply(b.current(),[this,b,c,d]),a instanceof Chunk))return a;var e=c.block,f=c["else"];if(d&&(b=b.push(d)),dust.isArray(a)){if(e){var g=a.length,h=this;if(g>0){b.stack.head&&(b.stack.head.$len=g);for(var i=0;g>i;i++)b.stack.head&&(b.stack.head.$idx=i),h=e(h,b.push(a[i],i,g));return b.stack.head&&(b.stack.head.$idx=void 0,b.stack.head.$len=void 0),h}if(f)return f(this,b)}}else if(a===!0){if(e)return e(this,b)}else if(a||0===a){if(e)return e(this,b.push(a))}else if(f)return f(this,b);return dust.log("Not rendering section (#) block in template ["+b.getTemplateName()+"], because above key was not found",DEBUG),this},Chunk.prototype.exists=function(a,b,c){var d=c.block,e=c["else"];if(dust.isEmpty(a)){if(e)return e(this,b)}else if(d)return d(this,b);return dust.log("Not rendering exists (?) block in template ["+b.getTemplateName()+"], because above key was not found",DEBUG),this},Chunk.prototype.notexists=function(a,b,c){var d=c.block,e=c["else"];if(dust.isEmpty(a)){if(d)return d(this,b)}else if(e)return e(this,b);return dust.log("Not rendering not exists (^) block check in template ["+b.getTemplateName()+"], because above key was found",DEBUG),this},Chunk.prototype.block=function(a,b,c){var d=c.block;return a&&(d=a),d?d(this,b):this},Chunk.prototype.partial=function(a,b,c){var d;d=dust.makeBase(b.global),d.blocks=b.blocks,b.stack&&b.stack.tail&&(d.stack=b.stack.tail),c&&(d=d.push(c)),"string"==typeof a&&(d.templateName=a),d=d.push(b.stack.head);var e;return e="function"==typeof a?this.capture(a,d,function(a,b){d.templateName=d.templateName||a,dust.load(a,b,d).end()}):dust.load(a,this,d)},Chunk.prototype.helper=function(a,b,c,d){var e=this;try{return dust.helpers[a]?dust.helpers[a](e,b,c,d):(dust.log("Invalid helper ["+a+"]",WARN),e)}catch(f){return e.setError(f),e}},Chunk.prototype.capture=function(a,b,c){return this.map(function(d){var e=new Stub(function(a,b){a?d.setError(a):c(b,d)});a(e.head,b).end()})},Chunk.prototype.setError=function(a){return this.error=a,this.root.flush(),this},Tap.prototype.push=function(a){return new Tap(a,this)},Tap.prototype.go=function(a){for(var b=this;b;)a=b.head(a),b=b.tail;return a};var HCHARS=new RegExp(/[&<>\"\']/),AMP=/&/g,LT=/</g,GT=/>/g,QUOT=/\"/g,SQUOT=/\'/g;dust.escapeHtml=function(a){return"string"==typeof a&&HCHARS.test(a)?a.replace(AMP,"&amp;").replace(LT,"&lt;").replace(GT,"&gt;").replace(QUOT,"&quot;").replace(SQUOT,"&#39;"):a};var BS=/\\/g,FS=/\//g,CR=/\r/g,LS=/\u2028/g,PS=/\u2029/g,NL=/\n/g,LF=/\f/g,SQ=/'/g,DQ=/"/g,TB=/\t/g;dust.escapeJs=function(a){return"string"==typeof a?a.replace(BS,"\\\\").replace(FS,"\\/").replace(DQ,'\\"').replace(SQ,"\\'").replace(CR,"\\r").replace(LS,"\\u2028").replace(PS,"\\u2029").replace(NL,"\\n").replace(LF,"\\f").replace(TB,"\\t"):a},"object"==typeof exports?module.exports=dust:root.dust=dust}(function(){return this}()),function(a,b){"object"==typeof exports?module.exports=b(require("./dust")):b(a.dust)}(this,function(dust){var a=function(){function b(a){return'"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\x08/g,"\\b").replace(/\t/g,"\\t").replace(/\n/g,"\\n").replace(/\f/g,"\\f").replace(/\r/g,"\\r").replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g,escape)+'"'}var c={parse:function(c,d){function e(a){var b={};for(var c in a)b[c]=a[c];return b}function f(a,b){for(var d=a.offset+b,e=a.offset;d>e;e++){var f=c.charAt(e);"\n"===f?(a.seenCR||a.line++,a.column=1,a.seenCR=!1):"\r"===f||"\u2028"===f||"\u2029"===f?(a.line++,a.column=1,a.seenCR=!0):(a.column++,a.seenCR=!1)}a.offset+=b}function g(a){R.offset<T.offset||(R.offset>T.offset&&(T=e(R),U=[]),U.push(a))}function h(){var a,b,c;for(c=e(R),a=[],b=i();null!==b;)a.push(b),b=i();return null!==a&&(a=function(a,b,c,d){return["body"].concat(d).concat([["line",b],["col",c]])}(c.offset,c.line,c.column,a)),null===a&&(R=e(c)),a}function i(){var a;return a=G(),null===a&&(a=H(),null===a&&(a=j(),null===a&&(a=q(),null===a&&(a=s(),null===a&&(a=p(),null===a&&(a=D())))))),a}function j(){var a,b,d,i,j,m,n,p,q;if(S++,p=e(R),q=e(R),a=k(),null!==a){for(b=[],d=O();null!==d;)b.push(d),d=O();null!==b?(d=K(),null!==d?(i=h(),null!==i?(j=o(),null!==j?(m=l(),m=null!==m?m:"",null!==m?(n=function(a,b,c,d,e,f,g){if(!g||d[1].text!==g.text)throw new Error("Expected end tag for "+d[1].text+" but it was not found. At line : "+b+", column : "+c);return!0}(R.offset,R.line,R.column,a,i,j,m)?"":null,null!==n?a=[a,b,d,i,j,m,n]:(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))}else a=null,R=e(q);if(null!==a&&(a=function(a,b,c,d,e,f){return f.push(["param",["literal","block"],e]),d.push(f),d.concat([["line",b],["col",c]])}(p.offset,p.line,p.column,a[0],a[3],a[4],a[5])),null===a&&(R=e(p)),null===a){if(p=e(R),q=e(R),a=k(),null!==a){for(b=[],d=O();null!==d;)b.push(d),d=O();null!==b?(47===c.charCodeAt(R.offset)?(d="/",f(R,1)):(d=null,0===S&&g('"/"')),null!==d?(i=K(),null!==i?a=[a,b,d,i]:(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))}else a=null,R=e(q);null!==a&&(a=function(a,b,c,d){return d.push(["bodies"]),d.concat([["line",b],["col",c]])}(p.offset,p.line,p.column,a[0])),null===a&&(R=e(p))}return S--,0===S&&null===a&&g("section"),a}function k(){var a,b,d,h,i,j,k,l;if(k=e(R),l=e(R),a=J(),null!==a)if(/^[#?^<+@%]/.test(c.charAt(R.offset))?(b=c.charAt(R.offset),f(R,1)):(b=null,0===S&&g("[#?^<+@%]")),null!==b){for(d=[],h=O();null!==h;)d.push(h),h=O();null!==d?(h=t(),null!==h?(i=m(),null!==i?(j=n(),null!==j?a=[a,b,d,h,i,j]:(a=null,R=e(l))):(a=null,R=e(l))):(a=null,R=e(l))):(a=null,R=e(l))}else a=null,R=e(l);else a=null,R=e(l);return null!==a&&(a=function(a,b,c,d,e,f,g){return[d,e,f,g]}(k.offset,k.line,k.column,a[1],a[3],a[4],a[5])),null===a&&(R=e(k)),a}function l(){var a,b,d,h,i,j,k,l;if(S++,k=e(R),l=e(R),a=J(),null!==a)if(47===c.charCodeAt(R.offset)?(b="/",f(R,1)):(b=null,0===S&&g('"/"')),null!==b){for(d=[],h=O();null!==h;)d.push(h),h=O();if(null!==d)if(h=t(),null!==h){for(i=[],j=O();null!==j;)i.push(j),j=O();null!==i?(j=K(),null!==j?a=[a,b,d,h,i,j]:(a=null,R=e(l))):(a=null,R=e(l))}else a=null,R=e(l);else a=null,R=e(l)}else a=null,R=e(l);else a=null,R=e(l);return null!==a&&(a=function(a,b,c,d){return d}(k.offset,k.line,k.column,a[3])),null===a&&(R=e(k)),S--,0===S&&null===a&&g("end tag"),a}function m(){var a,b,d,h,i;return d=e(R),h=e(R),i=e(R),58===c.charCodeAt(R.offset)?(a=":",f(R,1)):(a=null,0===S&&g('":"')),null!==a?(b=t(),null!==b?a=[a,b]:(a=null,R=e(i))):(a=null,R=e(i)),null!==a&&(a=function(a,b,c,d){return d}(h.offset,h.line,h.column,a[1])),null===a&&(R=e(h)),a=null!==a?a:"",null!==a&&(a=function(a,b,c,d){return d?["context",d]:["context"]}(d.offset,d.line,d.column,a)),null===a&&(R=e(d)),a}function n(){var a,b,d,h,i,j,k,l;if(S++,j=e(R),a=[],k=e(R),l=e(R),d=O(),null!==d)for(b=[];null!==d;)b.push(d),d=O();else b=null;for(null!==b?(d=y(),null!==d?(61===c.charCodeAt(R.offset)?(h="=",f(R,1)):(h=null,0===S&&g('"="')),null!==h?(i=u(),null===i&&(i=t(),null===i&&(i=B())),null!==i?b=[b,d,h,i]:(b=null,R=e(l))):(b=null,R=e(l))):(b=null,R=e(l))):(b=null,R=e(l)),null!==b&&(b=function(a,b,c,d,e){return["param",["literal",d],e]}(k.offset,k.line,k.column,b[1],b[3])),null===b&&(R=e(k));null!==b;){if(a.push(b),k=e(R),l=e(R),d=O(),null!==d)for(b=[];null!==d;)b.push(d),d=O();else b=null;null!==b?(d=y(),null!==d?(61===c.charCodeAt(R.offset)?(h="=",f(R,1)):(h=null,0===S&&g('"="')),null!==h?(i=u(),null===i&&(i=t(),null===i&&(i=B())),null!==i?b=[b,d,h,i]:(b=null,R=e(l))):(b=null,R=e(l))):(b=null,R=e(l))):(b=null,R=e(l)),null!==b&&(b=function(a,b,c,d,e){return["param",["literal",d],e]}(k.offset,k.line,k.column,b[1],b[3])),null===b&&(R=e(k))}return null!==a&&(a=function(a,b,c,d){return["params"].concat(d)}(j.offset,j.line,j.column,a)),null===a&&(R=e(j)),S--,0===S&&null===a&&g("params"),a}function o(){var a,b,d,i,j,k,l,m,n;for(S++,l=e(R),a=[],m=e(R),n=e(R),b=J(),null!==b?(58===c.charCodeAt(R.offset)?(d=":",f(R,1)):(d=null,0===S&&g('":"')),null!==d?(i=y(),null!==i?(j=K(),null!==j?(k=h(),null!==k?b=[b,d,i,j,k]:(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n)),null!==b&&(b=function(a,b,c,d,e){return["param",["literal",d],e]}(m.offset,m.line,m.column,b[2],b[4])),null===b&&(R=e(m));null!==b;)a.push(b),m=e(R),n=e(R),b=J(),null!==b?(58===c.charCodeAt(R.offset)?(d=":",f(R,1)):(d=null,0===S&&g('":"')),null!==d?(i=y(),null!==i?(j=K(),null!==j?(k=h(),null!==k?b=[b,d,i,j,k]:(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n))):(b=null,R=e(n)),null!==b&&(b=function(a,b,c,d,e){return["param",["literal",d],e]}(m.offset,m.line,m.column,b[2],b[4])),null===b&&(R=e(m));return null!==a&&(a=function(a,b,c,d){return["bodies"].concat(d)}(l.offset,l.line,l.column,a)),null===a&&(R=e(l)),S--,0===S&&null===a&&g("bodies"),a}function p(){var a,b,c,d,f,h;return S++,f=e(R),h=e(R),a=J(),null!==a?(b=t(),null!==b?(c=r(),null!==c?(d=K(),null!==d?a=[a,b,c,d]:(a=null,R=e(h))):(a=null,R=e(h))):(a=null,R=e(h))):(a=null,R=e(h)),null!==a&&(a=function(a,b,c,d,e){return["reference",d,e].concat([["line",b],["col",c]])}(f.offset,f.line,f.column,a[1],a[2])),null===a&&(R=e(f)),S--,0===S&&null===a&&g("reference"),a}function q(){var a,b,d,h,i,j,k,l,o,p,q,r;if(S++,p=e(R),q=e(R),a=J(),null!==a)if(62===c.charCodeAt(R.offset)?(b=">",f(R,1)):(b=null,0===S&&g('">"')),null===b&&(43===c.charCodeAt(R.offset)?(b="+",f(R,1)):(b=null,0===S&&g('"+"'))),null!==b){for(d=[],h=O();null!==h;)d.push(h),h=O();if(null!==d)if(r=e(R),h=y(),null!==h&&(h=function(a,b,c,d){return["literal",d]}(r.offset,r.line,r.column,h)),null===h&&(R=e(r)),null===h&&(h=B()),null!==h)if(i=m(),null!==i)if(j=n(),null!==j){for(k=[],l=O();null!==l;)k.push(l),l=O();null!==k?(47===c.charCodeAt(R.offset)?(l="/",f(R,1)):(l=null,0===S&&g('"/"')),null!==l?(o=K(),null!==o?a=[a,b,d,h,i,j,k,l,o]:(a=null,R=e(q))):(a=null,R=e(q))):(a=null,R=e(q))}else a=null,R=e(q);else a=null,R=e(q);else a=null,R=e(q);else a=null,R=e(q)}else a=null,R=e(q);else a=null,R=e(q);return null!==a&&(a=function(a,b,c,d,e,f,g){var h=">"===d?"partial":d;return[h,e,f,g].concat([["line",b],["col",c]])}(p.offset,p.line,p.column,a[1],a[3],a[4],a[5])),null===a&&(R=e(p)),S--,0===S&&null===a&&g("partial"),a}function r(){var a,b,d,h,i,j;for(S++,h=e(R),a=[],i=e(R),j=e(R),124===c.charCodeAt(R.offset)?(b="|",f(R,1)):(b=null,0===S&&g('"|"')),null!==b?(d=y(),null!==d?b=[b,d]:(b=null,R=e(j))):(b=null,R=e(j)),null!==b&&(b=function(a,b,c,d){return d}(i.offset,i.line,i.column,b[1])),null===b&&(R=e(i));null!==b;)a.push(b),i=e(R),j=e(R),124===c.charCodeAt(R.offset)?(b="|",f(R,1)):(b=null,0===S&&g('"|"')),null!==b?(d=y(),null!==d?b=[b,d]:(b=null,R=e(j))):(b=null,R=e(j)),null!==b&&(b=function(a,b,c,d){return d}(i.offset,i.line,i.column,b[1])),null===b&&(R=e(i));return null!==a&&(a=function(a,b,c,d){return["filters"].concat(d)}(h.offset,h.line,h.column,a)),null===a&&(R=e(h)),S--,0===S&&null===a&&g("filters"),a}function s(){var a,b,d,h,i,j;return S++,i=e(R),j=e(R),a=J(),null!==a?(126===c.charCodeAt(R.offset)?(b="~",f(R,1)):(b=null,0===S&&g('"~"')),null!==b?(d=y(),null!==d?(h=K(),null!==h?a=[a,b,d,h]:(a=null,R=e(j))):(a=null,R=e(j))):(a=null,R=e(j))):(a=null,R=e(j)),null!==a&&(a=function(a,b,c,d){return["special",d].concat([["line",b],["col",c]])}(i.offset,i.line,i.column,a[2])),null===a&&(R=e(i)),S--,0===S&&null===a&&g("special"),a}function t(){var a,b;return S++,b=e(R),a=x(),null!==a&&(a=function(a,b,c,d){var e=["path"].concat(d);return e.text=d[1].join("."),e}(b.offset,b.line,b.column,a)),null===a&&(R=e(b)),null===a&&(b=e(R),a=y(),null!==a&&(a=function(a,b,c,d){var e=["key",d];return e.text=d,e}(b.offset,b.line,b.column,a)),null===a&&(R=e(b))),S--,0===S&&null===a&&g("identifier"),a}function u(){var a,b;return S++,b=e(R),a=v(),null===a&&(a=w()),null!==a&&(a=function(a,b,c,d){return["literal",d]}(b.offset,b.line,b.column,a)),null===a&&(R=e(b)),S--,0===S&&null===a&&g("number"),a}function v(){var a,b,d,h,i,j;if(S++,i=e(R),j=e(R),a=w(),null!==a)if(46===c.charCodeAt(R.offset)?(b=".",f(R,1)):(b=null,0===S&&g('"."')),null!==b){if(h=w(),null!==h)for(d=[];null!==h;)d.push(h),h=w();else d=null;null!==d?a=[a,b,d]:(a=null,R=e(j))}else a=null,R=e(j);else a=null,R=e(j);return null!==a&&(a=function(a,b,c,d,e){return parseFloat(d+"."+e.join(""))}(i.offset,i.line,i.column,a[0],a[2])),null===a&&(R=e(i)),S--,0===S&&null===a&&g("float"),a}function w(){var a,b,d;if(S++,d=e(R),/^[0-9]/.test(c.charAt(R.offset))?(b=c.charAt(R.offset),f(R,1)):(b=null,0===S&&g("[0-9]")),null!==b)for(a=[];null!==b;)a.push(b),/^[0-9]/.test(c.charAt(R.offset))?(b=c.charAt(R.offset),f(R,1)):(b=null,0===S&&g("[0-9]"));else a=null;return null!==a&&(a=function(a,b,c,d){return parseInt(d.join(""),10)}(d.offset,d.line,d.column,a)),null===a&&(R=e(d)),S--,0===S&&null===a&&g("integer"),a}function x(){var a,b,d,h,i;if(S++,h=e(R),i=e(R),a=y(),a=null!==a?a:"",null!==a){if(d=A(),null===d&&(d=z()),null!==d)for(b=[];null!==d;)b.push(d),d=A(),null===d&&(d=z());else b=null;null!==b?a=[a,b]:(a=null,R=e(i))}else a=null,R=e(i);if(null!==a&&(a=function(a,b,c,d,e){return e=e[0],d&&e?(e.unshift(d),[!1,e].concat([["line",b],["col",c]])):[!0,e].concat([["line",b],["col",c]])}(h.offset,h.line,h.column,a[0],a[1])),null===a&&(R=e(h)),null===a){if(h=e(R),i=e(R),46===c.charCodeAt(R.offset)?(a=".",f(R,1)):(a=null,0===S&&g('"."')),null!==a){for(b=[],d=A(),null===d&&(d=z());null!==d;)b.push(d),d=A(),null===d&&(d=z());null!==b?a=[a,b]:(a=null,R=e(i))}else a=null,R=e(i);null!==a&&(a=function(a,b,c,d){return d.length>0?[!0,d[0]].concat([["line",b],["col",c]]):[!0,[]].concat([["line",b],["col",c]])}(h.offset,h.line,h.column,a[1])),null===a&&(R=e(h))}return S--,0===S&&null===a&&g("path"),a}function y(){var a,b,d,h,i;if(S++,h=e(R),i=e(R),/^[a-zA-Z_$]/.test(c.charAt(R.offset))?(a=c.charAt(R.offset),f(R,1)):(a=null,0===S&&g("[a-zA-Z_$]")),null!==a){for(b=[],/^[0-9a-zA-Z_$\-]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g("[0-9a-zA-Z_$\\-]"));null!==d;)b.push(d),/^[0-9a-zA-Z_$\-]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g("[0-9a-zA-Z_$\\-]"));null!==b?a=[a,b]:(a=null,R=e(i))}else a=null,R=e(i);return null!==a&&(a=function(a,b,c,d,e){return d+e.join("")}(h.offset,h.line,h.column,a[0],a[1])),null===a&&(R=e(h)),S--,0===S&&null===a&&g("key"),a}function z(){var a,b,d,h,i,j,k,l;if(S++,h=e(R),i=e(R),j=e(R),k=e(R),a=L(),null!==a){if(l=e(R),/^[0-9]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g("[0-9]")),null!==d)for(b=[];null!==d;)b.push(d),/^[0-9]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g("[0-9]"));else b=null;null!==b&&(b=function(a,b,c,d){return d.join("")}(l.offset,l.line,l.column,b)),null===b&&(R=e(l)),null===b&&(b=t()),null!==b?(d=M(),null!==d?a=[a,b,d]:(a=null,R=e(k))):(a=null,R=e(k))}else a=null,R=e(k);return null!==a&&(a=function(a,b,c,d){return d}(j.offset,j.line,j.column,a[1])),null===a&&(R=e(j)),null!==a?(b=A(),b=null!==b?b:"",null!==b?a=[a,b]:(a=null,R=e(i))):(a=null,R=e(i)),null!==a&&(a=function(a,b,c,d,e){return e?e.unshift(d):e=[d],e}(h.offset,h.line,h.column,a[0],a[1])),null===a&&(R=e(h)),S--,0===S&&null===a&&g("array"),a}function A(){var a,b,d,h,i,j,k;if(S++,h=e(R),i=e(R),j=e(R),k=e(R),46===c.charCodeAt(R.offset)?(b=".",f(R,1)):(b=null,0===S&&g('"."')),null!==b?(d=y(),null!==d?b=[b,d]:(b=null,R=e(k))):(b=null,R=e(k)),null!==b&&(b=function(a,b,c,d){return d}(j.offset,j.line,j.column,b[1])),null===b&&(R=e(j)),null!==b)for(a=[];null!==b;)a.push(b),j=e(R),k=e(R),46===c.charCodeAt(R.offset)?(b=".",f(R,1)):(b=null,0===S&&g('"."')),null!==b?(d=y(),null!==d?b=[b,d]:(b=null,R=e(k))):(b=null,R=e(k)),null!==b&&(b=function(a,b,c,d){return d}(j.offset,j.line,j.column,b[1])),null===b&&(R=e(j));else a=null;return null!==a?(b=z(),b=null!==b?b:"",null!==b?a=[a,b]:(a=null,R=e(i))):(a=null,R=e(i)),null!==a&&(a=function(a,b,c,d,e){return e?d.concat(e):d}(h.offset,h.line,h.column,a[0],a[1])),null===a&&(R=e(h)),S--,0===S&&null===a&&g("array_part"),a}function B(){var a,b,d,h,i;if(S++,h=e(R),i=e(R),34===c.charCodeAt(R.offset)?(a='"',f(R,1)):(a=null,0===S&&g('"\\""')),null!==a?(34===c.charCodeAt(R.offset)?(b='"',f(R,1)):(b=null,0===S&&g('"\\""')),null!==b?a=[a,b]:(a=null,R=e(i))):(a=null,R=e(i)),null!==a&&(a=function(a,b,c){return["literal",""].concat([["line",b],["col",c]])}(h.offset,h.line,h.column)),null===a&&(R=e(h)),null===a&&(h=e(R),i=e(R),34===c.charCodeAt(R.offset)?(a='"',f(R,1)):(a=null,0===S&&g('"\\""')),null!==a?(b=E(),null!==b?(34===c.charCodeAt(R.offset)?(d='"',f(R,1)):(d=null,0===S&&g('"\\""')),null!==d?a=[a,b,d]:(a=null,R=e(i))):(a=null,R=e(i))):(a=null,R=e(i)),null!==a&&(a=function(a,b,c,d){return["literal",d].concat([["line",b],["col",c]])}(h.offset,h.line,h.column,a[1])),null===a&&(R=e(h)),null===a)){if(h=e(R),i=e(R),34===c.charCodeAt(R.offset)?(a='"',f(R,1)):(a=null,0===S&&g('"\\""')),null!==a){if(d=C(),null!==d)for(b=[];null!==d;)b.push(d),d=C();else b=null;null!==b?(34===c.charCodeAt(R.offset)?(d='"',f(R,1)):(d=null,0===S&&g('"\\""')),null!==d?a=[a,b,d]:(a=null,R=e(i))):(a=null,R=e(i))}else a=null,R=e(i);null!==a&&(a=function(a,b,c,d){return["body"].concat(d).concat([["line",b],["col",c]])}(h.offset,h.line,h.column,a[1])),null===a&&(R=e(h))}return S--,0===S&&null===a&&g("inline"),a}function C(){var a,b;return a=s(),null===a&&(a=p(),null===a&&(b=e(R),a=E(),null!==a&&(a=function(a,b,c,d){return["buffer",d]}(b.offset,b.line,b.column,a)),null===a&&(R=e(b)))),a}function D(){var a,b,d,h,i,j,k,l,m,n;if(S++,k=e(R),l=e(R),a=N(),null!==a){for(b=[],d=O();null!==d;)b.push(d),d=O();null!==b?a=[a,b]:(a=null,R=e(l))}else a=null,R=e(l);if(null!==a&&(a=function(a,b,c,d,e){return["format",d,e.join("")].concat([["line",b],["col",c]])}(k.offset,k.line,k.column,a[0],a[1])),null===a&&(R=e(k)),null===a){if(k=e(R),l=e(R),m=e(R),n=e(R),S++,b=I(),S--,null===b?b="":(b=null,R=e(n)),null!==b?(n=e(R),S++,d=G(),S--,null===d?d="":(d=null,R=e(n)),null!==d?(n=e(R),S++,h=H(),S--,null===h?h="":(h=null,R=e(n)),null!==h?(n=e(R),S++,i=N(),S--,null===i?i="":(i=null,R=e(n)),null!==i?(c.length>R.offset?(j=c.charAt(R.offset),f(R,1)):(j=null,0===S&&g("any character")),null!==j?b=[b,d,h,i,j]:(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m)),null!==b&&(b=function(a,b,c,d){return d}(l.offset,l.line,l.column,b[4])),null===b&&(R=e(l)),null!==b)for(a=[];null!==b;)a.push(b),l=e(R),m=e(R),n=e(R),S++,b=I(),S--,null===b?b="":(b=null,R=e(n)),null!==b?(n=e(R),S++,d=G(),S--,null===d?d="":(d=null,R=e(n)),null!==d?(n=e(R),S++,h=H(),S--,null===h?h="":(h=null,R=e(n)),null!==h?(n=e(R),S++,i=N(),S--,null===i?i="":(i=null,R=e(n)),null!==i?(c.length>R.offset?(j=c.charAt(R.offset),f(R,1)):(j=null,0===S&&g("any character")),null!==j?b=[b,d,h,i,j]:(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m))):(b=null,R=e(m)),null!==b&&(b=function(a,b,c,d){return d}(l.offset,l.line,l.column,b[4])),null===b&&(R=e(l));else a=null;null!==a&&(a=function(a,b,c,d){return["buffer",d.join("")].concat([["line",b],["col",c]])}(k.offset,k.line,k.column,a)),null===a&&(R=e(k))}return S--,0===S&&null===a&&g("buffer"),a}function E(){var a,b,d,h,i,j,k;if(S++,h=e(R),i=e(R),j=e(R),k=e(R),S++,b=I(),S--,null===b?b="":(b=null,R=e(k)),null!==b?(d=F(),null===d&&(/^[^"]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g('[^"]'))),null!==d?b=[b,d]:(b=null,R=e(j))):(b=null,R=e(j)),null!==b&&(b=function(a,b,c,d){return d}(i.offset,i.line,i.column,b[1])),null===b&&(R=e(i)),null!==b)for(a=[];null!==b;)a.push(b),i=e(R),j=e(R),k=e(R),S++,b=I(),S--,null===b?b="":(b=null,R=e(k)),null!==b?(d=F(),null===d&&(/^[^"]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g('[^"]'))),null!==d?b=[b,d]:(b=null,R=e(j))):(b=null,R=e(j)),null!==b&&(b=function(a,b,c,d){return d}(i.offset,i.line,i.column,b[1])),null===b&&(R=e(i));else a=null;return null!==a&&(a=function(a,b,c,d){return d.join("")}(h.offset,h.line,h.column,a)),null===a&&(R=e(h)),S--,0===S&&null===a&&g("literal"),a}function F(){var a,b;return b=e(R),'\\"'===c.substr(R.offset,2)?(a='\\"',f(R,2)):(a=null,0===S&&g('"\\\\\\""')),null!==a&&(a=function(){return'"'}(b.offset,b.line,b.column)),null===a&&(R=e(b)),a}function G(){var a,b,d,h,i,j,k,l,m;if(S++,i=e(R),j=e(R),"{`"===c.substr(R.offset,2)?(a="{`",f(R,2)):(a=null,0===S&&g('"{`"')),null!==a){for(b=[],k=e(R),l=e(R),m=e(R),S++,"`}"===c.substr(R.offset,2)?(d="`}",f(R,2)):(d=null,0===S&&g('"`}"')),S--,null===d?d="":(d=null,R=e(m)),null!==d?(c.length>R.offset?(h=c.charAt(R.offset),f(R,1)):(h=null,0===S&&g("any character")),null!==h?d=[d,h]:(d=null,R=e(l))):(d=null,R=e(l)),null!==d&&(d=function(a,b,c,d){return d}(k.offset,k.line,k.column,d[1])),null===d&&(R=e(k));null!==d;)b.push(d),k=e(R),l=e(R),m=e(R),S++,"`}"===c.substr(R.offset,2)?(d="`}",f(R,2)):(d=null,0===S&&g('"`}"')),S--,null===d?d="":(d=null,R=e(m)),null!==d?(c.length>R.offset?(h=c.charAt(R.offset),f(R,1)):(h=null,0===S&&g("any character")),null!==h?d=[d,h]:(d=null,R=e(l))):(d=null,R=e(l)),null!==d&&(d=function(a,b,c,d){return d}(k.offset,k.line,k.column,d[1])),null===d&&(R=e(k));null!==b?("`}"===c.substr(R.offset,2)?(d="`}",f(R,2)):(d=null,0===S&&g('"`}"')),null!==d?a=[a,b,d]:(a=null,R=e(j))):(a=null,R=e(j))}else a=null,R=e(j);return null!==a&&(a=function(a,b,c,d){return["raw",d.join("")].concat([["line",b],["col",c]])}(i.offset,i.line,i.column,a[1])),null===a&&(R=e(i)),S--,0===S&&null===a&&g("raw"),a}function H(){var a,b,d,h,i,j,k,l,m;if(S++,i=e(R),j=e(R),"{!"===c.substr(R.offset,2)?(a="{!",f(R,2)):(a=null,0===S&&g('"{!"')),null!==a){for(b=[],k=e(R),l=e(R),m=e(R),S++,"!}"===c.substr(R.offset,2)?(d="!}",f(R,2)):(d=null,0===S&&g('"!}"')),S--,null===d?d="":(d=null,R=e(m)),null!==d?(c.length>R.offset?(h=c.charAt(R.offset),f(R,1)):(h=null,0===S&&g("any character")),null!==h?d=[d,h]:(d=null,R=e(l))):(d=null,R=e(l)),null!==d&&(d=function(a,b,c,d){return d}(k.offset,k.line,k.column,d[1])),null===d&&(R=e(k));null!==d;)b.push(d),k=e(R),l=e(R),m=e(R),S++,"!}"===c.substr(R.offset,2)?(d="!}",f(R,2)):(d=null,0===S&&g('"!}"')),S--,null===d?d="":(d=null,R=e(m)),null!==d?(c.length>R.offset?(h=c.charAt(R.offset),f(R,1)):(h=null,0===S&&g("any character")),null!==h?d=[d,h]:(d=null,R=e(l))):(d=null,R=e(l)),null!==d&&(d=function(a,b,c,d){return d}(k.offset,k.line,k.column,d[1])),null===d&&(R=e(k));null!==b?("!}"===c.substr(R.offset,2)?(d="!}",f(R,2)):(d=null,0===S&&g('"!}"')),null!==d?a=[a,b,d]:(a=null,R=e(j))):(a=null,R=e(j))}else a=null,R=e(j);return null!==a&&(a=function(a,b,c,d){return["comment",d.join("")].concat([["line",b],["col",c]])}(i.offset,i.line,i.column,a[1])),null===a&&(R=e(i)),S--,0===S&&null===a&&g("comment"),a}function I(){var a,b,d,h,i,j,k,l,m,n,o;if(m=e(R),a=J(),null!==a){for(b=[],d=O();null!==d;)b.push(d),d=O();if(null!==b)if(/^[#?^><+%:@\/~%]/.test(c.charAt(R.offset))?(d=c.charAt(R.offset),f(R,1)):(d=null,0===S&&g("[#?^><+%:@\\/~%]")),null!==d){for(h=[],i=O();null!==i;)h.push(i),i=O();if(null!==h){if(n=e(R),o=e(R),S++,j=K(),S--,null===j?j="":(j=null,R=e(o)),null!==j?(o=e(R),S++,k=N(),S--,null===k?k="":(k=null,R=e(o)),null!==k?(c.length>R.offset?(l=c.charAt(R.offset),f(R,1)):(l=null,0===S&&g("any character")),null!==l?j=[j,k,l]:(j=null,R=e(n))):(j=null,R=e(n))):(j=null,R=e(n)),null!==j)for(i=[];null!==j;)i.push(j),n=e(R),o=e(R),S++,j=K(),S--,null===j?j="":(j=null,R=e(o)),null!==j?(o=e(R),S++,k=N(),S--,null===k?k="":(k=null,R=e(o)),null!==k?(c.length>R.offset?(l=c.charAt(R.offset),f(R,1)):(l=null,0===S&&g("any character")),null!==l?j=[j,k,l]:(j=null,R=e(n))):(j=null,R=e(n))):(j=null,R=e(n));else i=null;if(null!==i){for(j=[],k=O();null!==k;)j.push(k),k=O();null!==j?(k=K(),null!==k?a=[a,b,d,h,i,j,k]:(a=null,R=e(m))):(a=null,R=e(m))}else a=null,R=e(m)}else a=null,R=e(m)}else a=null,R=e(m);else a=null,R=e(m)}else a=null,R=e(m);return null===a&&(a=p()),a}function J(){var a;return 123===c.charCodeAt(R.offset)?(a="{",f(R,1)):(a=null,0===S&&g('"{"')),a}function K(){var a;return 125===c.charCodeAt(R.offset)?(a="}",f(R,1)):(a=null,0===S&&g('"}"')),a}function L(){var a;return 91===c.charCodeAt(R.offset)?(a="[",f(R,1)):(a=null,0===S&&g('"["')),a}function M(){var a;return 93===c.charCodeAt(R.offset)?(a="]",f(R,1)):(a=null,0===S&&g('"]"')),a}function N(){var a;return 10===c.charCodeAt(R.offset)?(a="\n",f(R,1)):(a=null,0===S&&g('"\\n"')),null===a&&("\r\n"===c.substr(R.offset,2)?(a="\r\n",f(R,2)):(a=null,0===S&&g('"\\r\\n"')),null===a&&(13===c.charCodeAt(R.offset)?(a="\r",f(R,1)):(a=null,0===S&&g('"\\r"')),null===a&&(8232===c.charCodeAt(R.offset)?(a="\u2028",f(R,1)):(a=null,0===S&&g('"\\u2028"')),null===a&&(8233===c.charCodeAt(R.offset)?(a="\u2029",f(R,1)):(a=null,0===S&&g('"\\u2029"')))))),a
-}function O(){var a;return/^[\t\x0B\f \xA0\uFEFF]/.test(c.charAt(R.offset))?(a=c.charAt(R.offset),f(R,1)):(a=null,0===S&&g("[\\t\\x0B\\f \\xA0\\uFEFF]")),null===a&&(a=N()),a}function P(a){a.sort();for(var b=null,c=[],d=0;d<a.length;d++)a[d]!==b&&(c.push(a[d]),b=a[d]);return c}var Q={body:h,part:i,section:j,sec_tag_start:k,end_tag:l,context:m,params:n,bodies:o,reference:p,partial:q,filters:r,special:s,identifier:t,number:u,"float":v,integer:w,path:x,key:y,array:z,array_part:A,inline:B,inline_part:C,buffer:D,literal:E,esc:F,raw:G,comment:H,tag:I,ld:J,rd:K,lb:L,rb:M,eol:N,ws:O};if(void 0!==d){if(void 0===Q[d])throw new Error("Invalid rule name: "+b(d)+".")}else d="body";var R={offset:0,line:1,column:1,seenCR:!1},S=0,T={offset:0,line:1,column:1,seenCR:!1},U=[],V=Q[d]();if(null===V||R.offset!==c.length){var W=Math.max(R.offset,T.offset),X=W<c.length?c.charAt(W):null,Y=R.offset>T.offset?R:T;throw new a.SyntaxError(P(U),X,W,Y.line,Y.column)}return V},toSource:function(){return this._source}};return c.SyntaxError=function(a,c,d,e,f){function g(a,c){var d,e;switch(a.length){case 0:d="end of input";break;case 1:d=a[0];break;default:d=a.slice(0,a.length-1).join(", ")+" or "+a[a.length-1]}return e=c?b(c):"end of input","Expected "+d+" but "+e+" found."}this.name="SyntaxError",this.expected=a,this.found=c,this.message=g(a,c),this.offset=d,this.line=e,this.column=f},c.SyntaxError.prototype=Error.prototype,c}();return dust.parse=a.parse,a}),function(a,b){"object"==typeof exports?module.exports=b(require("./parser").parse,require("./dust")):b(a.dust.parse,a.dust)}(this,function(a,dust){function b(a){var b={};return n.filterNode(b,a)}function c(a,b){var c,d,e,f=[b[0]];for(c=1,d=b.length;d>c;c++)e=n.filterNode(a,b[c]),e&&f.push(e);return f}function d(a,b){var c,d,e,f,g=[b[0]];for(d=1,e=b.length;e>d;d++)f=n.filterNode(a,b[d]),f&&("buffer"===f[0]?c?c[1]+=f[1]:(c=f,g.push(f)):(c=null,g.push(f)));return g}function e(a,b){return["buffer",p[b[1]]]}function f(a,b){return b}function g(){}function h(a,b){var c={name:b,bodies:[],blocks:{},index:0,auto:"h"};return"(function(){dust.register("+(b?'"'+b+'"':"null")+","+n.compileNode(c,a)+");"+i(c)+j(c)+"return body_0;})();"}function i(a){var b,c=[],d=a.blocks;for(b in d)c.push('"'+b+'":'+d[b]);return c.length?(a.blocks="ctx=ctx.shiftBlocks(blocks);","var blocks={"+c.join(",")+"};"):a.blocks=""}function j(a){var b,c,d=[],e=a.bodies,f=a.blocks;for(b=0,c=e.length;c>b;b++)d[b]="function body_"+b+"(chk,ctx){"+f+"return chk"+e[b]+";}";return d.join("")}function k(a,b){var c,d,e="";for(c=1,d=b.length;d>c;c++)e+=n.compileNode(a,b[c]);return e}function l(a,b,c){return"."+c+"("+n.compileNode(a,b[1])+","+n.compileNode(a,b[2])+","+n.compileNode(a,b[4])+","+n.compileNode(a,b[3])+")"}function m(a){return a.replace(q,"\\\\").replace(r,'\\"').replace(s,"\\f").replace(t,"\\n").replace(u,"\\r").replace(v,"\\t")}var n={},o=dust.isArray;n.compile=function(c,d){if(!d&&null!==d)throw new Error("Template name parameter cannot be undefined when calling dust.compile");try{var e=b(a(c));return h(e,d)}catch(f){if(!f.line||!f.column)throw f;throw new SyntaxError(f.message+" At line : "+f.line+", column : "+f.column)}},n.filterNode=function(a,b){return n.optimizers[b[0]](a,b)},n.optimizers={body:d,buffer:f,special:e,format:g,reference:c,"#":c,"?":c,"^":c,"<":c,"+":c,"@":c,"%":c,partial:c,context:c,params:c,bodies:c,param:c,filters:f,key:f,path:f,literal:f,raw:f,comment:g,line:g,col:g},n.pragmas={esc:function(a,b,c){var d,e=a.auto;return b||(b="h"),a.auto="s"===b?"":b,d=k(a,c.block),a.auto=e,d}};var p={s:" ",n:"\n",r:"\r",lb:"{",rb:"}"};n.compileNode=function(a,b){return n.nodes[b[0]](a,b)},n.nodes={body:function(a,b){var c=a.index++,d="body_"+c;return a.bodies[c]=k(a,b),d},buffer:function(a,b){return".write("+w(b[1])+")"},format:function(a,b){return".write("+w(b[1]+b[2])+")"},reference:function(a,b){return".reference("+n.compileNode(a,b[1])+",ctx,"+n.compileNode(a,b[2])+")"},"#":function(a,b){return l(a,b,"section")},"?":function(a,b){return l(a,b,"exists")},"^":function(a,b){return l(a,b,"notexists")},"<":function(a,b){for(var c=b[4],d=1,e=c.length;e>d;d++){var f=c[d],g=f[1][1];if("block"===g)return a.blocks[b[1].text]=n.compileNode(a,f[2]),""}return""},"+":function(a,b){return"undefined"==typeof b[1].text&&"undefined"==typeof b[4]?".block(ctx.getBlock("+n.compileNode(a,b[1])+",chk, ctx),"+n.compileNode(a,b[2])+", {},"+n.compileNode(a,b[3])+")":".block(ctx.getBlock("+w(b[1].text)+"),"+n.compileNode(a,b[2])+","+n.compileNode(a,b[4])+","+n.compileNode(a,b[3])+")"},"@":function(a,b){return".helper("+w(b[1].text)+","+n.compileNode(a,b[2])+","+n.compileNode(a,b[4])+","+n.compileNode(a,b[3])+")"},"%":function(a,b){var c,d,e,f,g,h,i,j,k,l=b[1][1];if(!n.pragmas[l])return"";for(c=b[4],d={},j=1,k=c.length;k>j;j++)h=c[j],d[h[1][1]]=h[2];for(e=b[3],f={},j=1,k=e.length;k>j;j++)i=e[j],f[i[1][1]]=i[2][1];return g=b[2][1]?b[2][1].text:null,n.pragmas[l](a,g,d,f)},partial:function(a,b){return".partial("+n.compileNode(a,b[1])+","+n.compileNode(a,b[2])+","+n.compileNode(a,b[3])+")"},context:function(a,b){return b[1]?"ctx.rebase("+n.compileNode(a,b[1])+")":"ctx"},params:function(a,b){for(var c=[],d=1,e=b.length;e>d;d++)c.push(n.compileNode(a,b[d]));return c.length?"{"+c.join(",")+"}":"{}"},bodies:function(a,b){for(var c=[],d=1,e=b.length;e>d;d++)c.push(n.compileNode(a,b[d]));return"{"+c.join(",")+"}"},param:function(a,b){return n.compileNode(a,b[1])+":"+n.compileNode(a,b[2])},filters:function(a,b){for(var c=[],d=1,e=b.length;e>d;d++){var f=b[d];c.push('"'+f+'"')}return'"'+a.auto+'"'+(c.length?",["+c.join(",")+"]":"")},key:function(a,b){return'ctx.get(["'+b[1]+'"], false)'},path:function(a,b){for(var c=b[1],d=b[2],e=[],f=0,g=d.length;g>f;f++)e.push(o(d[f])?n.compileNode(a,d[f]):'"'+d[f]+'"');return"ctx.getPath("+c+", ["+e.join(",")+"])"},literal:function(a,b){return w(b[1])},raw:function(a,b){return".write("+w(b[1])+")"}};var q=/\\/g,r=/"/g,s=/\f/g,t=/\n/g,u=/\r/g,v=/\t/g,w="undefined"==typeof JSON?function(a){return'"'+m(a)+'"'}:JSON.stringify;return dust.compile=n.compile,dust.filterNode=n.filterNode,dust.optimizers=n.optimizers,dust.pragmas=n.pragmas,dust.compileNode=n.compileNode,dust.nodes=n.nodes,n});
+(function(root) {
+  var dust = {},
+      NONE = 'NONE',
+      ERROR = 'ERROR',
+      WARN = 'WARN',
+      INFO = 'INFO',
+      DEBUG = 'DEBUG',
+      loggingLevels = [DEBUG, INFO, WARN, ERROR, NONE],
+      EMPTY_FUNC = function() {},
+      logger = {},
+      originalLog,
+      loggerContext,
+      hasOwnProperty = Object.prototype.hasOwnProperty,
+      getResult;
+
+  dust.debugLevel = NONE;
+
+  /**
+   * Given an object and a key, return the value. Use this instead of obj[key] in order to:
+   *     prevent looking up the prototype chain
+   *     fail nicely when the object is falsy
+   * @param {Object} obj the object to inspect
+   * @param {String} key the name of the property to resolve
+   * @return {*} the resolved value
+   */
+  getResult = function(obj, key) {
+    if (obj && hasOwnProperty.call(obj, key)) {
+      return obj[key];
+    }
+  };
+
+
+  // Try to find the console in global scope
+  if (root && root.console && root.console.log) {
+    loggerContext = root.console;
+    originalLog = root.console.log;
+  }
+
+  // robust logger for node.js, modern browsers, and IE <= 9.
+  logger.log = loggerContext ? function() {
+      // Do this for normal browsers
+      if (typeof originalLog === 'function') {
+        logger.log = function() {
+          originalLog.apply(loggerContext, arguments);
+        };
+      } else {
+        // Do this for IE <= 9
+        logger.log = function() {
+          var message = Array.prototype.slice.apply(arguments).join(' ');
+          originalLog(message);
+        };
+      }
+      logger.log.apply(this, arguments);
+  } : function() { /* no op */ };
+
+  /**
+   * Log dust debug statements, info statements, warning statements, and errors.
+   * Filters out the messages based on the dust.debuglevel.
+   * This default implementation will print to the console if it exists.
+   * @param {String|Error} message the message to print/throw
+   * @param {String} type the severity of the message(ERROR, WARN, INFO, or DEBUG)
+   * @public
+   */
+  dust.log = function(message, type) {
+    type = type || INFO;
+    if (dust.debugLevel !== NONE && dust.indexInArray(loggingLevels, type) >= dust.indexInArray(loggingLevels, dust.debugLevel)) {
+      if(!dust.logQueue) {
+        dust.logQueue = [];
+      }
+      dust.logQueue.push({message: message, type: type});
+      logger.log('[DUST ' + type + ']: ' + message);
+    }
+  };
+
+  dust.helpers = {};
+
+  dust.cache = {};
+
+  dust.register = function(name, tmpl) {
+    if (!name) {
+      return;
+    }
+    dust.cache[name] = tmpl;
+  };
+
+  dust.render = function(name, context, callback) {
+    var chunk = new Stub(callback).head;
+    try {
+      dust.load(name, chunk, Context.wrap(context, name)).end();
+    } catch (err) {
+      chunk.setError(err);
+    }
+  };
+
+  dust.stream = function(name, context) {
+    var stream = new Stream(),
+        chunk = stream.head;
+    dust.nextTick(function() {
+      try {
+        dust.load(name, stream.head, Context.wrap(context, name)).end();
+      } catch (err) {
+        chunk.setError(err);
+      }
+    });
+    return stream;
+  };
+
+  dust.renderSource = function(source, context, callback) {
+    return dust.compileFn(source)(context, callback);
+  };
+
+  dust.compileFn = function(source, name) {
+    // name is optional. When name is not provided the template can only be rendered using the callable returned by this function.
+    // If a name is provided the compiled template can also be rendered by name.
+    name = name || null;
+    var tmpl = dust.loadSource(dust.compile(source, name));
+    return function(context, callback) {
+      var master = callback ? new Stub(callback) : new Stream();
+      dust.nextTick(function() {
+        if(typeof tmpl === 'function') {
+          tmpl(master.head, Context.wrap(context, name)).end();
+        }
+        else {
+          dust.log(new Error('Template [' + name + '] cannot be resolved to a Dust function'), ERROR);
+        }
+      });
+      return master;
+    };
+  };
+
+  dust.load = function(name, chunk, context) {
+    var tmpl = dust.cache[name];
+    if (tmpl) {
+      return tmpl(chunk, context);
+    } else {
+      if (dust.onLoad) {
+        return chunk.map(function(chunk) {
+          dust.onLoad(name, function(err, src) {
+            if (err) {
+              return chunk.setError(err);
+            }
+            if (!dust.cache[name]) {
+              dust.loadSource(dust.compile(src, name));
+            }
+            dust.cache[name](chunk, context).end();
+          });
+        });
+      }
+      return chunk.setError(new Error('Template Not Found: ' + name));
+    }
+  };
+
+  dust.loadSource = function(source, path) {
+    return eval(source);
+  };
+
+  if (Array.isArray) {
+    dust.isArray = Array.isArray;
+  } else {
+    dust.isArray = function(arr) {
+      return Object.prototype.toString.call(arr) === '[object Array]';
+    };
+  }
+
+  // indexOf shim for arrays for IE <= 8
+  // source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf
+  dust.indexInArray = function(arr, item, fromIndex) {
+    fromIndex = +fromIndex || 0;
+    if (Array.prototype.indexOf) {
+      return arr.indexOf(item, fromIndex);
+    } else {
+    if ( arr === undefined || arr === null ) {
+      throw new TypeError( 'cannot call method "indexOf" of null' );
+    }
+
+    var length = arr.length; // Hack to convert object.length to a UInt32
+
+    if (Math.abs(fromIndex) === Infinity) {
+      fromIndex = 0;
+    }
+
+    if (fromIndex < 0) {
+      fromIndex += length;
+      if (fromIndex < 0) {
+        fromIndex = 0;
+      }
+    }
+
+    for (;fromIndex < length; fromIndex++) {
+      if (arr[fromIndex] === item) {
+        return fromIndex;
+      }
+    }
+
+    return -1;
+    }
+  };
+
+  dust.nextTick = (function() {
+    return function(callback) {
+      setTimeout(callback,0);
+    };
+  } )();
+
+  dust.isEmpty = function(value) {
+    if (dust.isArray(value) && !value.length) {
+      return true;
+    }
+    if (value === 0) {
+      return false;
+    }
+    return (!value);
+  };
+
+  // apply the filter chain and return the output string
+  dust.filter = function(string, auto, filters) {
+    if (filters) {
+      for (var i=0, len=filters.length; i<len; i++) {
+        var name = filters[i];
+        if (name === 's') {
+          auto = null;
+        }
+        else if (typeof dust.filters[name] === 'function') {
+          string = dust.filters[name](string);
+        }
+        else {
+          dust.log('Invalid filter [' + name + ']', WARN);
+        }
+      }
+    }
+    // by default always apply the h filter, unless asked to unescape with |s
+    if (auto) {
+      string = dust.filters[auto](string);
+    }
+    return string;
+  };
+
+  dust.filters = {
+    h: function(value) { return dust.escapeHtml(value); },
+    j: function(value) { return dust.escapeJs(value); },
+    u: encodeURI,
+    uc: encodeURIComponent,
+    js: function(value) {
+      if (!JSON) {
+        dust.log('JSON is undefined.  JSON stringify has not been used on [' + value + ']', WARN);
+        return value;
+      } else {
+        return JSON.stringify(value);
+      }
+    },
+    jp: function(value) {
+      if (!JSON) {dust.log('JSON is undefined.  JSON parse has not been used on [' + value + ']', WARN);
+        return value;
+      } else {
+        return JSON.parse(value);
+      }
+    }
+  };
+
+  function Context(stack, global, blocks, templateName) {
+    this.stack  = stack;
+    this.global = global;
+    this.blocks = blocks;
+    this.templateName = templateName;
+  }
+
+  dust.makeBase = function(global) {
+    return new Context(new Stack(), global);
+  };
+
+  Context.wrap = function(context, name) {
+    if (context instanceof Context) {
+      return context;
+    }
+    return new Context(new Stack(context), {}, null, name);
+  };
+
+  /**
+   * Public API for getting a value from the context.
+   * @method get
+   * @param {string|array} path The path to the value. Supported formats are:
+   * 'key'
+   * 'path.to.key'
+   * '.path.to.key'
+   * ['path', 'to', 'key']
+   * ['key']
+   * @param {boolean} [cur=false] Boolean which determines if the search should be limited to the
+   * current context (true), or if get should search in parent contexts as well (false).
+   * @public
+   * @returns {string|object}
+   */
+  Context.prototype.get = function(path, cur) {
+    if (typeof path === 'string') {
+      if (path[0] === '.') {
+        cur = true;
+        path = path.substr(1);
+      }
+      path = path.split('.');
+    }
+    return this._get(cur, path);
+  };
+
+  /**
+   * Get a value from the context
+   * @method _get
+   * @param {boolean} cur Get only from the current context
+   * @param {array} down An array of each step in the path
+   * @private
+   * @return {string | object}
+   */
+  Context.prototype._get = function(cur, down) {
+    var ctx = this.stack,
+        i = 1,
+        value, first, len, ctxThis;
+    first = down[0];
+    len = down.length;
+
+    if (cur && len === 0) {
+      ctxThis = ctx;
+      ctx = ctx.head;
+    } else {
+      if (!cur) {
+        // Search up the stack for the first value
+        while (ctx) {
+          if (ctx.isObject) {
+            ctxThis = ctx.head;
+            value = getResult(ctx.head, first);
+            if (value !== undefined) {
+              break;
+            }
+          }
+          ctx = ctx.tail;
+        }
+
+        if (value !== undefined) {
+          ctx = value;
+        } else {
+          ctx = getResult(this.global, first);
+        }
+      } else if (ctx) {
+        // if scope is limited by a leading dot, don't search up the tree
+        ctx = getResult(ctx.head, first);
+      }
+
+      while (ctx && i < len) {
+        ctxThis = ctx;
+        ctx = getResult(ctx, down[i]);
+        i++;
+      }
+    }
+
+    // Return the ctx or a function wrapping the application of the context.
+    if (typeof ctx === 'function') {
+      return function() {
+        try {
+          return ctx.apply(ctxThis, arguments);
+        } catch (err) {
+          return dust.log(err, ERROR);
+        }
+      };
+    } else {
+      if (ctx === undefined) {
+        dust.log('Cannot find the value for reference [{' + down.join('.') + '}] in template [' + this.getTemplateName() + ']');
+      }
+      return ctx;
+    }
+  };
+
+  Context.prototype.getPath = function(cur, down) {
+    return this._get(cur, down);
+  };
+
+  Context.prototype.push = function(head, idx, len) {
+    return new Context(new Stack(head, this.stack, idx, len), this.global, this.blocks, this.getTemplateName());
+  };
+
+  Context.prototype.rebase = function(head) {
+    return new Context(new Stack(head), this.global, this.blocks, this.getTemplateName());
+  };
+
+  Context.prototype.current = function() {
+    return this.stack.head;
+  };
+
+  Context.prototype.getBlock = function(key, chk, ctx) {
+    if (typeof key === 'function') {
+      var tempChk = new Chunk();
+      key = key(tempChk, this).data.join('');
+    }
+
+    var blocks = this.blocks;
+
+    if (!blocks) {
+      dust.log('No blocks for context[{' + key + '}] in template [' + this.getTemplateName() + ']', DEBUG);
+      return;
+    }
+    var len = blocks.length, fn;
+    while (len--) {
+      fn = blocks[len][key];
+      if (fn) {
+        return fn;
+      }
+    }
+  };
+
+  Context.prototype.shiftBlocks = function(locals) {
+    var blocks = this.blocks,
+        newBlocks;
+
+    if (locals) {
+      if (!blocks) {
+        newBlocks = [locals];
+      } else {
+        newBlocks = blocks.concat([locals]);
+      }
+      return new Context(this.stack, this.global, newBlocks, this.getTemplateName());
+    }
+    return this;
+  };
+
+  Context.prototype.getTemplateName = function() {
+    return this.templateName;
+  };
+
+  function Stack(head, tail, idx, len) {
+    this.tail = tail;
+    this.isObject = head && typeof head === 'object';
+    this.head = head;
+    this.index = idx;
+    this.of = len;
+  }
+
+  function Stub(callback) {
+    this.head = new Chunk(this);
+    this.callback = callback;
+    this.out = '';
+  }
+
+  Stub.prototype.flush = function() {
+    var chunk = this.head;
+
+    while (chunk) {
+      if (chunk.flushable) {
+        this.out += chunk.data.join(''); //ie7 perf
+      } else if (chunk.error) {
+        this.callback(chunk.error);
+        dust.log('Chunk error [' + chunk.error + '] thrown. Ceasing to render this template.', WARN);
+        this.flush = EMPTY_FUNC;
+        return;
+      } else {
+        return;
+      }
+      chunk = chunk.next;
+      this.head = chunk;
+    }
+    this.callback(null, this.out);
+  };
+
+  function Stream() {
+    this.head = new Chunk(this);
+  }
+
+  Stream.prototype.flush = function() {
+    var chunk = this.head;
+
+    while(chunk) {
+      if (chunk.flushable) {
+        this.emit('data', chunk.data.join('')); //ie7 perf
+      } else if (chunk.error) {
+        this.emit('error', chunk.error);
+        dust.log('Chunk error [' + chunk.error + '] thrown. Ceasing to render this template.', WARN);
+        this.flush = EMPTY_FUNC;
+        return;
+      } else {
+        return;
+      }
+      chunk = chunk.next;
+      this.head = chunk;
+    }
+    this.emit('end');
+  };
+
+  Stream.prototype.emit = function(type, data) {
+    if (!this.events) {
+      dust.log('No events to emit', INFO);
+      return false;
+    }
+    var handler = this.events[type];
+    if (!handler) {
+      dust.log('Event type [' + type + '] does not exist', WARN);
+      return false;
+    }
+    if (typeof handler === 'function') {
+      handler(data);
+    } else if (dust.isArray(handler)) {
+      var listeners = handler.slice(0);
+      for (var i = 0, l = listeners.length; i < l; i++) {
+        listeners[i](data);
+      }
+    } else {
+      dust.log('Event Handler [' + handler + '] is not of a type that is handled by emit', WARN);
+    }
+  };
+
+  Stream.prototype.on = function(type, callback) {
+    if (!this.events) {
+      this.events = {};
+    }
+    if (!this.events[type]) {
+      dust.log('Event type [' + type + '] does not exist. Using just the specified callback.', WARN);
+      if(callback) {
+        this.events[type] = callback;
+      } else {
+        dust.log('Callback for type [' + type + '] does not exist. Listener not registered.', WARN);
+      }
+    } else if(typeof this.events[type] === 'function') {
+      this.events[type] = [this.events[type], callback];
+    } else {
+      this.events[type].push(callback);
+    }
+    return this;
+  };
+
+  Stream.prototype.pipe = function(stream) {
+    this.on('data', function(data) {
+      try {
+        stream.write(data, 'utf8');
+      } catch (err) {
+        dust.log(err, ERROR);
+      }
+    }).on('end', function() {
+      try {
+        return stream.end();
+      } catch (err) {
+        dust.log(err, ERROR);
+      }
+    }).on('error', function(err) {
+      stream.error(err);
+    });
+    return this;
+  };
+
+  function Chunk(root, next, taps) {
+    this.root = root;
+    this.next = next;
+    this.data = []; //ie7 perf
+    this.flushable = false;
+    this.taps = taps;
+  }
+
+  Chunk.prototype.write = function(data) {
+    var taps  = this.taps;
+
+    if (taps) {
+      data = taps.go(data);
+    }
+    this.data.push(data);
+    return this;
+  };
+
+  Chunk.prototype.end = function(data) {
+    if (data) {
+      this.write(data);
+    }
+    this.flushable = true;
+    this.root.flush();
+    return this;
+  };
+
+  Chunk.prototype.map = function(callback) {
+    var cursor = new Chunk(this.root, this.next, this.taps),
+        branch = new Chunk(this.root, cursor, this.taps);
+
+    this.next = branch;
+    this.flushable = true;
+    callback(branch);
+    return cursor;
+  };
+
+  Chunk.prototype.tap = function(tap) {
+    var taps = this.taps;
+
+    if (taps) {
+      this.taps = taps.push(tap);
+    } else {
+      this.taps = new Tap(tap);
+    }
+    return this;
+  };
+
+  Chunk.prototype.untap = function() {
+    this.taps = this.taps.tail;
+    return this;
+  };
+
+  Chunk.prototype.render = function(body, context) {
+    return body(this, context);
+  };
+
+  Chunk.prototype.reference = function(elem, context, auto, filters) {
+    if (typeof elem === 'function') {
+      // Changed the function calling to use apply with the current context to make sure
+      // that "this" is wat we expect it to be inside the function
+      elem = elem.apply(context.current(), [this, context, null, {auto: auto, filters: filters}]);
+      if (elem instanceof Chunk) {
+        return elem;
+      }
+    }
+    if (!dust.isEmpty(elem)) {
+      return this.write(dust.filter(elem, auto, filters));
+    } else {
+      return this;
+    }
+  };
+
+  Chunk.prototype.section = function(elem, context, bodies, params) {
+    // anonymous functions
+    if (typeof elem === 'function') {
+      elem = elem.apply(context.current(), [this, context, bodies, params]);
+      // functions that return chunks are assumed to have handled the body and/or have modified the chunk
+      // use that return value as the current chunk and go to the next method in the chain
+      if (elem instanceof Chunk) {
+        return elem;
+      }
+    }
+    var body = bodies.block,
+        skip = bodies['else'];
+
+    // a.k.a Inline parameters in the Dust documentations
+    if (params) {
+      context = context.push(params);
+    }
+
+    /*
+    Dust's default behavior is to enumerate over the array elem, passing each object in the array to the block.
+    When elem resolves to a value or object instead of an array, Dust sets the current context to the value
+    and renders the block one time.
+    */
+    //non empty array is truthy, empty array is falsy
+    if (dust.isArray(elem)) {
+      if (body) {
+        var len = elem.length, chunk = this;
+        if (len > 0) {
+          // any custom helper can blow up the stack
+          // and store a flattened context, guard defensively
+          if(context.stack.head) {
+            context.stack.head['$len'] = len;
+          }
+          for (var i=0; i<len; i++) {
+            if(context.stack.head) {
+              context.stack.head['$idx'] = i;
+            }
+            chunk = body(chunk, context.push(elem[i], i, len));
+          }
+          if(context.stack.head) {
+            context.stack.head['$idx'] = undefined;
+            context.stack.head['$len'] = undefined;
+          }
+          return chunk;
+        }
+        else if (skip) {
+          return skip(this, context);
+        }
+      }
+    } else if (elem  === true) {
+     // true is truthy but does not change context
+      if (body) {
+        return body(this, context);
+      }
+    } else if (elem || elem === 0) {
+       // everything that evaluates to true are truthy ( e.g. Non-empty strings and Empty objects are truthy. )
+       // zero is truthy
+       // for anonymous functions that did not returns a chunk, truthiness is evaluated based on the return value
+      if (body) {
+        return body(this, context.push(elem));
+      }
+     // nonexistent, scalar false value, scalar empty string, null,
+     // undefined are all falsy
+    } else if (skip) {
+      return skip(this, context);
+    }
+    dust.log('Not rendering section (#) block in template [' + context.getTemplateName() + '], because above key was not found', DEBUG);
+    return this;
+  };
+
+  Chunk.prototype.exists = function(elem, context, bodies) {
+    var body = bodies.block,
+        skip = bodies['else'];
+
+    if (!dust.isEmpty(elem)) {
+      if (body) {
+        return body(this, context);
+      }
+    } else if (skip) {
+      return skip(this, context);
+    }
+    dust.log('Not rendering exists (?) block in template [' + context.getTemplateName() + '], because above key was not found', DEBUG);
+    return this;
+  };
+
+  Chunk.prototype.notexists = function(elem, context, bodies) {
+    var body = bodies.block,
+        skip = bodies['else'];
+
+    if (dust.isEmpty(elem)) {
+      if (body) {
+        return body(this, context);
+      }
+    } else if (skip) {
+      return skip(this, context);
+    }
+    dust.log('Not rendering not exists (^) block check in template [' + context.getTemplateName() + '], because above key was found', DEBUG);
+    return this;
+  };
+
+  Chunk.prototype.block = function(elem, context, bodies) {
+    var body = bodies.block;
+
+    if (elem) {
+      body = elem;
+    }
+
+    if (body) {
+      return body(this, context);
+    }
+    return this;
+  };
+
+  Chunk.prototype.partial = function(elem, context, params) {
+    var partialContext;
+    //put the params context second to match what section does. {.} matches the current context without parameters
+    // start with an empty context
+    partialContext = dust.makeBase(context.global);
+    partialContext.blocks = context.blocks;
+    if (context.stack && context.stack.tail){
+      // grab the stack(tail) off of the previous context if we have it
+      partialContext.stack = context.stack.tail;
+    }
+    if (params){
+      //put params on
+      partialContext = partialContext.push(params);
+    }
+
+    if(typeof elem === 'string') {
+      partialContext.templateName = elem;
+    }
+
+    //reattach the head
+    partialContext = partialContext.push(context.stack.head);
+
+    var partialChunk;
+    if (typeof elem === 'function') {
+      partialChunk = this.capture(elem, partialContext, function(name, chunk) {
+        partialContext.templateName = partialContext.templateName || name;
+        dust.load(name, chunk, partialContext).end();
+      });
+    } else {
+      partialChunk = dust.load(elem, this, partialContext);
+    }
+    return partialChunk;
+  };
+
+  Chunk.prototype.helper = function(name, context, bodies, params) {
+    var chunk = this;
+    // handle invalid helpers, similar to invalid filters
+    try {
+      if(dust.helpers[name]) {
+        return dust.helpers[name](chunk, context, bodies, params);
+      } else {
+        dust.log('Invalid helper [' + name + ']', WARN);
+        return chunk;
+      }
+    } catch (err) {
+      chunk.setError(err);
+      return chunk;
+    }
+  };
+
+  Chunk.prototype.capture = function(body, context, callback) {
+    return this.map(function(chunk) {
+      var stub = new Stub(function(err, out) {
+        if (err) {
+          chunk.setError(err);
+        } else {
+          callback(out, chunk);
+        }
+      });
+      body(stub.head, context).end();
+    });
+  };
+
+  Chunk.prototype.setError = function(err) {
+    this.error = err;
+    this.root.flush();
+    return this;
+  };
+
+  function Tap(head, tail) {
+    this.head = head;
+    this.tail = tail;
+  }
+
+  Tap.prototype.push = function(tap) {
+    return new Tap(tap, this);
+  };
+
+  Tap.prototype.go = function(value) {
+    var tap = this;
+
+    while(tap) {
+      value = tap.head(value);
+      tap = tap.tail;
+    }
+    return value;
+  };
+
+  var HCHARS = new RegExp(/[&<>\"\']/),
+      AMP    = /&/g,
+      LT     = /</g,
+      GT     = />/g,
+      QUOT   = /\"/g,
+      SQUOT  = /\'/g;
+
+  dust.escapeHtml = function(s) {
+    if (typeof s === 'string') {
+      if (!HCHARS.test(s)) {
+        return s;
+      }
+      return s.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(QUOT,'&quot;').replace(SQUOT, '&#39;');
+    }
+    return s;
+  };
+
+  var BS = /\\/g,
+      FS = /\//g,
+      CR = /\r/g,
+      LS = /\u2028/g,
+      PS = /\u2029/g,
+      NL = /\n/g,
+      LF = /\f/g,
+      SQ = /'/g,
+      DQ = /"/g,
+      TB = /\t/g;
+
+  dust.escapeJs = function(s) {
+    if (typeof s === 'string') {
+      return s
+        .replace(BS, '\\\\')
+        .replace(FS, '\\/')
+        .replace(DQ, '\\"')
+        .replace(SQ, '\\\'')
+        .replace(CR, '\\r')
+        .replace(LS, '\\u2028')
+        .replace(PS, '\\u2029')
+        .replace(NL, '\\n')
+        .replace(LF, '\\f')
+        .replace(TB, '\\t');
+    }
+    return s;
+  };
+
+
+  if (typeof exports === 'object') {
+    module.exports = dust;
+  } else {
+    root.dust = dust;
+  }
+
+})((function(){return this;})());
+
+(function(root, factory) {
+  if (typeof exports === 'object') {
+    // in Node, require this file if we want to use the parser as a standalone module
+    module.exports = factory(require('./dust'));
+    // @see server file for parser methods exposed in node
+  } else {
+    // in the browser, store the factory output if we want to use the parser directly
+    factory(root.dust);
+  }
+}(this, function(dust) {
+  var parser = (function(){
+  /*
+   * Generated by PEG.js 0.7.0.
+   *
+   * http://pegjs.majda.cz/
+   */
+
+  function quote(s) {
+    /*
+     * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a
+     * string literal except for the closing quote character, backslash,
+     * carriage return, line separator, paragraph separator, and line feed.
+     * Any character may appear in the form of an escape sequence.
+     *
+     * For portability, we also escape escape all control and non-ASCII
+     * characters. Note that "\0" and "\v" escape sequences are not used
+     * because JSHint does not like the first and IE the second.
+     */
+     return '"' + s
+      .replace(/\\/g, '\\\\')  // backslash
+      .replace(/"/g, '\\"')    // closing quote character
+      .replace(/\x08/g, '\\b') // backspace
+      .replace(/\t/g, '\\t')   // horizontal tab
+      .replace(/\n/g, '\\n')   // line feed
+      .replace(/\f/g, '\\f')   // form feed
+      .replace(/\r/g, '\\r')   // carriage return
+      .replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g, escape)
+      + '"';
+  }
+
+  var result = {
+    /*
+     * Parses the input with a generated parser. If the parsing is successfull,
+     * returns a value explicitly or implicitly specified by the grammar from
+     * which the parser was generated (see |PEG.buildParser|). If the parsing is
+     * unsuccessful, throws |PEG.parser.SyntaxError| describing the error.
+     */
+    parse: function(input, startRule) {
+      var parseFunctions = {
+        "body": parse_body,
+        "part": parse_part,
+        "section": parse_section,
+        "sec_tag_start": parse_sec_tag_start,
+        "end_tag": parse_end_tag,
+        "context": parse_context,
+        "params": parse_params,
+        "bodies": parse_bodies,
+        "reference": parse_reference,
+        "partial": parse_partial,
+        "filters": parse_filters,
+        "special": parse_special,
+        "identifier": parse_identifier,
+        "number": parse_number,
+        "float": parse_float,
+        "integer": parse_integer,
+        "path": parse_path,
+        "key": parse_key,
+        "array": parse_array,
+        "array_part": parse_array_part,
+        "inline": parse_inline,
+        "inline_part": parse_inline_part,
+        "buffer": parse_buffer,
+        "literal": parse_literal,
+        "esc": parse_esc,
+        "raw": parse_raw,
+        "comment": parse_comment,
+        "tag": parse_tag,
+        "ld": parse_ld,
+        "rd": parse_rd,
+        "lb": parse_lb,
+        "rb": parse_rb,
+        "eol": parse_eol,
+        "ws": parse_ws
+      };
+
+      if (startRule !== undefined) {
+        if (parseFunctions[startRule] === undefined) {
+          throw new Error("Invalid rule name: " + quote(startRule) + ".");
+        }
+      } else {
+        startRule = "body";
+      }
+
+      var pos = { offset: 0, line: 1, column: 1, seenCR: false };
+      var reportFailures = 0;
+      var rightmostFailuresPos = { offset: 0, line: 1, column: 1, seenCR: false };
+      var rightmostFailuresExpected = [];
+
+      function padLeft(input, padding, length) {
+        var result = input;
+
+        var padLength = length - input.length;
+        for (var i = 0; i < padLength; i++) {
+          result = padding + result;
+        }
+
+        return result;
+      }
+
+      function escape(ch) {
+        var charCode = ch.charCodeAt(0);
+        var escapeChar;
+        var length;
+
+        if (charCode <= 0xFF) {
+          escapeChar = 'x';
+          length = 2;
+        } else {
+          escapeChar = 'u';
+          length = 4;
+        }
+
+        return '\\' + escapeChar + padLeft(charCode.toString(16).toUpperCase(), '0', length);
+      }
+
+      function clone(object) {
+        var result = {};
+        for (var key in object) {
+          result[key] = object[key];
+        }
+        return result;
+      }
+
+      function advance(pos, n) {
+        var endOffset = pos.offset + n;
+
+        for (var offset = pos.offset; offset < endOffset; offset++) {
+          var ch = input.charAt(offset);
+          if (ch === "\n") {
+            if (!pos.seenCR) { pos.line++; }
+            pos.column = 1;
+            pos.seenCR = false;
+          } else if (ch === "\r" || ch === "\u2028" || ch === "\u2029") {
+            pos.line++;
+            pos.column = 1;
+            pos.seenCR = true;
+          } else {
+            pos.column++;
+            pos.seenCR = false;
+          }
+        }
+
+        pos.offset += n;
+      }
+
+      function matchFailed(failure) {
+        if (pos.offset < rightmostFailuresPos.offset) {
+          return;
+        }
+
+        if (pos.offset > rightmostFailuresPos.offset) {
+          rightmostFailuresPos = clone(pos);
+          rightmostFailuresExpected = [];
+        }
+
+        rightmostFailuresExpected.push(failure);
+      }
+
+      function parse_body() {
+        var result0, result1;
+        var pos0;
+
+        pos0 = clone(pos);
+        result0 = [];
+        result1 = parse_part();
+        while (result1 !== null) {
+          result0.push(result1);
+          result1 = parse_part();
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, p) { return ["body"].concat(p).concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        return result0;
+      }
+
+      function parse_part() {
+        var result0;
+
+        result0 = parse_raw();
+        if (result0 === null) {
+          result0 = parse_comment();
+          if (result0 === null) {
+            result0 = parse_section();
+            if (result0 === null) {
+              result0 = parse_partial();
+              if (result0 === null) {
+                result0 = parse_special();
+                if (result0 === null) {
+                  result0 = parse_reference();
+                  if (result0 === null) {
+                    result0 = parse_buffer();
+                  }
+                }
+              }
+            }
+          }
+        }
+        return result0;
+      }
+
+      function parse_section() {
+        var result0, result1, result2, result3, result4, result5, result6;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_sec_tag_start();
+        if (result0 !== null) {
+          result1 = [];
+          result2 = parse_ws();
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_ws();
+          }
+          if (result1 !== null) {
+            result2 = parse_rd();
+            if (result2 !== null) {
+              result3 = parse_body();
+              if (result3 !== null) {
+                result4 = parse_bodies();
+                if (result4 !== null) {
+                  result5 = parse_end_tag();
+                  result5 = result5 !== null ? result5 : "";
+                  if (result5 !== null) {
+                    result6 = (function(offset, line, column, t, b, e, n) {if( (!n) || (t[1].text !== n.text) ) { throw new Error("Expected end tag for "+t[1].text+" but it was not found. At line : "+line+", column : " + column)} return true;})(pos.offset, pos.line, pos.column, result0, result3, result4, result5) ? "" : null;
+                    if (result6 !== null) {
+                      result0 = [result0, result1, result2, result3, result4, result5, result6];
+                    } else {
+                      result0 = null;
+                      pos = clone(pos1);
+                    }
+                  } else {
+                    result0 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, t, b, e, n) { e.push(["param", ["literal", "block"], b]); t.push(e); return t.concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[0], result0[3], result0[4], result0[5]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          pos1 = clone(pos);
+          result0 = parse_sec_tag_start();
+          if (result0 !== null) {
+            result1 = [];
+            result2 = parse_ws();
+            while (result2 !== null) {
+              result1.push(result2);
+              result2 = parse_ws();
+            }
+            if (result1 !== null) {
+              if (input.charCodeAt(pos.offset) === 47) {
+                result2 = "/";
+                advance(pos, 1);
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"/\"");
+                }
+              }
+              if (result2 !== null) {
+                result3 = parse_rd();
+                if (result3 !== null) {
+                  result0 = [result0, result1, result2, result3];
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, line, column, t) { t.push(["bodies"]); return t.concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[0]);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("section");
+        }
+        return result0;
+      }
+
+      function parse_sec_tag_start() {
+        var result0, result1, result2, result3, result4, result5;
+        var pos0, pos1;
+
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          if (/^[#?^<+@%]/.test(input.charAt(pos.offset))) {
+            result1 = input.charAt(pos.offset);
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("[#?^<+@%]");
+            }
+          }
+          if (result1 !== null) {
+            result2 = [];
+            result3 = parse_ws();
+            while (result3 !== null) {
+              result2.push(result3);
+              result3 = parse_ws();
+            }
+            if (result2 !== null) {
+              result3 = parse_identifier();
+              if (result3 !== null) {
+                result4 = parse_context();
+                if (result4 !== null) {
+                  result5 = parse_params();
+                  if (result5 !== null) {
+                    result0 = [result0, result1, result2, result3, result4, result5];
+                  } else {
+                    result0 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, t, n, c, p) { return [t, n, c, p] })(pos0.offset, pos0.line, pos0.column, result0[1], result0[3], result0[4], result0[5]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        return result0;
+      }
+
+      function parse_end_tag() {
+        var result0, result1, result2, result3, result4, result5;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 47) {
+            result1 = "/";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"/\"");
+            }
+          }
+          if (result1 !== null) {
+            result2 = [];
+            result3 = parse_ws();
+            while (result3 !== null) {
+              result2.push(result3);
+              result3 = parse_ws();
+            }
+            if (result2 !== null) {
+              result3 = parse_identifier();
+              if (result3 !== null) {
+                result4 = [];
+                result5 = parse_ws();
+                while (result5 !== null) {
+                  result4.push(result5);
+                  result5 = parse_ws();
+                }
+                if (result4 !== null) {
+                  result5 = parse_rd();
+                  if (result5 !== null) {
+                    result0 = [result0, result1, result2, result3, result4, result5];
+                  } else {
+                    result0 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, n) { return n })(pos0.offset, pos0.line, pos0.column, result0[3]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("end tag");
+        }
+        return result0;
+      }
+
+      function parse_context() {
+        var result0, result1;
+        var pos0, pos1, pos2;
+
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        if (input.charCodeAt(pos.offset) === 58) {
+          result0 = ":";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\":\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = parse_identifier();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos2);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, n) {return n})(pos1.offset, pos1.line, pos1.column, result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos1);
+        }
+        result0 = result0 !== null ? result0 : "";
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, n) { return n ? ["context", n] : ["context"] })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        return result0;
+      }
+
+      function parse_params() {
+        var result0, result1, result2, result3, result4;
+        var pos0, pos1, pos2;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        result0 = [];
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        result2 = parse_ws();
+        if (result2 !== null) {
+          result1 = [];
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_ws();
+          }
+        } else {
+          result1 = null;
+        }
+        if (result1 !== null) {
+          result2 = parse_key();
+          if (result2 !== null) {
+            if (input.charCodeAt(pos.offset) === 61) {
+              result3 = "=";
+              advance(pos, 1);
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"=\"");
+              }
+            }
+            if (result3 !== null) {
+              result4 = parse_number();
+              if (result4 === null) {
+                result4 = parse_identifier();
+                if (result4 === null) {
+                  result4 = parse_inline();
+                }
+              }
+              if (result4 !== null) {
+                result1 = [result1, result2, result3, result4];
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, k, v) {return ["param", ["literal", k], v]})(pos1.offset, pos1.line, pos1.column, result1[1], result1[3]);
+        }
+        if (result1 === null) {
+          pos = clone(pos1);
+        }
+        while (result1 !== null) {
+          result0.push(result1);
+          pos1 = clone(pos);
+          pos2 = clone(pos);
+          result2 = parse_ws();
+          if (result2 !== null) {
+            result1 = [];
+            while (result2 !== null) {
+              result1.push(result2);
+              result2 = parse_ws();
+            }
+          } else {
+            result1 = null;
+          }
+          if (result1 !== null) {
+            result2 = parse_key();
+            if (result2 !== null) {
+              if (input.charCodeAt(pos.offset) === 61) {
+                result3 = "=";
+                advance(pos, 1);
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"=\"");
+                }
+              }
+              if (result3 !== null) {
+                result4 = parse_number();
+                if (result4 === null) {
+                  result4 = parse_identifier();
+                  if (result4 === null) {
+                    result4 = parse_inline();
+                  }
+                }
+                if (result4 !== null) {
+                  result1 = [result1, result2, result3, result4];
+                } else {
+                  result1 = null;
+                  pos = clone(pos2);
+                }
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, k, v) {return ["param", ["literal", k], v]})(pos1.offset, pos1.line, pos1.column, result1[1], result1[3]);
+          }
+          if (result1 === null) {
+            pos = clone(pos1);
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, p) { return ["params"].concat(p) })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("params");
+        }
+        return result0;
+      }
+
+      function parse_bodies() {
+        var result0, result1, result2, result3, result4, result5;
+        var pos0, pos1, pos2;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        result0 = [];
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        result1 = parse_ld();
+        if (result1 !== null) {
+          if (input.charCodeAt(pos.offset) === 58) {
+            result2 = ":";
+            advance(pos, 1);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("\":\"");
+            }
+          }
+          if (result2 !== null) {
+            result3 = parse_key();
+            if (result3 !== null) {
+              result4 = parse_rd();
+              if (result4 !== null) {
+                result5 = parse_body();
+                if (result5 !== null) {
+                  result1 = [result1, result2, result3, result4, result5];
+                } else {
+                  result1 = null;
+                  pos = clone(pos2);
+                }
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, k, v) {return ["param", ["literal", k], v]})(pos1.offset, pos1.line, pos1.column, result1[2], result1[4]);
+        }
+        if (result1 === null) {
+          pos = clone(pos1);
+        }
+        while (result1 !== null) {
+          result0.push(result1);
+          pos1 = clone(pos);
+          pos2 = clone(pos);
+          result1 = parse_ld();
+          if (result1 !== null) {
+            if (input.charCodeAt(pos.offset) === 58) {
+              result2 = ":";
+              advance(pos, 1);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\":\"");
+              }
+            }
+            if (result2 !== null) {
+              result3 = parse_key();
+              if (result3 !== null) {
+                result4 = parse_rd();
+                if (result4 !== null) {
+                  result5 = parse_body();
+                  if (result5 !== null) {
+                    result1 = [result1, result2, result3, result4, result5];
+                  } else {
+                    result1 = null;
+                    pos = clone(pos2);
+                  }
+                } else {
+                  result1 = null;
+                  pos = clone(pos2);
+                }
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, k, v) {return ["param", ["literal", k], v]})(pos1.offset, pos1.line, pos1.column, result1[2], result1[4]);
+          }
+          if (result1 === null) {
+            pos = clone(pos1);
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, p) { return ["bodies"].concat(p) })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("bodies");
+        }
+        return result0;
+      }
+
+      function parse_reference() {
+        var result0, result1, result2, result3;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          result1 = parse_identifier();
+          if (result1 !== null) {
+            result2 = parse_filters();
+            if (result2 !== null) {
+              result3 = parse_rd();
+              if (result3 !== null) {
+                result0 = [result0, result1, result2, result3];
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, n, f) { return ["reference", n, f].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1], result0[2]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("reference");
+        }
+        return result0;
+      }
+
+      function parse_partial() {
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8;
+        var pos0, pos1, pos2;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 62) {
+            result1 = ">";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\">\"");
+            }
+          }
+          if (result1 === null) {
+            if (input.charCodeAt(pos.offset) === 43) {
+              result1 = "+";
+              advance(pos, 1);
+            } else {
+              result1 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"+\"");
+              }
+            }
+          }
+          if (result1 !== null) {
+            result2 = [];
+            result3 = parse_ws();
+            while (result3 !== null) {
+              result2.push(result3);
+              result3 = parse_ws();
+            }
+            if (result2 !== null) {
+              pos2 = clone(pos);
+              result3 = parse_key();
+              if (result3 !== null) {
+                result3 = (function(offset, line, column, k) {return ["literal", k]})(pos2.offset, pos2.line, pos2.column, result3);
+              }
+              if (result3 === null) {
+                pos = clone(pos2);
+              }
+              if (result3 === null) {
+                result3 = parse_inline();
+              }
+              if (result3 !== null) {
+                result4 = parse_context();
+                if (result4 !== null) {
+                  result5 = parse_params();
+                  if (result5 !== null) {
+                    result6 = [];
+                    result7 = parse_ws();
+                    while (result7 !== null) {
+                      result6.push(result7);
+                      result7 = parse_ws();
+                    }
+                    if (result6 !== null) {
+                      if (input.charCodeAt(pos.offset) === 47) {
+                        result7 = "/";
+                        advance(pos, 1);
+                      } else {
+                        result7 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"/\"");
+                        }
+                      }
+                      if (result7 !== null) {
+                        result8 = parse_rd();
+                        if (result8 !== null) {
+                          result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8];
+                        } else {
+                          result0 = null;
+                          pos = clone(pos1);
+                        }
+                      } else {
+                        result0 = null;
+                        pos = clone(pos1);
+                      }
+                    } else {
+                      result0 = null;
+                      pos = clone(pos1);
+                    }
+                  } else {
+                    result0 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, s, n, c, p) { var key = (s ===">")? "partial" : s; return [key, n, c, p].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1], result0[3], result0[4], result0[5]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("partial");
+        }
+        return result0;
+      }
+
+      function parse_filters() {
+        var result0, result1, result2;
+        var pos0, pos1, pos2;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        result0 = [];
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        if (input.charCodeAt(pos.offset) === 124) {
+          result1 = "|";
+          advance(pos, 1);
+        } else {
+          result1 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"|\"");
+          }
+        }
+        if (result1 !== null) {
+          result2 = parse_key();
+          if (result2 !== null) {
+            result1 = [result1, result2];
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, n) {return n})(pos1.offset, pos1.line, pos1.column, result1[1]);
+        }
+        if (result1 === null) {
+          pos = clone(pos1);
+        }
+        while (result1 !== null) {
+          result0.push(result1);
+          pos1 = clone(pos);
+          pos2 = clone(pos);
+          if (input.charCodeAt(pos.offset) === 124) {
+            result1 = "|";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"|\"");
+            }
+          }
+          if (result1 !== null) {
+            result2 = parse_key();
+            if (result2 !== null) {
+              result1 = [result1, result2];
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, n) {return n})(pos1.offset, pos1.line, pos1.column, result1[1]);
+          }
+          if (result1 === null) {
+            pos = clone(pos1);
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, f) { return ["filters"].concat(f) })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("filters");
+        }
+        return result0;
+      }
+
+      function parse_special() {
+        var result0, result1, result2, result3;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 126) {
+            result1 = "~";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"~\"");
+            }
+          }
+          if (result1 !== null) {
+            result2 = parse_key();
+            if (result2 !== null) {
+              result3 = parse_rd();
+              if (result3 !== null) {
+                result0 = [result0, result1, result2, result3];
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, k) { return ["special", k].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[2]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("special");
+        }
+        return result0;
+      }
+
+      function parse_identifier() {
+        var result0;
+        var pos0;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        result0 = parse_path();
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, p) { var arr = ["path"].concat(p); arr.text = p[1].join('.'); return arr; })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          result0 = parse_key();
+          if (result0 !== null) {
+            result0 = (function(offset, line, column, k) { var arr = ["key", k]; arr.text = k; return arr; })(pos0.offset, pos0.line, pos0.column, result0);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("identifier");
+        }
+        return result0;
+      }
+
+      function parse_number() {
+        var result0;
+        var pos0;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        result0 = parse_float();
+        if (result0 === null) {
+          result0 = parse_integer();
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, n) { return ['literal', n]; })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("number");
+        }
+        return result0;
+      }
+
+      function parse_float() {
+        var result0, result1, result2, result3;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_integer();
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 46) {
+            result1 = ".";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\".\"");
+            }
+          }
+          if (result1 !== null) {
+            result3 = parse_integer();
+            if (result3 !== null) {
+              result2 = [];
+              while (result3 !== null) {
+                result2.push(result3);
+                result3 = parse_integer();
+              }
+            } else {
+              result2 = null;
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, l, r) { return parseFloat(l + "." + r.join('')); })(pos0.offset, pos0.line, pos0.column, result0[0], result0[2]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("float");
+        }
+        return result0;
+      }
+
+      function parse_integer() {
+        var result0, result1;
+        var pos0;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        if (/^[0-9]/.test(input.charAt(pos.offset))) {
+          result1 = input.charAt(pos.offset);
+          advance(pos, 1);
+        } else {
+          result1 = null;
+          if (reportFailures === 0) {
+            matchFailed("[0-9]");
+          }
+        }
+        if (result1 !== null) {
+          result0 = [];
+          while (result1 !== null) {
+            result0.push(result1);
+            if (/^[0-9]/.test(input.charAt(pos.offset))) {
+              result1 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result1 = null;
+              if (reportFailures === 0) {
+                matchFailed("[0-9]");
+              }
+            }
+          }
+        } else {
+          result0 = null;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, digits) { return parseInt(digits.join(""), 10); })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("integer");
+        }
+        return result0;
+      }
+
+      function parse_path() {
+        var result0, result1, result2;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_key();
+        result0 = result0 !== null ? result0 : "";
+        if (result0 !== null) {
+          result2 = parse_array_part();
+          if (result2 === null) {
+            result2 = parse_array();
+          }
+          if (result2 !== null) {
+            result1 = [];
+            while (result2 !== null) {
+              result1.push(result2);
+              result2 = parse_array_part();
+              if (result2 === null) {
+                result2 = parse_array();
+              }
+            }
+          } else {
+            result1 = null;
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, k, d) {
+            d = d[0];
+            if (k && d) {
+              d.unshift(k);
+              return [false, d].concat([['line', line], ['col', column]]);
+            }
+            return [true, d].concat([['line', line], ['col', column]]);
+          })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          pos1 = clone(pos);
+          if (input.charCodeAt(pos.offset) === 46) {
+            result0 = ".";
+            advance(pos, 1);
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\".\"");
+            }
+          }
+          if (result0 !== null) {
+            result1 = [];
+            result2 = parse_array_part();
+            if (result2 === null) {
+              result2 = parse_array();
+            }
+            while (result2 !== null) {
+              result1.push(result2);
+              result2 = parse_array_part();
+              if (result2 === null) {
+                result2 = parse_array();
+              }
+            }
+            if (result1 !== null) {
+              result0 = [result0, result1];
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, line, column, d) {
+              if (d.length > 0) {
+                return [true, d[0]].concat([['line', line], ['col', column]]);
+              }
+              return [true, []].concat([['line', line], ['col', column]]);
+            })(pos0.offset, pos0.line, pos0.column, result0[1]);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("path");
+        }
+        return result0;
+      }
+
+      function parse_key() {
+        var result0, result1, result2;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        if (/^[a-zA-Z_$]/.test(input.charAt(pos.offset))) {
+          result0 = input.charAt(pos.offset);
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[a-zA-Z_$]");
+          }
+        }
+        if (result0 !== null) {
+          result1 = [];
+          if (/^[0-9a-zA-Z_$\-]/.test(input.charAt(pos.offset))) {
+            result2 = input.charAt(pos.offset);
+            advance(pos, 1);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("[0-9a-zA-Z_$\\-]");
+            }
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            if (/^[0-9a-zA-Z_$\-]/.test(input.charAt(pos.offset))) {
+              result2 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("[0-9a-zA-Z_$\\-]");
+              }
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, h, t) { return h + t.join('') })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("key");
+        }
+        return result0;
+      }
+
+      function parse_array() {
+        var result0, result1, result2;
+        var pos0, pos1, pos2, pos3, pos4;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        pos3 = clone(pos);
+        result0 = parse_lb();
+        if (result0 !== null) {
+          pos4 = clone(pos);
+          if (/^[0-9]/.test(input.charAt(pos.offset))) {
+            result2 = input.charAt(pos.offset);
+            advance(pos, 1);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("[0-9]");
+            }
+          }
+          if (result2 !== null) {
+            result1 = [];
+            while (result2 !== null) {
+              result1.push(result2);
+              if (/^[0-9]/.test(input.charAt(pos.offset))) {
+                result2 = input.charAt(pos.offset);
+                advance(pos, 1);
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("[0-9]");
+                }
+              }
+            }
+          } else {
+            result1 = null;
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, n) {return n.join('')})(pos4.offset, pos4.line, pos4.column, result1);
+          }
+          if (result1 === null) {
+            pos = clone(pos4);
+          }
+          if (result1 === null) {
+            result1 = parse_identifier();
+          }
+          if (result1 !== null) {
+            result2 = parse_rb();
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = clone(pos3);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos3);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos3);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, a) {return a; })(pos2.offset, pos2.line, pos2.column, result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos2);
+        }
+        if (result0 !== null) {
+          result1 = parse_array_part();
+          result1 = result1 !== null ? result1 : "";
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, i, nk) { if(nk) { nk.unshift(i); } else {nk = [i] } return nk; })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("array");
+        }
+        return result0;
+      }
+
+      function parse_array_part() {
+        var result0, result1, result2;
+        var pos0, pos1, pos2, pos3;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        pos3 = clone(pos);
+        if (input.charCodeAt(pos.offset) === 46) {
+          result1 = ".";
+          advance(pos, 1);
+        } else {
+          result1 = null;
+          if (reportFailures === 0) {
+            matchFailed("\".\"");
+          }
+        }
+        if (result1 !== null) {
+          result2 = parse_key();
+          if (result2 !== null) {
+            result1 = [result1, result2];
+          } else {
+            result1 = null;
+            pos = clone(pos3);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos3);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, k) {return k})(pos2.offset, pos2.line, pos2.column, result1[1]);
+        }
+        if (result1 === null) {
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result0 = [];
+          while (result1 !== null) {
+            result0.push(result1);
+            pos2 = clone(pos);
+            pos3 = clone(pos);
+            if (input.charCodeAt(pos.offset) === 46) {
+              result1 = ".";
+              advance(pos, 1);
+            } else {
+              result1 = null;
+              if (reportFailures === 0) {
+                matchFailed("\".\"");
+              }
+            }
+            if (result1 !== null) {
+              result2 = parse_key();
+              if (result2 !== null) {
+                result1 = [result1, result2];
+              } else {
+                result1 = null;
+                pos = clone(pos3);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos3);
+            }
+            if (result1 !== null) {
+              result1 = (function(offset, line, column, k) {return k})(pos2.offset, pos2.line, pos2.column, result1[1]);
+            }
+            if (result1 === null) {
+              pos = clone(pos2);
+            }
+          }
+        } else {
+          result0 = null;
+        }
+        if (result0 !== null) {
+          result1 = parse_array();
+          result1 = result1 !== null ? result1 : "";
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, d, a) { if (a) { return d.concat(a); } else { return d; } })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("array_part");
+        }
+        return result0;
+      }
+
+      function parse_inline() {
+        var result0, result1, result2;
+        var pos0, pos1;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        if (input.charCodeAt(pos.offset) === 34) {
+          result0 = "\"";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"\\\"\"");
+          }
+        }
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 34) {
+            result1 = "\"";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"\\\"\"");
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column) { return ["literal", ""].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          pos1 = clone(pos);
+          if (input.charCodeAt(pos.offset) === 34) {
+            result0 = "\"";
+            advance(pos, 1);
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"\\\"\"");
+            }
+          }
+          if (result0 !== null) {
+            result1 = parse_literal();
+            if (result1 !== null) {
+              if (input.charCodeAt(pos.offset) === 34) {
+                result2 = "\"";
+                advance(pos, 1);
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"\\\"\"");
+                }
+              }
+              if (result2 !== null) {
+                result0 = [result0, result1, result2];
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, line, column, l) { return ["literal", l].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1]);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+          if (result0 === null) {
+            pos0 = clone(pos);
+            pos1 = clone(pos);
+            if (input.charCodeAt(pos.offset) === 34) {
+              result0 = "\"";
+              advance(pos, 1);
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"\\\"\"");
+              }
+            }
+            if (result0 !== null) {
+              result2 = parse_inline_part();
+              if (result2 !== null) {
+                result1 = [];
+                while (result2 !== null) {
+                  result1.push(result2);
+                  result2 = parse_inline_part();
+                }
+              } else {
+                result1 = null;
+              }
+              if (result1 !== null) {
+                if (input.charCodeAt(pos.offset) === 34) {
+                  result2 = "\"";
+                  advance(pos, 1);
+                } else {
+                  result2 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"\\\"\"");
+                  }
+                }
+                if (result2 !== null) {
+                  result0 = [result0, result1, result2];
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, line, column, p) { return ["body"].concat(p).concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1]);
+            }
+            if (result0 === null) {
+              pos = clone(pos0);
+            }
+          }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("inline");
+        }
+        return result0;
+      }
+
+      function parse_inline_part() {
+        var result0;
+        var pos0;
+
+        result0 = parse_special();
+        if (result0 === null) {
+          result0 = parse_reference();
+          if (result0 === null) {
+            pos0 = clone(pos);
+            result0 = parse_literal();
+            if (result0 !== null) {
+              result0 = (function(offset, line, column, l) { return ["buffer", l] })(pos0.offset, pos0.line, pos0.column, result0);
+            }
+            if (result0 === null) {
+              pos = clone(pos0);
+            }
+          }
+        }
+        return result0;
+      }
+
+      function parse_buffer() {
+        var result0, result1, result2, result3, result4, result5;
+        var pos0, pos1, pos2, pos3;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_eol();
+        if (result0 !== null) {
+          result1 = [];
+          result2 = parse_ws();
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_ws();
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, e, w) { return ["format", e, w.join('')].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          pos0 = clone(pos);
+          pos1 = clone(pos);
+          pos2 = clone(pos);
+          pos3 = clone(pos);
+          reportFailures++;
+          result1 = parse_tag();
+          reportFailures--;
+          if (result1 === null) {
+            result1 = "";
+          } else {
+            result1 = null;
+            pos = clone(pos3);
+          }
+          if (result1 !== null) {
+            pos3 = clone(pos);
+            reportFailures++;
+            result2 = parse_raw();
+            reportFailures--;
+            if (result2 === null) {
+              result2 = "";
+            } else {
+              result2 = null;
+              pos = clone(pos3);
+            }
+            if (result2 !== null) {
+              pos3 = clone(pos);
+              reportFailures++;
+              result3 = parse_comment();
+              reportFailures--;
+              if (result3 === null) {
+                result3 = "";
+              } else {
+                result3 = null;
+                pos = clone(pos3);
+              }
+              if (result3 !== null) {
+                pos3 = clone(pos);
+                reportFailures++;
+                result4 = parse_eol();
+                reportFailures--;
+                if (result4 === null) {
+                  result4 = "";
+                } else {
+                  result4 = null;
+                  pos = clone(pos3);
+                }
+                if (result4 !== null) {
+                  if (input.length > pos.offset) {
+                    result5 = input.charAt(pos.offset);
+                    advance(pos, 1);
+                  } else {
+                    result5 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("any character");
+                    }
+                  }
+                  if (result5 !== null) {
+                    result1 = [result1, result2, result3, result4, result5];
+                  } else {
+                    result1 = null;
+                    pos = clone(pos2);
+                  }
+                } else {
+                  result1 = null;
+                  pos = clone(pos2);
+                }
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+          if (result1 !== null) {
+            result1 = (function(offset, line, column, c) {return c})(pos1.offset, pos1.line, pos1.column, result1[4]);
+          }
+          if (result1 === null) {
+            pos = clone(pos1);
+          }
+          if (result1 !== null) {
+            result0 = [];
+            while (result1 !== null) {
+              result0.push(result1);
+              pos1 = clone(pos);
+              pos2 = clone(pos);
+              pos3 = clone(pos);
+              reportFailures++;
+              result1 = parse_tag();
+              reportFailures--;
+              if (result1 === null) {
+                result1 = "";
+              } else {
+                result1 = null;
+                pos = clone(pos3);
+              }
+              if (result1 !== null) {
+                pos3 = clone(pos);
+                reportFailures++;
+                result2 = parse_raw();
+                reportFailures--;
+                if (result2 === null) {
+                  result2 = "";
+                } else {
+                  result2 = null;
+                  pos = clone(pos3);
+                }
+                if (result2 !== null) {
+                  pos3 = clone(pos);
+                  reportFailures++;
+                  result3 = parse_comment();
+                  reportFailures--;
+                  if (result3 === null) {
+                    result3 = "";
+                  } else {
+                    result3 = null;
+                    pos = clone(pos3);
+                  }
+                  if (result3 !== null) {
+                    pos3 = clone(pos);
+                    reportFailures++;
+                    result4 = parse_eol();
+                    reportFailures--;
+                    if (result4 === null) {
+                      result4 = "";
+                    } else {
+                      result4 = null;
+                      pos = clone(pos3);
+                    }
+                    if (result4 !== null) {
+                      if (input.length > pos.offset) {
+                        result5 = input.charAt(pos.offset);
+                        advance(pos, 1);
+                      } else {
+                        result5 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("any character");
+                        }
+                      }
+                      if (result5 !== null) {
+                        result1 = [result1, result2, result3, result4, result5];
+                      } else {
+                        result1 = null;
+                        pos = clone(pos2);
+                      }
+                    } else {
+                      result1 = null;
+                      pos = clone(pos2);
+                    }
+                  } else {
+                    result1 = null;
+                    pos = clone(pos2);
+                  }
+                } else {
+                  result1 = null;
+                  pos = clone(pos2);
+                }
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+              if (result1 !== null) {
+                result1 = (function(offset, line, column, c) {return c})(pos1.offset, pos1.line, pos1.column, result1[4]);
+              }
+              if (result1 === null) {
+                pos = clone(pos1);
+              }
+            }
+          } else {
+            result0 = null;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, line, column, b) { return ["buffer", b.join('')].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0);
+          }
+          if (result0 === null) {
+            pos = clone(pos0);
+          }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("buffer");
+        }
+        return result0;
+      }
+
+      function parse_literal() {
+        var result0, result1, result2;
+        var pos0, pos1, pos2, pos3;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        pos3 = clone(pos);
+        reportFailures++;
+        result1 = parse_tag();
+        reportFailures--;
+        if (result1 === null) {
+          result1 = "";
+        } else {
+          result1 = null;
+          pos = clone(pos3);
+        }
+        if (result1 !== null) {
+          result2 = parse_esc();
+          if (result2 === null) {
+            if (/^[^"]/.test(input.charAt(pos.offset))) {
+              result2 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("[^\"]");
+              }
+            }
+          }
+          if (result2 !== null) {
+            result1 = [result1, result2];
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, c) {return c})(pos1.offset, pos1.line, pos1.column, result1[1]);
+        }
+        if (result1 === null) {
+          pos = clone(pos1);
+        }
+        if (result1 !== null) {
+          result0 = [];
+          while (result1 !== null) {
+            result0.push(result1);
+            pos1 = clone(pos);
+            pos2 = clone(pos);
+            pos3 = clone(pos);
+            reportFailures++;
+            result1 = parse_tag();
+            reportFailures--;
+            if (result1 === null) {
+              result1 = "";
+            } else {
+              result1 = null;
+              pos = clone(pos3);
+            }
+            if (result1 !== null) {
+              result2 = parse_esc();
+              if (result2 === null) {
+                if (/^[^"]/.test(input.charAt(pos.offset))) {
+                  result2 = input.charAt(pos.offset);
+                  advance(pos, 1);
+                } else {
+                  result2 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("[^\"]");
+                  }
+                }
+              }
+              if (result2 !== null) {
+                result1 = [result1, result2];
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+            if (result1 !== null) {
+              result1 = (function(offset, line, column, c) {return c})(pos1.offset, pos1.line, pos1.column, result1[1]);
+            }
+            if (result1 === null) {
+              pos = clone(pos1);
+            }
+          }
+        } else {
+          result0 = null;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, b) { return b.join('') })(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("literal");
+        }
+        return result0;
+      }
+
+      function parse_esc() {
+        var result0;
+        var pos0;
+
+        pos0 = clone(pos);
+        if (input.substr(pos.offset, 2) === "\\\"") {
+          result0 = "\\\"";
+          advance(pos, 2);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"\\\\\\\"\"");
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column) { return '"' })(pos0.offset, pos0.line, pos0.column);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        return result0;
+      }
+
+      function parse_raw() {
+        var result0, result1, result2, result3;
+        var pos0, pos1, pos2, pos3, pos4;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        if (input.substr(pos.offset, 2) === "{`") {
+          result0 = "{`";
+          advance(pos, 2);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"{`\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = [];
+          pos2 = clone(pos);
+          pos3 = clone(pos);
+          pos4 = clone(pos);
+          reportFailures++;
+          if (input.substr(pos.offset, 2) === "`}") {
+            result2 = "`}";
+            advance(pos, 2);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"`}\"");
+            }
+          }
+          reportFailures--;
+          if (result2 === null) {
+            result2 = "";
+          } else {
+            result2 = null;
+            pos = clone(pos4);
+          }
+          if (result2 !== null) {
+            if (input.length > pos.offset) {
+              result3 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("any character");
+              }
+            }
+            if (result3 !== null) {
+              result2 = [result2, result3];
+            } else {
+              result2 = null;
+              pos = clone(pos3);
+            }
+          } else {
+            result2 = null;
+            pos = clone(pos3);
+          }
+          if (result2 !== null) {
+            result2 = (function(offset, line, column, char) {return char})(pos2.offset, pos2.line, pos2.column, result2[1]);
+          }
+          if (result2 === null) {
+            pos = clone(pos2);
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            pos2 = clone(pos);
+            pos3 = clone(pos);
+            pos4 = clone(pos);
+            reportFailures++;
+            if (input.substr(pos.offset, 2) === "`}") {
+              result2 = "`}";
+              advance(pos, 2);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"`}\"");
+              }
+            }
+            reportFailures--;
+            if (result2 === null) {
+              result2 = "";
+            } else {
+              result2 = null;
+              pos = clone(pos4);
+            }
+            if (result2 !== null) {
+              if (input.length > pos.offset) {
+                result3 = input.charAt(pos.offset);
+                advance(pos, 1);
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("any character");
+                }
+              }
+              if (result3 !== null) {
+                result2 = [result2, result3];
+              } else {
+                result2 = null;
+                pos = clone(pos3);
+              }
+            } else {
+              result2 = null;
+              pos = clone(pos3);
+            }
+            if (result2 !== null) {
+              result2 = (function(offset, line, column, char) {return char})(pos2.offset, pos2.line, pos2.column, result2[1]);
+            }
+            if (result2 === null) {
+              pos = clone(pos2);
+            }
+          }
+          if (result1 !== null) {
+            if (input.substr(pos.offset, 2) === "`}") {
+              result2 = "`}";
+              advance(pos, 2);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"`}\"");
+              }
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, rawText) { return ["raw", rawText.join('')].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("raw");
+        }
+        return result0;
+      }
+
+      function parse_comment() {
+        var result0, result1, result2, result3;
+        var pos0, pos1, pos2, pos3, pos4;
+
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        if (input.substr(pos.offset, 2) === "{!") {
+          result0 = "{!";
+          advance(pos, 2);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"{!\"");
+          }
+        }
+        if (result0 !== null) {
+          result1 = [];
+          pos2 = clone(pos);
+          pos3 = clone(pos);
+          pos4 = clone(pos);
+          reportFailures++;
+          if (input.substr(pos.offset, 2) === "!}") {
+            result2 = "!}";
+            advance(pos, 2);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"!}\"");
+            }
+          }
+          reportFailures--;
+          if (result2 === null) {
+            result2 = "";
+          } else {
+            result2 = null;
+            pos = clone(pos4);
+          }
+          if (result2 !== null) {
+            if (input.length > pos.offset) {
+              result3 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("any character");
+              }
+            }
+            if (result3 !== null) {
+              result2 = [result2, result3];
+            } else {
+              result2 = null;
+              pos = clone(pos3);
+            }
+          } else {
+            result2 = null;
+            pos = clone(pos3);
+          }
+          if (result2 !== null) {
+            result2 = (function(offset, line, column, c) {return c})(pos2.offset, pos2.line, pos2.column, result2[1]);
+          }
+          if (result2 === null) {
+            pos = clone(pos2);
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            pos2 = clone(pos);
+            pos3 = clone(pos);
+            pos4 = clone(pos);
+            reportFailures++;
+            if (input.substr(pos.offset, 2) === "!}") {
+              result2 = "!}";
+              advance(pos, 2);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"!}\"");
+              }
+            }
+            reportFailures--;
+            if (result2 === null) {
+              result2 = "";
+            } else {
+              result2 = null;
+              pos = clone(pos4);
+            }
+            if (result2 !== null) {
+              if (input.length > pos.offset) {
+                result3 = input.charAt(pos.offset);
+                advance(pos, 1);
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("any character");
+                }
+              }
+              if (result3 !== null) {
+                result2 = [result2, result3];
+              } else {
+                result2 = null;
+                pos = clone(pos3);
+              }
+            } else {
+              result2 = null;
+              pos = clone(pos3);
+            }
+            if (result2 !== null) {
+              result2 = (function(offset, line, column, c) {return c})(pos2.offset, pos2.line, pos2.column, result2[1]);
+            }
+            if (result2 === null) {
+              pos = clone(pos2);
+            }
+          }
+          if (result1 !== null) {
+            if (input.substr(pos.offset, 2) === "!}") {
+              result2 = "!}";
+              advance(pos, 2);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"!}\"");
+              }
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, c) { return ["comment", c.join('')].concat([['line', line], ['col', column]]) })(pos0.offset, pos0.line, pos0.column, result0[1]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("comment");
+        }
+        return result0;
+      }
+
+      function parse_tag() {
+        var result0, result1, result2, result3, result4, result5, result6, result7;
+        var pos0, pos1, pos2;
+
+        pos0 = clone(pos);
+        result0 = parse_ld();
+        if (result0 !== null) {
+          result1 = [];
+          result2 = parse_ws();
+          while (result2 !== null) {
+            result1.push(result2);
+            result2 = parse_ws();
+          }
+          if (result1 !== null) {
+            if (/^[#?^><+%:@\/~%]/.test(input.charAt(pos.offset))) {
+              result2 = input.charAt(pos.offset);
+              advance(pos, 1);
+            } else {
+              result2 = null;
+              if (reportFailures === 0) {
+                matchFailed("[#?^><+%:@\\/~%]");
+              }
+            }
+            if (result2 !== null) {
+              result3 = [];
+              result4 = parse_ws();
+              while (result4 !== null) {
+                result3.push(result4);
+                result4 = parse_ws();
+              }
+              if (result3 !== null) {
+                pos1 = clone(pos);
+                pos2 = clone(pos);
+                reportFailures++;
+                result5 = parse_rd();
+                reportFailures--;
+                if (result5 === null) {
+                  result5 = "";
+                } else {
+                  result5 = null;
+                  pos = clone(pos2);
+                }
+                if (result5 !== null) {
+                  pos2 = clone(pos);
+                  reportFailures++;
+                  result6 = parse_eol();
+                  reportFailures--;
+                  if (result6 === null) {
+                    result6 = "";
+                  } else {
+                    result6 = null;
+                    pos = clone(pos2);
+                  }
+                  if (result6 !== null) {
+                    if (input.length > pos.offset) {
+                      result7 = input.charAt(pos.offset);
+                      advance(pos, 1);
+                    } else {
+                      result7 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("any character");
+                      }
+                    }
+                    if (result7 !== null) {
+                      result5 = [result5, result6, result7];
+                    } else {
+                      result5 = null;
+                      pos = clone(pos1);
+                    }
+                  } else {
+                    result5 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result5 = null;
+                  pos = clone(pos1);
+                }
+                if (result5 !== null) {
+                  result4 = [];
+                  while (result5 !== null) {
+                    result4.push(result5);
+                    pos1 = clone(pos);
+                    pos2 = clone(pos);
+                    reportFailures++;
+                    result5 = parse_rd();
+                    reportFailures--;
+                    if (result5 === null) {
+                      result5 = "";
+                    } else {
+                      result5 = null;
+                      pos = clone(pos2);
+                    }
+                    if (result5 !== null) {
+                      pos2 = clone(pos);
+                      reportFailures++;
+                      result6 = parse_eol();
+                      reportFailures--;
+                      if (result6 === null) {
+                        result6 = "";
+                      } else {
+                        result6 = null;
+                        pos = clone(pos2);
+                      }
+                      if (result6 !== null) {
+                        if (input.length > pos.offset) {
+                          result7 = input.charAt(pos.offset);
+                          advance(pos, 1);
+                        } else {
+                          result7 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("any character");
+                          }
+                        }
+                        if (result7 !== null) {
+                          result5 = [result5, result6, result7];
+                        } else {
+                          result5 = null;
+                          pos = clone(pos1);
+                        }
+                      } else {
+                        result5 = null;
+                        pos = clone(pos1);
+                      }
+                    } else {
+                      result5 = null;
+                      pos = clone(pos1);
+                    }
+                  }
+                } else {
+                  result4 = null;
+                }
+                if (result4 !== null) {
+                  result5 = [];
+                  result6 = parse_ws();
+                  while (result6 !== null) {
+                    result5.push(result6);
+                    result6 = parse_ws();
+                  }
+                  if (result5 !== null) {
+                    result6 = parse_rd();
+                    if (result6 !== null) {
+                      result0 = [result0, result1, result2, result3, result4, result5, result6];
+                    } else {
+                      result0 = null;
+                      pos = clone(pos0);
+                    }
+                  } else {
+                    result0 = null;
+                    pos = clone(pos0);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos0);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos0);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos0);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos0);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos0);
+        }
+        if (result0 === null) {
+          result0 = parse_reference();
+        }
+        return result0;
+      }
+
+      function parse_ld() {
+        var result0;
+
+        if (input.charCodeAt(pos.offset) === 123) {
+          result0 = "{";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"{\"");
+          }
+        }
+        return result0;
+      }
+
+      function parse_rd() {
+        var result0;
+
+        if (input.charCodeAt(pos.offset) === 125) {
+          result0 = "}";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"}\"");
+          }
+        }
+        return result0;
+      }
+
+      function parse_lb() {
+        var result0;
+
+        if (input.charCodeAt(pos.offset) === 91) {
+          result0 = "[";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"[\"");
+          }
+        }
+        return result0;
+      }
+
+      function parse_rb() {
+        var result0;
+
+        if (input.charCodeAt(pos.offset) === 93) {
+          result0 = "]";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"]\"");
+          }
+        }
+        return result0;
+      }
+
+      function parse_eol() {
+        var result0;
+
+        if (input.charCodeAt(pos.offset) === 10) {
+          result0 = "\n";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"\\n\"");
+          }
+        }
+        if (result0 === null) {
+          if (input.substr(pos.offset, 2) === "\r\n") {
+            result0 = "\r\n";
+            advance(pos, 2);
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"\\r\\n\"");
+            }
+          }
+          if (result0 === null) {
+            if (input.charCodeAt(pos.offset) === 13) {
+              result0 = "\r";
+              advance(pos, 1);
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"\\r\"");
+              }
+            }
+            if (result0 === null) {
+              if (input.charCodeAt(pos.offset) === 8232) {
+                result0 = "\u2028";
+                advance(pos, 1);
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"\\u2028\"");
+                }
+              }
+              if (result0 === null) {
+                if (input.charCodeAt(pos.offset) === 8233) {
+                  result0 = "\u2029";
+                  advance(pos, 1);
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"\\u2029\"");
+                  }
+                }
+              }
+            }
+          }
+        }
+        return result0;
+      }
+
+      function parse_ws() {
+        var result0;
+
+        if (/^[\t\x0B\f \xA0\uFEFF]/.test(input.charAt(pos.offset))) {
+          result0 = input.charAt(pos.offset);
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[\\t\\x0B\\f \\xA0\\uFEFF]");
+          }
+        }
+        if (result0 === null) {
+          result0 = parse_eol();
+        }
+        return result0;
+      }
+
+
+      function cleanupExpected(expected) {
+        expected.sort();
+
+        var lastExpected = null;
+        var cleanExpected = [];
+        for (var i = 0; i < expected.length; i++) {
+          if (expected[i] !== lastExpected) {
+            cleanExpected.push(expected[i]);
+            lastExpected = expected[i];
+          }
+        }
+        return cleanExpected;
+      }
+
+
+
+      var result = parseFunctions[startRule]();
+
+      /*
+       * The parser is now in one of the following three states:
+       *
+       * 1. The parser successfully parsed the whole input.
+       *
+       *    - |result !== null|
+       *    - |pos.offset === input.length|
+       *    - |rightmostFailuresExpected| may or may not contain something
+       *
+       * 2. The parser successfully parsed only a part of the input.
+       *
+       *    - |result !== null|
+       *    - |pos.offset < input.length|
+       *    - |rightmostFailuresExpected| may or may not contain something
+       *
+       * 3. The parser did not successfully parse any part of the input.
+       *
+       *   - |result === null|
+       *   - |pos.offset === 0|
+       *   - |rightmostFailuresExpected| contains at least one failure
+       *
+       * All code following this comment (including called functions) must
+       * handle these states.
+       */
+      if (result === null || pos.offset !== input.length) {
+        var offset = Math.max(pos.offset, rightmostFailuresPos.offset);
+        var found = offset < input.length ? input.charAt(offset) : null;
+        var errorPosition = pos.offset > rightmostFailuresPos.offset ? pos : rightmostFailuresPos;
+
+        throw new parser.SyntaxError(
+          cleanupExpected(rightmostFailuresExpected),
+          found,
+          offset,
+          errorPosition.line,
+          errorPosition.column
+        );
+      }
+
+      return result;
+    },
+
+    /* Returns the parser source code. */
+    toSource: function() { return this._source; }
+  };
+
+  /* Thrown when a parser encounters a syntax error. */
+
+  result.SyntaxError = function(expected, found, offset, line, column) {
+    function buildMessage(expected, found) {
+      var expectedHumanized, foundHumanized;
+
+      switch (expected.length) {
+        case 0:
+          expectedHumanized = "end of input";
+          break;
+        case 1:
+          expectedHumanized = expected[0];
+          break;
+        default:
+          expectedHumanized = expected.slice(0, expected.length - 1).join(", ")
+            + " or "
+            + expected[expected.length - 1];
+      }
+
+      foundHumanized = found ? quote(found) : "end of input";
+
+      return "Expected " + expectedHumanized + " but " + foundHumanized + " found.";
+    }
+
+    this.name = "SyntaxError";
+    this.expected = expected;
+    this.found = found;
+    this.message = buildMessage(expected, found);
+    this.offset = offset;
+    this.line = line;
+    this.column = column;
+  };
+
+  result.SyntaxError.prototype = Error.prototype;
+
+  return result;
+})();
+
+  // expose parser methods
+  dust.parse = parser.parse;
+
+  return parser;
+}));
+
+
+
+(function(root, factory) {
+  if (typeof exports === 'object') {
+    // in Node, require this file if we want to use the compiler as a standalone module
+    module.exports = factory(require('./parser').parse, require('./dust'));
+  } else {
+    // in the browser, store the factory output if we want to use the compiler directly
+    factory(root.dust.parse, root.dust);
+  }
+}(this, function(parse, dust) {
+  var compiler = {},
+      isArray = dust.isArray;
+
+
+  compiler.compile = function(source, name) {
+    // the name parameter is optional.
+    // this can happen for templates that are rendered immediately (renderSource which calls compileFn) or
+    // for templates that are compiled as a callable (compileFn)
+    //
+    // for the common case (using compile and render) a name is required so that templates will be cached by name and rendered later, by name.
+    if (!name && name !== null) {
+      throw new Error('Template name parameter cannot be undefined when calling dust.compile');
+    }
+
+    try {
+      var ast = filterAST(parse(source));
+      return compile(ast, name);
+    }
+    catch (err)
+    {
+      if (!err.line || !err.column) {
+        throw err;
+      }
+      throw new SyntaxError(err.message + ' At line : ' + err.line + ', column : ' + err.column);
+    }
+  };
+
+  function filterAST(ast) {
+    var context = {};
+    return compiler.filterNode(context, ast);
+  }
+
+  compiler.filterNode = function(context, node) {
+    return compiler.optimizers[node[0]](context, node);
+  };
+
+  compiler.optimizers = {
+    body:      compactBuffers,
+    buffer:    noop,
+    special:   convertSpecial,
+    format:    nullify,        // TODO: convert format
+    reference: visit,
+    '#':       visit,
+    '?':       visit,
+    '^':       visit,
+    '<':       visit,
+    '+':       visit,
+    '@':       visit,
+    '%':       visit,
+    partial:   visit,
+    context:   visit,
+    params:    visit,
+    bodies:    visit,
+    param:     visit,
+    filters:   noop,
+    key:       noop,
+    path:      noop,
+    literal:   noop,
+    raw:       noop,
+    comment:   nullify,
+    line:      nullify,
+    col:       nullify
+  };
+
+  compiler.pragmas = {
+    esc: function(compiler, context, bodies, params) {
+      var old = compiler.auto,
+          out;
+      if (!context) {
+        context = 'h';
+      }
+      compiler.auto = (context === 's') ? '' : context;
+      out = compileParts(compiler, bodies.block);
+      compiler.auto = old;
+      return out;
+    }
+  };
+
+  function visit(context, node) {
+    var out = [node[0]],
+        i, len, res;
+    for (i=1, len=node.length; i<len; i++) {
+      res = compiler.filterNode(context, node[i]);
+      if (res) {
+        out.push(res);
+      }
+    }
+    return out;
+  }
+
+  // Compacts consecutive buffer nodes into a single node
+  function compactBuffers(context, node) {
+    var out = [node[0]],
+        memo, i, len, res;
+    for (i=1, len=node.length; i<len; i++) {
+      res = compiler.filterNode(context, node[i]);
+      if (res) {
+        if (res[0] === 'buffer') {
+          if (memo) {
+            memo[1] += res[1];
+          } else {
+            memo = res;
+            out.push(res);
+          }
+        } else {
+          memo = null;
+          out.push(res);
+        }
+      }
+    }
+    return out;
+  }
+
+  var specialChars = {
+    's': ' ',
+    'n': '\n',
+    'r': '\r',
+    'lb': '{',
+    'rb': '}'
+  };
+
+  function convertSpecial(context, node) {
+    return ['buffer', specialChars[node[1]]];
+  }
+
+  function noop(context, node) {
+    return node;
+  }
+
+  function nullify(){}
+
+  function compile(ast, name) {
+    var context = {
+      name: name,
+      bodies: [],
+      blocks: {},
+      index: 0,
+      auto: 'h'
+    };
+
+    return '(function(){dust.register(' +
+        (name ? '"' + name + '"' : 'null') + ',' +
+        compiler.compileNode(context, ast) +
+        ');' +
+        compileBlocks(context) +
+        compileBodies(context) +
+        'return body_0;' +
+        '})();';
+  }
+
+  function compileBlocks(context) {
+    var out = [],
+        blocks = context.blocks,
+        name;
+
+    for (name in blocks) {
+      out.push('"' + name + '":' + blocks[name]);
+    }
+    if (out.length) {
+      context.blocks = 'ctx=ctx.shiftBlocks(blocks);';
+      return 'var blocks={' + out.join(',') + '};';
+    }
+    return context.blocks = '';
+  }
+
+  function compileBodies(context) {
+    var out = [],
+        bodies = context.bodies,
+        blx = context.blocks,
+        i, len;
+
+    for (i=0, len=bodies.length; i<len; i++) {
+      out[i] = 'function body_' + i + '(chk,ctx){' +
+          blx + 'return chk' + bodies[i] + ';}';
+    }
+    return out.join('');
+  }
+
+  function compileParts(context, body) {
+    var parts = '',
+        i, len;
+    for (i=1, len=body.length; i<len; i++) {
+      parts += compiler.compileNode(context, body[i]);
+    }
+    return parts;
+  }
+
+  compiler.compileNode = function(context, node) {
+    return compiler.nodes[node[0]](context, node);
+  };
+
+  compiler.nodes = {
+    body: function(context, node) {
+      var id = context.index++,
+          name = 'body_' + id;
+      context.bodies[id] = compileParts(context, node);
+      return name;
+    },
+
+    buffer: function(context, node) {
+      return '.write(' + escape(node[1]) + ')';
+    },
+
+    format: function(context, node) {
+      return '.write(' + escape(node[1] + node[2]) + ')';
+    },
+
+    reference: function(context, node) {
+      return '.reference(' + compiler.compileNode(context, node[1]) +
+        ',ctx,' + compiler.compileNode(context, node[2]) + ')';
+    },
+
+    '#': function(context, node) {
+      return compileSection(context, node, 'section');
+    },
+
+    '?': function(context, node) {
+      return compileSection(context, node, 'exists');
+    },
+
+    '^': function(context, node) {
+      return compileSection(context, node, 'notexists');
+    },
+
+    '<': function(context, node) {
+      var bodies = node[4];
+      for (var i=1, len=bodies.length; i<len; i++) {
+        var param = bodies[i],
+            type = param[1][1];
+        if (type === 'block') {
+          context.blocks[node[1].text] = compiler.compileNode(context, param[2]);
+          return '';
+        }
+      }
+      return '';
+    },
+
+    '+': function(context, node) {
+      if (typeof(node[1].text) === 'undefined'  && typeof(node[4]) === 'undefined'){
+        return '.block(ctx.getBlock(' +
+              compiler.compileNode(context, node[1]) +
+              ',chk, ctx),' + compiler.compileNode(context, node[2]) + ', {},' +
+              compiler.compileNode(context, node[3]) +
+              ')';
+      } else {
+        return '.block(ctx.getBlock(' +
+            escape(node[1].text) +
+            '),' + compiler.compileNode(context, node[2]) + ',' +
+            compiler.compileNode(context, node[4]) + ',' +
+            compiler.compileNode(context, node[3]) +
+            ')';
+      }
+    },
+
+    '@': function(context, node) {
+      return '.helper(' +
+        escape(node[1].text) +
+        ',' + compiler.compileNode(context, node[2]) + ',' +
+        compiler.compileNode(context, node[4]) + ',' +
+        compiler.compileNode(context, node[3]) +
+        ')';
+    },
+
+    '%': function(context, node) {
+      // TODO: Move these hacks into pragma precompiler
+      var name = node[1][1],
+          rawBodies,
+          bodies,
+          rawParams,
+          params,
+          ctx, b, p, i, len;
+      if (!compiler.pragmas[name]) {
+        return '';
+      }
+
+      rawBodies = node[4];
+      bodies = {};
+      for (i=1, len=rawBodies.length; i<len; i++) {
+        b = rawBodies[i];
+        bodies[b[1][1]] = b[2];
+      }
+
+      rawParams = node[3];
+      params = {};
+      for (i=1, len=rawParams.length; i<len; i++) {
+        p = rawParams[i];
+        params[p[1][1]] = p[2][1];
+      }
+
+      ctx = node[2][1] ? node[2][1].text : null;
+
+      return compiler.pragmas[name](context, ctx, bodies, params);
+    },
+
+    partial: function(context, node) {
+      return '.partial(' +
+          compiler.compileNode(context, node[1]) +
+          ',' + compiler.compileNode(context, node[2]) +
+          ',' + compiler.compileNode(context, node[3]) + ')';
+    },
+
+    context: function(context, node) {
+      if (node[1]) {
+        return 'ctx.rebase(' + compiler.compileNode(context, node[1]) + ')';
+      }
+      return 'ctx';
+    },
+
+    params: function(context, node) {
+      var out = [];
+      for (var i=1, len=node.length; i<len; i++) {
+        out.push(compiler.compileNode(context, node[i]));
+      }
+      if (out.length) {
+        return '{' + out.join(',') + '}';
+      }
+      return '{}';
+    },
+
+    bodies: function(context, node) {
+      var out = [];
+      for (var i=1, len=node.length; i<len; i++) {
+        out.push(compiler.compileNode(context, node[i]));
+      }
+      return '{' + out.join(',') + '}';
+    },
+
+    param: function(context, node) {
+      return compiler.compileNode(context, node[1]) + ':' + compiler.compileNode(context, node[2]);
+    },
+
+    filters: function(context, node) {
+      var list = [];
+      for (var i=1, len=node.length; i<len; i++) {
+        var filter = node[i];
+        list.push('"' + filter + '"');
+      }
+      return '"' + context.auto + '"' +
+        (list.length ? ',[' + list.join(',') + ']' : '');
+    },
+
+    key: function(context, node) {
+      return 'ctx.get(["' + node[1] + '"], false)';
+    },
+
+    path: function(context, node) {
+      var current = node[1],
+          keys = node[2],
+          list = [];
+
+      for (var i=0,len=keys.length; i<len; i++) {
+        if (isArray(keys[i])) {
+          list.push(compiler.compileNode(context, keys[i]));
+        } else {
+          list.push('"' + keys[i] + '"');
+        }
+      }
+      return 'ctx.getPath(' + current + ', [' + list.join(',') + '])';
+    },
+
+    literal: function(context, node) {
+      return escape(node[1]);
+    },
+    raw: function(context, node) {
+      return ".write(" + escape(node[1]) + ")";
+    }
+  };
+
+  function compileSection(context, node, cmd) {
+    return '.' + cmd + '(' +
+      compiler.compileNode(context, node[1]) +
+      ',' + compiler.compileNode(context, node[2]) + ',' +
+      compiler.compileNode(context, node[4]) + ',' +
+      compiler.compileNode(context, node[3]) +
+      ')';
+  }
+
+  var BS = /\\/g,
+      DQ = /"/g,
+      LF = /\f/g,
+      NL = /\n/g,
+      CR = /\r/g,
+      TB = /\t/g;
+  function escapeToJsSafeString(str) {
+    return str.replace(BS, '\\\\')
+              .replace(DQ, '\\"')
+              .replace(LF, '\\f')
+              .replace(NL, '\\n')
+              .replace(CR, '\\r')
+              .replace(TB, '\\t');
+  }
+
+  var escape = (typeof JSON === 'undefined') ?
+                  function(str) { return '"' + escapeToJsSafeString(str) + '"';} :
+                  JSON.stringify;
+
+  // expose compiler methods
+  dust.compile = compiler.compile;
+  dust.filterNode = compiler.filterNode;
+  dust.optimizers = compiler.optimizers;
+  dust.pragmas = compiler.pragmas;
+  dust.compileNode = compiler.compileNode;
+  dust.nodes = compiler.nodes;
+
+  return compiler;
+
+}));
+
+
+
+/*! dustjs-helpers - v1.2.0
+* https://github.com/linkedin/dustjs-helpers
+* Copyright (c) 2014 Aleksander Williams; Released under the MIT License */
+!function(dust){function isSelect(a){var b=a.current();return"object"==typeof b&&b.isSelect===!0}function jsonFilter(a,b){return"function"==typeof b?b.toString().replace(/(^\s+|\s+$)/gm,"").replace(/\n/gm,"").replace(/,\s*/gm,", ").replace(/\)\{/gm,") {"):b}function filter(a,b,c,d,e){d=d||{};var f,g,h=c.block,i=d.filterOpType||"";if("undefined"!=typeof d.key)f=dust.helpers.tap(d.key,a,b);else{if(!isSelect(b))return _console.log("No key specified for filter in:"+i+" helper "),a;f=b.current().selectKey,b.current().isResolved&&(e=function(){return!1})}return g=dust.helpers.tap(d.value,a,b),e(coerce(g,d.type,b),coerce(f,d.type,b))?(isSelect(b)&&(b.current().isResolved=!0),h?a.render(h,b):(_console.log("Missing body block in the "+i+" helper "),a)):c["else"]?a.render(c["else"],b):a}function coerce(a,b,c){if(a)switch(b||typeof a){case"number":return+a;case"string":return String(a);case"boolean":return a="false"===a?!1:a,Boolean(a);case"date":return new Date(a);case"context":return c.get(a)}return a}var _console="undefined"!=typeof console?console:{log:function(){}},helpers={tap:function(a,b,c){if("function"!=typeof a)return a;var d,e="";return d=b.tap(function(a){return e+=a,""}).render(a,c),b.untap(),d.constructor!==b.constructor?d:""===e?!1:e},sep:function(a,b,c){var d=c.block;return b.stack.index===b.stack.of-1?a:d?c.block(a,b):a},idx:function(a,b,c){var d=c.block;return d?c.block(a,b.push(b.stack.index)):a},contextDump:function(a,b,c,d){var e,f=d||{},g=f.to||"output",h=f.key||"current";return g=dust.helpers.tap(g,a,b),h=dust.helpers.tap(h,a,b),e="full"===h?JSON.stringify(b.stack,jsonFilter,2):JSON.stringify(b.stack.head,jsonFilter,2),"console"===g?(_console.log(e),a):a.write(e)},"if":function(chunk,context,bodies,params){var body=bodies.block,skip=bodies["else"];if(params&&params.cond){var cond=params.cond;if(cond=dust.helpers.tap(cond,chunk,context),eval(cond))return body?chunk.render(bodies.block,context):(_console.log("Missing body block in the if helper!"),chunk);if(skip)return chunk.render(bodies["else"],context)}else _console.log("No condition given in the if helper!");return chunk},math:function(a,b,c,d){if(d&&"undefined"!=typeof d.key&&d.method){var e=d.key,f=d.method,g=d.operand,h=d.round,i=null;switch(e=dust.helpers.tap(e,a,b),g=dust.helpers.tap(g,a,b),f){case"mod":(0===g||g===-0)&&_console.log("operand for divide operation is 0/-0: expect Nan!"),i=parseFloat(e)%parseFloat(g);break;case"add":i=parseFloat(e)+parseFloat(g);break;case"subtract":i=parseFloat(e)-parseFloat(g);break;case"multiply":i=parseFloat(e)*parseFloat(g);break;case"divide":(0===g||g===-0)&&_console.log("operand for divide operation is 0/-0: expect Nan/Infinity!"),i=parseFloat(e)/parseFloat(g);break;case"ceil":i=Math.ceil(parseFloat(e));break;case"floor":i=Math.floor(parseFloat(e));break;case"round":i=Math.round(parseFloat(e));break;case"abs":i=Math.abs(parseFloat(e));break;default:_console.log("method passed is not supported")}return null!==i?(h&&(i=Math.round(i)),c&&c.block?a.render(c.block,b.push({isSelect:!0,isResolved:!1,selectKey:i})):a.write(i)):a}return _console.log("Key is a required parameter for math helper along with method/operand!"),a},select:function(a,b,c,d){var e=c.block;if(d&&"undefined"!=typeof d.key){var f=dust.helpers.tap(d.key,a,b);return e?a.render(c.block,b.push({isSelect:!0,isResolved:!1,selectKey:f})):(_console.log("Missing body block in the select helper "),a)}return _console.log("No key given in the select helper!"),a},eq:function(a,b,c,d){return d&&(d.filterOpType="eq"),filter(a,b,c,d,function(a,b){return b===a})},ne:function(a,b,c,d){return d?(d.filterOpType="ne",filter(a,b,c,d,function(a,b){return b!==a})):a},lt:function(a,b,c,d){return d?(d.filterOpType="lt",filter(a,b,c,d,function(a,b){return a>b})):void 0},lte:function(a,b,c,d){return d?(d.filterOpType="lte",filter(a,b,c,d,function(a,b){return a>=b})):a},gt:function(a,b,c,d){return d?(d.filterOpType="gt",filter(a,b,c,d,function(a,b){return b>a})):a},gte:function(a,b,c,d){return d?(d.filterOpType="gte",filter(a,b,c,d,function(a,b){return b>=a})):a},"default":function(a,b,c,d){return d&&(d.filterOpType="default"),filter(a,b,c,d,function(){return!0})},size:function(a,b,c,d){var e,f,g,h=0;if(d=d||{},e=d.key,e&&e!==!0)if(dust.isArray(e))h=e.length;else if(!isNaN(parseFloat(e))&&isFinite(e))h=e;else if("object"==typeof e){f=0;for(g in e)Object.hasOwnProperty.call(e,g)&&f++;h=f}else h=(e+"").length;else h=0;return a.write(h)}};dust.helpers=helpers}("undefined"!=typeof exports?module.exports=require("dustjs-linkedin"):dust);
+
+(function(dust){
+
+dust.helpers.i18n = function(chunk, context, bodies, params) {
+  var i18nstring    = dust.helpers.tap(params.t, chunk, context.push(dust.helpers.i18n.context()));
+  var contextlookup = '_i18n_.' + i18nstring;
+  if (i18nstring) {
+    var localized = context.get(contextlookup);
+    if (localized) {
+      return chunk.write(localized);
+    }
+    return chunk.write('**' + i18nstring + '**');
+  }
+  return chunk;
+};
+
+dust.helpers.i18n.context = function(context) {
+  if (typeof context === 'undefined')
+  {
+    var r = { '_i18n_': dust.helpers.i18n._context_ || {} };
+    return r
+  }
+  dust.helpers.i18n._context_ = context;
+}
+
+dust.helpers.substr = function (chunk, context, bodies, params) {
+  // Get the values of all the parameters. The tap function takes care of resolving any variable references
+  // used in parameters (e.g. param="{name}"
+  var str   = dust.helpers.tap(params.str, chunk, context),
+      begin = dust.helpers.tap(params.begin, chunk, context),
+      end   = dust.helpers.tap(params.end, chunk, context),
+      len   = dust.helpers.tap(params.len, chunk, context);
+  begin = begin || 0; // Default begin to zero if omitted
+  // Use JavaScript substr if len is supplied.
+  // Helpers need to return some value using chunk. Here we write the substring into chunk.
+  // If you have nothing to output, just return chunk.write("");
+  if (!(typeof(len) === 'undefined')) {
+      return chunk.write(str.substr(begin,len));
+  }
+  if (!(typeof(end) === 'undefined')) {
+      return chunk.write(str.slice(begin,end));
+  }
+  return chunk.write(str);
+}
+
+})(dust);
 
 if(!window.jQuery.jsonp){
 	/* jquery.jsonp 2.2.0 (c)2010 Julian Aubourg | MIT License | http://code.google.com/p/jquery-jsonp/ */
@@ -9607,9 +13814,10 @@ DarkTip.registerModule('d3.profile', {
 				for (var i = 0; i < numclasses; i++)
 				{
 					var payload = {
-						'class'   : classorder[i],
-						'relative': state['data']['profile']['timePlayed'][classorder[i]],
-						'absolute': Math.round((state['data']['profile']['timePlayed'][classorder[i]] / time_played_total) * 100)
+						'class'          : classorder[i],
+						'relative'       : state['data']['profile']['timePlayed'][classorder[i]],
+						'relativePercent': state['data']['profile']['timePlayed'][classorder[i]] * 100,
+						'absolute'       : Math.round((state['data']['profile']['timePlayed'][classorder[i]] / time_played_total) * 100)
 					};
 
 					if (i == (numclasses -1))
@@ -9697,7 +13905,7 @@ DarkTip.registerModule('d3.profile', {
 				'<div class="darktip-container">' +
 					'<div class="darktip-hero-badge darktip-<%= this["class"] %>">' +
 						'<% if(this["relative"] > 0) { %>' +
-							'<div class="darktip-hero-badge darktip-overlay<% if(this["relative"] == 1) { %> full<% } %>" style="height: <%= this["relative"] * 100 %>%;"></div>' +
+							'<div class="darktip-hero-badge darktip-overlay" style="height: <%= this["relativePercent"] %>%;"></div>' +
 						'<% } %>' +
 					'</div>' +
 					'<div class="darktip-label"><%= this["absolute"] %>%</div>' +

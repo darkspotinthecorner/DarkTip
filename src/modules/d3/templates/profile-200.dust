@@ -19,9 +19,9 @@
 			{#profile.timePlayed.perClass}
 			<div class="darktip-container">
 				<div class="darktip-hero-badge darktip-{class}">
-					{@if cond="{relative} > 0"}
-					<div class="darktip-hero-badge darktip-overlay{@if cond="{relative} == 1"} full{/if}" style="height: {@math key=relative method="multiply" operand=100}%;"></div>
-					{/if}
+					{?relative}
+					<div class="darktip-hero-badge darktip-overlay" style="height: {relativePercent}%;"></div>
+					{/relative}
 				</div>
 				<div class="darktip-label">{absolute}%</div>
 			</div>
@@ -30,7 +30,7 @@
 		{/profile.timePlayed.perClass}
 
 		{?DarkTip.extendedActive}
-		<div class="darktip-row darktip-info-meta"><%= this._loc("extendedInactive") %></div>
+		<div class="darktip-row darktip-info-meta">{@i18n}extendedInactive{/i18n}</div>
 		{/DarkTip.extendedActive}
 	</div>
 	{?DarkTip.extendedActive}
@@ -42,12 +42,12 @@
 			<div class="darktip-row darktip-padded darktip-{#hardcore}hardcore{:else}normal{/hardcore}{@math key=$idx method="mod" operand=2}{@eq value=1} alt{/eq}{/math}">
 				<span class="darktip-name">{name}</span>
 				<span class="darktip-level">{level}</span>
-				<span class="darktip-class darktip-ccolor-{class}"><%= this._loc("characterClass." + this["class"] + "." + this["gender"]) %></span>
+				<span class="darktip-class darktip-ccolor-{class}">{@i18n}characterClass.{class}.{gender}{/i18n}</span>
 			</div>
 			{/profile.heroes}
 		</div>
 		{/profile.heroes}
-		<div class="darktip-row darktip-info-meta"><%= this._loc("extendedActive") %></div>
+		<div class="darktip-row darktip-info-meta">{@i18n}extendedActive{/i18n}</div>
 	</div>
 	{/DarkTip.extendedActive}
 </div>

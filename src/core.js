@@ -887,6 +887,51 @@ window.DarkTip = {
 	'init': function() {
 		this.buildSettings();
 		this.startUp();
+
+		// this.dustTest();
+	},
+
+	'dustTest': function() {
+		var i18n = {
+			'en_US': {
+				'foo'  : 'foo(en)',
+				'one'  : 'One small house',
+				'two'  : 'Two more to go',
+				'three': 'Three are here',
+				'four' : {
+					'A': 'The letter A',
+					'B': 'The letter B',
+					'C': 'The letter C'
+				}
+			},
+			'de_DE': {
+				'foo'  : 'foo(de)',
+				'one'  : 'Ein kleines Haus',
+				'two'  : 'Zwei passen noch rein',
+				'three': 'Drei sind hier',
+				'four' : {
+					'A': 'Der Buchstabe A',
+					'B': 'Der Buchstabe B',
+					'C': 'Der Buchstabe C'
+				}
+			}
+		};
+
+		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}!{/users}', 'intro'));
+		console.log('narf');
+
+		dust.helpers.i18n.context(i18n['de_DE']);
+		dust.render('intro', {
+			'name': 'Fred',
+			'test': 'B',
+			'users': [
+				{ 'name': 'Wilma' },
+				{ 'name': 'Barney' },
+				{ 'name': 'Dino' },
+			]
+		}, function(err, out) {
+			console.log(out);
+		});
 	},
 
 	'checkRequirements': function(requirement, version) {
