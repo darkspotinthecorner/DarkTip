@@ -650,9 +650,17 @@ window.DarkTip = {
 					condition = DarkTip.compareRule(state.data, condition);
 
 					if (typeof condition !== 'undefined') {
+						/*
 						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
 							'condition': condition
 						}, state.repo.templateTools));
+						// */
+
+						var apicall = DarkTip.quickRender(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
+							'condition': condition
+						}, state.repo.templateTools));
+
+						console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall]);
 
 						state.awakenQuery(key);
 
@@ -716,6 +724,30 @@ window.DarkTip = {
 	'startDataCollect': function(module, params, element, type) {
 		var state = this.initDataCollectState(module, params, element, type);
 		state.run();
+	},
+
+	'quickRender': function(source, context, errorFunc) {
+		return this.quickCompile(source, errorFunc)(context);
+	},
+
+	'quickCompile': function(source, errorFunc) {
+		var dusterFn = null;
+		var onError = errorFunc || function (error) { console.log(error); };
+		try {
+			var compiled = dust.compileFn(source);
+			dusterFn = function (context) {
+				var dustOutput = '';
+				compiled(context, function (error, out) {
+					if (error) onError(error);
+					console.log(out);
+					dustOutput = out;
+				});
+				return dustOutput;
+			};
+		} catch (e) {
+			throw ('Please check your template syntax.');
+		}
+		return dusterFn;
 	},
 
 	'renderTooltip': function(state) {

@@ -1,0 +1,5 @@
+<div class="tooltip-profile darktip-tooltip-404">
+	<div class="darktip-title">404<span class="darktip-sub"> / {@i18n t="not-found"/}</span></div>
+	<div class="darktip-row"><span class="darktip-label">{@i18n t="label.battletag"/}</span> <span class="value">{battletag_name}-{battletag_code}</span></div>
+	<div class="darktip-row"><span class="darktip-label">{@i18n t="label.region"/}</span> <span class="value">{region}</span></div>
+</div>
