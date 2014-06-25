@@ -911,9 +911,9 @@ window.DarkTip = {
 				'two'  : 'Two more to go',
 				'three': 'Three are here',
 				'four' : {
-					'A': 'The letter A',
-					'B': 'The letter B',
-					'C': 'The letter C'
+					'one': 'The letter A for {x} --{narf}--',
+					'two': 'The letter B for {x} --{narf}--',
+					'three': 'The letter C for {x} --{narf}--'
 				}
 			},
 			'de_DE': {
@@ -922,14 +922,14 @@ window.DarkTip = {
 				'two'  : 'Zwei passen noch rein',
 				'three': 'Drei sind hier',
 				'four' : {
-					'A': 'Der Buchstabe A',
-					'B': 'Der Buchstabe B',
-					'C': 'Der Buchstabe C'
+					'one': 'Der Buchstabe A für ({@i18n t="foo" /}) {x} --{narf}--',
+					'two': 'Der Buchstabe B für {x} --{narf}--',
+					'three': 'Der Buchstabe C für {x} --{narf}--'
 				}
 			}
 		};
 
-		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}!{/users}', 'intro'));
+		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}! ({@i18n t="four.{bar}" x="{name}" /}){/users}', 'intro'));
 		console.log('narf');
 
 		dust.helpers.i18n.context(i18n['de_DE']);
@@ -937,9 +937,9 @@ window.DarkTip = {
 			'name': 'Fred',
 			'test': 'B',
 			'users': [
-				{ 'name': 'Wilma' },
-				{ 'name': 'Barney' },
-				{ 'name': 'Dino' },
+				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
+				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
+				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
 			]
 		}, function(err, out) {
 			console.log(out);
@@ -5156,12 +5156,17 @@ yepnope([{
 (function(dust){
 
 dust.helpers.i18n = function(chunk, context, bodies, params) {
-  var i18nstring    = dust.helpers.tap(params.t, chunk, context.push(dust.helpers.i18n.context()));
-  var contextlookup = '_i18n_.' + i18nstring;
+  // console.log({'params.t': params.t, 'params.t.tapped': dust.helpers.tap(params.t, chunk, context)});
+  var newContext = dust.makeBase(dust.helpers.i18n.context()).push(context);
+  var i18nstring = dust.helpers.tap(params.t, chunk, context);
   if (i18nstring) {
-    var localized = context.get(contextlookup);
+    var contextlookup = '_i18n_.' + i18nstring;
+    var localized     = newContext.get(contextlookup);
     if (localized) {
-      return chunk.write(localized);
+      var newParams = params;
+      delete newParams.t;
+      dust.loadSource(dust.compile(localized, contextlookup));
+      return chunk.partial(contextlookup, context, newParams);
     }
     return chunk.write('**' + i18nstring + '**');
   }
@@ -5169,32 +5174,8 @@ dust.helpers.i18n = function(chunk, context, bodies, params) {
 };
 
 dust.helpers.i18n.context = function(context) {
-  if (typeof context === 'undefined')
-  {
-    var r = { '_i18n_': dust.helpers.i18n._context_ || {} };
-    return r
-  }
-  dust.helpers.i18n._context_ = context;
-}
-
-dust.helpers.substr = function (chunk, context, bodies, params) {
-  // Get the values of all the parameters. The tap function takes care of resolving any variable references
-  // used in parameters (e.g. param="{name}"
-  var str   = dust.helpers.tap(params.str, chunk, context),
-      begin = dust.helpers.tap(params.begin, chunk, context),
-      end   = dust.helpers.tap(params.end, chunk, context),
-      len   = dust.helpers.tap(params.len, chunk, context);
-  begin = begin || 0; // Default begin to zero if omitted
-  // Use JavaScript substr if len is supplied.
-  // Helpers need to return some value using chunk. Here we write the substring into chunk.
-  // If you have nothing to output, just return chunk.write("");
-  if (!(typeof(len) === 'undefined')) {
-      return chunk.write(str.substr(begin,len));
-  }
-  if (!(typeof(end) === 'undefined')) {
-      return chunk.write(str.slice(begin,end));
-  }
-  return chunk.write(str);
+  if (typeof context === 'undefined') return { '_i18n_': dust.helpers.i18n._context_ || {} };
+  return dust.helpers.i18n._context_ = context;
 }
 
 })(dust);

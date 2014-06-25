@@ -899,9 +899,9 @@ window.DarkTip = {
 				'two'  : 'Two more to go',
 				'three': 'Three are here',
 				'four' : {
-					'A': 'The letter A',
-					'B': 'The letter B',
-					'C': 'The letter C'
+					'one': 'The letter A for {x} --{narf}--',
+					'two': 'The letter B for {x} --{narf}--',
+					'three': 'The letter C for {x} --{narf}--'
 				}
 			},
 			'de_DE': {
@@ -910,14 +910,14 @@ window.DarkTip = {
 				'two'  : 'Zwei passen noch rein',
 				'three': 'Drei sind hier',
 				'four' : {
-					'A': 'Der Buchstabe A',
-					'B': 'Der Buchstabe B',
-					'C': 'Der Buchstabe C'
+					'one': 'Der Buchstabe A für ({@i18n t="foo" /}) {x} --{narf}--',
+					'two': 'Der Buchstabe B für {x} --{narf}--',
+					'three': 'Der Buchstabe C für {x} --{narf}--'
 				}
 			}
 		};
 
-		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}!{/users}', 'intro'));
+		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}! ({@i18n t="four.{bar}" x="{name}" /}){/users}', 'intro'));
 		console.log('narf');
 
 		dust.helpers.i18n.context(i18n['de_DE']);
@@ -925,9 +925,9 @@ window.DarkTip = {
 			'name': 'Fred',
 			'test': 'B',
 			'users': [
-				{ 'name': 'Wilma' },
-				{ 'name': 'Barney' },
-				{ 'name': 'Dino' },
+				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
+				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
+				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
 			]
 		}, function(err, out) {
 			console.log(out);
