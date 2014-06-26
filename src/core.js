@@ -645,10 +645,8 @@ window.DarkTip = {
 
 					var apiCallFn = function(err, apicall) {
 						if (apicall) {
-							console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall, 'key: '+key]);
 							state.awakenQuery(key);
 							var cache = DarkTip.getCache('apicall', apicall);
-							console.log(['cache', cache]);
 							if (typeof cache !== 'undefined') {
 								state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
 							} else {
@@ -664,21 +662,17 @@ window.DarkTip = {
 					};
 
 					if (typeof condition === 'string') {
-						console.log('condition evaluate');
 						dust.renderSource(condition, state.repo.params, function(err, context_lookup) {
-							console.log(['evaluate done', {'context_lookup': context_lookup}]);
 							if (context_lookup) {
-								var context           = dust.makeBase(state.data).push(state.repo.params);
+								var context           = dust.makeBase().push(state.repo.params).push(state.data);
 								var condition_context = context.get(context_lookup);
-								console.log(['context', context]);
-								console.log(['context.get(context_lookup)', condition_context]);
+								console.log(['context', context, 'context_lookup', context_lookup, 'context.get(context_lookup)', condition_context]);
 								if (typeof condition_context !== 'undefined') {
 									dust.renderSource(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, { 'condition': condition_context }), apiCallFn);
 								}
 							}
 						});
 					} else {
-						console.log('no condition evaluate');
 						dust.renderSource(query['call'], state.repo.params, apiCallFn);
 					}
 				});
@@ -724,30 +718,6 @@ window.DarkTip = {
 	'startDataCollect': function(module, params, element, type) {
 		var state = this.initDataCollectState(module, params, element, type);
 		state.run();
-	},
-
-	'quickRender': function(source, context, errorFunc) {
-		return this.quickCompile(source, errorFunc)(context);
-	},
-
-	'quickCompile': function(source, errorFunc) {
-		var dusterFn = null;
-		var onError = errorFunc || function (error) { console.log(error); };
-		try {
-			var compiled = dust.compileFn(source);
-			dusterFn = function (context) {
-				var dustOutput = '';
-				compiled(context, function (error, out) {
-					if (error) onError(error);
-					console.log(out);
-					dustOutput = out;
-				});
-				return dustOutput;
-			};
-		} catch (e) {
-			throw ('Please check your template syntax.');
-		}
-		return dusterFn;
 	},
 
 	'renderTooltip': function(state) {
@@ -919,51 +889,6 @@ window.DarkTip = {
 	'init': function() {
 		this.buildSettings();
 		this.startUp();
-
-		// this.dustTest();
-	},
-
-	'dustTest': function() {
-		var i18n = {
-			'en_US': {
-				'foo'  : 'foo(en)',
-				'one'  : 'One small house',
-				'two'  : 'Two more to go',
-				'three': 'Three are here',
-				'four' : {
-					'one': 'The letter A for {x} --{narf}--',
-					'two': 'The letter B for {x} --{narf}--',
-					'three': 'The letter C for {x} --{narf}--'
-				}
-			},
-			'de_DE': {
-				'foo'  : 'foo(de)',
-				'one'  : 'Ein kleines Haus',
-				'two'  : 'Zwei passen noch rein',
-				'three': 'Drei sind hier',
-				'four' : {
-					'one': 'Der Buchstabe A für ({@i18n t="foo" /}) {x} --{narf}--',
-					'two': 'Der Buchstabe B für {x} --{narf}--',
-					'three': 'Der Buchstabe C für {x} --{narf}--'
-				}
-			}
-		};
-
-		dust.loadSource(dust.compile('{#users}({$idx}) Hello {name}! ({@i18n t="four.{bar}" x="{name}" /}){/users}', 'intro'));
-		console.log('narf');
-
-		dust.helpers.i18n.context(i18n['de_DE']);
-		dust.render('intro', {
-			'name': 'Fred',
-			'test': 'B',
-			'users': [
-				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
-				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
-				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
-			]
-		}, function(err, out) {
-			console.log(out);
-		});
 	},
 
 	'checkRequirements': function(requirement, version) {

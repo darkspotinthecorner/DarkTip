@@ -45,7 +45,7 @@ DarkTip.registerModule('wow.item.equipped', {
 		'item': {
 			'required' : true,
 			'condition': 'character.items.{slot}',
-			'call'     : '//{host}/api/wow/item/{condition"]["id}?locale={locale}',
+			'call'     : '//{host}/api/wow/item/{condition.id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {

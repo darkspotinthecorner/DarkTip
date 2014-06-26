@@ -1,8 +1,8 @@
 (function(dust){
 
 dust.helpers.i18n = function(chunk, context, bodies, params) {
-  // console.log({'params.t': params.t, 'params.t.tapped': dust.helpers.tap(params.t, chunk, context)});
   var newContext = dust.makeBase(dust.helpers.i18n.context()).push(context);
+  console.log(['i18n', 'context', context, 'newContext', newContext]);
   var i18nstring = dust.helpers.tap(params.t, chunk, context);
   if (i18nstring) {
     var contextlookup = '_i18n_.' + i18nstring;
@@ -11,7 +11,7 @@ dust.helpers.i18n = function(chunk, context, bodies, params) {
       var newParams = params;
       delete newParams.t;
       dust.loadSource(dust.compile(localized, contextlookup));
-      return chunk.partial(contextlookup, context, newParams);
+      return chunk.partial(contextlookup, context.push(newParams));
     }
     return chunk.write('**' + i18nstring + '**');
   }

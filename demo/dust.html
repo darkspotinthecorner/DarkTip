@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Dust tests</title>
+</head>
+<body>
+	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../vendor/dustjs-helpers/dust-helpers.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/dustjs_helpers.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+
+		var i18n = {
+			'en_US': {
+				'salutation': 'Hi threre, {name}! How are you?'
+			},
+			'de_DE': {
+				'salutation': 'Hallo {name}, wie geht\'s denn so?'
+			}
+		};
+
+		dust.loadSource(dust.compile('{@i18n t="salutation"/}', 'test_1'));
+		dust.helpers.i18n.context(i18n['de_DE']);
+
+		dust.render('test_1', {
+			'_i18n_': {
+				'salutation': 'this should not show'
+			},
+			'name': 'Fred',
+			'test': 'B',
+			'users': [
+				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
+				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
+				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
+			]
+		}, function(err, out) {
+			console.log({'err': err, 'out': out});
+		});
+
+		var context = dust.makeBase().push({'base': 'yes', 'aaa': { 'bbb': '111', 'ccc': '222' } }).push({'base': 'no', 'xxx': { 'yyy': '888', 'zzz': '999' } }).push({ 'base': 'blaaaaa', 'aaa': '123' });
+
+		console.log(['constructed context', context]);
+		dust.renderSource('base: {base}', context, function(err, out) {
+			console.log(['inline render', out]);
+		});
+
+		console.log(['context.get("base")', context.get('base')]);
+		console.log(['context.get("aaa")', context.get('aaa')]);
+		console.log(['context.get("aaa.bbb")', context.get('aaa.bbb')]);
+		console.log(['context.get("xxx.yyy")', context.get('xxx.yyy')]);
+
+
+
+	</script>
+</body>
+</html>
