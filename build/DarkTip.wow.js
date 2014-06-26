@@ -655,46 +655,46 @@ window.DarkTip = {
 				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
 					var condition = query.condition;
 
-					if (DarkTip.isTemplateString(condition)) {
-						condition = DarkTip.jq.jqote(condition, DarkTip.jq.extend(true, {}, state.repo.params, state.repo.templateTools));
-					}
-
-					condition = DarkTip.compareRule(state.data, condition);
-
-					if (typeof condition !== 'undefined') {
-						/*
-						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
-							'condition': condition
-						}, state.repo.templateTools));
-						// */
-
-						var apicall = DarkTip.quickRender(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
-							'condition': condition
-						}, state.repo.templateTools));
-
-						console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall]);
-
-						state.awakenQuery(key);
-
-						var cache = DarkTip.getCache('apicall', apicall);
-
-						if (typeof cache !== 'undefined') {
-							state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
-						} else {
-							DarkTip.jq.jsonp({
-								'url': apicall,
-								'callbackParameter': state.repo.callbackParam,
-								'success': state.buildCallbackQuerySuccess(key, apicall, query['caching']),
-								'error': state.buildCallbackQueryError(key)
-							});
+					var apiCallFn = function(err, apicall) {
+						if (apicall) {
+							console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall, 'key: '+key]);
+							state.awakenQuery(key);
+							var cache = DarkTip.getCache('apicall', apicall);
+							console.log(['cache', cache]);
+							if (typeof cache !== 'undefined') {
+								state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
+							} else {
+								DarkTip.jq.jsonp({
+									'url': apicall,
+									'callbackParameter': state.repo.callbackParam,
+									'success': state.buildCallbackQuerySuccess(key, apicall, query['caching']),
+									'error': state.buildCallbackQueryError(key)
+								});
+							}
 						}
+						state.finish();
+					};
+
+					if (typeof condition === 'string') {
+						console.log('condition evaluate');
+						dust.renderSource(condition, state.repo.params, function(err, context_lookup) {
+							console.log(['evaluate done', {'context_lookup': context_lookup}]);
+							if (context_lookup) {
+								var context           = dust.makeBase(state.data).push(state.repo.params);
+								var condition_context = context.get(context_lookup);
+								console.log(['context', context]);
+								console.log(['context.get(context_lookup)', condition_context]);
+								if (typeof condition_context !== 'undefined') {
+									dust.renderSource(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, { 'condition': condition_context }), apiCallFn);
+								}
+							}
+						});
+					} else {
+						console.log('no condition evaluate');
+						dust.renderSource(query['call'], state.repo.params, apiCallFn);
 					}
-
 				});
-
-				this.finish();
 			}
-
 		};
 
 		var apicalls = this._read(this.route(module, 'queries'));
@@ -5175,7 +5175,7 @@ DarkTip.registerModule('wow.realm', {
 		'realm': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/realm/status?realm=<%= this["realm"] %>&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/realm/status?realm={realm}&locale={locale}',
 			'caching'  : (60 * 5)
 		}
 	},
@@ -5504,7 +5504,7 @@ DarkTip.registerModule('wow.quest', {
 		'quest': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/quest/{questid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -5573,7 +5573,7 @@ DarkTip.registerModule('wow.quest', {
 			'not-found'            : 'Missione non trovata',
 			'reqLevel'             : 'Richiede il livello <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Missione di gruppo (<%= this["quest"]["suggestedPartyMembers"] %>)'
-		}		
+		}
 	}
 
 });
@@ -5596,7 +5596,7 @@ DarkTip.registerModule('wow.spell', {
 		'spell': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/spell/{spellid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -5681,7 +5681,7 @@ DarkTip.registerModule('wow.spell', {
 		'it_IT': {
 			'loading'          : 'Caricamento incantesimo...',
 			'not-found'        : 'Incantesimo non trovato'
-		}		
+		}
 	}
 
 });
@@ -6868,19 +6868,19 @@ DarkTip.registerModule('wow.item', {
 		'item': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/{itemid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition"]["id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -7556,62 +7556,62 @@ DarkTip.registerModule('wow.item.equipped', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=items,audit&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/character/{realm}/{character}?fields=items,audit&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 1)
 		},
 		'item': {
 			'required' : true,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}',
+			'call'     : '//{host}/api/wow/item/{condition"]["id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition.id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem0': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem0',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem0',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem1': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem1',
-			'call'   : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem1',
+			'call'   : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem2': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem2',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem2',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'transmog': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.transmogItem',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.transmogItem',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		/*
 		'enchant': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.enchant',
-			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.enchant',
+			'call'     : '//{host}/api/wow/spell/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'reforge': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.reforge',
-			'call'     : '//<%= this["host"] %>/api/wow/reforge/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.reforge',
+			'call'     : '//{host}/api/wow/reforge/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		// */
@@ -8065,7 +8065,7 @@ DarkTip.registerModule('wow.wowhead.quest', {
 		'quest': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/quest/{questid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -8136,7 +8136,7 @@ DarkTip.registerModule('wow.wowhead.quest', {
 			'not-found'            : 'Missione non trovata',
 			'reqLevel'             : 'Richiede il livello <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Missione di gruppo (<%= this["quest"]["suggestedPartyMembers"] %>)'
-		}		
+		}
 	}
 
 });
@@ -8158,7 +8158,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'spell': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/spell/{spellid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -8239,7 +8239,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'it_IT': {
 			'loading'          : 'Caricamento incantesimo...',
 			'not-found'        : 'Incantesimo non trovato'
-		}		
+		}
 	}
 
 });
@@ -8263,7 +8263,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 		'guild': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/guild/{realm}/{guild}?fields=members&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 3)
 		}
 	},
@@ -8334,7 +8334,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 			'not-found'     : 'Gilda non trovata',
 			'classification': 'Livello <%= this["guild"]["level"] %> <%= this._loc("factionSide." + this["guild"]["side"]) %> Gilda, <%= this["guild"]["realm"] %>',
 			'members'       : '<%= this["guild"]["members"].length %> membri'
-		}		
+		}
 	}
 
 });
@@ -8356,7 +8356,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		'achievement': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/achievement/<%= this["achievementid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/achievement/{achievementid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -8418,7 +8418,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		'it_IT': {
 			'loading'       : 'Caricamento Impresa...',
 			'not-found'     : 'Impresa non trovata'
-		}			
+		}
 	}
 
 });
@@ -8427,7 +8427,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/profile=(us|eu)\.([^\.]+)\.([^\.#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/list=[\d]+\/(us|eu)-([^\.]+)-([^\.#]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'region',
@@ -8452,20 +8452,20 @@ DarkTip.registerModule('wow.wowhead.character', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,pets,mounts&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/character/{realm}/{character}?fields=guild,talents,items,professions,pets,mounts&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 1)
 		}
 		/*
 		'races'    : {
 			'required' : false,
 			'condition': 'character.race',
-			'call'     : '//<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/character/races?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'classes'  : {
 			'required' : false,
 			'condition': 'character.class',
-			'call'     : '//<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/character/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		// */
@@ -8672,7 +8672,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 			'mounts'        : 'Cavalcature: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
 			'pets'          : 'Mascotte: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : 'Ultima modifica: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
-		}		
+		}
 	}
 
 });
@@ -8704,19 +8704,19 @@ DarkTip.registerModule('wow.wowhead.item', {
 		'item': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/{itemid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition.id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -9363,7 +9363,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 			'socketBonus'      : 'Bonus incavo: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Odiato', '1': 'Ostile', '2': 'Avverso', '3': 'Neutrale', '4': 'Amichevole', '5': 'Onorato', '6': 'Reverito', '7': 'Osannato' },
 			'inventoryType'   : { '1': 'Testa', '2': 'Collo', '3': 'Spalle', '4': 'Camicia', '5': 'Torso', '6': 'Fianchi', '7': 'Gambe', '8': 'Piedi', '9': 'Polsi', '10': 'Mani', '11': 'Dita', '12': 'Monile', '13': 'A una Mano', '15': 'A Distanza' /* Bow */, '16': 'Schiena', '17': 'A due mani', '18': 'Borsa', '20': 'Torso', '21': 'Mano primaria', '22': 'Mano secondaria', '23': 'Accessorio', '25': 'Da Tiro' /* Thrown */, '26': 'A distanza' /* Gun, Crossbow, Wand */ }
-		}		
+		}
 	}
 
 });

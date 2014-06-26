@@ -38,7 +38,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 		'guild': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/guild/<%= this["realm"] %>/<%= this["guild"] %>?fields=members&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/guild/{realm}/{guild}?fields=members&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 3)
 		}
 	},
@@ -109,7 +109,7 @@ DarkTip.registerModule('wow.wowhead.guild', {
 			'not-found'     : 'Gilda non trovata',
 			'classification': 'Livello <%= this["guild"]["level"] %> <%= this._loc("factionSide." + this["guild"]["side"]) %> Gilda, <%= this["guild"]["realm"] %>',
 			'members'       : '<%= this["guild"]["members"].length %> membri'
-		}		
+		}
 	}
 
 });

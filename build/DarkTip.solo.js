@@ -655,46 +655,46 @@ window.DarkTip = {
 				DarkTip.jq.each(state.queries.sleeping, function(key, query) {
 					var condition = query.condition;
 
-					if (DarkTip.isTemplateString(condition)) {
-						condition = DarkTip.jq.jqote(condition, DarkTip.jq.extend(true, {}, state.repo.params, state.repo.templateTools));
-					}
-
-					condition = DarkTip.compareRule(state.data, condition);
-
-					if (typeof condition !== 'undefined') {
-						/*
-						var apicall = DarkTip.jq.jqote(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
-							'condition': condition
-						}, state.repo.templateTools));
-						// */
-
-						var apicall = DarkTip.quickRender(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, {
-							'condition': condition
-						}, state.repo.templateTools));
-
-						console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall]);
-
-						state.awakenQuery(key);
-
-						var cache = DarkTip.getCache('apicall', apicall);
-
-						if (typeof cache !== 'undefined') {
-							state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
-						} else {
-							DarkTip.jq.jsonp({
-								'url': apicall,
-								'callbackParameter': state.repo.callbackParam,
-								'success': state.buildCallbackQuerySuccess(key, apicall, query['caching']),
-								'error': state.buildCallbackQueryError(key)
-							});
+					var apiCallFn = function(err, apicall) {
+						if (apicall) {
+							console.log(['dust.js rendered apicall', 'before: '+query['call'], 'after: '+apicall, 'key: '+key]);
+							state.awakenQuery(key);
+							var cache = DarkTip.getCache('apicall', apicall);
+							console.log(['cache', cache]);
+							if (typeof cache !== 'undefined') {
+								state.buildCallbackQuerySuccess(key, apicall, query['caching'])(cache);
+							} else {
+								DarkTip.jq.jsonp({
+									'url': apicall,
+									'callbackParameter': state.repo.callbackParam,
+									'success': state.buildCallbackQuerySuccess(key, apicall, query['caching']),
+									'error': state.buildCallbackQueryError(key)
+								});
+							}
 						}
+						state.finish();
+					};
+
+					if (typeof condition === 'string') {
+						console.log('condition evaluate');
+						dust.renderSource(condition, state.repo.params, function(err, context_lookup) {
+							console.log(['evaluate done', {'context_lookup': context_lookup}]);
+							if (context_lookup) {
+								var context           = dust.makeBase(state.data).push(state.repo.params);
+								var condition_context = context.get(context_lookup);
+								console.log(['context', context]);
+								console.log(['context.get(context_lookup)', condition_context]);
+								if (typeof condition_context !== 'undefined') {
+									dust.renderSource(query['call'], DarkTip.jq.extend(true, {}, state.repo.params, { 'condition': condition_context }), apiCallFn);
+								}
+							}
+						});
+					} else {
+						console.log('no condition evaluate');
+						dust.renderSource(query['call'], state.repo.params, apiCallFn);
 					}
-
 				});
-
-				this.finish();
 			}
-
 		};
 
 		var apicalls = this._read(this.route(module, 'queries'));

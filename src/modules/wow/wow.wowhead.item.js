@@ -46,19 +46,19 @@ DarkTip.registerModule('wow.wowhead.item', {
 		'item': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/{itemid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition.id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -705,7 +705,7 @@ DarkTip.registerModule('wow.wowhead.item', {
 			'socketBonus'      : 'Bonus incavo: <%= this["item"]["socketInfo"]["socketBonus"] %>',
 			'reputationLevel'  : { '0': 'Odiato', '1': 'Ostile', '2': 'Avverso', '3': 'Neutrale', '4': 'Amichevole', '5': 'Onorato', '6': 'Reverito', '7': 'Osannato' },
 			'inventoryType'   : { '1': 'Testa', '2': 'Collo', '3': 'Spalle', '4': 'Camicia', '5': 'Torso', '6': 'Fianchi', '7': 'Gambe', '8': 'Piedi', '9': 'Polsi', '10': 'Mani', '11': 'Dita', '12': 'Monile', '13': 'A una Mano', '15': 'A Distanza' /* Bow */, '16': 'Schiena', '17': 'A due mani', '18': 'Borsa', '20': 'Torso', '21': 'Mano primaria', '22': 'Mano secondaria', '23': 'Accessorio', '25': 'Da Tiro' /* Thrown */, '26': 'A distanza' /* Gun, Crossbow, Wand */ }
-		}		
+		}
 	}
 
 });

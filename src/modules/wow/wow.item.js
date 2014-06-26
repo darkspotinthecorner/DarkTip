@@ -55,19 +55,19 @@ DarkTip.registerModule('wow.item', {
 		'item': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["itemid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/{itemid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition"]["id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},

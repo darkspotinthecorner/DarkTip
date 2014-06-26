@@ -37,7 +37,7 @@ DarkTip.registerModule('wow.realm', {
 		'realm': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/realm/status?realm=<%= this["realm"] %>&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/realm/status?realm={realm}&locale={locale}',
 			'caching'  : (60 * 5)
 		}
 	},

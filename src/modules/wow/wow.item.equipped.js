@@ -39,62 +39,62 @@ DarkTip.registerModule('wow.item.equipped', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=items,audit&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/character/{realm}/{character}?fields=items,audit&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 1)
 		},
 		'item': {
 			'required' : true,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}',
+			'call'     : '//{host}/api/wow/item/{condition"]["id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemclass': {
 			'required' : true,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>',
-			'call'     : '//<%= this["host"] %>/api/wow/data/item/classes?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}',
+			'call'     : '//{host}/api/wow/data/item/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'itemset': {
 			'required' : false,
 			'condition': 'item.itemSet',
-			'call'     : '//<%= this["host"] %>/api/wow/item/set/<%= this["condition"]["id"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/item/set/{condition.id}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem0': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem0',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem0',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem1': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem1',
-			'call'   : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem1',
+			'call'   : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'gem2': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.gem2',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.gem2',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'transmog': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.transmogItem',
-			'call'     : '//<%= this["host"] %>/api/wow/item/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.transmogItem',
+			'call'     : '//{host}/api/wow/item/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		/*
 		'enchant': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.enchant',
-			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.enchant',
+			'call'     : '//{host}/api/wow/spell/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'reforge': {
 			'required' : false,
-			'condition': 'character.items.<%= DarkTip.map("wow.item.equipped", "maps.slot", this["slot"].toLowerCase()) %>.tooltipParams.reforge',
-			'call'     : '//<%= this["host"] %>/api/wow/reforge/<%= this["condition"] %>?locale=<%= this["locale"] %>',
+			'condition': 'character.items.{slot}.tooltipParams.reforge',
+			'call'     : '//{host}/api/wow/reforge/{condition}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 		// */

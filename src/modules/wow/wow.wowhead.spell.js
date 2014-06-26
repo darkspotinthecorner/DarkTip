@@ -36,7 +36,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'spell': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/spell/<%= this["spellid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/spell/{spellid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -117,7 +117,7 @@ DarkTip.registerModule('wow.wowhead.spell', {
 		'it_IT': {
 			'loading'          : 'Caricamento incantesimo...',
 			'not-found'        : 'Incantesimo non trovato'
-		}		
+		}
 	}
 
 });

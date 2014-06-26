@@ -24,7 +24,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 
 	'triggers': {
 		'implicit': {
-			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/profile=(us|eu)\.([^\.]+)\.([^\.#]+).*/i,
+			'match' : /http:\/\/(www\.wowhead\.com|de\.wowhead\.com|es\.wowhead\.com|fr\.wowhead\.com|pt\.wowhead\.com|ru\.wowhead\.com)\/list=[\d]+\/(us|eu)-([^\.]+)-([^\.#]+).*/i,
 			'params': {
 				'1': 'wowheadhost',
 				'2': 'region',
@@ -49,20 +49,20 @@ DarkTip.registerModule('wow.wowhead.character', {
 		'character': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/character/<%= this["realm"] %>/<%= this["character"] %>?fields=guild,talents,items,professions,pets,mounts&locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/character/{realm}/{character}?fields=guild,talents,items,professions,pets,mounts&locale={locale}',
 			'caching'  : (60 * 60 * 24 * 1)
 		}
 		/*
 		'races'    : {
 			'required' : false,
 			'condition': 'character.race',
-			'call'     : '//<%= this["host"] %>/api/wow/data/character/races?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/character/races?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		'classes'  : {
 			'required' : false,
 			'condition': 'character.class',
-			'call'     : '//<%= this["host"] %>/api/wow/data/character/classes?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/data/character/classes?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		},
 		// */
@@ -269,7 +269,7 @@ DarkTip.registerModule('wow.wowhead.character', {
 			'mounts'        : 'Cavalcature: <%= this["character"]["mounts"]["numCollected"] %> / <%= this["character"]["mounts"]["numCollected"] + this["character"]["mounts"]["numNotCollected"] %>',
 			'pets'          : 'Mascotte: <%= this["character"]["pets"]["numCollected"] %> / <%= this["character"]["pets"]["numCollected"] + this["character"]["pets"]["numNotCollected"] %>',
 			'lastModified'  : 'Ultima modifica: <%= this._renderDateTime(this["character"]["lastModified"]) %>'
-		}		
+		}
 	}
 
 });

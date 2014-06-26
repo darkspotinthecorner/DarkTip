@@ -36,7 +36,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		'achievement': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/achievement/<%= this["achievementid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/achievement/{achievementid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -98,7 +98,7 @@ DarkTip.registerModule('wow.wowhead.achievement', {
 		'it_IT': {
 			'loading'       : 'Caricamento Impresa...',
 			'not-found'     : 'Impresa non trovata'
-		}			
+		}
 	}
 
 });

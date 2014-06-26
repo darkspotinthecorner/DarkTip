@@ -36,7 +36,7 @@ DarkTip.registerModule('wow.wowhead.quest', {
 		'quest': {
 			'required' : true,
 			'condition': true,
-			'call'     : '//<%= this["host"] %>/api/wow/quest/<%= this["questid"] %>?locale=<%= this["locale"] %>',
+			'call'     : '//{host}/api/wow/quest/{questid}?locale={locale}',
 			'caching'  : (60 * 60 * 24 * 90)
 		}
 	},
@@ -107,7 +107,7 @@ DarkTip.registerModule('wow.wowhead.quest', {
 			'not-found'            : 'Missione non trovata',
 			'reqLevel'             : 'Richiede il livello <%= this["quest"]["reqLevel"] %>',
 			'suggestedPartyMembers': 'Missione di gruppo (<%= this["quest"]["suggestedPartyMembers"] %>)'
-		}		
+		}
 	}
 
 });
