@@ -8,7 +8,6 @@
 <body>
 	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../vendor/dustjs-helpers/dust-helpers.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src/dustjs_helpers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/v2/main.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" charset="utf-8">
 
@@ -42,22 +41,12 @@
 		dust.loadSource(dust.compile('{@i18n t="{usewhat}"/}', 'test_i18n_1'));
 		dust.render('test_i18n_1',     data, function(err, out) {console.log({'err': err, 'out': out});});
 
-		dust.loadSource(dust.compile('{@api query="github.user"}User found: {#data.name}{.} {/data.name}"{data.login}" ({data.id})\
-		{?data.public_repos}\
-			{@api query="github.user.repos"}\
-				<h2>Repositories:</h2>\
-				{#data}\
-					<br/>\
-					{full_name}\
-				{/data}\
-			{/api}\
-		{/data.public_repos}\
-		{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
+		dust.loadSource(dust.compile('{@api query="github.user"}User found: {#data.name}{.} {/data.name}"{data.login}" ({data.id}){?data.public_repos}{@api query="github.user.repos"}<h2>Repositories:</h2>{#data}<br/>{full_name}{/data}{/api}{/data.public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, function(err, out) {console.log({'err': err, 'out': out}); document.getElementById('output_1').innerHTML = out;});
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})
-			.push({'aada': 'super', 'ddd': 'narf'});
+			.push({'aaa': 'super', 'ddd': 'narf'});
 		console.log(['context.get(aaa)', ctx.get('aaa')]);
 
 
