@@ -9,108 +9,8 @@
 	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../vendor/dustjs-helpers/dust-helpers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/dustjs_helpers.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/v2/main.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" charset="utf-8">
-
-		var DarkTip = {};
-
-		(function(globalScope) {
-
-			var DarkTip = {},
-				logger  = {};
-
-			if (globalScope && globalScope.console && globalScope.console.log) {
-				loggerContext = globalScope.console;
-				originalLog = globalScope.console.log;
-			}
-
-			logger.log = loggerContext ? function() {
-				if (typeof originalLog === 'function') {
-					logger.log = function() {
-						originalLog.apply(loggerContext, arguments);
-					};
-				} else {
-					logger.log = function() {
-						var message = Array.prototype.slice.apply(arguments).join(' ');
-						originalLog(message);
-					};
-				}
-				logger.log.apply(this, arguments);
-			} : function() {};
-
-			DarkTip.log = function(message) {
-				logger.log(message);
-			};
-
-			DarkTip.jsonp = (function() {
-				var callbackId = 0;
-				var jsonp = function(url, successFn, errorFn, timeout) {
-					var callBackName = "_callback" + callbackId++;
-					var queryString  = "?jsonp=DarkTip.jsonp." + callBackName;
-					// setup the callback
-					jsonp[callBackName] = function(data) {
-						delete jsonp[callBackName];
-						if (data.error) {
-							if (errorFn) {
-								data.error.callback = callBackName;
-								errorFn(data.error);
-							}
-						}
-						else {
-							successFn(data);
-						}
-					};
-
-					var scr = document.createElement("script");
-					scr.type = "text/javascript";
-					scr.src = url + queryString;
-					var head = document.getElementsByTagName("head")[0];
-					head.insertBefore(scr, head.firstChild);
-
-					timeout = timeout || 5000;
-					window.setTimeout(function() {
-						if (typeof jsonp[callBackName] == "function") {
-							jsonp[callBackName] = function(data) {
-								delete jsonp[callBackName];
-							};
-							errorFn({ code: 408, message: "Request Timeout", callback: callBackName });
-							window.setTimeout(function() {
-								if (typeof jsonp[callBackName] == "function") {
-									delete jsonp[callBackName];
-								};
-							}, 60000);
-						}
-					}, timeout);
-				};
-				return jsonp;
-			})();
-
-			DarkTip.getApicall = function(apicallId) {
-				console.log({'apicallId': apicallId});
-
-				if (apicallId == 'github.user') {
-					return '//api.github.com/users/{username}';
-				}
-			};
-
-			DarkTip.callApi = function(url, successFn, errorFn) {
-				return DarkTip.jsonp(url, successFn, errorFn);
-			};
-
-
-
-
-
-			if (typeof exports === 'object') {
-				module.exports = DarkTip;
-			} else {
-				globalScope.DarkTip = DarkTip;
-			}
-		})((function(){return this;})())
-
-
-
-
-
 
 		var i18n = {
 			'en_US': {
@@ -131,6 +31,7 @@
 			'name': 'Fred',
 			'test': 'B',
 			'username': 'darkspotinthecorner',
+			'othername': 'rragan',
 			'users': [
 				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
 				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
@@ -139,11 +40,28 @@
 		};
 
 		dust.loadSource(dust.compile('{@i18n t="{usewhat}"/}', 'test_i18n_1'));
-		dust.loadSource(dust.compile('{@api query="github.user"}Yay! Success!!!{:else}github user apicall failed{/api}', 'test_apiquery_1'));
-
 		dust.render('test_i18n_1',     data, function(err, out) {console.log({'err': err, 'out': out});});
-		dust.render('test_apiquery_1', data, function(err, out) {console.log({'err': err, 'out': out});});
+
+		dust.loadSource(dust.compile('{@api query="github.user"}User found: {#data.name}{.} {/data.name}"{data.login}" ({data.id})\
+		{?data.public_repos}\
+			{@api query="github.user.repos"}\
+				<h2>Repositories:</h2>\
+				{#data}\
+					<br/>\
+					{full_name}\
+				{/data}\
+			{/api}\
+		{/data.public_repos}\
+		{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
+		dust.render('test_apiquery_1', data, function(err, out) {console.log({'err': err, 'out': out}); document.getElementById('output_1').innerHTML = out;});
+
+		var ctx = dust.makeBase()
+			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})
+			.push({'aada': 'super', 'ddd': 'narf'});
+		console.log(['context.get(aaa)', ctx.get('aaa')]);
+
 
 	</script>
+	<div id="output_1"></div>
 </body>
 </html>
