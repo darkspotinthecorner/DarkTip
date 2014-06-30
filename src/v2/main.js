@@ -1,7 +1,9 @@
 (function(globalScope) {
 
 	var DarkTip = {},
-		logger  = {};
+		logger  = {},
+		originalLog,
+		loggerContext;
 
 	if (globalScope && globalScope.console && globalScope.console.log) {
 		loggerContext = globalScope.console;
@@ -30,12 +32,11 @@
 		DarkTip.log('DarkTip requires dust.js [http://linkedin.github.io/dustjs/] to operate!');
 		return;
 	}
-
 	/* #################### dust.js helpers #################### */
 	(function(dust){
 		dust.helpers.i18n = (function(){
 			var helper = function(chunk, context, bodies, params) {
-				var newContext = dust.makeBase().push(context).push(dust.helpers.i18n.context());
+				var newContext = context.push(dust.helpers.i18n.context());
 				var i18nstring = dust.helpers.tap(params.t, chunk, context);
 				if (i18nstring) {
 					var contextlookup = '_i18n_.' + i18nstring;
@@ -69,7 +70,7 @@
 						if (apicall) {
 							DarkTip.callApi(
 								apicall,
-								rawcallData.validationFn,
+								rawcallData.validationFn || true,
 								function(data) {
 									return chunk.render(body, newContext.push(data)).end();
 								},
@@ -94,13 +95,62 @@
 	})(globalScope.dust);
 	/* ######################################################### */
 
+	DarkTip.merge = function(target, src) {
+		var array = dust.isArray(src);
+		var dst = array && [] || {};
+		if (array) {
+			target = target || [];
+			dst = dst.concat(target);
+			src.forEach(function(e, i) {
+				if (typeof dst[i] === 'undefined') {
+					dst[i] = e;
+				} else if (typeof e === 'object') {
+					dst[i] = deepmerge(target[i], e);
+				} else {
+					if (target.indexOf(e) === -1) {
+						dst.push(e);
+					}
+				}
+			});
+		} else {
+			if (target && typeof target === 'object') {
+				Object.keys(target).forEach(function (key) {
+					dst[key] = target[key];
+				})
+			}
+			Object.keys(src).forEach(function (key) {
+				if (typeof src[key] !== 'object' || !src[key]) {
+					dst[key] = src[key];
+				}
+				else {
+					if (!target[key]) {
+						dst[key] = src[key];
+					} else {
+						dst[key] = deepmerge(target[key], src[key]);
+					}
+				}
+			});
+		}
+		return dst;
+	}
+
+	/* ######################################################### */
+
+	DarkTip.modules = {};
+	DarkTip.triggerGroups = {};
+
+	DarkTip.data = {
+		'cache': {
+			'apicall': {}
+		}
+	};
+
 	DarkTip.jsonp = (function() {
 		var callbackId = 0;
-		var jsonp = function(url, validationFn, successFn, errorFn, remoteCallbackParam, timeout) {
+		var jsonp = function(url, successFn, errorFn, remoteCallbackParam, timeout) {
 			remoteCallbackParam = remoteCallbackParam || 'callback';
-			var callBackName    = '_callback' + callbackId++;
+			var callBackName    = '_cb' + callbackId++;
 			var queryString     = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
-			// setup the callback
 			jsonp[callBackName] = function(data) {
 				delete jsonp[callBackName];
 				if (data.error) {
@@ -109,21 +159,14 @@
 						errorFn(data.error);
 					}
 				} else {
-					if (validationFn(data))
-					{
-						successFn(data);
-					} else {
-						errorFn('narf');
-					}
+					successFn(data);
 				}
 			};
-
 			var scr = document.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
 			var head = document.getElementsByTagName('head')[0];
 			head.insertBefore(scr, head.firstChild);
-
 			timeout = timeout || 5000;
 			window.setTimeout(function() {
 				if (typeof jsonp[callBackName] == 'function') {
@@ -141,6 +184,62 @@
 		};
 		return jsonp;
 	})();
+
+	DarkTip.isLocalStorageUseable = function() {
+		return (typeof globalScope.localStorage !== 'undefined');
+	};
+
+	DarkTip.readFromLocalStorage = function(key) {
+		var item = window.localStorage.getItem(key);
+		if (typeof item !== 'undefined') {
+			return JSON.parse(item);
+		}
+		return undefined;
+	},
+
+	DarkTip.writeToLocalStorage = function(key, data) {
+		try {
+			window.localStorage.setItem(key, JSON.stringify(data));
+		} catch (e) {
+			if (e == QUOTA_EXCEEDED_ERR) {
+				DarkTip.log('Writing to localStorage failes, quote exeeded for key "' + key + '".');
+			}
+			return false;
+		}
+		return true;
+	};
+
+	DarkTip.cache = function(region, key, data, cacheLifetime) {
+		if (typeof data === 'undefined')
+		{
+			var result = undefined;
+			if (DarkTip.isLocalStorageUseable()) {
+				var maxtime = DarkTip.readFromLocalStorage('darktip_cache_maxtime_' + region + '_' + key);
+				var curtime = Math.round((new Date()).getTime() / 1000);
+				if ((maxtime === null) || (curtime < maxtime)) {
+					result = DarkTip.readFromLocalStorage('darktip_cache_' + region + '_' + key);
+				}
+			} else {
+				if (typeof DarkTip['data']['cache'][region][key] !== 'undefined') {
+					result = DarkTip['data']['cache'][region][key];
+				}
+			}
+			if (result === null) {
+				result = undefined;
+			}
+			return result;
+		}
+		cacheLifetime = cacheLifetime || 0;
+		if (DarkTip.isLocalStorageUseable()) {
+			var maxtime = Math.round((new Date()).getTime() / 1000) + cacheLifetime;
+			if ((cacheLifetime == 0) || (DarkTip.writeToLocalStorage(('darktip_cache_maxtime_' + region + '_' + key), maxtime))) {
+				return DarkTip.writeToLocalStorage(('darktip_cache_' + region + '_' + key), data);
+			}
+			return false;
+		}
+		DarkTip['data']['cache']['region'][key] = data;
+		return true;
+	};
 
 	DarkTip.getApicallData = function(apicallId) {
 		console.log({'DarkTip.getApicall': apicallId});
@@ -160,10 +259,112 @@
 	};
 
 	DarkTip.callApi = function(url, validationFn, successFn, errorFn) {
-		return DarkTip.jsonp(url, validationFn, successFn, errorFn);
+		var cache = DarkTip.cache('apicall', url);
+		if (typeof cache !== 'undefined') {
+
+		}
+		if (typeof validationFn === 'function')
+		{
+			var constructedSuccessFn = function(data) {
+				if (validationFn(data)) {
+					return successFn(data);
+				} else {
+					return errorFn({code: 500, message: 'Requested content did not validate'});
+				}
+			};
+		}
+		return DarkTip.jsonp(url, constructedSuccessFn || successFn, errorFn);
 	};
 
+	DarkTip.triggerGroup = function(triggerGroupId, queries, events) {
+		if (typeof DarkTip.triggerGroups[triggerGroupId] !== 'undefined') {
+			return DarkTip.triggerGroups[triggerGroupId];
+		}
+		if (typeof queries === 'string') {
+			queries = [queries];
+		}
+		if (typeof events === 'string') {
+			events = [events];
+		}
+		DarkTip.triggerGroups[triggerGroupId] = {
+			'queries': queries,
+			'events': events
+		}
+	};
 
+	DarkTip.module = function(moduleId, dependencies)
+	{
+		if (typeof dependencies === 'string') {
+			dependencies = [dependencies];
+		}
+		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
+			return DarkTip.modules[moduleId];
+		}
+		var moduleFactory = function(moduleId, dependencies) {
+			if (dust.isArray(dependencies)) {
+				var numdeps = dependencies.length;
+				for (var i = 0; i <= numdeps; i++) {
+					if (typeof DarkTip.modules[dependencies[i]] === 'undefined') {
+						DarkTip.log('Module "' + moduleId + '" could not be created! Dependant module "' + dependencies[i] + '" was not found.');
+						return;
+					}
+				};
+			}
+			this.registerCollection = {
+				'map': {},
+				'i18n': {},
+				'trigger': {},
+				'apicall': {},
+				'settings': {},
+				'template': {}
+			};
+
+			this.map = function(mapKey, data) {
+				this.registerCollection.map[mapKey] = data;
+				return this;
+			};
+			this.i18n = function(locale, data) {
+				if (typeof this.registerCollection.i18n[locale] === 'undefined')
+				{
+					this.registerCollection.i18n[locale] = data;
+				} else {
+					this.registerCollection.i18n[locale] = DarkTip.merge(this.registerCollection.i18n[locale], data);
+				}
+				return this;
+			};
+			this.trigger = function(triggerGroupId, extractors) {
+				if (DarkTip.triggerGroup(triggerGroupId)) {
+					this.registerCollection.trigger[triggerGroupId] = extractors;
+				} else {
+					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
+				}
+				return this;
+			};
+			this.apicall = function(apicallId, url, validationFn) {
+				this.registerCollection.apicall[apicallId] = {
+					'url': url,
+					'validationFn': validationFn
+				};
+				return this;
+			};
+			this.settings = function(data) {
+				this.registerCollection.settings = DarkTip.merge(this.registerCollection.settings, data);
+				return this;
+			};
+			this.template = function(templateKey, templateCode) {
+				return this;
+			};
+			this.register = function() {
+				// integrate all stuff into one module package and push it to DarkTip
+				// merge settings into one
+				var settings = dust.makeBase();
+				// foreach dependency, push it's settings onto this module's settings
+				var settings = settings.push(ownSettings);
+				// DarkTip.modules[moduleId] =
+			};
+		}
+		return new moduleFactory(moduleId, dependencies);
+	};
 
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;

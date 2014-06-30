@@ -4,8 +4,33 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Dust tests</title>
+	<style type="text/css" media="screen">
+		body {
+			font-family: Helvetica, sans-serif;
+		}
+		#output {
+			border: 3px solid #bbb;
+		}
+		#output .output {
+			border-top: 3px solid #bbb;
+		}
+		#output .content {
+			padding: 10px;
+		}
+		#output .output:nth-child(1) {
+			border-top: 0;
+		}
+		#output .output h1 {
+			font-size: 1.2em;
+			background-color: #ddd;
+			margin: 0;
+			padding: 5px 10px;
+		}
+	</style>
 </head>
 <body>
+	<div id="output"></div>
+
 	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../vendor/dustjs-helpers/dust-helpers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/v2/main.js" type="text/javascript" charset="utf-8"></script>
@@ -35,14 +60,33 @@
 				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
 				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
 				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
-			]
+			],
+			'xxx': 'testing'
 		};
 
-		dust.loadSource(dust.compile('{@i18n t="{usewhat}"/}', 'test_i18n_1'));
-		dust.render('test_i18n_1',     data, function(err, out) {console.log({'err': err, 'out': out});});
+		var buildDemoCallbackFn = function(label) {
+			return function(err, out)
+			{
+				if (err) {
+					console.log({'error': err, 'stacktrace': err.stack});
+				} else {
+					var container = document.querySelector('#output');
+					container.innerHTML = container.innerHTML + '<div class="output"><h1>' + label + '</h1><div class="content">' + out + '</div></div>';
+				}
+			}
+		}
 
-		dust.loadSource(dust.compile('{@api query="github.user"}User found: {#data.name}{.} {/data.name}"{data.login}" ({data.id}){?data.public_repos}{@api query="github.user.repos"}<h2>Repositories:</h2>{#data}<br/>{full_name}{/data}{/api}{/data.public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
-		dust.render('test_apiquery_1', data, function(err, out) {console.log({'err': err, 'out': out}); document.getElementById('output_1').innerHTML = out;});
+		dust.loadSource(dust.compile('{@i18n t="{usewhat}"/}', 'test_i18n_1'));
+		dust.render('test_i18n_1', data, buildDemoCallbackFn('test_i18n_1'));
+
+		dust.loadSource(dust.compile('{@i18n t="salutation" name="github_{username}"/}', 'test_i18n_2'));
+		dust.render('test_i18n_2', data, buildDemoCallbackFn('test_i18n_2'));
+
+		// dust.loadSource(dust.compile('{@api query="github.user"}User found: {#data.name}{.} {/data.name}"{data.login}" ({data.id}){?data.public_repos}{@api query="github.user.repos"}<h2>Repositories:</h2>{#data}<br/>{full_name}{/data}{/api}{/data.public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
+		// dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
+
+		// console.log(DarkTip.module('wow'));
+		// console.log(DarkTip.merge({'A': '1', 'b': '2', 'C': {'C.A': '3.1', 'C.B': '3.2'}}, {'A': '3', 'C': {'C.A': '4.1', 'XXX': '223'}}));
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})
@@ -51,6 +95,5 @@
 
 
 	</script>
-	<div id="output_1"></div>
 </body>
 </html>
