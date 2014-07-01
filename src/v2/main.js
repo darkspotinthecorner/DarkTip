@@ -29,11 +29,16 @@
 	};
 
 	if (typeof globalScope.dust === 'undefined') {
-		DarkTip.log('DarkTip requires dust.js [http://linkedin.github.io/dustjs/] to operate!');
+		DarkTip.log('DarkTip requires dust.js [https://github.com/linkedin/dustjs] to operate!');
 		return;
 	}
+
 	/* #################### dust.js helpers #################### */
 	(function(dust){
+		if (typeof dust.helpers.tap === 'undefined') {
+			DarkTip.log('DarkTip requires dust.js helpers [https://github.com/linkedin/dustjs-helpers] to operate!');
+			return;
+		}
 		dust.helpers.i18n = (function(){
 			var helper = function(chunk, context, bodies, params) {
 				var newContext = context.push(dust.helpers.i18n.context());
@@ -70,7 +75,6 @@
 						if (apicall) {
 							DarkTip.callApi(
 								apicall,
-								rawcallData.validationFn || true,
 								function(data) {
 									return chunk.render(body, newContext.push(data)).end();
 								},
@@ -79,7 +83,9 @@
 										return chunk.render(skip, newContext.push(data)).end();
 									}
 									return chunk.end();
-								}
+								},
+								rawcallData.validationFn,
+								rawcallData.processFn
 							);
 						} else {
 							dust.log('queryId "' + queryId + '" could not be resolved by DarkTip');
@@ -145,23 +151,36 @@
 		}
 	};
 
+	DarkTip.dataReceiveFn = function(url, successFn, errorFn, callBackName) {
+		return function(data) {
+			if (typeof callBackName !== 'undefined') {
+				delete DarkTip.jsonp[callBackName];
+			}
+			if (data.error) {
+				if (errorFn) {
+					data.error.callback = callBackName;
+					errorFn(data.error);
+				}
+			} else {
+				DarkTip.cache('apicall', url, data);
+				if ((typeof successFn.validationFn === 'function') && (!successFn.validationFn(data))) {
+					return errorFn({code: 500, message: 'Requested content did not validate'});
+				}
+				if (typeof successFn.processFn === 'function') {
+					data = successFn.processFn(data);
+				}
+				successFn(data);
+			}
+		};
+	}
+
 	DarkTip.jsonp = (function() {
 		var callbackId = 0;
 		var jsonp = function(url, successFn, errorFn, remoteCallbackParam, timeout) {
 			remoteCallbackParam = remoteCallbackParam || 'callback';
-			var callBackName    = '_cb' + callbackId++;
-			var queryString     = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
-			jsonp[callBackName] = function(data) {
-				delete jsonp[callBackName];
-				if (data.error) {
-					if (errorFn) {
-						data.error.callback = callBackName;
-						errorFn(data.error);
-					}
-				} else {
-					successFn(data);
-				}
-			};
+			var callBackName = '_cb' + callbackId++;
+			var queryString = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
+			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, callBackName);
 			var scr = document.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
@@ -244,36 +263,32 @@
 	DarkTip.getApicallData = function(apicallId) {
 		console.log({'DarkTip.getApicall': apicallId});
 
-		if (apicallId == 'github.user') {
+		if (apicallId == 'github-user') {
 			return {
 				url: '//api.github.com/users/{username}',
-				validationFn: function(data) { return (data.meta.status == 200); }
+				caching : (60 * 60 * 24 * 1),
+				validationFn: function(data) { return (data.meta.status == 200); },
+				processFn: function(data) { return (data.data); }
 			};
 		}
-		if (apicallId == 'github.user.repos') {
+		if (apicallId == 'github-user-repos') {
 			return {
 				url: '//api.github.com/users/{username}/repos',
-				validationFn: function(data) { return (data.meta.status == 200); }
+				caching : (60 * 60 * 24 * 1),
+				validationFn: function(data) { return (data.meta.status == 200); },
+				processFn: function(data) { return (data.data); }
 			};
 		}
 	};
 
-	DarkTip.callApi = function(url, validationFn, successFn, errorFn) {
+	DarkTip.callApi = function(url, successFn, errorFn, validationFn, processFn) {
+		successFn.processFn = processFn;
+		successFn.validationFn = validationFn;
 		var cache = DarkTip.cache('apicall', url);
 		if (typeof cache !== 'undefined') {
-
+			return DarkTip.dataReceiveFn(url, successFn, errorFn)(cache);
 		}
-		if (typeof validationFn === 'function')
-		{
-			var constructedSuccessFn = function(data) {
-				if (validationFn(data)) {
-					return successFn(data);
-				} else {
-					return errorFn({code: 500, message: 'Requested content did not validate'});
-				}
-			};
-		}
-		return DarkTip.jsonp(url, constructedSuccessFn || successFn, errorFn);
+		return DarkTip.jsonp(url, successFn, errorFn);
 	};
 
 	DarkTip.triggerGroup = function(triggerGroupId, queries, events) {
@@ -340,10 +355,11 @@
 				}
 				return this;
 			};
-			this.apicall = function(apicallId, url, validationFn) {
+			this.apicall = function(apicallId, url, validationFn, processFn) {
 				this.registerCollection.apicall[apicallId] = {
 					'url': url,
-					'validationFn': validationFn
+					'validationFn': (validationFn || false),
+					'processFn': (processFn || false)
 				};
 				return this;
 			};
