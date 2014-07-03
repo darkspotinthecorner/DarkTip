@@ -288,20 +288,37 @@
 		return DarkTip.jsonp(url, successFn, errorFn, cacheDuration);
 	};
 
-	DarkTip.triggerGroup = function(triggerGroupId, queries, events) {
+	DarkTip.triggerGroup = function(triggerGroupId) {
 		if (typeof DarkTip.triggerGroups[triggerGroupId] !== 'undefined') {
 			return DarkTip.triggerGroups[triggerGroupId];
 		}
-		if (!dust.isArray(queries)) {
-			queries = [queries];
+
+		var TriggerGroup = function(triggerGroupId) {
+			this.id = triggerGroupId;
+			this.events = {};
+
+			this.event = function(selector, event, accessFn) {
+				if (typeof selector !== 'string') {
+					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
+					return this;
+				}
+				if (typeof event !== 'string') {
+					DarkTip.log('TriggerGroup.addEvent: Invalid event! 2nd argument must be event type string.');
+					return this;
+				}
+				if (typeof accessFn !== 'function') {
+					DarkTip.log('TriggerGroup.addEvent: Invalid access function! 3rd argument must be a function.');
+					return this;
+				}
+				if (typeof this.events[selector] === 'undefined') {
+					this.events[selector] = {};
+				}
+				this.events[selector][event] = accessFn;
+				return this;
+			};
 		}
-		if (!dust.isArray(events)) {
-			events = [events];
-		}
-		DarkTip.triggerGroups[triggerGroupId] = {
-			'queries': queries,
-			'events': events
-		}
+
+		return (DarkTip.triggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
 	};
 
 	DarkTip.module = function(moduleId, dependencies)
@@ -312,7 +329,7 @@
 		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
 			return DarkTip.modules[moduleId];
 		}
-		var moduleFactory = function(moduleId, dependencies) {
+		var ModuleFactory = function(moduleId, dependencies) {
 			if (dust.isArray(dependencies)) {
 				var numdeps = dependencies.length;
 				for (var i = 0; i <= numdeps; i++) {
@@ -330,7 +347,6 @@
 				'settings': {},
 				'template': {}
 			};
-
 			this.map = function(mapKey, data) {
 				this.registerCollection.map[mapKey] = data;
 				return this;
@@ -376,8 +392,12 @@
 				// DarkTip.modules[moduleId] =
 			};
 		}
-		return new moduleFactory(moduleId, dependencies);
+		return new ModuleFactory(moduleId, dependencies);
 	};
+
+	DarkTip.init = function() {
+		// document.addEventListener('DOMContentLoaded', DarkTip.init, false);
+	}
 
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;

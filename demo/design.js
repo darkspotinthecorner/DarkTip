@@ -1,7 +1,9 @@
 /* DarkTip by Martin Gelder (Dark Spot in the Corner), Copyright (c) 2014 */
 
-DarkTip.triggerGroup('implicit', 'a[href]', 'hover');
-DarkTip.triggerGroup('explicit', '[data-darktip]', 'hover');
+DarkTip.triggerGroup('implicit')
+	.addEvent('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+DarkTip.triggerGroup('explicit')
+	.addEvent('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 DarkTip.module('wow.item', ['wow'])
 	.apicall('wow-item', '//{host}/api/wow/item/{itemid}?locale={locale}')
