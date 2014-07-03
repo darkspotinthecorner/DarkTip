@@ -1,32 +1,28 @@
 (function(globalScope) {
 
-	var DarkTip = {},
-		logger  = {},
-		originalLog,
-		loggerContext;
+	var DarkTip = {};
 
-	if (globalScope && globalScope.console && globalScope.console.log) {
-		loggerContext = globalScope.console;
-		originalLog = globalScope.console.log;
-	}
-
-	logger.log = loggerContext ? function() {
+	DarkTip.log = (function() {
+		var logger = {},
+			originalLog,
+			loggerContext;
+		if (globalScope && globalScope.console && globalScope.console.log) {
+			loggerContext = globalScope.console;
+			originalLog = globalScope.console.log;
+		}
+		if (!loggerContext) {
+			return function() {};
+		}
 		if (typeof originalLog === 'function') {
-			logger.log = function() {
+			return function() {
 				originalLog.apply(loggerContext, arguments);
 			};
-		} else {
-			logger.log = function() {
-				var message = Array.prototype.slice.apply(arguments).join(' ');
-				originalLog(message);
-			};
 		}
-		logger.log.apply(this, arguments);
-	} : function() {};
-
-	DarkTip.log = function(message) {
-		logger.log(message);
-	};
+		return function() {
+			var message = Array.prototype.slice.apply(arguments).join(' ');
+			originalLog(message);
+		};
+	})();
 
 	if (typeof globalScope.dust === 'undefined') {
 		DarkTip.log('DarkTip requires dust.js [https://github.com/linkedin/dustjs] to operate!');
@@ -84,6 +80,7 @@
 									}
 									return chunk.end();
 								},
+								rawcallData.caching,
 								rawcallData.validationFn,
 								rawcallData.processFn
 							);
@@ -111,7 +108,7 @@
 				if (typeof dst[i] === 'undefined') {
 					dst[i] = e;
 				} else if (typeof e === 'object') {
-					dst[i] = deepmerge(target[i], e);
+					dst[i] = DarkTip.merge(target[i], e);
 				} else {
 					if (target.indexOf(e) === -1) {
 						dst.push(e);
@@ -132,7 +129,7 @@
 					if (!target[key]) {
 						dst[key] = src[key];
 					} else {
-						dst[key] = deepmerge(target[key], src[key]);
+						dst[key] = DarkTip.merge(target[key], src[key]);
 					}
 				}
 			});
@@ -145,13 +142,7 @@
 	DarkTip.modules = {};
 	DarkTip.triggerGroups = {};
 
-	DarkTip.data = {
-		'cache': {
-			'apicall': {}
-		}
-	};
-
-	DarkTip.dataReceiveFn = function(url, successFn, errorFn, callBackName) {
+	DarkTip.dataReceiveFn = function(url, successFn, errorFn, cacheDuration, callBackName) {
 		return function(data) {
 			if (typeof callBackName !== 'undefined') {
 				delete DarkTip.jsonp[callBackName];
@@ -162,10 +153,10 @@
 					errorFn(data.error);
 				}
 			} else {
-				DarkTip.cache('apicall', url, data);
 				if ((typeof successFn.validationFn === 'function') && (!successFn.validationFn(data))) {
 					return errorFn({code: 500, message: 'Requested content did not validate'});
 				}
+				DarkTip.cache('apicall', url, data, cacheDuration);
 				if (typeof successFn.processFn === 'function') {
 					data = successFn.processFn(data);
 				}
@@ -176,11 +167,11 @@
 
 	DarkTip.jsonp = (function() {
 		var callbackId = 0;
-		var jsonp = function(url, successFn, errorFn, remoteCallbackParam, timeout) {
+		var jsonp = function(url, successFn, errorFn, cacheDuration, remoteCallbackParam, timeout) {
 			remoteCallbackParam = remoteCallbackParam || 'callback';
 			var callBackName = '_cb' + callbackId++;
 			var queryString = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
-			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, callBackName);
+			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, cacheDuration, callBackName);
 			var scr = document.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
@@ -204,65 +195,71 @@
 		return jsonp;
 	})();
 
-	DarkTip.isLocalStorageUseable = function() {
-		return (typeof globalScope.localStorage !== 'undefined');
-	};
-
-	DarkTip.readFromLocalStorage = function(key) {
-		var item = window.localStorage.getItem(key);
-		if (typeof item !== 'undefined') {
-			return JSON.parse(item);
-		}
-		return undefined;
-	},
-
-	DarkTip.writeToLocalStorage = function(key, data) {
-		try {
-			window.localStorage.setItem(key, JSON.stringify(data));
-		} catch (e) {
-			if (e == QUOTA_EXCEEDED_ERR) {
-				DarkTip.log('Writing to localStorage failes, quote exeeded for key "' + key + '".');
-			}
-			return false;
-		}
-		return true;
-	};
-
-	DarkTip.cache = function(region, key, data, cacheLifetime) {
-		if (typeof data === 'undefined')
-		{
-			var result = undefined;
-			if (DarkTip.isLocalStorageUseable()) {
-				var maxtime = DarkTip.readFromLocalStorage('darktip_cache_maxtime_' + region + '_' + key);
-				var curtime = Math.round((new Date()).getTime() / 1000);
-				if ((maxtime === null) || (curtime < maxtime)) {
-					result = DarkTip.readFromLocalStorage('darktip_cache_' + region + '_' + key);
-				}
+	DarkTip.cache = (function() {
+		var cache = function(region, key, data, duration) {
+			if (typeof data === 'undefined') {
+				return cache.read(region, key);
 			} else {
-				if (typeof DarkTip['data']['cache'][region][key] !== 'undefined') {
-					result = DarkTip['data']['cache'][region][key];
+				if (duration === false) {
+					return;
 				}
+				return cache.write(region, key, data, duration);
 			}
-			if (result === null) {
-				result = undefined;
-			}
-			return result;
 		}
-		cacheLifetime = cacheLifetime || 0;
-		if (DarkTip.isLocalStorageUseable()) {
-			var maxtime = Math.round((new Date()).getTime() / 1000) + cacheLifetime;
-			if ((cacheLifetime == 0) || (DarkTip.writeToLocalStorage(('darktip_cache_maxtime_' + region + '_' + key), maxtime))) {
-				return DarkTip.writeToLocalStorage(('darktip_cache_' + region + '_' + key), data);
-			}
-			return false;
+		if (typeof globalScope.localStorage !== 'undefined') {
+			cache.key = function(region, key) {
+				return ('DarkTip_cache_' + region + '_' + key);
+			};
+			cache.read = function(region, key) {
+				var result = undefined;
+				var rawitem = globalScope.localStorage.getItem(cache.key(region, key));
+				if (typeof rawitem !== 'undefined')
+				{
+					var item = JSON.parse(rawitem);
+					if (item !== null)
+					{
+						var curtime = Math.round((new Date()).getTime() / 1000);
+						if ((!item.maxtime) || (curtime < item.maxtime)) {
+							result = item.content;
+						}
+					}
+				}
+				return result;
+			};
+			cache.write = function(region, key, data, duration) {
+				var maxtime = (duration === 0 ? 0 : (Math.round((new Date()).getTime() / 1000) + duration));
+				try {
+					globalScope.localStorage.setItem(cache.key(region, key), JSON.stringify({'maxtime': maxtime, 'content': data}));
+				} catch (e) {
+					if (e == QUOTA_EXCEEDED_ERR) {
+						DarkTip.log('Writing to localStorage failed! Quote exeeded for region/key "' + region + '/' + key + '".');
+					}
+					return false;
+				}
+				return true;
+			};
+		} else {
+			cache.storage = {};
+			cache.read = function(region, key) {
+				var result = undefined;
+				if (typeof cache.storage[region][key] !== 'undefined') {
+					var curtime = Math.round((new Date()).getTime() / 1000);
+					if ((cache.storage[region][key].maxtime === 0) || (curtime < cache.storage[region][key].maxtime)) {
+						result = item.content;
+					}
+				}
+				return result;
+			};
+			cache.write = function(region, key, data, duration) {
+				var maxtime = (duration === 0 ? 0 : (Math.round((new Date()).getTime() / 1000) + duration));
+				cache.storage['region'][key] = { 'maxtime': maxtime, 'content': data };
+				return true;
+			};
 		}
-		DarkTip['data']['cache']['region'][key] = data;
-		return true;
-	};
+		return cache;
+	})();
 
 	DarkTip.getApicallData = function(apicallId) {
-		console.log({'DarkTip.getApicall': apicallId});
-
 		if (apicallId == 'github-user') {
 			return {
 				url: '//api.github.com/users/{username}',
@@ -281,24 +278,24 @@
 		}
 	};
 
-	DarkTip.callApi = function(url, successFn, errorFn, validationFn, processFn) {
+	DarkTip.callApi = function(url, successFn, errorFn, cacheDuration, validationFn, processFn) {
 		successFn.processFn = processFn;
 		successFn.validationFn = validationFn;
 		var cache = DarkTip.cache('apicall', url);
 		if (typeof cache !== 'undefined') {
-			return DarkTip.dataReceiveFn(url, successFn, errorFn)(cache);
+			return DarkTip.dataReceiveFn(url, successFn, errorFn, false)(cache);
 		}
-		return DarkTip.jsonp(url, successFn, errorFn);
+		return DarkTip.jsonp(url, successFn, errorFn, cacheDuration);
 	};
 
 	DarkTip.triggerGroup = function(triggerGroupId, queries, events) {
 		if (typeof DarkTip.triggerGroups[triggerGroupId] !== 'undefined') {
 			return DarkTip.triggerGroups[triggerGroupId];
 		}
-		if (typeof queries === 'string') {
+		if (!dust.isArray(queries)) {
 			queries = [queries];
 		}
-		if (typeof events === 'string') {
+		if (!dust.isArray(events)) {
 			events = [events];
 		}
 		DarkTip.triggerGroups[triggerGroupId] = {
