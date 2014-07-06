@@ -1,5 +1,7 @@
 (function(globalScope) {
 
+	// Target browser support - 2 versions back (that's version 9, I'm looking at you, IE!)
+
 	var DarkTip = {};
 
 	DarkTip.log = (function() {
@@ -169,23 +171,24 @@
 		var callbackId = 0;
 		var jsonp = function(url, successFn, errorFn, cacheDuration, remoteCallbackParam, timeout) {
 			remoteCallbackParam = remoteCallbackParam || 'callback';
+			timeout = timeout || 5000;
 			var callBackName = '_cb' + callbackId++;
 			var queryString = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
-			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, cacheDuration, callBackName);
-			var scr = document.createElement('script');
+			var doc = globalScope.document;
+			var scr = doc.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
-			var head = document.getElementsByTagName('head')[0];
+			var head = doc.getElementsByTagName('head')[0];
 			head.insertBefore(scr, head.firstChild);
-			timeout = timeout || 5000;
-			window.setTimeout(function() {
-				if (typeof jsonp[callBackName] == 'function') {
+			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, cacheDuration, callBackName);
+			globalScope.setTimeout(function() {
+				if (typeof jsonp[callBackName] !== 'undefined') {
 					jsonp[callBackName] = function(data) {
 						delete jsonp[callBackName];
 					};
 					errorFn({ code: 408, message: 'Request Timeout', callback: callBackName });
-					window.setTimeout(function() {
-						if (typeof jsonp[callBackName] == 'function') {
+					globalScope.setTimeout(function() {
+						if (typeof jsonp[callBackName] !== 'undefined') {
 							delete jsonp[callBackName];
 						};
 					}, 60000);
@@ -292,11 +295,9 @@
 		if (typeof DarkTip.triggerGroups[triggerGroupId] !== 'undefined') {
 			return DarkTip.triggerGroups[triggerGroupId];
 		}
-
 		var TriggerGroup = function(triggerGroupId) {
 			this.id = triggerGroupId;
 			this.events = {};
-
 			this.event = function(selector, event, accessFn) {
 				if (typeof selector !== 'string') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
@@ -317,7 +318,6 @@
 				return this;
 			};
 		}
-
 		return (DarkTip.triggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
 	};
 
@@ -329,7 +329,7 @@
 		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
 			return DarkTip.modules[moduleId];
 		}
-		var ModuleFactory = function(moduleId, dependencies) {
+		var Module = function(moduleId, dependencies) {
 			if (dust.isArray(dependencies)) {
 				var numdeps = dependencies.length;
 				for (var i = 0; i <= numdeps; i++) {
@@ -339,7 +339,7 @@
 					}
 				};
 			}
-			this.registerCollection = {
+			this.data = {
 				'map': {},
 				'i18n': {},
 				'trigger': {},
@@ -348,28 +348,28 @@
 				'template': {}
 			};
 			this.map = function(mapKey, data) {
-				this.registerCollection.map[mapKey] = data;
+				this.data.map[mapKey] = data;
 				return this;
 			};
 			this.i18n = function(locale, data) {
-				if (typeof this.registerCollection.i18n[locale] === 'undefined')
+				if (typeof this.data.i18n[locale] === 'undefined')
 				{
-					this.registerCollection.i18n[locale] = data;
+					this.data.i18n[locale] = data;
 				} else {
-					this.registerCollection.i18n[locale] = DarkTip.merge(this.registerCollection.i18n[locale], data);
+					this.data.i18n[locale] = DarkTip.merge(this.data.i18n[locale], data);
 				}
 				return this;
 			};
 			this.trigger = function(triggerGroupId, extractors) {
 				if (DarkTip.triggerGroup(triggerGroupId)) {
-					this.registerCollection.trigger[triggerGroupId] = extractors;
+					this.data.trigger[triggerGroupId] = extractors;
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
 				return this;
 			};
 			this.apicall = function(apicallId, url, validationFn, processFn) {
-				this.registerCollection.apicall[apicallId] = {
+				this.data.apicall[apicallId] = {
 					'url': url,
 					'validationFn': (validationFn || false),
 					'processFn': (processFn || false)
@@ -377,27 +377,47 @@
 				return this;
 			};
 			this.settings = function(data) {
-				this.registerCollection.settings = DarkTip.merge(this.registerCollection.settings, data);
+				this.data.settings = DarkTip.merge(this.data.settings, data);
 				return this;
 			};
 			this.template = function(templateKey, templateCode) {
 				return this;
 			};
-			this.register = function() {
-				// integrate all stuff into one module package and push it to DarkTip
-				// merge settings into one
-				var settings = dust.makeBase();
-				// foreach dependency, push it's settings onto this module's settings
-				var settings = settings.push(ownSettings);
-				// DarkTip.modules[moduleId] =
-			};
 		}
-		return new ModuleFactory(moduleId, dependencies);
+		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
 	DarkTip.init = function() {
 		// document.addEventListener('DOMContentLoaded', DarkTip.init, false);
+		// Bind MutationObserver
+			// If new content comes in: document.querySelectorAll(newroot, selector...) for each triggergroup
+				// Foreach element found, check each trigger on the triggergroup for events to bind
+				// triggers are checked from last to first, so the newest wins
 	}
+
+	// if an triggergroup is registered, run it's init function, or push it's init function onto the stack for domready
+
+
+	DarkTip.domReady = (function () {
+		var listener;
+		var queue = [];
+		var doc = globalScope.document;
+		var domContentLoaded = 'DOMContentLoaded';
+		var loaded = /^loaded|^i|^c/.test(doc.readyState);
+		if (!loaded) {
+			doc.addEventListener(domContentLoaded, listener = function () {
+				doc.removeEventListener(domContentLoaded, listener);
+				loaded = true;
+				while (listener = queue.shift()) {
+					listener();
+				}
+			});
+		}
+		return function (fn) {
+			loaded ? fn() : queue.push(fn);
+		};
+	})();
+
 
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;
