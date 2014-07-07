@@ -413,8 +413,12 @@
 				}
 			});
 		}
-		return function (fn) {
-			loaded ? fn() : queue.push(fn);
+		return function (callbackFn) {
+			if (loaded) {
+				callbackFn();
+			} else {
+				queue.push(callbackFn);
+			}
 		};
 	})();
 
