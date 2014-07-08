@@ -88,8 +88,8 @@
 		dust.loadSource(dust.compile('{@api query="github-user"}User found: {#name}{.} {/name}"{login}" ({id}){?public_repos}{@api query="github-user-repos"}<h2>Repositories:</h2>{#.}<br/>{full_name}{/.}{/api}{/public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
 
-		DarkTip.triggerGroup('implicit').event('a[href]', 'mouseenter', function(elem) { return elem.getAttribute('href'); });
-		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'mouseenter', function(elem) { return elem.getAttribute('data-darktip'); });
+		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})

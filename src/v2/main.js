@@ -297,12 +297,12 @@
 		}
 		var TriggerGroup = function(triggerGroupId) {
 			this.id = triggerGroupId;
-			this.event = function(selector, eventShow, accessFn, eventHide) {
+			this.event = function(selector, event, accessFn) {
 				if (typeof selector !== 'string') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
 					return this;
 				}
-				if (typeof eventShow !== 'string') {
+				if (typeof event !== 'string') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid show event! 2nd argument must be event type string.');
 					return this;
 				}
@@ -310,29 +310,12 @@
 					DarkTip.log('TriggerGroup.addEvent: Invalid access function! 3rd argument must be a function.');
 					return this;
 				}
-				if (typeof eventHide === 'undefined') {
-					switch (eventShow) {
-						case 'mouseenter':
-							eventHide = 'mouseleave';
-							break;
-						case 'click':
-							eventHide = 'click';
-							break;
-						default:
-							eventHide = 'mouseleave';
-							break;
-					}
-				}
-				if (typeof eventHide !== 'string') {
-					DarkTip.log('TriggerGroup.addEvent: Invalid hide event! 4rd argument must be a string or undefined.');
-					return this;
-				}
 				/*
 				if (typeof this.events[selector] === 'undefined') {
 					this.events[selector] = {};
 				}
 				*/
-				DarkTip.bindEvent(eventShow, eventHide, selector, accessFn);
+				DarkTip.bindEvent(event, selector, accessFn);
 				return this;
 			};
 		}
@@ -405,18 +388,12 @@
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
-	DarkTip.bindEvent = function(eventShow, eventHide, selector, accessFn) {
+	DarkTip.bindEvent = function(event, selector, accessFn) {
 		DarkTip.domReady(function() {
 			var doc = globalScope.document;
 			var elems = doc.querySelectorAll(selector);
-			var eventShowFn = function() {
-				var accessed = accessFn(this);
-				if (accessed) {
-					DarkTip.handleEventShowFire(this, accessed);
-				}
-			};
 			Array.prototype.forEach.call(elems, function(elem) {
-				elem.addEventListener(eventShow, eventShowFn, false);
+				DarkTip.addEventListeners(elem, event, accessFn);
 			});
 		});
 
@@ -427,8 +404,26 @@
 				// triggers are checked from last to first, so the newest wins
 	}
 
-	DarkTip.handleEventShowFire = function(elem, accessed) {
-		console.log({'elem': elem, 'accessed': accessed});
+	DarkTip.addEventListeners = function(elem, event, accessFn) {
+		var eventFn = function() {
+			var accessed = accessFn(this);
+			if (accessed) {
+				DarkTip.handleEventFire(event, this, accessed);
+			}
+		};
+		if (event === 'hover') {
+			elem.addEventListener('mouseenter', eventFn, false);
+			elem.addEventListener('mouseleave', eventFn, false);
+		}
+		if (event === 'hoverintent') {}
+		if (event === 'hover&stay') {}
+		if (event === 'hoverintent&stay') {}
+		if (event === 'click') {}
+		if (event === 'click&hover') {}
+	};
+
+	DarkTip.handleEventFire = function(event, elem, accessed) {
+		console.log({'event': event, 'elem': elem, 'accessed': accessed});
 	};
 
 
