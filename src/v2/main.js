@@ -297,24 +297,42 @@
 		}
 		var TriggerGroup = function(triggerGroupId) {
 			this.id = triggerGroupId;
-			this.events = {};
-			this.event = function(selector, event, accessFn) {
+			this.event = function(selector, eventShow, accessFn, eventHide) {
 				if (typeof selector !== 'string') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
 					return this;
 				}
-				if (typeof event !== 'string') {
-					DarkTip.log('TriggerGroup.addEvent: Invalid event! 2nd argument must be event type string.');
+				if (typeof eventShow !== 'string') {
+					DarkTip.log('TriggerGroup.addEvent: Invalid show event! 2nd argument must be event type string.');
 					return this;
 				}
 				if (typeof accessFn !== 'function') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid access function! 3rd argument must be a function.');
 					return this;
 				}
+				if (typeof eventHide === 'undefined') {
+					switch (eventShow) {
+						case 'mouseenter':
+							eventHide = 'mouseleave';
+							break;
+						case 'click':
+							eventHide = 'click';
+							break;
+						default:
+							eventHide = 'mouseleave';
+							break;
+					}
+				}
+				if (typeof eventHide !== 'string') {
+					DarkTip.log('TriggerGroup.addEvent: Invalid hide event! 4rd argument must be a string or undefined.');
+					return this;
+				}
+				/*
 				if (typeof this.events[selector] === 'undefined') {
 					this.events[selector] = {};
 				}
-				this.events[selector][event] = accessFn;
+				*/
+				DarkTip.bindEvent(eventShow, eventHide, selector, accessFn);
 				return this;
 			};
 		}
@@ -387,15 +405,31 @@
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
-	DarkTip.init = function() {
-		// document.addEventListener('DOMContentLoaded', DarkTip.init, false);
-		// Bind MutationObserver
+	DarkTip.bindEvent = function(eventShow, eventHide, selector, accessFn) {
+		DarkTip.domReady(function() {
+			var doc = globalScope.document;
+			var elems = doc.querySelectorAll(selector);
+			var eventShowFn = function() {
+				var accessed = accessFn(this);
+				if (accessed) {
+					DarkTip.handleEventShowFire(this, accessed);
+				}
+			};
+			Array.prototype.forEach.call(elems, function(elem) {
+				elem.addEventListener(eventShow, eventShowFn, false);
+			});
+		});
+
+
+		// If MutationObserver: Bind it
 			// If new content comes in: document.querySelectorAll(newroot, selector...) for each triggergroup
 				// Foreach element found, check each trigger on the triggergroup for events to bind
 				// triggers are checked from last to first, so the newest wins
 	}
 
-	// if an triggergroup is registered, run it's init function, or push it's init function onto the stack for domready
+	DarkTip.handleEventShowFire = function(elem, accessed) {
+		console.log({'elem': elem, 'accessed': accessed});
+	};
 
 
 	DarkTip.domReady = (function () {

@@ -29,6 +29,9 @@
 	</style>
 </head>
 <body>
+	<p>
+		Lorem ipsum dolor sit amet, <a href="http://www.google.de">consectetur adipisicing</a> elit. Voluptates esse unde doloribus, <a href="http://www.github.com">alias enim magnam ipsum</a> sequi, quisquam fuga laudantium quidem tempora veniam velit fugiat possimus! Sit quae commodi ipsum.
+	</p>
 	<div id="output"></div>
 
 	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
@@ -85,11 +88,8 @@
 		dust.loadSource(dust.compile('{@api query="github-user"}User found: {#name}{.} {/name}"{login}" ({id}){?public_repos}{@api query="github-user-repos"}<h2>Repositories:</h2>{#.}<br/>{full_name}{/.}{/api}{/public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
 
-		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
-
-		// console.log(DarkTip.module('wow'));
-		// console.log(DarkTip.merge({'A': '1', 'b': '2', 'C': {'C.A': '3.1', 'C.B': '3.2'}}, {'A': '3', 'C': {'C.A': '4.1', 'XXX': '223'}}));
+		DarkTip.triggerGroup('implicit').event('a[href]', 'mouseenter', function(elem) { return elem.getAttribute('href'); });
+		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'mouseenter', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})

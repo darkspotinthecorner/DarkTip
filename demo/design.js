@@ -11,8 +11,7 @@ DarkTip.module('wow.item', ['wow'])
 	.trigger('explicit', [DarkTip.extractorFn(/other/i, {'1': 'foo', '2': 'bar'})])
 	.settings({'templates': {'success': 'item-200', 'failed': 'item-404'}})
 	.template('item-200', 'A template string')
-	.template('item-404', 'Other template string')
-	.register();
+	.template('item-404', 'Other template string');
 
 DarkTip.registerModule('wow.wowhead.item', ['wow.item', 'wow.wowhead'])
 	.trigger('implicit', [DarkTip.extractorFn(/regex/i, {'1': 'foo', '2': 'bar'})])
