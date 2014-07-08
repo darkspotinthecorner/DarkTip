@@ -82,21 +82,30 @@
 		dust.loadSource(dust.compile('{#users blubb="aaa_{test}"}{@i18n t="{usewhat}"/}{@sep}<hr />{/sep}{/users}', 'test_i18n_1'));
 		dust.render('test_i18n_1', data, buildDemoCallbackFn('test_i18n_1'));
 
-		dust.loadSource(dust.compile('{@i18n t="salutation" name="github_{username}"/}', 'test_i18n_2'));
+		dust.loadSource(dust.compile('<a href="http://www.heise.de">{@i18n t="salutation" name="github_{username}"/}</a>', 'test_i18n_2'));
 		dust.render('test_i18n_2', data, buildDemoCallbackFn('test_i18n_2'));
 
 		dust.loadSource(dust.compile('{@api query="github-user"}User found: {#name}{.} {/name}"{login}" ({id}){?public_repos}{@api query="github-user-repos"}<h2>Repositories:</h2>{#.}<br/>{full_name}{/.}{/api}{/public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
 
 		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+		//DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})
 			.push({'aaa': 'super', 'ddd': 'narf'});
 		console.log(['context.get(aaa)', ctx.get('aaa')]);
 
+		setTimeout(function() {
+			var e = document.querySelector('#foobar');
+			var link = document.createElement('a');
+			link.href  = 'http://www.dsitc.de';
+			link.innerHTML = 'TEEEEEST';
+			var container = document.querySelector('#foobar');
+			container.insertBefore(link, container.lastChild);
+		}, 1000);
 
 	</script>
+	<div id="foobar"><hr /></div>
 </body>
 </html>

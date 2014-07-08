@@ -143,6 +143,7 @@
 
 	DarkTip.modules = {};
 	DarkTip.triggerGroups = {};
+	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
 
 	DarkTip.dataReceiveFn = function(url, successFn, errorFn, cacheDuration, callBackName) {
 		return function(data) {
@@ -178,7 +179,7 @@
 			var scr = doc.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
-			var head = doc.getElementsByTagName('head')[0];
+			var head = doc.querySelector('head');
 			head.insertBefore(scr, head.firstChild);
 			jsonp[callBackName] = DarkTip.dataReceiveFn(url, successFn, errorFn, cacheDuration, callBackName);
 			globalScope.setTimeout(function() {
@@ -389,20 +390,52 @@
 	};
 
 	DarkTip.bindEvent = function(event, selector, accessFn) {
+		var doc = globalScope.document;
 		DarkTip.domReady(function() {
-			var doc = globalScope.document;
 			var elems = doc.querySelectorAll(selector);
 			Array.prototype.forEach.call(elems, function(elem) {
 				DarkTip.addEventListeners(elem, event, accessFn);
 			});
 		});
+		if (DarkTip.MutationObserver) {
+			var observedAddFn = function(elem) {
+				if (!elem || elem.nodeType !== 1) {
+					return;
+				}
+				var elems = elem.querySelectorAll(selector);
+				console.log({'do': 'added elements', 'elem': elem, 'elems matching selector': elems});
+			};
+			var observedRemoveFn = function(elem) {
+				if (!elem || elem.nodeType !== 1) {
+					return;
+				}
+				var elems = elem.querySelectorAll(selector);
+				console.log({'do': 'removed elements', 'elem': elem, 'elems matching selector': elems});
+			};
+			var observeFn = function(mutations) {
+				console.log({'do': 'DarkTip.MutationObserver', 'mutations': mutations});
+				var added, removed, i, l;
+				for (var m = 0, ml = mutations.length; m < ml; m++) {
+					added = mutations[m].addedNodes;
+					removed = mutations[m].removedNodes;
+					for (i = 0, l = added.length; i < l; i++) {
+						observedAddFn(added[i]);
+					}
+					for (i = 0, l = removed.length; i < l; i++) {
+						observedRemoveFn(added[i]);
+					}
+				}
+			};
+			var observer = new DarkTip.MutationObserver(observeFn);
+			observer.observe(doc, {childList: true, subtree: true});
+		}
 
 
 		// If MutationObserver: Bind it
 			// If new content comes in: document.querySelectorAll(newroot, selector...) for each triggergroup
 				// Foreach element found, check each trigger on the triggergroup for events to bind
 				// triggers are checked from last to first, so the newest wins
-	}
+	};
 
 	DarkTip.addEventListeners = function(elem, event, accessFn) {
 		var eventFn = function() {
