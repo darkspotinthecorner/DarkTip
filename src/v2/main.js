@@ -64,21 +64,47 @@
 			var body = bodies.block;
 			var skip = bodies['else'];
 			if (body && params && params.query) {
-				var queryId = dust.helpers.tap(params.query, chunk, context);
+				// Check if multiple queries are presend
+				// Split it up
+				// foreach do a dust.helpers.tap to get the queryId
+					// get the rawcalldata via DarkTip.getApicallData
+					// push the context
+					// create a promise with Q.fcall(function, args)
+				// do a Q.all([promise1, promise2, etc...])
+				var alias = false;
+				var query = params.query;
+				var aliasSeperatorPosition = query.indexOf(':', 1);
 				delete params.query;
+				if (aliasSeperatorPosition > 0)
+				{
+					var alias = query.substr(0, aliasSeperatorPosition);
+					var query = query.substr((aliasSeperatorPosition + 1));
+				}
+				var queryId = dust.helpers.tap(query, chunk, context);
 				var rawcallData = DarkTip.getApicallData(queryId);
 				var newContext  = context.push(params);
 				return chunk.map(function(chunk) {
+					var pushData = {};
 					dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
 						if (apicall) {
 							DarkTip.callApi(
 								apicall,
 								function(data) {
-									return chunk.render(body, newContext.push(data)).end();
+									if (alias) {
+										pushData[alias] = data;
+									} else {
+										pushData = data;
+									}
+									return chunk.render(body, newContext.push(pushData)).end();
 								},
 								function(data) {
 									if (skip) {
-										return chunk.render(skip, newContext.push(data)).end();
+										if (alias) {
+											pushData[alias] = data;
+										} else {
+											pushData = data;
+										}
+										return chunk.render(skip, newContext.push(pushData)).end();
 									}
 									return chunk.end();
 								},
@@ -325,16 +351,16 @@
 
 	DarkTip.module = function(moduleId, dependencies)
 	{
-		if (typeof dependencies === 'string') {
-			dependencies = [dependencies];
-		}
 		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
 			return DarkTip.modules[moduleId];
+		}
+		if (typeof dependencies === 'string') {
+			dependencies = [dependencies];
 		}
 		var Module = function(moduleId, dependencies) {
 			if (dust.isArray(dependencies)) {
 				var numdeps = dependencies.length;
-				for (var i = 0; i <= numdeps; i++) {
+				for (var i = 0; i < numdeps; i++) {
 					if (typeof DarkTip.modules[dependencies[i]] === 'undefined') {
 						DarkTip.log('Module "' + moduleId + '" could not be created! Dependant module "' + dependencies[i] + '" was not found.');
 						return;
@@ -342,15 +368,15 @@
 				};
 			}
 			this.data = {
-				'map': {},
-				'i18n': {},
-				'trigger': {},
-				'apicall': {},
-				'settings': {},
-				'template': {}
+				'maps'     : {},
+				'i18n'     : {},
+				'triggers' : {},
+				'apicalls' : {},
+				'settings' : {},
+				'templates': {}
 			};
 			this.map = function(mapKey, data) {
-				this.data.map[mapKey] = data;
+				this.data.maps[mapKey] = data;
 				return this;
 			};
 			this.i18n = function(locale, data) {
@@ -364,17 +390,18 @@
 			};
 			this.trigger = function(triggerGroupId, extractors) {
 				if (DarkTip.triggerGroup(triggerGroupId)) {
-					this.data.trigger[triggerGroupId] = extractors;
+					this.data.triggers[triggerGroupId] = extractors;
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
 				return this;
 			};
-			this.apicall = function(apicallId, url, validationFn, processFn) {
-				this.data.apicall[apicallId] = {
-					'url': url,
+			this.apicall = function(apicallId, url, caching, validationFn, processFn) {
+				this.data.apicalls[apicallId] = {
+					'url'         : url,
+					'caching'     : caching || false,
 					'validationFn': (validationFn || false),
-					'processFn': (processFn || false)
+					'processFn'   : (processFn || false)
 				};
 				return this;
 			};
@@ -427,7 +454,7 @@
 				}
 			};
 			var observer = new DarkTip.MutationObserver(observeFn);
-			observer.observe(doc, {childList: true, subtree: true});
+			// observer.observe(doc, {childList: true, subtree: true});
 		}
 
 

@@ -2,13 +2,14 @@
 
 DarkTip.triggerGroup('implicit')
 	.addEvent('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+
 DarkTip.triggerGroup('explicit')
 	.addEvent('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 DarkTip.module('wow.item', ['wow'])
 	.apicall('wow-item', '//{host}/api/wow/item/{itemid}?locale={locale}')
-	.trigger('implicit', [DarkTip.extractorFn(/regex/i, {'1': 'foo', '2': 'bar'})])
-	.trigger('explicit', [DarkTip.extractorFn(/other/i, {'1': 'foo', '2': 'bar'})])
+	.trigger('implicit', [DarkTip.extractorFn(/regex/i, {'1': 'itemid', '2': 'locale'})])
+	.trigger('explicit', [DarkTip.extractorFn(/other/i, {'1': 'itemid', '2': 'locale'})])
 	.settings({'templates': {'success': 'item-200', 'failed': 'item-404'}})
 	.template('item-200', 'A template string')
 	.template('item-404', 'Other template string');

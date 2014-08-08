@@ -34,10 +34,17 @@
 	</p>
 	<div id="output"></div>
 
+	<script src="../vendor/q/q.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../vendor/dustjs/dust-full.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../vendor/dustjs-helpers/dust-helpers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../src/v2/main.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" charset="utf-8">
+
+		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+		//DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+
+		DarkTip.module('github-user')
+			.apicall('user');
 
 		var i18n = {
 			'en_US': {
@@ -85,11 +92,8 @@
 		dust.loadSource(dust.compile('<a href="http://www.heise.de">{@i18n t="salutation" name="github_{username}"/}</a>', 'test_i18n_2'));
 		dust.render('test_i18n_2', data, buildDemoCallbackFn('test_i18n_2'));
 
-		dust.loadSource(dust.compile('{@api query="github-user"}User found: {#name}{.} {/name}"{login}" ({id}){?public_repos}{@api query="github-user-repos"}<h2>Repositories:</h2>{#.}<br/>{full_name}{/.}{/api}{/public_repos}{:else}github user apicall failed for "{username}"{/api}', 'test_apiquery_1'));
+		dust.loadSource(dust.compile('{@api query="user:github-user"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?user.public_repos}{@api query="repos:github-user-repos" username=user.username}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/api}{/user.public_repos}{:else}github user apicall failed for "{user.username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
-
-		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		//DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})

@@ -26,8 +26,20 @@ dust.helpers.api = function(chunk, context, bodies, params) {
   var body = bodies.block;
   var skip = bodies['else'];
   if (params && params.query) {
-    var queryId = dust.helpers.tap(params.query, chunk, context);
+    var alias = false;
+    var query = params.query;
+    var aliasSeperatorPosition = query.indexOf(':', 1);
     delete params.query;
+    if (aliasSeperatorPosition > 0)
+    {
+      //
+      var alias = query.substr(0, aliasSeperatorPosition);
+      var query = query.substr((aliasSeperatorPosition + 1));
+    }
+
+    console.log({'alias': alias, 'query': query});
+
+    var queryId = dust.helpers.tap(query, chunk, context);
     var rawcall = DarkTip.getApicall(queryId);
     var newContext = context.push(params);
     return chunk.map(function(chunk) {
