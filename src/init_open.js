@@ -1,3 +1,8 @@
+if (typeof window.___DarkTipSettings === 'undefined')
+{
+	window.___DarkTipSettings = {};
+}
+
 window.___DarkTipSettings['unbindJQuery'] = ((window.jQuery && !DarkTip.checkRequirements('jquery', window.jQuery().jquery)) ? true : false);
 
 yepnope([{

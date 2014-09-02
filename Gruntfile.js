@@ -4,6 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     'pkg': grunt.file.readJSON('package.json'),
     'config': {
+      'sep': grunt.util.linefeed + grunt.util.linefeed,
       'dirs': {
         'source'   : 'src',
         'modules'  : 'modules',
@@ -52,13 +53,13 @@ module.exports = function(grunt) {
     /* ************************************************** */
     'concat': {
       'options': {
-        'separator': grunt.util.linefeed + grunt.util.linefeed,
+        'separator': '<%= config.sep %>',
         'stripBanners': true,
-        'banner': '/* <%= pkg.name %> (v<%= pkg.version %>) by <%= pkg.author.name %> (<%= pkg.author.alias %>), Copyright (c) <%= grunt.template.today("yyyy") %> */' + grunt.util.linefeed + grunt.util.linefeed
+        'banner': '/* <%= pkg.name %> (v<%= pkg.version %>) by <%= pkg.author.name %> (<%= pkg.author.alias %>), Copyright (c) <%= grunt.template.today("yyyy") %> */' + '<%= config.sep %>'
       },
       'license': {
         'options': {
-          'banner': 'Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>, contributors' + grunt.util.linefeed + grunt.util.linefeed
+          'banner': 'Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>, contributors' + '<%= config.sep %>'
         },
         'files': {
           'LICENSE-<%= pkg.license.type %>': '<%= config.dirs.source %>/doc/license.txt'
@@ -68,14 +69,13 @@ module.exports = function(grunt) {
         'src': [
           '<%= config.dirs.source %>/log.js',
           '<%= config.dirs.vendor %>/yepnope/yepnope.js',
-          '<%= config.dirs.source %>/core.js',
           '<%= config.dirs.source %>/init_open.js',
+          '<%= config.dirs.vendor %>/q/q.js',
           '<%= config.dirs.vendor %>/dustjs/dust-full.min.js',
           '<%= config.dirs.vendor %>/dustjs-helpers/dust-helpers.min.js',
           '<%= config.dirs.source %>/dustjs_helpers.js',
           '<%= config.dirs.vendor %>/jquery.jsonp/jquery.jsonp.min.js',
-          '<%= config.dirs.vendor %>/jQote2/jquery.jqote2.min.js',
-          '<%= config.dirs.vendor %>/qtip2/jquery.qtip.js',
+          '<%= config.dirs.source %>/v2/main.js',
           '<%= config.dirs.source %>/init_close.js'
         ],
         'dest': '<%= config.dirs.temp %>/main.js'

@@ -64,58 +64,72 @@
 			var body = bodies.block;
 			var skip = bodies['else'];
 			if (body && params && params.query) {
-				// Check if multiple queries are presend
-				// Split it up
-				// foreach do a dust.helpers.tap to get the queryId
-					// get the rawcalldata via DarkTip.getApicallData
-					// push the context
-					// create a promise with Q.fcall(function, args)
-				// do a Q.all([promise1, promise2, etc...])
-				var alias = false;
-				var query = params.query;
-				var aliasSeperatorPosition = query.indexOf(':', 1);
+				var queries      = params.query.split('|');
+				var queriesCount = queries.length;
+				var queryStack   = [];
 				delete params.query;
-				if (aliasSeperatorPosition > 0)
-				{
-					var alias = query.substr(0, aliasSeperatorPosition);
-					var query = query.substr((aliasSeperatorPosition + 1));
-				}
-				var queryId = dust.helpers.tap(query, chunk, context);
-				var rawcallData = DarkTip.getApicallData(queryId);
-				var newContext  = context.push(params);
+				var newContext   = context.push(params);
+				for (var i = 0; i < queriesCount; i++) {
+					(function(item) {
+						var alias                  = false;
+						var query                  = item;
+						var aliasSeperatorPosition = query.indexOf(':', 1);
+						if (aliasSeperatorPosition > 0) {
+							alias = query.substr(0, aliasSeperatorPosition);
+							query = query.substr((aliasSeperatorPosition + 1));
+						}
+						var queryId     = dust.helpers.tap(query, chunk, context);
+						var rawcallData = DarkTip.getApicallData(queryId);
+						queryStack.push((function() {
+							DarkTip.log(['queryStack async start']);
+							var deferred = Q.defer();
+							dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
+								if (err) {
+									deferred.reject();
+								}
+								deferred.resolve((function(apicall) {
+									var deferred = Q.defer();
+									DarkTip.callApi(
+										apicall,
+										function(data) {
+											deferred.resolve({
+												'alias'  : alias,
+												'data'   : data
+											});
+										},
+										function(data) {
+											deferred.reject();
+										},
+										rawcallData.caching,
+										rawcallData.validationFn,
+										rawcallData.processFn
+									);
+									return deferred.promise;
+								})(apicall));
+							});
+							return deferred.promise;
+						})());
+					})(queries[i]);
+				};
+
 				return chunk.map(function(chunk) {
 					var pushData = {};
-					dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
-						if (apicall) {
-							DarkTip.callApi(
-								apicall,
-								function(data) {
-									if (alias) {
-										pushData[alias] = data;
-									} else {
-										pushData = data;
-									}
-									return chunk.render(body, newContext.push(pushData)).end();
-								},
-								function(data) {
-									if (skip) {
-										if (alias) {
-											pushData[alias] = data;
-										} else {
-											pushData = data;
-										}
-										return chunk.render(skip, newContext.push(pushData)).end();
-									}
-									return chunk.end();
-								},
-								rawcallData.caching,
-								rawcallData.validationFn,
-								rawcallData.processFn
-							);
-						} else {
-							dust.log('queryId "' + queryId + '" could not be resolved by DarkTip');
-							return chunk.render(skip, newContext);
+					Q.all(queryStack).spread(function() {
+						var argumentsCount = arguments.length;
+						for (var i = 0; i < argumentsCount; i++) {
+							if (arguments[i]['alias'] !== false) {
+								pushData[arguments[i]['alias']] = arguments[i]['data'];
+							} else {
+								pushData = DarkTip.merge(pushData, arguments[i]['data']);
+							}
 						}
+					}).done(function() {
+						return chunk.render(body, newContext.push(pushData)).end();
+					}, function() {
+						if (skip) {
+							return chunk.render(skip, newContext.push(pushData)).end();
+						}
+						return chunk.end();
 					});
 				});
 			} else {
@@ -306,6 +320,7 @@
 				processFn: function(data) { return (data.data); }
 			};
 		}
+		return false;
 	};
 
 	DarkTip.callApi = function(url, successFn, errorFn, cacheDuration, validationFn, processFn) {
