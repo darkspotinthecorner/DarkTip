@@ -44,7 +44,24 @@
 		//DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github-user')
-			.apicall('user');
+			.apicall(
+				'user',
+				'//api.github.com/users/{username}',
+				(60 * 60 * 24 * 1),
+				function(data) { return (data.meta.status == 200); },
+				function(data) { return (data.data); }
+			)
+			.apicall(
+				'user-repos',
+				'//api.github.com/users/{username}/repos',
+				(60 * 60 * 24 * 1),
+				function(data) { return (data.meta.status == 200); },
+				function(data) { return (data.data); }
+			)
+			.template(
+				'index',
+				'{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}'
+			);
 
 		var i18n = {
 			'en_US': {
@@ -94,6 +111,9 @@
 
 		dust.loadSource(dust.compile('{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
+
+
+		// DarkTip.render('github-user', )
 
 		var ctx = dust.makeBase()
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})

@@ -81,7 +81,6 @@
 						var queryId     = dust.helpers.tap(query, chunk, context);
 						var rawcallData = DarkTip.getApicallData(queryId);
 						queryStack.push((function() {
-							DarkTip.log(['queryStack async start']);
 							var deferred = Q.defer();
 							dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
 								if (err) {
@@ -111,7 +110,6 @@
 						})());
 					})(queries[i]);
 				};
-
 				return chunk.map(function(chunk) {
 					var pushData = {};
 					Q.all(queryStack).spread(function() {
@@ -412,12 +410,16 @@
 				return this;
 			};
 			this.apicall = function(apicallId, url, caching, validationFn, processFn) {
-				this.data.apicalls[apicallId] = {
-					'url'         : url,
-					'caching'     : caching || false,
-					'validationFn': (validationFn || false),
-					'processFn'   : (processFn || false)
-				};
+				if (typeof url === 'undefined') {
+					DarkTip.log('Apicall for module "' + moduleId + '" could not be created! Url was empty.');
+				} else {
+					this.data.apicalls[apicallId] = {
+						'url'         : url,
+						'caching'     : caching || false,
+						'validationFn': validationFn || false,
+						'processFn'   : processFn || false
+					};
+				}
 				return this;
 			};
 			this.settings = function(data) {
@@ -425,6 +427,7 @@
 				return this;
 			};
 			this.template = function(templateKey, templateCode) {
+				this.data.templates[templateKey] = templateCode;
 				return this;
 			};
 		}
