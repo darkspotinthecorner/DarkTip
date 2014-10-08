@@ -1,0 +1,11 @@
+html {
+	background: url('bg_noisy.png') center repeat;
+}
+
+body {
+	margin: 200px;
+	font-family: 'Roboto', Arial, sans-serif;
+	font-size: 30px;
+	text-shadow: 2px 2px 2px #000;
+	color: #eee;
+}

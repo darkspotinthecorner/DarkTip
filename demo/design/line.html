@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>DarkTip Design Demo: Line</title>
+	<link rel="stylesheet" href="generic.css">
+	<link rel="stylesheet" href="line.css">
+
+</head>
+<body>
+
+<p>
+	<span class="tooltip">
+		Blubbbbb
+		<span class="tooltip-content">
+			<span class="tooltip-text">
+				<span class="tooltip-inner">Howdy, Ben!<br> There are 13 unread messages in your inbox.</span>
+			</span>
+		</span>
+	</span>
+</p>
+<p>
+	<span class="tooltip todo">Dynamic! Yeah!</span>
+</p>
+
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+	$(function() {
+		$('.tooltip.todo').on('mouseenter', function(event) {
+			var e = $(this);
+			e.append('<span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner">This was dynamically generated!<br>Hell yeah! :D</span></span></span>');
+			e.removeClass('todo');
+			e.off(event);
+		});
+	});
+</script>
+</body>
+</html>
