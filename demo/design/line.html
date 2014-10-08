@@ -11,7 +11,7 @@
 <body>
 
 <p>
-	<span class="tooltip">
+	<span class="tooltip initialized">
 		Blubbbbb
 		<span class="tooltip-content">
 			<span class="tooltip-text">
@@ -21,7 +21,7 @@
 	</span>
 </p>
 <p>
-	<span class="tooltip todo">Dynamic! Yeah!</span>
+	<span class="tooltip">Dynamic! Yeah!</span>
 </p>
 
 
@@ -31,11 +31,20 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
 	$(function() {
-		$('.tooltip.todo').on('mouseenter', function(event) {
+		$('.tooltip').on('mouseenter', function(event) {
 			var e = $(this);
-			e.append('<span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner">This was dynamically generated!<br>Hell yeah! :D</span></span></span>');
-			e.removeClass('todo');
-			e.off(event);
+			if (!e.hasClass('initialized'))
+			{
+				e.append('<span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner">This was dynamically generated!<br>Hell yeah! :D</span></span></span>');
+				e.addClass('initialized');
+				var x = e.offset();
+			}
+			e.addClass('active');
+		});
+
+		$('.tooltip').on('mouseleave', function(event) {
+			var e = $(this);
+			e.removeClass('active');
 		});
 	});
 </script>
