@@ -4,6 +4,11 @@
 
 	var DarkTip = {};
 
+	var requirements = [
+		{ 'id': 'dust', 'name': 'dust.js', 'url': 'https://github.com/linkedin/dustjs' },
+		{ 'id': 'Q',    'name': 'Q',       'url': 'http://github.com/kriskowal/q' }
+	];
+
 	DarkTip.log = (function() {
 		var logger = {},
 			originalLog,
@@ -26,9 +31,12 @@
 		};
 	})();
 
-	if (typeof globalScope.dust === 'undefined') {
-		DarkTip.log('DarkTip requires dust.js [https://github.com/linkedin/dustjs] to operate!');
-		return;
+	var requirementCount = requirements.length;
+	for (var i = 0; i < requirementCount; i++) {
+		if (typeof globalScope[requirements[i]['id']] === 'undefined') {
+			DarkTip.log('DarkTip requires '+requirements[i]['name']+' ['+requirements[i]['url']+'] to operate!');
+			return;
+		}
 	}
 
 	/* #################### dust.js helpers #################### */
@@ -81,13 +89,13 @@
 						var queryId     = dust.helpers.tap(query, chunk, context);
 						var rawcallData = DarkTip.getApicallData(queryId);
 						queryStack.push((function() {
-							var deferred = Q.defer();
+							var deferred = globalScope.Q.defer();
 							dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
 								if (err) {
 									deferred.reject();
 								}
 								deferred.resolve((function(apicall) {
-									var deferred = Q.defer();
+									var deferred = globalScope.Q.defer();
 									DarkTip.callApi(
 										apicall,
 										function(data) {
@@ -112,7 +120,7 @@
 				};
 				return chunk.map(function(chunk) {
 					var pushData = {};
-					Q.all(queryStack).spread(function() {
+					globalScope.Q.all(queryStack).spread(function() {
 						var argumentsCount = arguments.length;
 						for (var i = 0; i < argumentsCount; i++) {
 							if (arguments[i]['alias'] !== false) {
@@ -403,6 +411,9 @@
 			};
 			this.trigger = function(triggerGroupId, extractors) {
 				if (DarkTip.triggerGroup(triggerGroupId)) {
+					// if extractors == function -> use it
+					// if extractors == object, parse and eval
+					// else nothing to extract
 					this.data.triggers[triggerGroupId] = extractors;
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
