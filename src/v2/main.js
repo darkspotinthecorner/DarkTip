@@ -372,15 +372,18 @@
 
 	DarkTip.module = function(moduleId, dependencies)
 	{
+		var numdeps = 0;
 		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
 			return DarkTip.modules[moduleId];
 		}
 		if (typeof dependencies === 'string') {
 			dependencies = [dependencies];
 		}
+		if (dust.isArray(dependencies)) {
+			numdeps = dependencies.length;
+		}
 		var Module = function(moduleId, dependencies) {
-			if (dust.isArray(dependencies)) {
-				var numdeps = dependencies.length;
+			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
 					if (typeof DarkTip.modules[dependencies[i]] === 'undefined') {
 						DarkTip.log('Module "' + moduleId + '" could not be created! Dependant module "' + dependencies[i] + '" was not found.');
@@ -390,22 +393,31 @@
 			}
 			this.data = {
 				'maps'     : {},
-				'i18n'     : {},
+				'i18ns'    : {},
 				'triggers' : {},
 				'apicalls' : {},
 				'settings' : {},
 				'templates': {}
 			};
+			this.buildDeepContext = function(context, region) {
+				if (numdeps > 0) {
+					for (var i = numdeps - 1; i >= 0; i--) {
+						context = DarkTip.modules[dependencies[i]].buildDeepContext(context, region);
+					}
+				}
+				context = context.push(this.data[region]);
+				return context;
+			}
 			this.map = function(mapKey, data) {
 				this.data.maps[mapKey] = data;
 				return this;
 			};
 			this.i18n = function(locale, data) {
-				if (typeof this.data.i18n[locale] === 'undefined')
+				if (typeof this.data.i18ns[locale] === 'undefined')
 				{
-					this.data.i18n[locale] = data;
+					this.data.i18ns[locale] = data;
 				} else {
-					this.data.i18n[locale] = DarkTip.merge(this.data.i18n[locale], data);
+					this.data.i18ns[locale] = DarkTip.merge(this.data.i18ns[locale], data);
 				}
 				return this;
 			};
@@ -440,6 +452,9 @@
 			this.template = function(templateKey, templateCode) {
 				this.data.templates[templateKey] = templateCode;
 				return this;
+			};
+			this.contexts = {
+				'templates': this.buildDeepContext(dust.makeBase(), 'templates')
 			};
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));

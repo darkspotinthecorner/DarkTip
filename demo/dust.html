@@ -41,9 +41,13 @@
 	<script type="text/javascript" charset="utf-8">
 
 		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		//DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
-		DarkTip.module('github-user')
+		DarkTip.module('github')
+			.template('index', 'Blaaaaaaaa')
+			.template('blubb', 'Naaaarffff');
+
+		DarkTip.module('github-user', 'github')
 			.apicall(
 				'user',
 				'//api.github.com/users/{username}',
@@ -103,6 +107,19 @@
 			}
 		}
 
+		var formatJSON = function(json) {
+			return '<pre>'+(json.replace(/(\})/ig, "$1\r\n").replace(/(\{)/g, "\r\n$1"))+'</pre>';
+		}
+
+		buildDemoCallbackFn('Fetching template "index" from module "github-user"')(false, DarkTip.modules['github-user'].contexts['templates'].get('index'));
+		buildDemoCallbackFn('Fetching template "blubb" from module "github-user" (not set there, but in parent template "github")')(false, DarkTip.modules['github-user'].contexts['templates'].get('blubb'));
+
+		dust.loadSource(dust.compile('Overwrite Test 1 <br />{#users}- {name}<br />{/users}', 'overwrite_test'));
+		dust.render('overwrite_test', data, buildDemoCallbackFn('overwrite_test'));
+
+		dust.loadSource(dust.compile('Overwrite Test 2 <br />{#users}- {name}<br />{/users}', 'overwrite_test'));
+		dust.render('overwrite_test', data, buildDemoCallbackFn('overwrite_test'));
+
 		dust.loadSource(dust.compile('{#users blubb="aaa_{test}"}{@i18n t="{usewhat}"/}{@sep}<hr />{/sep}{/users}', 'test_i18n_1'));
 		dust.render('test_i18n_1', data, buildDemoCallbackFn('test_i18n_1'));
 
@@ -119,6 +136,49 @@
 			.push({'aaa': 'one', 'bbb': 'two', 'ccc': {'aa': 'three', 'bb': 'four'}})
 			.push({'aaa': 'super', 'ddd': 'narf'});
 		// console.log(['context.get(aaa)', ctx.get('aaa')]);
+
+
+		var ctx_test_1 = dust.makeBase();
+		buildDemoCallbackFn('ctx_test_1')(false, formatJSON(JSON.stringify(ctx_test_1)));
+
+		var ctx_test_2 = dust.makeBase({'aaa': 1, 'bbb': 2});
+		buildDemoCallbackFn('ctx_test_2')(false, formatJSON(JSON.stringify(ctx_test_2)));
+
+		var ctx_test_3 = dust.makeBase().push({'ccc': 3, 'ddd': 4});
+		buildDemoCallbackFn('ctx_test_3')(false, formatJSON(JSON.stringify(ctx_test_3)));
+
+		var ctx_test_4 = dust.makeBase({'aaa': 1, 'bbb': 2}).push({'ccc': 3, 'ddd': 4});
+		buildDemoCallbackFn('ctx_test_4')(false, formatJSON(JSON.stringify(ctx_test_4)));
+
+		var ctx_test_5 = dust.makeBase({'aaa': 1, 'bbb': 2}).push({'ccc': 3, 'ddd': 4}).push({'eee': 5, 'fff': 6});
+		buildDemoCallbackFn('ctx_test_5')(false, formatJSON(JSON.stringify(ctx_test_5)));
+
+		var ctx_test_6 = dust.makeBase();
+		var ctx_test_6_sub_1 = {'name': 'sub 1'};
+		var ctx_test_6_sub_2 = {'name': 'sub 2'};
+		var ctx_test_6_sub_3 = {'name': 'sub 3'};
+		ctx_test_6 = ctx_test_6.push(ctx_test_6_sub_1).push(ctx_test_6_sub_2).push(ctx_test_6_sub_3);
+		buildDemoCallbackFn('ctx_test_6 (init)')(false, formatJSON(JSON.stringify(ctx_test_6)));
+		ctx_test_6_sub_1['desc'] = 'newly added desc for sub 1';
+		ctx_test_6_sub_1['narf'] = 'newly added narf for sub 1';
+		buildDemoCallbackFn('ctx_test_6 (edit sub 1)')(false, formatJSON(JSON.stringify(ctx_test_6)));
+		ctx_test_6_sub_2['desc'] = 'newly added desc for sub 2';
+		buildDemoCallbackFn('ctx_test_6 (edit sub 2)')(false, formatJSON(JSON.stringify(ctx_test_6)));
+		ctx_test_6_sub_3['obj'] = { 'object': 'yes', 'what': { 'yah': 'rly' } };
+		buildDemoCallbackFn('ctx_test_6 (edit sub 3)')(false, formatJSON(JSON.stringify(ctx_test_6)));
+		buildDemoCallbackFn('ctx_test_6: get("name")')(false, ctx_test_6.get('name'));
+		buildDemoCallbackFn('ctx_test_6: get("desc")')(false, ctx_test_6.get('desc'));
+		buildDemoCallbackFn('ctx_test_6: get("narf")')(false, ctx_test_6.get('narf'));
+		buildDemoCallbackFn('ctx_test_6: get("obj.what")')(false, ctx_test_6.get('obj.what'));
+		buildDemoCallbackFn('ctx_test_6: get("obj.what.yah")')(false, ctx_test_6.get('obj.what.yah'));
+		ctx_test_6_sub_2['obj'] = { 'something': 'no' };
+		buildDemoCallbackFn('ctx_test_6 (edit sub 2)')(false, formatJSON(JSON.stringify(ctx_test_6)));
+		buildDemoCallbackFn('ctx_test_6: get("obj.something")')(false, ctx_test_6.get('obj.something'));
+
+		var module_wow = dust.makeBase().push({ 'name': 'wow' });
+		var module_blubb = dust.makeBase().push({ 'name': 'blubb' });
+		var module_wow_blubb = module_wow.push(module_blubb).push({ 'name': 'wow_blubb' });
+		buildDemoCallbackFn('module inheritance 1: blubb pushed to wow')(false, formatJSON(JSON.stringify(module_wow_blubb)));
 
 		setTimeout(function() {
 			var e = document.querySelector('#foobar');
