@@ -399,6 +399,11 @@
 				'settings' : {},
 				'templates': {}
 			};
+			this.buildContexts = function() {
+				for (var region in this.data) {
+					DarkTip.log(region);
+				}
+			};
 			this.buildDeepContext = function(context, region) {
 				if (numdeps > 0) {
 					for (var i = numdeps - 1; i >= 0; i--) {
@@ -456,6 +461,7 @@
 			this.contexts = {
 				'templates': this.buildDeepContext(dust.makeBase(), 'templates')
 			};
+			this.buildContexts();
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
