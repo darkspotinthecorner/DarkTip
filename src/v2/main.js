@@ -79,14 +79,14 @@
 				var newContext   = context.push(params);
 				for (var i = 0; i < queriesCount; i++) {
 					(function(item) {
-						var alias                  = false;
-						var query                  = item;
+						var alias = false;
+						var query = item;
 						var aliasSeperatorPosition = query.indexOf(':', 1);
 						if (aliasSeperatorPosition > 0) {
 							alias = query.substr(0, aliasSeperatorPosition);
 							query = query.substr((aliasSeperatorPosition + 1));
 						}
-						var queryId     = dust.helpers.tap(query, chunk, context);
+						var queryId = dust.helpers.tap(query, chunk, context);
 						var rawcallData = DarkTip.getApicallData(queryId);
 						queryStack.push((function() {
 							var deferred = globalScope.Q.defer();
@@ -100,8 +100,8 @@
 										apicall,
 										function(data) {
 											deferred.resolve({
-												'alias'  : alias,
-												'data'   : data
+												'alias': alias,
+												'data': data
 											});
 										},
 										function(data) {
