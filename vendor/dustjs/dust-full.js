@@ -289,10 +289,12 @@
    * ['key']
    * @param {boolean} [cur=false] Boolean which determines if the search should be limited to the
    * current context (true), or if get should search in parent contexts as well (false).
+   * @param {boolean} [grdy=false] Boolean which determines if the search should be greedy, looking
+   * through all contexts until a full path match is found.
    * @public
    * @returns {string|object}
    */
-  Context.prototype.get = function(path, cur) {
+  Context.prototype.get = function(path, cur, grdy) {
     if (typeof path === 'string') {
       if (path[0] === '.') {
         cur = true;
@@ -300,7 +302,7 @@
       }
       path = path.split('.');
     }
-    return this._get(cur, path);
+    return this._get(cur, path, grdy);
   };
 
   /**
@@ -308,50 +310,75 @@
    * @method _get
    * @param {boolean} cur Get only from the current context
    * @param {array} down An array of each step in the path
+   * @param {boolen} grdy Try to find a full path match from all contexts
    * @private
    * @return {string | object}
    */
-  Context.prototype._get = function(cur, down) {
+  Context.prototype._get = function(cur, down, grdy) {
     var ctx = this.stack,
         i = 1,
+        greedy = grdy || false,
         value, first, len, ctxThis;
     first = down[0];
     len = down.length;
-
     if (cur && len === 0) {
       ctxThis = ctx;
       ctx = ctx.head;
     } else {
       if (!cur) {
-        // Search up the stack for the first value
-        while (ctx) {
-          if (ctx.isObject) {
-            ctxThis = ctx.head;
-            value = getResult(ctx.head, first);
-            if (value !== undefined) {
-              break;
-            }
-          }
-          ctx = ctx.tail;
-        }
+        if (greedy) {
+          loop:
+          while (ctx) {
+            i = 1;
+            if (ctx.isObject) {
+              ctxThis = ctx.head;
+              value = getResult(ctx.head, first);
+              if (value !== undefined) {
 
-        if (value !== undefined) {
-          ctx = value;
+                while (value && i < len) {
+                  ctxThis = value;
+                  value = getResult(value, down[i]);
+                  i++;
+                }
+                if (value !== undefined) {
+                  ctx = value;
+                  break loop;
+                }
+              }
+            }
+            ctx = ctx.tail;
+          }
         } else {
-          ctx = getResult(this.global, first);
+          // Search up the stack for the first value
+          while (ctx) {
+            if (ctx.isObject) {
+              ctxThis = ctx.head;
+              value = getResult(ctx.head, first);
+              if (value !== undefined) {
+                break;
+              }
+            }
+            ctx = ctx.tail;
+          }
+
+          if (value !== undefined) {
+            ctx = value;
+          } else {
+            ctx = getResult(this.global, first);
+          }
         }
       } else if (ctx) {
         // if scope is limited by a leading dot, don't search up the tree
         ctx = getResult(ctx.head, first);
       }
-
-      while (ctx && i < len) {
-        ctxThis = ctx;
-        ctx = getResult(ctx, down[i]);
-        i++;
+      if(!greedy) {
+        while (ctx && i < len) {
+          ctxThis = ctx;
+          ctx = getResult(ctx, down[i]);
+          i++;
+        }
       }
     }
-
     // Return the ctx or a function wrapping the application of the context.
     if (typeof ctx === 'function') {
       return function() {

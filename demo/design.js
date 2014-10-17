@@ -1,10 +1,10 @@
 /* DarkTip by Martin Gelder (Dark Spot in the Corner), Copyright (c) 2014 */
 
 DarkTip.triggerGroup('implicit')
-	.addEvent('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+	.event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
 
 DarkTip.triggerGroup('explicit')
-	.addEvent('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+	.event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 DarkTip.module('wow')
 	.apicall('wow-data-battlegroups',           '//{host}/wow/data/battlegroups?locale={locale}')

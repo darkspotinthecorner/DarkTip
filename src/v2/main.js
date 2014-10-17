@@ -345,6 +345,7 @@
 		}
 		var TriggerGroup = function(triggerGroupId) {
 			this.id = triggerGroupId;
+			this.triggers = [];
 			this.event = function(selector, event, accessFn) {
 				if (typeof selector !== 'string') {
 					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
@@ -358,13 +359,11 @@
 					DarkTip.log('TriggerGroup.addEvent: Invalid access function! 3rd argument must be a function.');
 					return this;
 				}
-				/*
-				if (typeof this.events[selector] === 'undefined') {
-					this.events[selector] = {};
-				}
-				*/
 				DarkTip.bindEvent(event, selector, accessFn);
 				return this;
+			};
+			this.trigger = function(moduleId, extractorFn) {
+				this.triggers.push({ 'module': moduleId, 'extractor': extractorFn });
 			};
 		}
 		return (DarkTip.triggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
@@ -391,29 +390,34 @@
 					}
 				};
 			}
+			this.contexts = {};
 			this.data = {
 				'maps'     : {},
 				'i18ns'    : {},
-				'triggers' : {},
 				'apicalls' : {},
 				'settings' : {},
 				'templates': {}
 			};
 			this.buildContexts = function() {
-				for (var region in this.data) {
-					DarkTip.log(region);
-				}
+				this.contexts['maps']      = this.buildContext(dust.makeBase(), 'maps');
+				this.contexts['i18ns']     = this.buildContext(dust.makeBase(), 'i18ns');
+				this.contexts['apicalls']  = this.buildContext(dust.makeBase(), 'apicalls');
+				this.contexts['settings']  = this.buildContext(dust.makeBase(), 'settings');
+				this.contexts['templates'] = this.buildContext(dust.makeBase(), 'templates');
 			};
-			this.buildDeepContext = function(context, region) {
+			this.buildContext = function(context, region) {
 				if (numdeps > 0) {
 					for (var i = numdeps - 1; i >= 0; i--) {
-						context = DarkTip.modules[dependencies[i]].buildDeepContext(context, region);
+						context = DarkTip.modules[dependencies[i]].buildContext(context, region);
 					}
 				}
 				context = context.push(this.data[region]);
 				return context;
 			}
 			this.map = function(mapKey, data) {
+				if (typeof data === 'undefined') {
+					return this.contexts.maps.get(mapKey);
+				}
 				this.data.maps[mapKey] = data;
 				return this;
 			};
@@ -426,12 +430,10 @@
 				}
 				return this;
 			};
-			this.trigger = function(triggerGroupId, extractors) {
-				if (DarkTip.triggerGroup(triggerGroupId)) {
-					// if extractors == function -> use it
-					// if extractors == object, parse and eval
-					// else nothing to extract
-					this.data.triggers[triggerGroupId] = extractors;
+			this.trigger = function(triggerGroupId, extractorFn) {
+				var triggerGroup = DarkTip.triggerGroup(triggerGroupId)
+				if (triggerGroup) {
+					triggerGroup.trigger(moduleId, extractorFn);
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
@@ -457,9 +459,6 @@
 			this.template = function(templateKey, templateCode) {
 				this.data.templates[templateKey] = templateCode;
 				return this;
-			};
-			this.contexts = {
-				'templates': this.buildDeepContext(dust.makeBase(), 'templates')
 			};
 			this.buildContexts();
 		}

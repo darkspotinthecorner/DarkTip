@@ -150,6 +150,7 @@
 
 		var ctx_test_5 = dust.makeBase({'aaa': 1, 'bbb': 2}).push({'ccc': 3, 'ddd': 4}).push({'eee': 5, 'fff': 6});
 		buildDemoCallbackFn('ctx_test_5')(false, formatJSON(JSON.stringify(ctx_test_5)));
+		*/
 
 		var ctx_test_6 = dust.makeBase();
 		var ctx_test_6_sub_1 = {'name': 'sub 1'};
@@ -172,7 +173,9 @@
 		ctx_test_6_sub_2['obj'] = { 'something': 'no' };
 		buildDemoCallbackFn('ctx_test_6 (edit sub 2)')(false, formatJSON(JSON.stringify(ctx_test_6)));
 		buildDemoCallbackFn('ctx_test_6: get("obj.something")')(false, ctx_test_6.get('obj.something'));
+		buildDemoCallbackFn('ctx_test_6: greedy get("obj.something", false, true)')(false, ctx_test_6.get('obj.something', false, true));
 
+		/*
 		var module_wow = dust.makeBase().push({ 'name': 'wow' });
 		var module_blubb = dust.makeBase().push({ 'name': 'blubb' });
 		var module_wow_blubb = module_wow.push(module_blubb).push({ 'name': 'wow_blubb' });
