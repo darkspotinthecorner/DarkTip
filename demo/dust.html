@@ -163,17 +163,18 @@
 		buildDemoCallbackFn('ctx_test_6 (edit sub 1)')(false, formatJSON(JSON.stringify(ctx_test_6)));
 		ctx_test_6_sub_2['desc'] = 'newly added desc for sub 2';
 		buildDemoCallbackFn('ctx_test_6 (edit sub 2)')(false, formatJSON(JSON.stringify(ctx_test_6)));
-		ctx_test_6_sub_3['obj'] = { 'object': 'yes', 'what': { 'yah': 'rly' } };
+		ctx_test_6_sub_3['obj'] = { 'about': 'sub3object', 'what': { 'yah': 'rly' } };
 		buildDemoCallbackFn('ctx_test_6 (edit sub 3)')(false, formatJSON(JSON.stringify(ctx_test_6)));
 		buildDemoCallbackFn('ctx_test_6: get("name")')(false, ctx_test_6.get('name'));
 		buildDemoCallbackFn('ctx_test_6: get("desc")')(false, ctx_test_6.get('desc'));
 		buildDemoCallbackFn('ctx_test_6: get("narf")')(false, ctx_test_6.get('narf'));
 		buildDemoCallbackFn('ctx_test_6: get("obj.what")')(false, ctx_test_6.get('obj.what'));
 		buildDemoCallbackFn('ctx_test_6: get("obj.what.yah")')(false, ctx_test_6.get('obj.what.yah'));
-		ctx_test_6_sub_2['obj'] = { 'something': 'no' };
+		ctx_test_6_sub_2['obj'] = { 'about': 'sub2object', 'something': 'no' };
 		buildDemoCallbackFn('ctx_test_6 (edit sub 2)')(false, formatJSON(JSON.stringify(ctx_test_6)));
 		buildDemoCallbackFn('ctx_test_6: get("obj.something")')(false, ctx_test_6.get('obj.something'));
 		buildDemoCallbackFn('ctx_test_6: greedy get("obj.something", false, true)')(false, ctx_test_6.get('obj.something', false, true));
+		buildDemoCallbackFn('ctx_test_6: greedy get("obj.about", false, true)')(false, ctx_test_6.get('obj.about', false, true));
 
 		/*
 		var module_wow = dust.makeBase().push({ 'name': 'wow' });
