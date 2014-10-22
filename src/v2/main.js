@@ -346,24 +346,67 @@
 		var TriggerGroup = function(triggerGroupId) {
 			this.id = triggerGroupId;
 			this.triggers = [];
+			this.generateExtractorFn = function(moduleId, extractorFn, extractorPayload) {
+				if (typeof extractorFn === 'function') {
+					return extractorFn;
+				}
+				if (typeof extractorFn === 'string') {
+					if (typeof extractorPayload !== 'object') {
+						DarkTip.log('TriggerGroup.trigger: Invalid RegExp payload! 3rd argument must be an object.');
+						return false;
+					}
+					extractorFn = new RegExp(extractorFn);
+					return function(candidate) {
+						var data = {};
+						var result = extractorFn.exec(candidate);
+						if (result) {
+							for (var key in extractorPayload) {
+								if (extractorPayload.hasOwnProperty(key)) {
+									data[extractorPayload[key]] = result[key];
+								}
+							}
+							return data;
+						}
+						return false;
+					};
+				}
+				DarkTip.log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
+				return false;
+			};
 			this.event = function(selector, event, accessFn) {
 				if (typeof selector !== 'string') {
-					DarkTip.log('TriggerGroup.addEvent: Invalid selector! 1st argument must be selector string.');
+					DarkTip.log('TriggerGroup.event: Invalid selector! 1st argument must be selector string.');
 					return this;
 				}
 				if (typeof event !== 'string') {
-					DarkTip.log('TriggerGroup.addEvent: Invalid show event! 2nd argument must be event type string.');
+					DarkTip.log('TriggerGroup.event: Invalid show event! 2nd argument must be event type string.');
 					return this;
 				}
 				if (typeof accessFn !== 'function') {
-					DarkTip.log('TriggerGroup.addEvent: Invalid access function! 3rd argument must be a function.');
+					DarkTip.log('TriggerGroup.event: Invalid access function! 3rd argument must be a function.');
 					return this;
 				}
-				DarkTip.bindEvent(event, selector, accessFn);
+				DarkTip.bindEvent(event, selector, accessFn, this);
 				return this;
 			};
-			this.trigger = function(moduleId, extractorFn) {
+			this.trigger = function(moduleId, extractorFn, extractorPayload) {
+				extractorFn = this.generateExtractorFn(moduleId, extractorFn, extractorPayload);
+				if (typeof extractorFn !== 'function') {
+					DarkTip.log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
+					return this;
+				}
 				this.triggers.push({ 'module': moduleId, 'extractor': extractorFn });
+				return this;
+			};
+			this.getTrigger = function(candidate) {
+				var i, result, trigger, triggerlen = this.triggers.length;
+				for (i = (triggerlen - 1); i >= 0; i--) {
+					trigger = this.triggers[i];
+					result  = trigger.extractor(candidate);
+					if (result) {
+						DarkTip.log({'module': trigger.module, 'result': result});
+					}
+				}
 			};
 		}
 		return (DarkTip.triggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
@@ -430,10 +473,10 @@
 				}
 				return this;
 			};
-			this.trigger = function(triggerGroupId, extractorFn) {
+			this.trigger = function(triggerGroupId, extractorFn, extractorPayload) {
 				var triggerGroup = DarkTip.triggerGroup(triggerGroupId)
 				if (triggerGroup) {
-					triggerGroup.trigger(moduleId, extractorFn);
+					triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
@@ -465,12 +508,12 @@
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
-	DarkTip.bindEvent = function(event, selector, accessFn) {
+	DarkTip.bindEvent = function(event, selector, accessFn, triggerGroup) {
 		var doc = globalScope.document;
 		DarkTip.domReady(function() {
 			var elems = doc.querySelectorAll(selector);
 			Array.prototype.forEach.call(elems, function(elem) {
-				DarkTip.addEventListeners(elem, event, accessFn);
+				DarkTip.addEventListeners(elem, event, accessFn, triggerGroup);
 			});
 		});
 		if (DarkTip.MutationObserver) {
@@ -513,11 +556,11 @@
 				// triggers are checked from last to first, so the newest wins
 	};
 
-	DarkTip.addEventListeners = function(elem, event, accessFn) {
+	DarkTip.addEventListeners = function(elem, event, accessFn, triggerGroup) {
 		var eventFn = function() {
 			var accessed = accessFn(this);
 			if (accessed) {
-				DarkTip.handleEventFire(event, this, accessed);
+				DarkTip.handleEventFire(event, this, accessed, triggerGroup);
 			}
 		};
 		if (event === 'hover') {
@@ -531,8 +574,9 @@
 		if (event === 'click&hover') {}
 	};
 
-	DarkTip.handleEventFire = function(event, elem, accessed) {
-		console.log({'event': event, 'elem': elem, 'accessed': accessed});
+	DarkTip.handleEventFire = function(event, elem, accessed, triggerGroup) {
+		DarkTip.log({'event': event, 'elem': elem, 'accessed': accessed});
+		var result = triggerGroup.getTrigger(accessed);
 	};
 
 

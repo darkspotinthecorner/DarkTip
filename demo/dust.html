@@ -29,9 +29,12 @@
 	</style>
 </head>
 <body>
-	<p>
-		Lorem ipsum dolor sit amet, <a href="http://www.google.de">consectetur adipisicing</a> elit. Voluptates esse unde doloribus, <a href="http://www.github.com">alias enim magnam ipsum</a> sequi, quisquam fuga laudantium quidem tempora veniam velit fugiat possimus! Sit quae commodi ipsum.
-	</p>
+	<p>Lorem ipsum dolor sit amet, <a href="http://www.google.de">consectetur adipisicing</a> elit. Voluptates esse unde doloribus, <a href="http://www.github.com">alias enim magnam ipsum</a> sequi, quisquam fuga laudantium quidem tempora veniam velit fugiat possimus! Sit quae commodi ipsum.</p>
+
+	<p>Narf narf <a href="https://github.com/darkspotinthecorner">dsitc</a>...</p>
+
+	<p>Check out my supercooooool <a href="https://github.com/darkspotinthecorner/DarkTip">DarkTip</a> project on github! ;)</p>
+
 	<div id="output"></div>
 
 	<script src="../vendor/q/q.js" type="text/javascript" charset="utf-8"></script>
@@ -44,9 +47,15 @@
 		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
-			.template('index', 'Blaaaaaaaa')
-			.template('blubb', 'Naaaarffff');
+			.map('root_url', '(?:https?://)?(?:www\.)?github\.com/');
 
+		DarkTip.module('github-user', 'github')
+			.trigger('implicit', '^(?:https?://)?(?:www\.)?github\.com/([^/]+)/?$', {1: 'username'});
+
+		DarkTip.module('github-repository', 'github')
+			.trigger('implicit', '^(?:https?://)?(?:www\.)?github\.com/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
+
+		/*
 		DarkTip.module('github-user', 'github')
 			.apicall(
 				'user',
@@ -128,7 +137,7 @@
 
 		dust.loadSource(dust.compile('{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}', 'test_apiquery_1'));
 		dust.render('test_apiquery_1', data, buildDemoCallbackFn('test_apiquery_1'));
-
+		// */
 
 		/*
 		var ctx = dust.makeBase()
@@ -150,8 +159,9 @@
 
 		var ctx_test_5 = dust.makeBase({'aaa': 1, 'bbb': 2}).push({'ccc': 3, 'ddd': 4}).push({'eee': 5, 'fff': 6});
 		buildDemoCallbackFn('ctx_test_5')(false, formatJSON(JSON.stringify(ctx_test_5)));
-		*/
+		// */
 
+		/*
 		var ctx_test_6 = dust.makeBase();
 		var ctx_test_6_sub_1 = {'name': 'sub 1'};
 		var ctx_test_6_sub_2 = {'name': 'sub 2'};
@@ -175,14 +185,16 @@
 		buildDemoCallbackFn('ctx_test_6: get("obj.something")')(false, ctx_test_6.get('obj.something'));
 		buildDemoCallbackFn('ctx_test_6: greedy get("obj.something", false, true)')(false, ctx_test_6.get('obj.something', false, true));
 		buildDemoCallbackFn('ctx_test_6: greedy get("obj.about", false, true)')(false, ctx_test_6.get('obj.about', false, true));
+		// */
 
 		/*
 		var module_wow = dust.makeBase().push({ 'name': 'wow' });
 		var module_blubb = dust.makeBase().push({ 'name': 'blubb' });
 		var module_wow_blubb = module_wow.push(module_blubb).push({ 'name': 'wow_blubb' });
 		buildDemoCallbackFn('module inheritance 1: blubb pushed to wow')(false, formatJSON(JSON.stringify(module_wow_blubb)));
-		*/
+		// */
 
+		/*
 		setTimeout(function() {
 			var e = document.querySelector('#foobar');
 			var link = document.createElement('a');
@@ -191,6 +203,7 @@
 			var container = document.querySelector('#foobar');
 			container.insertBefore(link, container.lastChild);
 		}, 1000);
+		// */
 
 	</script>
 	<div id="foobar"><hr /></div>
