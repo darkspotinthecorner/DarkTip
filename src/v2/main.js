@@ -457,24 +457,22 @@
 				context = context.push(this.data[region]);
 				return context;
 			}
-			this.map = function(mapKey, data) {
+			this.map = function(key, data) {
 				if (typeof data === 'undefined') {
-					return this.contexts.maps.get(mapKey);
+					return this.contexts.maps.gget(key);
 				}
-				this.data.maps[mapKey] = data;
+				this.contexts.maps.set(key, data);
 				return this;
 			};
-			this.i18n = function(locale, data) {
-				if (typeof this.data.i18ns[locale] === 'undefined')
-				{
-					this.data.i18ns[locale] = data;
-				} else {
-					this.data.i18ns[locale] = DarkTip.merge(this.data.i18ns[locale], data);
+			this.i18n = function(key, data) {
+				if (typeof data === 'undefined') {
+					return this.contexts.i18ns.gget(key);
 				}
+				this.contexts.i18ns.set(key, data);
 				return this;
 			};
 			this.trigger = function(triggerGroupId, extractorFn, extractorPayload) {
-				var triggerGroup = DarkTip.triggerGroup(triggerGroupId)
+				var triggerGroup = DarkTip.triggerGroup(triggerGroupId);
 				if (triggerGroup) {
 					triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
 				} else {
@@ -482,25 +480,35 @@
 				}
 				return this;
 			};
-			this.apicall = function(apicallId, url, caching, validationFn, processFn) {
+			this.apicall = function(key, url, caching, validationFn, processFn) {
 				if (typeof url === 'undefined') {
+					var apicall = this.contexts.apicalls.gget(key);
+					if (typeof apicall !== 'undefined') {
+						return apicall;
+					}
 					DarkTip.log('Apicall for module "' + moduleId + '" could not be created! Url was empty.');
 				} else {
-					this.data.apicalls[apicallId] = {
+					this.contexts.templates.set(key, {
 						'url'         : url,
 						'caching'     : caching || false,
 						'validationFn': validationFn || false,
 						'processFn'   : processFn || false
-					};
+					});
 				}
 				return this;
 			};
-			this.settings = function(data) {
-				this.data.settings = DarkTip.merge(this.data.settings, data);
+			this.setting = function(key, data) {
+				if (typeof data === 'undefined') {
+					return this.contexts.settings.gget(key);
+				}
+				this.contexts.settings.set(key, data);
 				return this;
 			};
-			this.template = function(templateKey, templateCode) {
-				this.data.templates[templateKey] = templateCode;
+			this.template = function(key, data) {
+				if (typeof data === 'undefined') {
+					return this.contexts.templates.gget(key);
+				}
+				this.contexts.templates.set(key, data);
 				return this;
 			};
 			this.buildContexts();

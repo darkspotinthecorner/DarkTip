@@ -305,6 +305,10 @@
     return this._get(cur, path, grdy);
   };
 
+  Context.prototype.gget = function(path) {
+    return this.get(path, false, true);
+  }
+
   /**
    * Get a value from the context
    * @method _get
@@ -395,6 +399,30 @@
       return ctx;
     }
   };
+
+  Context.prototype.set = function(path, value) {
+    if (typeof path === 'string') {
+      path = path.split('.');
+    }
+    return this._set(path, value);
+  };
+
+  Context.prototype._set = function(down, value) {
+    var len = down.length;
+    var cur = this.stack.head
+    for (var i = 0; i <= len; i++) {
+      if ((i + 1) == len) {
+        var oldvalue = cur[down[i]];
+        cur[down[i]] = value;
+        return oldvalue;
+      } else {
+        if (typeof cur[down[i]] !== 'object') {
+          cur[down[i]] = {};
+        }
+        cur = cur[down[i]];
+      }
+    }
+  }
 
   Context.prototype.getPath = function(cur, down) {
     return this._get(cur, down);

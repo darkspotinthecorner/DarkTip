@@ -42,4 +42,6 @@ DarkTip.registerModule('wow.character', ['wow'])
 	-> partials / templates
 	-> translations
 	-> api calls
-	->
+	-> i18n
+	-> maps
+// */
