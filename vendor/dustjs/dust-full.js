@@ -79,11 +79,19 @@
 
   dust.cache = {};
 
+  dust.getTemplate = function(name) {
+    return dust.cache[name];
+  }
+
+  dust.setTemplate = function(name, tmpl) {
+    dust.cache[name] = tmpl;
+  }
+
   dust.register = function(name, tmpl) {
     if (!name) {
       return;
     }
-    dust.cache[name] = tmpl;
+    dust.setTemplate(name, tpl);
   };
 
   dust.render = function(name, context, callback) {
@@ -132,7 +140,7 @@
   };
 
   dust.load = function(name, chunk, context) {
-    var tmpl = dust.cache[name];
+    var tmpl = dust.getTemplate(name);
     if (tmpl) {
       return tmpl(chunk, context);
     } else {
@@ -142,10 +150,11 @@
             if (err) {
               return chunk.setError(err);
             }
-            if (!dust.cache[name]) {
+            var tmpl = dust.getTemplate(name);
+            if (!tmpl) {
               dust.loadSource(dust.compile(src, name));
             }
-            dust.cache[name](chunk, context).end();
+            tmpl(chunk, context).end();
           });
         });
       }

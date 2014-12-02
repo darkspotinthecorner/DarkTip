@@ -398,13 +398,13 @@
 				this.triggers.push({ 'module': moduleId, 'extractor': extractorFn });
 				return this;
 			};
-			this.getTrigger = function(candidate) {
+			this.findFirstTrigger = function(candidate) {
 				var i, result, trigger, triggerlen = this.triggers.length;
 				for (i = (triggerlen - 1); i >= 0; i--) {
 					trigger = this.triggers[i];
 					result  = trigger.extractor(candidate);
 					if (result) {
-						DarkTip.log({'module': trigger.module, 'result': result});
+						return {'module': trigger.module, 'params': result}
 					}
 				}
 			};
@@ -511,6 +511,17 @@
 				this.contexts.templates.set(key, data);
 				return this;
 			};
+			this.start = function(elem, params) {
+				DarkTip.log('starting module '+moduleId);
+				// push templates, i18n, maps, apicalls and settings to dust.js
+				// start render tooltip
+				// -> callback: display tooltip
+			}
+			this.stop = function(elem, params) {
+				DarkTip.log('stopping module '+moduleId);
+				// stop rendering tooltip
+				// if already rendered, hide it
+			}
 			this.buildContexts();
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
@@ -565,15 +576,21 @@
 	};
 
 	DarkTip.addEventListeners = function(elem, event, accessFn, triggerGroup) {
-		var eventFn = function() {
+		var eventOnFn = function() {
 			var accessed = accessFn(this);
 			if (accessed) {
-				DarkTip.handleEventFire(event, this, accessed, triggerGroup);
+				DarkTip.handleEventFire(event, this, accessed, triggerGroup, true);
+			}
+		};
+		var eventOffFn = function() {
+			var accessed = accessFn(this);
+			if (accessed) {
+				DarkTip.handleEventFire(event, this, accessed, triggerGroup, false);
 			}
 		};
 		if (event === 'hover') {
-			elem.addEventListener('mouseenter', eventFn, false);
-			elem.addEventListener('mouseleave', eventFn, false);
+			elem.addEventListener('mouseenter', eventOnFn,  false);
+			elem.addEventListener('mouseleave', eventOffFn, false);
 		}
 		if (event === 'hoverintent') {}
 		if (event === 'hover&stay') {}
@@ -582,11 +599,22 @@
 		if (event === 'click&hover') {}
 	};
 
-	DarkTip.handleEventFire = function(event, elem, accessed, triggerGroup) {
-		DarkTip.log({'event': event, 'elem': elem, 'accessed': accessed});
-		var result = triggerGroup.getTrigger(accessed);
+	DarkTip.handleEventFire = function(event, elem, accessed, triggerGroup, on) {
+		if (typeof on === 'undefined') on = false;
+		// if element already has a tooltip attached, access it
+		var result = triggerGroup.findFirstTrigger(accessed);
+		if (result) {
+			var module = DarkTip.module(result.module);
+			if (module) {
+				if (on) {
+					module.start(elem, result.params);
+				} else {
+					module.stop(elem, result.params);
+				}
+			}
+		}
+		DarkTip.log({'event': event, 'elem': elem, 'accessed': accessed, 'foundTrigger': result});
 	};
-
 
 	DarkTip.domReady = (function () {
 		var listener;
