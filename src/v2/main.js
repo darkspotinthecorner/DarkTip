@@ -513,7 +513,17 @@
 			};
 			this.start = function(elem, params) {
 				DarkTip.log('starting module '+moduleId);
-				// push templates, i18n, maps, apicalls and settings to dust.js
+				var module = this;
+				var providerFn = function(type, key) {
+					if (type === 'module') {
+						return module;
+					}
+					if (typeof module.contexts[type] !== 'undefined') {
+						return this.contexts[type].gget(key);
+					}
+				}
+
+				// call dust.render or something with providerFn
 				// start render tooltip
 				// -> callback: display tooltip
 			}
