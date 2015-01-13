@@ -1,0 +1,180 @@
+(function(dust){
+
+  var helpers = {
+    'i18n': (function(){
+      var helper = function(chunk, context, bodies, params) {
+        var newContext = context.push(dust.helpers.i18n.context());
+        var i18nstring = dust.helpers.tap(params.t, chunk, context);
+        if (i18nstring) {
+          var contextlookup = '_i18n_.' + i18nstring;
+          var localized = newContext.get(contextlookup);
+          if (localized) {
+            var newParams = params;
+            delete newParams.t;
+            dust.loadSource(dust.compile(localized, contextlookup));
+            return chunk.partial(contextlookup, context.push(newParams));
+          }
+          return chunk.write('**' + i18nstring + '**');
+        }
+        return chunk;
+      };
+      helper.context = function(context) {
+        if (typeof context === 'undefined') return { '_i18n_': dust.helpers.i18n._context_ || {} };
+        return dust.helpers.i18n._context_ = context;
+      }
+      return helper;
+    })(),
+    'api': function(chunk, context, bodies, params) {
+      var body = bodies.block;
+      var skip = bodies['else'];
+      if (body && params && params.query) {
+        var queries      = params.query.split('|');
+        var queriesCount = queries.length;
+        var queryStack   = [];
+        delete params.query;
+        var newContext   = context.push(params);
+        for (var i = 0; i < queriesCount; i++) {
+          (function(item) {
+            var alias = false;
+            var query = item;
+            var aliasSeperatorPosition = query.indexOf(':', 1);
+            if (aliasSeperatorPosition > 0) {
+              alias = query.substr(0, aliasSeperatorPosition);
+              query = query.substr((aliasSeperatorPosition + 1));
+            }
+            var queryId = dust.helpers.tap(query, chunk, context);
+            var rawcallData = DarkTip.getApicallData(queryId);
+            queryStack.push((function() {
+              var deferred = globalScope.Q.defer();
+              dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
+                if (err) {
+                  deferred.reject();
+                }
+                deferred.resolve((function(apicall) {
+                  var deferred = globalScope.Q.defer();
+                  DarkTip.callApi(
+                    apicall,
+                    function(data) {
+                      deferred.resolve({
+                        'alias': alias,
+                        'data': data
+                      });
+                    },
+                    function(data) {
+                      deferred.reject();
+                    },
+                    rawcallData.caching,
+                    rawcallData.validationFn,
+                    rawcallData.processFn
+                  );
+                  return deferred.promise;
+                })(apicall));
+              });
+              return deferred.promise;
+            })());
+          })(queries[i]);
+        };
+        return chunk.map(function(chunk) {
+          var pushData = {};
+          globalScope.Q.all(queryStack).spread(function() {
+            var argumentsCount = arguments.length;
+            for (var i = 0; i < argumentsCount; i++) {
+              if (arguments[i]['alias'] !== false) {
+                pushData[arguments[i]['alias']] = arguments[i]['data'];
+              } else {
+                pushData = DarkTip.merge(pushData, arguments[i]['data']);
+              }
+            }
+          }).done(function() {
+            return chunk.render(body, newContext.push(pushData)).end();
+          }, function() {
+            if (skip) {
+              return chunk.render(skip, newContext.push(pushData)).end();
+            }
+            return chunk.end();
+          });
+        });
+      } else {
+        dust.log('No "query" parameter given for @api helper');
+      }
+      return chunk;
+    }
+  };
+
+  for (var key in helpers) {
+    dust.helpers[key] = helpers[key];
+  }
+
+  /* ==========---------- Modify core dust functions ----------========== */
+
+  var Context = dust.makeBase().constructor;
+
+  Context.prototype.get = function(path, cur) {
+    var greedy = false;
+    if (typeof path === 'string') {
+      if (path.substr(0, 2) === '..') {
+        greedy = true;
+        path = path.substr(2);
+      } else if (path[0] === '.') {
+        cur = true;
+        path = path.substr(1);
+      }
+      path = path.split('.');
+    }
+    if (greedy) {
+      return this._gget(path);
+    }
+    return this._get(cur, path);
+  };
+
+  Context.prototype._gget = function(down) {
+    var ctx = this.stack,
+        i = 1,
+        value, first, len, ctxThis, fn;
+    first = down[0];
+    len = down.length;
+    loop:
+    while (ctx) {
+      i = 1;
+      if (ctx.isObject) {
+        ctxThis = ctx.head;
+        value = getResult(ctx.head, first);
+        if (value !== undefined) {
+
+          while (value && i < len) {
+            ctxThis = value;
+            value = getResult(value, down[i]);
+            i++;
+          }
+          if (value !== undefined) {
+            ctx = value;
+            break loop;
+          }
+        }
+      }
+      ctx = ctx.tail;
+    }
+    if (typeof ctx === 'function') {
+      fn = function() {
+        try {
+          return ctx.apply(ctxThis, arguments);
+        } catch (err) {
+          dust.log(err, ERROR);
+          throw err;
+        }
+      };
+      fn.__dustBody = !!ctx.__dustBody;
+      return fn;
+    } else {
+      if (ctx === undefined) {
+        dust.log('Cannot find the value for reference [{' + down.join('.') + '}] in template [' + this.getTemplateName() + ']');
+      }
+      return ctx;
+    }
+  };
+
+  if(typeof exports !== 'undefined') {
+    module.exports = dust;
+  }
+
+})(typeof exports !== 'undefined' ? require('dustjs-linkedin') : dust);

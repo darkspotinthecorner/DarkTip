@@ -1,15 +1,16 @@
 (function(globalScope) {
 
-	// Target browser support - 2 versions back (that's version 9, I'm looking at you, IE!)
-
 	var DarkTip = {};
 
-	var requirements = [
-		{ 'id': 'dust', 'name': 'dust.js', 'url': 'https://github.com/linkedin/dustjs' },
-		{ 'id': 'Q',    'name': 'Q',       'url': 'http://github.com/kriskowal/q' }
-	];
+	var dust = require('dustjs-linkedin');
+	require('dustjs-helpers');
+	require('./dustjs-darktip');
 
-	DarkTip.log = (function() {
+	DarkTip.dust = dust;
+
+	// Target browser support - 2 versions back (that's version 9, I'm looking at you, IE!)
+
+	var log = (function() {
 		var logger = {},
 			originalLog,
 			loggerContext;
@@ -31,122 +32,7 @@
 		};
 	})();
 
-	var requirementCount = requirements.length;
-	for (var i = 0; i < requirementCount; i++) {
-		if (typeof globalScope[requirements[i]['id']] === 'undefined') {
-			DarkTip.log('DarkTip requires '+requirements[i]['name']+' ['+requirements[i]['url']+'] to operate!');
-			return;
-		}
-	}
-
-	/* #################### dust.js helpers #################### */
-	(function(dust){
-		if (typeof dust.helpers.tap === 'undefined') {
-			DarkTip.log('DarkTip requires dust.js helpers [https://github.com/linkedin/dustjs-helpers] to operate!');
-			return;
-		}
-		dust.helpers.i18n = (function(){
-			var helper = function(chunk, context, bodies, params) {
-				var newContext = context.push(dust.helpers.i18n.context());
-				var i18nstring = dust.helpers.tap(params.t, chunk, context);
-				if (i18nstring) {
-					var contextlookup = '_i18n_.' + i18nstring;
-					var localized = newContext.get(contextlookup);
-					if (localized) {
-						var newParams = params;
-						delete newParams.t;
-						dust.loadSource(dust.compile(localized, contextlookup));
-						return chunk.partial(contextlookup, context.push(newParams));
-					}
-					return chunk.write('**' + i18nstring + '**');
-				}
-				return chunk;
-			};
-			helper.context = function(context) {
-				if (typeof context === 'undefined') return { '_i18n_': dust.helpers.i18n._context_ || {} };
-				return dust.helpers.i18n._context_ = context;
-			}
-			return helper;
-		})();
-		dust.helpers.api = function(chunk, context, bodies, params) {
-			var body = bodies.block;
-			var skip = bodies['else'];
-			if (body && params && params.query) {
-				var queries      = params.query.split('|');
-				var queriesCount = queries.length;
-				var queryStack   = [];
-				delete params.query;
-				var newContext   = context.push(params);
-				for (var i = 0; i < queriesCount; i++) {
-					(function(item) {
-						var alias = false;
-						var query = item;
-						var aliasSeperatorPosition = query.indexOf(':', 1);
-						if (aliasSeperatorPosition > 0) {
-							alias = query.substr(0, aliasSeperatorPosition);
-							query = query.substr((aliasSeperatorPosition + 1));
-						}
-						var queryId = dust.helpers.tap(query, chunk, context);
-						var rawcallData = DarkTip.getApicallData(queryId);
-						queryStack.push((function() {
-							var deferred = globalScope.Q.defer();
-							dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
-								if (err) {
-									deferred.reject();
-								}
-								deferred.resolve((function(apicall) {
-									var deferred = globalScope.Q.defer();
-									DarkTip.callApi(
-										apicall,
-										function(data) {
-											deferred.resolve({
-												'alias': alias,
-												'data': data
-											});
-										},
-										function(data) {
-											deferred.reject();
-										},
-										rawcallData.caching,
-										rawcallData.validationFn,
-										rawcallData.processFn
-									);
-									return deferred.promise;
-								})(apicall));
-							});
-							return deferred.promise;
-						})());
-					})(queries[i]);
-				};
-				return chunk.map(function(chunk) {
-					var pushData = {};
-					globalScope.Q.all(queryStack).spread(function() {
-						var argumentsCount = arguments.length;
-						for (var i = 0; i < argumentsCount; i++) {
-							if (arguments[i]['alias'] !== false) {
-								pushData[arguments[i]['alias']] = arguments[i]['data'];
-							} else {
-								pushData = DarkTip.merge(pushData, arguments[i]['data']);
-							}
-						}
-					}).done(function() {
-						return chunk.render(body, newContext.push(pushData)).end();
-					}, function() {
-						if (skip) {
-							return chunk.render(skip, newContext.push(pushData)).end();
-						}
-						return chunk.end();
-					});
-				});
-			} else {
-				dust.log('No "query" parameter given for @api helper');
-			}
-			return chunk;
-		};
-	})(globalScope.dust);
-	/* ######################################################### */
-
-	DarkTip.merge = function(target, src) {
+	var merge = function(target, src) {
 		var array = dust.isArray(src);
 		var dst = array && [] || {};
 		if (array) {
@@ -156,7 +42,7 @@
 				if (typeof dst[i] === 'undefined') {
 					dst[i] = e;
 				} else if (typeof e === 'object') {
-					dst[i] = DarkTip.merge(target[i], e);
+					dst[i] = merge(target[i], e);
 				} else {
 					if (target.indexOf(e) === -1) {
 						dst.push(e);
@@ -177,7 +63,7 @@
 					if (!target[key]) {
 						dst[key] = src[key];
 					} else {
-						dst[key] = DarkTip.merge(target[key], src[key]);
+						dst[key] = merge(target[key], src[key]);
 					}
 				}
 			});
@@ -653,7 +539,8 @@
 
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;
-	} else {
-		globalScope.DarkTip = DarkTip;
 	}
+
+	globalScope.DarkTip = DarkTip;
+
 })((function(){return this;})())
