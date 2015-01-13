@@ -28,11 +28,13 @@
   },
   "dependencies": {
     "dustjs-helpers": "^1.5.0",
-    "dustjs-linkedin": "^2.5.1"
+    "dustjs-linkedin": "^2.5.1",
+    "q": "^1.1.2"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
-    "gulp-browserify": "^0.5.1"
+    "gulp-browserify": "^0.5.1",
+    "gulp-watch": "^3.0.0"
   },
   "private": true
 }

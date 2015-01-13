@@ -2,11 +2,14 @@
 
 	var DarkTip = {};
 
-	var dust = require('dustjs-linkedin');
+	var q    = require('q'),
+		dust = require('dustjs-linkedin');
+
 	require('dustjs-helpers');
 	require('./dustjs-darktip');
 
 	DarkTip.dust = dust;
+	DarkTip.q    = q;
 
 	// Target browser support - 2 versions back (that's version 9, I'm looking at you, IE!)
 
@@ -241,6 +244,9 @@
 						DarkTip.log('TriggerGroup.trigger: Invalid RegExp payload! 3rd argument must be an object.');
 						return false;
 					}
+					// Treat extractorFn as a dust template and pass
+					DarkTip.dust
+
 					extractorFn = new RegExp(extractorFn);
 					return function(candidate) {
 						var data = {};
@@ -319,7 +325,7 @@
 					}
 				};
 			}
-			this.contexts = {};
+			this.context = dust.makeBase();
 			this.data = {
 				'maps'     : {},
 				'i18ns'    : {},
@@ -327,54 +333,56 @@
 				'settings' : {},
 				'templates': {}
 			};
-			this.buildContexts = function() {
-				this.contexts['maps']      = this.buildContext(dust.makeBase(), 'maps');
-				this.contexts['i18ns']     = this.buildContext(dust.makeBase(), 'i18ns');
-				this.contexts['apicalls']  = this.buildContext(dust.makeBase(), 'apicalls');
-				this.contexts['settings']  = this.buildContext(dust.makeBase(), 'settings');
-				this.contexts['templates'] = this.buildContext(dust.makeBase(), 'templates');
-			};
-			this.buildContext = function(context, region) {
+			this.buildContext = function(context) {
 				if (numdeps > 0) {
 					for (var i = numdeps - 1; i >= 0; i--) {
-						context = DarkTip.modules[dependencies[i]].buildContext(context, region);
+						context = DarkTip.modules[dependencies[i]].buildContext(context);
 					}
 				}
-				context = context.push(this.data[region]);
+				context = context.push(this.data);
 				return context;
-			}
+			};
 			this.map = function(key, data) {
+				key = 'maps.' + key;
 				if (typeof data === 'undefined') {
-					return this.contexts.maps.gget(key);
+					return this.context.gget(key);
 				}
-				this.contexts.maps.set(key, data);
+				this.context.set(key, data);
 				return this;
 			};
 			this.i18n = function(key, data) {
+				key = 'i18ns.' + key;
 				if (typeof data === 'undefined') {
-					return this.contexts.i18ns.gget(key);
+					return this.context.gget(key);
 				}
-				this.contexts.i18ns.set(key, data);
+				this.context.set(key, data);
 				return this;
 			};
 			this.trigger = function(triggerGroupId, extractorFn, extractorPayload) {
 				var triggerGroup = DarkTip.triggerGroup(triggerGroupId);
 				if (triggerGroup) {
-					triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
+					if (typeof extractorFn === 'string') {
+						DarkTip.dust.renderSource(extractorFn, context, function(err, out) {
+							triggerGroup.trigger(moduleId, out, extractorPayload);
+						});
+					} else {
+						triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
+					}
 				} else {
 					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
 				return this;
 			};
 			this.apicall = function(key, url, caching, validationFn, processFn) {
+				key = 'apicalls.' + key;
 				if (typeof url === 'undefined') {
-					var apicall = this.contexts.apicalls.gget(key);
+					var apicall = this.context.gget(key);
 					if (typeof apicall !== 'undefined') {
 						return apicall;
 					}
 					DarkTip.log('Apicall for module "' + moduleId + '" could not be created! Url was empty.');
 				} else {
-					this.contexts.templates.set(key, {
+					this.context.set(key, {
 						'url'         : url,
 						'caching'     : caching || false,
 						'validationFn': validationFn || false,
@@ -384,17 +392,19 @@
 				return this;
 			};
 			this.setting = function(key, data) {
+				key = 'settings.' + key;
 				if (typeof data === 'undefined') {
-					return this.contexts.settings.gget(key);
+					return this.context.gget(key);
 				}
-				this.contexts.settings.set(key, data);
+				this.context.set(key, data);
 				return this;
 			};
 			this.template = function(key, data) {
+				key = 'templates.' + key;
 				if (typeof data === 'undefined') {
-					return this.contexts.templates.gget(key);
+					return this.context.gget(key);
 				}
-				this.contexts.templates.set(key, data);
+				this.context.set(key, data);
 				return this;
 			};
 			this.start = function(elem, params) {
@@ -404,8 +414,8 @@
 					if (type === 'module') {
 						return module;
 					}
-					if (typeof module.contexts[type] !== 'undefined') {
-						return this.contexts[type].gget(key);
+					if (typeof module.data[type] !== 'undefined') {
+						return this.context.gget(type+'.'+key);
 					}
 				}
 
@@ -418,7 +428,7 @@
 				// stop rendering tooltip
 				// if already rendered, hide it
 			}
-			this.buildContexts();
+			this.buildContext(this.context);
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
@@ -535,7 +545,6 @@
 			}
 		};
 	})();
-
 
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;

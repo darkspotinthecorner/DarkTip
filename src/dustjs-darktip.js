@@ -1,5 +1,11 @@
 (function(dust){
 
+  var getResult = function(obj, key) {
+    if (obj && hasOwnProperty.call(obj, key)) {
+      return obj[key];
+    }
+  };
+
   var helpers = {
     'i18n': (function(){
       var helper = function(chunk, context, bodies, params) {
@@ -25,7 +31,7 @@
       return helper;
     })(),
     'api': function(chunk, context, bodies, params) {
-      var body = bodies.block;
+      var body = bodies['block'];
       var skip = bodies['else'];
       if (body && params && params.query) {
         var queries      = params.query.split('|');
@@ -45,13 +51,13 @@
             var queryId = dust.helpers.tap(query, chunk, context);
             var rawcallData = DarkTip.getApicallData(queryId);
             queryStack.push((function() {
-              var deferred = globalScope.Q.defer();
+              var deferred = DarkTip.q.defer();
               dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
                 if (err) {
                   deferred.reject();
                 }
                 deferred.resolve((function(apicall) {
-                  var deferred = globalScope.Q.defer();
+                  var deferred = DarkTip.q.defer();
                   DarkTip.callApi(
                     apicall,
                     function(data) {
@@ -76,7 +82,7 @@
         };
         return chunk.map(function(chunk) {
           var pushData = {};
-          globalScope.Q.all(queryStack).spread(function() {
+          DarkTip.q.all(queryStack).spread(function() {
             var argumentsCount = arguments.length;
             for (var i = 0; i < argumentsCount; i++) {
               if (arguments[i]['alias'] !== false) {
@@ -127,6 +133,11 @@
     return this._get(cur, path);
   };
 
+  Context.prototype.gget = function(path) {
+    path = path.split('.');
+    return this._gget(path);
+  };
+
   Context.prototype._gget = function(down) {
     var ctx = this.stack,
         i = 1,
@@ -172,6 +183,30 @@
       return ctx;
     }
   };
+
+  Context.prototype.set = function(path, value) {
+    if (typeof path === 'string') {
+      path = path.split('.');
+    }
+    return this._set(path, value);
+  };
+
+  Context.prototype._set = function(down, value) {
+    var len = down.length;
+    var cur = this.stack.head
+    for (var i = 0; i <= len; i++) {
+      if ((i + 1) == len) {
+        var oldvalue = cur[down[i]];
+        cur[down[i]] = value;
+        return oldvalue;
+      } else {
+        if (typeof cur[down[i]] !== 'object') {
+          cur[down[i]] = {};
+        }
+        cur = cur[down[i]];
+      }
+    }
+  }
 
   if(typeof exports !== 'undefined') {
     module.exports = dust;
