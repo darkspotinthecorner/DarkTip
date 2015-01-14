@@ -6,68 +6,28 @@
 </head>
 <body>
 	<h1>Loaded</h1>
+	<div id="output"></div>
 	<script type="text/javascript" charset="utf-8">
 
 		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
 		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
-			.map('root_url', '(?:https?://)?(?:www\.)?github\.com/');
+			.map('root_url', '(?:https?://)?(?:www\.)?github\.com/')
+			.template('foo', '<i>BAZ</i>');
 
 		DarkTip.module('github-user', 'github')
-			.trigger('implicit', '^{{map.root_url}}([^/]+)/?$', {1: 'username'});
+			.trigger('implicit', '^{module.map.root_url}([^/]+)/?$', {1: 'username'})
+			.apicall('user', '//api.github.com/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.apicall('user-repos', '//api.github.com/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.template('index', 'Hallo Github user, {username}! {>foo /}')
+			.template('foo', '<i>bar</i>')
+			.template('narf', '{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}');
 
 		DarkTip.module('github-repository', 'github')
-			.trigger('implicit', '^{{map.root_url}}([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
+			.trigger('implicit', '^{module.map.root_url}([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
 
-		//*
-		DarkTip.module('github-user', 'github')
-			.apicall(
-				'user',
-				'//api.github.com/users/{username}',
-				(60 * 60 * 24 * 1),
-				function(data) { return (data.meta.status == 200); },
-				function(data) { return (data.data); }
-			)
-			.apicall(
-				'user-repos',
-				'//api.github.com/users/{username}/repos',
-				(60 * 60 * 24 * 1),
-				function(data) { return (data.meta.status == 200); },
-				function(data) { return (data.data); }
-			)
-			.template(
-				'index',
-				'{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}'
-			);
-
-		var i18n = {
-			'en_US': {
-				'salutation': 'Hi threre, {name}! How are you?'
-			},
-			'de_DE': {
-				'salutation': 'Hallo {name}, wie geht\'s denn so?'
-			}
-		};
-
-		DarkTip.dust.helpers.i18n.context(i18n['de_DE']);
-
-		var data = {
-			'usewhat': 'salutation',
-			'_i18n_': {
-				'salutation': 'this should not show'
-			},
-			'name': 'Fred',
-			'test': 'B',
-			'username': 'darkspotinthecorner',
-			'othername': 'rragan',
-			'users': [
-				{ 'name': 'Wilma',  'bar': 'one',   'narf': '111'},
-				{ 'name': 'Barney', 'bar': 'two',   'narf': '222'},
-				{ 'name': 'Dino',   'bar': 'three', 'narf': '333'},
-			],
-			'xxx': 'testing'
-		};
+		DarkTip.dust.register('index', DarkTip.dust.loadSource(DarkTip.dust.compile('Hallo Github user, {username}', 'index')));
 
 		var buildDemoCallbackFn = function(label) {
 			return function(err, out)
@@ -76,17 +36,21 @@
 					console.log({'error': err, 'stacktrace': err.stack});
 				} else {
 					var container = document.querySelector('#output');
-					container.innerHTML = container.innerHTML + '<div class="output"><h1>' + label + '</h1><div class="content">' + out + '</div></div>';
+					container.innerHTML = container.innerHTML + '<pre class="output"><h3>' + label + '</h3><div class="content">' + out + '</div></pre>';
 				}
 			}
 		}
+
+		var narf = buildDemoCallbackFn('github-user test');
+		console.log(narf);
+
+		DarkTip.module('github-user').test({'username': 'darkspotinthecorner'}, narf);
 
 		var formatJSON = function(json) {
 			return '<pre>'+(json.replace(/(\})/ig, "$1\r\n").replace(/(\{)/g, "\r\n$1"))+'</pre>';
 		}
 
-		// buildDemoCallbackFn('label')(false, true);
-
+		/*
 		var mod_wow = DarkTip.module('wow');
 		var mod_wow2 = DarkTip.module('wow2', 'wow');
 
@@ -112,6 +76,7 @@
 
 		console.log({'wow2.setting.bbb.b' : DarkTip.module('wow2').setting('bbb.b')});
 		console.log({'wow2.setting.bbb.b.a' : DarkTip.module('wow2').setting('bbb.b.a')});
+		// */
 
 	</script>
 </body>

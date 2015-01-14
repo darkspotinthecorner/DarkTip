@@ -135,6 +135,7 @@
 
   dust.load = function(name, chunk, context) {
     var tmpl = dust.cache[name];
+    // console.log({name, chunk, context, tmpl});
     if (tmpl) {
       return tmpl(chunk, context);
     } else {
@@ -2411,28 +2412,61 @@ process.chdir = function (dir) {
 
   /* ==========---------- Modify core dust functions ----------========== */
 
+  /*
+  dust.load = function(name, chunk, context) {
+    var tmpl_old = dust.cache[name];
+    var tplkey = 'module.template.'+name;
+    var tmpl = context.get(tplkey);
+    console.log({'tplkey': tplkey, 'tmpl': tmpl, 'tmpl_old': tmpl_old});
+    if (tmpl) {
+      return tmpl(chunk, context);
+    } else {
+      if (dust.onLoad) {
+        return chunk.map(function(chunk) {
+          dust.onLoad(name, function(err, src) {
+            if (err) {
+              return chunk.setError(err);
+            }
+            if (!dust.cache[name]) {
+              dust.loadSource(dust.compile(src, name));
+            }
+            dust.cache[name](chunk, context).end();
+          });
+        });
+      }
+      return chunk.setError(new Error('Template Not Found: ' + name));
+    }
+  };
+  */
+
+  dust.load = function(name, chunk, context) {
+    var tmpl = context.get('module.template.'+name);
+    if (tmpl) {
+      return tmpl(chunk, context);
+    }
+    return chunk.setError(new Error('Template Not Found: ' + name));
+  };
+
   var Context = dust.makeBase().constructor;
 
+  Context.prototype.getPath = function(cur, down) {
+    if (cur) {
+      return this._get(cur, down);
+    }
+    return this._gget(down);
+  };
+
   Context.prototype.get = function(path, cur) {
-    var greedy = false;
     if (typeof path === 'string') {
-      if (path.substr(0, 2) === '..') {
-        greedy = true;
-        path = path.substr(2);
-      } else if (path[0] === '.') {
+      if (path[0] === '.') {
         cur = true;
         path = path.substr(1);
       }
       path = path.split('.');
     }
-    if (greedy) {
-      return this._gget(path);
+    if (cur) {
+      return this._get(cur, path);
     }
-    return this._get(cur, path);
-  };
-
-  Context.prototype.gget = function(path) {
-    path = path.split('.');
     return this._gget(path);
   };
 
@@ -2512,5 +2546,5 @@ process.chdir = function (dir) {
 
 })(typeof exports !== 'undefined' ? require('dustjs-linkedin') : dust);
 
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_c615dbc9.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_f4de1fbe.js","/")
 },{"1YiZ5S":5,"buffer":2,"dustjs-linkedin":1}]},{},[6])

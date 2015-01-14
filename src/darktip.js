@@ -5,6 +5,8 @@
 	var q    = require('q'),
 		dust = require('dustjs-linkedin');
 
+	//require('dustjs-linkedin/lib/parser');
+	require('dustjs-linkedin/lib/compiler');
 	require('dustjs-helpers');
 	require('./dustjs-darktip');
 
@@ -171,7 +173,7 @@
 					globalScope.localStorage.setItem(cache.key(region, key), JSON.stringify({'maxtime': maxtime, 'content': data}));
 				} catch (e) {
 					if (e == QUOTA_EXCEEDED_ERR) {
-						DarkTip.log('Writing to localStorage failed! Quote exeeded for region/key "' + region + '/' + key + '".');
+						log('Writing to localStorage failed! Quote exeeded for region/key "' + region + '/' + key + '".');
 					}
 					return false;
 				}
@@ -241,7 +243,7 @@
 				}
 				if (typeof extractorFn === 'string') {
 					if (typeof extractorPayload !== 'object') {
-						DarkTip.log('TriggerGroup.trigger: Invalid RegExp payload! 3rd argument must be an object.');
+						log('TriggerGroup.trigger: Invalid RegExp payload! 3rd argument must be an object.');
 						return false;
 					}
 					// Treat extractorFn as a dust template and pass
@@ -262,20 +264,20 @@
 						return false;
 					};
 				}
-				DarkTip.log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
+				log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
 				return false;
 			};
 			this.event = function(selector, event, accessFn) {
 				if (typeof selector !== 'string') {
-					DarkTip.log('TriggerGroup.event: Invalid selector! 1st argument must be selector string.');
+					log('TriggerGroup.event: Invalid selector! 1st argument must be selector string.');
 					return this;
 				}
 				if (typeof event !== 'string') {
-					DarkTip.log('TriggerGroup.event: Invalid show event! 2nd argument must be event type string.');
+					log('TriggerGroup.event: Invalid show event! 2nd argument must be event type string.');
 					return this;
 				}
 				if (typeof accessFn !== 'function') {
-					DarkTip.log('TriggerGroup.event: Invalid access function! 3rd argument must be a function.');
+					log('TriggerGroup.event: Invalid access function! 3rd argument must be a function.');
 					return this;
 				}
 				DarkTip.bindEvent(event, selector, accessFn, this);
@@ -284,7 +286,7 @@
 			this.trigger = function(moduleId, extractorFn, extractorPayload) {
 				extractorFn = this.generateExtractorFn(moduleId, extractorFn, extractorPayload);
 				if (typeof extractorFn !== 'function') {
-					DarkTip.log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
+					log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
 					return this;
 				}
 				this.triggers.push({ 'module': moduleId, 'extractor': extractorFn });
@@ -320,18 +322,18 @@
 			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
 					if (typeof DarkTip.modules[dependencies[i]] === 'undefined') {
-						DarkTip.log('Module "' + moduleId + '" could not be created! Dependant module "' + dependencies[i] + '" was not found.');
+						log('Module "' + moduleId + '" could not be created! Dependant module "' + dependencies[i] + '" was not found.');
 						return;
 					}
 				};
 			}
-			this.context = dust.makeBase();
 			this.data = {
-				'maps'     : {},
-				'i18ns'    : {},
-				'apicalls' : {},
-				'settings' : {},
-				'templates': {}
+				'name'    : moduleId,
+				'map'     : {},
+				'i18n'    : {},
+				'setting' : {},
+				'template': {},
+				'apicall' : {}
 			};
 			this.buildContext = function(context) {
 				if (numdeps > 0) {
@@ -339,48 +341,42 @@
 						context = DarkTip.modules[dependencies[i]].buildContext(context);
 					}
 				}
-				context = context.push(this.data);
+				context = context.push({'module': this.data});
 				return context;
 			};
-			this.map = function(key, data) {
-				key = 'maps.' + key;
+			this.buildKey = function(region, key) {
+				return 'module.' + region + '.' + key;
+			};
+			this.dataHandler = function(region, key, data) {
+				key = this.buildKey(region, key);
 				if (typeof data === 'undefined') {
-					return this.context.gget(key);
+					return this.context.get(key);
 				}
 				this.context.set(key, data);
 				return this;
+			};
+			this.map = function(key, data) {
+				return this.dataHandler('map', key, data);
 			};
 			this.i18n = function(key, data) {
-				key = 'i18ns.' + key;
-				if (typeof data === 'undefined') {
-					return this.context.gget(key);
-				}
-				this.context.set(key, data);
-				return this;
+				return this.dataHandler('i18n', key, data);
 			};
-			this.trigger = function(triggerGroupId, extractorFn, extractorPayload) {
-				var triggerGroup = DarkTip.triggerGroup(triggerGroupId);
-				if (triggerGroup) {
-					if (typeof extractorFn === 'string') {
-						DarkTip.dust.renderSource(extractorFn, context, function(err, out) {
-							triggerGroup.trigger(moduleId, out, extractorPayload);
-						});
-					} else {
-						triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
-					}
-				} else {
-					DarkTip.log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
+			this.setting = function(key, data) {
+				return this.dataHandler('setting', key, data);
+			};
+			this.template = function(key, data) {
+				var tplName = key;
+				key = this.buildKey('template', key);
+				if (typeof data === 'undefined') {
+					return this.context.get(key);
 				}
+				this.context.set(key, dust.loadSource(dust.compile(data, tplName)));
 				return this;
 			};
 			this.apicall = function(key, url, caching, validationFn, processFn) {
-				key = 'apicalls.' + key;
+				key = this.buildKey('apicall', key);
 				if (typeof url === 'undefined') {
-					var apicall = this.context.gget(key);
-					if (typeof apicall !== 'undefined') {
-						return apicall;
-					}
-					DarkTip.log('Apicall for module "' + moduleId + '" could not be created! Url was empty.');
+					return this.context.get(key);
 				} else {
 					this.context.set(key, {
 						'url'         : url,
@@ -391,31 +387,33 @@
 				}
 				return this;
 			};
-			this.setting = function(key, data) {
-				key = 'settings.' + key;
-				if (typeof data === 'undefined') {
-					return this.context.gget(key);
+			this.trigger = function(triggerGroupId, extractorFn, extractorPayload) {
+				var triggerGroup = DarkTip.triggerGroup(triggerGroupId);
+				if (triggerGroup) {
+					if (typeof extractorFn === 'string') {
+						DarkTip.dust.renderSource(extractorFn, this.context, function(err, out) {
+							triggerGroup.trigger(moduleId, out, extractorPayload);
+						});
+					} else {
+						triggerGroup.trigger(moduleId, extractorFn, extractorPayload);
+					}
+				} else {
+					log('Trigger for module "' + moduleId + '" could not be created! Trigger group "' + triggerGroupId + '" was not found.');
 				}
-				this.context.set(key, data);
 				return this;
 			};
-			this.template = function(key, data) {
-				key = 'templates.' + key;
-				if (typeof data === 'undefined') {
-					return this.context.gget(key);
-				}
-				this.context.set(key, data);
-				return this;
+			this.test = function(data, callbackFn) {
+				dust.render('index', this.context.push(data), callbackFn);
 			};
 			this.start = function(elem, params) {
-				DarkTip.log('starting module '+moduleId);
+				log('starting module '+moduleId);
 				var module = this;
 				var providerFn = function(type, key) {
 					if (type === 'module') {
 						return module;
 					}
 					if (typeof module.data[type] !== 'undefined') {
-						return this.context.gget(type+'.'+key);
+						return this.context.get(type+'.'+key);
 					}
 				}
 
@@ -424,11 +422,11 @@
 				// -> callback: display tooltip
 			}
 			this.stop = function(elem, params) {
-				DarkTip.log('stopping module '+moduleId);
+				log('stopping module '+moduleId);
 				// stop rendering tooltip
 				// if already rendered, hide it
 			}
-			this.buildContext(this.context);
+			this.context = this.buildContext(dust.makeBase());
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
@@ -519,7 +517,7 @@
 				}
 			}
 		}
-		DarkTip.log({'event': event, 'elem': elem, 'accessed': accessed, 'foundTrigger': result});
+		log({'event': event, 'elem': elem, 'accessed': accessed, 'foundTrigger': result});
 	};
 
 	DarkTip.domReady = (function () {
