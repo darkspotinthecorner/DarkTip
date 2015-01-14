@@ -113,33 +113,6 @@
 
   /* ==========---------- Modify core dust functions ----------========== */
 
-  /*
-  dust.load = function(name, chunk, context) {
-    var tmpl_old = dust.cache[name];
-    var tplkey = 'module.template.'+name;
-    var tmpl = context.get(tplkey);
-    console.log({'tplkey': tplkey, 'tmpl': tmpl, 'tmpl_old': tmpl_old});
-    if (tmpl) {
-      return tmpl(chunk, context);
-    } else {
-      if (dust.onLoad) {
-        return chunk.map(function(chunk) {
-          dust.onLoad(name, function(err, src) {
-            if (err) {
-              return chunk.setError(err);
-            }
-            if (!dust.cache[name]) {
-              dust.loadSource(dust.compile(src, name));
-            }
-            dust.cache[name](chunk, context).end();
-          });
-        });
-      }
-      return chunk.setError(new Error('Template Not Found: ' + name));
-    }
-  };
-  */
-
   dust.load = function(name, chunk, context) {
     var tmpl = context.get('module.template.'+name);
     if (tmpl) {

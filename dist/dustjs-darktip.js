@@ -2412,33 +2412,6 @@ process.chdir = function (dir) {
 
   /* ==========---------- Modify core dust functions ----------========== */
 
-  /*
-  dust.load = function(name, chunk, context) {
-    var tmpl_old = dust.cache[name];
-    var tplkey = 'module.template.'+name;
-    var tmpl = context.get(tplkey);
-    console.log({'tplkey': tplkey, 'tmpl': tmpl, 'tmpl_old': tmpl_old});
-    if (tmpl) {
-      return tmpl(chunk, context);
-    } else {
-      if (dust.onLoad) {
-        return chunk.map(function(chunk) {
-          dust.onLoad(name, function(err, src) {
-            if (err) {
-              return chunk.setError(err);
-            }
-            if (!dust.cache[name]) {
-              dust.loadSource(dust.compile(src, name));
-            }
-            dust.cache[name](chunk, context).end();
-          });
-        });
-      }
-      return chunk.setError(new Error('Template Not Found: ' + name));
-    }
-  };
-  */
-
   dust.load = function(name, chunk, context) {
     var tmpl = context.get('module.template.'+name);
     if (tmpl) {
@@ -2546,5 +2519,5 @@ process.chdir = function (dir) {
 
 })(typeof exports !== 'undefined' ? require('dustjs-linkedin') : dust);
 
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_f4de1fbe.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_c673fc4c.js","/")
 },{"1YiZ5S":5,"buffer":2,"dustjs-linkedin":1}]},{},[6])
