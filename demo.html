@@ -3,31 +3,63 @@
 <head>
 	<title>DarkTip Demo</title>
 	<script src="dist/darktip.js" type="text/javascript"></script>
+	<style type="text/css" media="screen">
+
+		* {
+			padding: 0;
+			margin: 0;
+		}
+
+		html {
+			font-family: Arial, sans-serif;
+			background-color: #bbb;
+		}
+
+		#container {
+			margin: 0 auto;
+			max-width: 960px;
+			background-color: #eee;
+		}
+
+		#testing {
+			padding: 1em;
+		}
+
+		#output {
+			padding: 1em;
+			list-style-type: none;
+		}
+
+		#output > li {
+			border: 2px solid #999;
+			margin-bottom: 1em;
+		}
+
+		#output > li > h3 {
+			padding: 0.3em 0.6em;
+			background-color: #bbb;
+		}
+
+		#output > li > pre {
+			padding: 1em;
+		}
+
+		#output > li:last-of-type {
+			margin-bottom: 0;
+		}
+
+	</style>
 </head>
 <body>
-	<h1>Loaded</h1>
-	<div id="output"></div>
+	<section id="container">
+		<ul id="testing">
+			<a href="https://github.com/darkspotinthecorner">https://github.com/darkspotinthecorner</a>
+		</ul>
+
+		<ul id="output"></ul>
+
+	</section>
 	<script type="text/javascript" charset="utf-8">
-
-		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
-
-		DarkTip.module('github')
-			.map('root_url', '(?:https?://)?(?:www\.)?github\.com/')
-			.template('foo', '<i>BAZ</i>');
-
-		DarkTip.module('github-user', 'github')
-			.trigger('implicit', '^{module.map.root_url}([^/]+)/?$', {1: 'username'})
-			.apicall('user', '//api.github.com/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.apicall('user-repos', '//api.github.com/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.template('index', 'Hallo Github user, {username}! {>foo /}')
-			.template('foo', '<i>bar</i>')
-			.template('narf', '{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h2>Repositories:</h2>{#repos}<br/>{full_name}{/repos}{/repos}{:else}github user apicall failed for "{user.username}"{/api}');
-
-		DarkTip.module('github-repository', 'github')
-			.trigger('implicit', '^{module.map.root_url}([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
-
-		DarkTip.dust.register('index', DarkTip.dust.loadSource(DarkTip.dust.compile('Hallo Github user, {username}', 'index')));
 
 		var buildDemoCallbackFn = function(label) {
 			return function(err, out)
@@ -36,19 +68,39 @@
 					console.log({'error': err, 'stacktrace': err.stack});
 				} else {
 					var container = document.querySelector('#output');
-					container.innerHTML = container.innerHTML + '<pre class="output"><h3>' + label + '</h3><div class="content">' + out + '</div></pre>';
+					container.innerHTML = container.innerHTML + '<li><h3>' + label + '</h3><pre>' + out + '</pre></li>';
 				}
 			}
 		}
 
-		var narf = buildDemoCallbackFn('github-user test');
-		console.log(narf);
-
-		DarkTip.module('github-user').test({'username': 'darkspotinthecorner'}, narf);
-
 		var formatJSON = function(json) {
 			return '<pre>'+(json.replace(/(\})/ig, "$1\r\n").replace(/(\{)/g, "\r\n$1"))+'</pre>';
 		}
+
+	</script>
+	<script type="text/javascript" charset="utf-8">
+
+		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
+		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+
+		DarkTip.module('github')
+			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com/')
+			.map('url.api', '//api\.github\.com/')
+			.template('loading', '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20mm" height="20mm" viewBox="0 0 40 40" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>')
+			.template('index', 'Loading...<div>{>loading /}</div>');
+
+		DarkTip.module('github-user', 'github')
+			.trigger('implicit', '^{module.map.url.trigger}([^/]+)/?$', {1: 'username'})
+			.apicall('user', '{module.map.url.api}users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.apicall('user-repos', '{module.map.url.api}users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.template('index', '{@api query="user:github-user|repos:github-user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?repos}<h4>Repositories:</h4>{#repos}  - {full_name}<br />{/repos}{/repos}{:else}github user apicall failed for "{username}"{/api}');
+
+		DarkTip.module('github-repository', 'github')
+			.trigger('implicit', '^{module.map.url.trigger}([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
+
+		DarkTip.module('github').test('en_GB', {'username': 'darkspotinthecorner'}, buildDemoCallbackFn('Test: github (loading)'));
+		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotinthecorner'}, buildDemoCallbackFn('Test: github-user (valid)'));
+		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotterinthecorner'}, buildDemoCallbackFn('Test: github-user (invalid)'));
 
 		/*
 		var mod_wow = DarkTip.module('wow');

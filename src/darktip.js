@@ -344,8 +344,10 @@
 				context = context.push({'module': this.data});
 				return context;
 			};
-			this.buildKey = function(region, key) {
-				return 'module.' + region + '.' + key;
+			this.buildKey = function() {
+				var args = Array.prototype.slice.call(arguments);
+				args.unshift('module');
+				return args.join('.');
 			};
 			this.dataHandler = function(region, key, data) {
 				key = this.buildKey(region, key);
@@ -358,15 +360,14 @@
 			this.map = function(key, data) {
 				return this.dataHandler('map', key, data);
 			};
-			this.i18n = function(key, data) {
-				return this.dataHandler('i18n', key, data);
+			this.i18n = function(locale, key, data) {
+				return this.dataHandler(('i18n.' + locale), key, data);
 			};
 			this.setting = function(key, data) {
 				return this.dataHandler('setting', key, data);
 			};
-			this.template = function(key, data) {
-				var tplName = key;
-				key = this.buildKey('template', key);
+			this.template = function(tplName, data) {
+				var key = this.buildKey('template', tplName);
 				if (typeof data === 'undefined') {
 					return this.context.get(key);
 				}
@@ -402,22 +403,13 @@
 				}
 				return this;
 			};
-			this.test = function(data, callbackFn) {
+			this.test = function(locale, data, callbackFn) {
+				newContext = this.context.push(data);
+				newContext.set('module.locale', locale);
 				dust.render('index', this.context.push(data), callbackFn);
 			};
 			this.start = function(elem, params) {
 				log('starting module '+moduleId);
-				var module = this;
-				var providerFn = function(type, key) {
-					if (type === 'module') {
-						return module;
-					}
-					if (typeof module.data[type] !== 'undefined') {
-						return this.context.get(type+'.'+key);
-					}
-				}
-
-				// call dust.render or something with providerFn
 				// start render tooltip
 				// -> callback: display tooltip
 			}

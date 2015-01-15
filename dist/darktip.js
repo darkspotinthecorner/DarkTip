@@ -7876,30 +7876,23 @@ return Q;
   };
 
   var helpers = {
-    'i18n': (function(){
-      var helper = function(chunk, context, bodies, params) {
-        var newContext = context.push(dust.helpers.i18n.context());
-        var i18nstring = dust.helpers.tap(params.t, chunk, context);
-        if (i18nstring) {
-          var contextlookup = '_i18n_.' + i18nstring;
-          var localized = newContext.get(contextlookup);
-          if (localized) {
-            var newParams = params;
-            delete newParams.t;
-            dust.loadSource(dust.compile(localized, contextlookup));
-            return chunk.partial(contextlookup, context.push(newParams));
-          }
-          return chunk.write('**' + i18nstring + '**');
+    i18n: function(chunk, context, bodies, params) {
+      var i18nkey = dust.helpers.tap(params.t, chunk, context);
+      var locale = context.get('module.locale');
+      if (i18nkey) {
+        var contextlookup = 'module.i18n.' + locale + '.' + i18nkey;
+        var localized = context.get(contextlookup);
+        if (localized) {
+          var newParams = params;
+          delete newParams.t;
+          dust.loadSource(dust.compile(localized, contextlookup));
+          return chunk.partial(contextlookup, context.push(newParams));
         }
-        return chunk;
-      };
-      helper.context = function(context) {
-        if (typeof context === 'undefined') return { '_i18n_': dust.helpers.i18n._context_ || {} };
-        return dust.helpers.i18n._context_ = context;
+        return chunk.write('**' + i18nkey + '**');
       }
-      return helper;
-    })(),
-    'api': function(chunk, context, bodies, params) {
+      return chunk;
+    },
+    api: function(chunk, context, bodies, params) {
       var body = bodies['block'];
       var skip = bodies['else'];
       if (body && params && params.query) {
@@ -7981,33 +7974,6 @@ return Q;
   }
 
   /* ==========---------- Modify core dust functions ----------========== */
-
-  /*
-  dust.load = function(name, chunk, context) {
-    var tmpl_old = dust.cache[name];
-    var tplkey = 'module.template.'+name;
-    var tmpl = context.get(tplkey);
-    console.log({'tplkey': tplkey, 'tmpl': tmpl, 'tmpl_old': tmpl_old});
-    if (tmpl) {
-      return tmpl(chunk, context);
-    } else {
-      if (dust.onLoad) {
-        return chunk.map(function(chunk) {
-          dust.onLoad(name, function(err, src) {
-            if (err) {
-              return chunk.setError(err);
-            }
-            if (!dust.cache[name]) {
-              dust.loadSource(dust.compile(src, name));
-            }
-            dust.cache[name](chunk, context).end();
-          });
-        });
-      }
-      return chunk.setError(new Error('Template Not Found: ' + name));
-    }
-  };
-  */
 
   dust.load = function(name, chunk, context) {
     var tmpl = context.get('module.template.'+name);
@@ -8465,8 +8431,10 @@ return Q;
 				context = context.push({'module': this.data});
 				return context;
 			};
-			this.buildKey = function(region, key) {
-				return 'module.' + region + '.' + key;
+			this.buildKey = function() {
+				var args = Array.prototype.slice.call(arguments);
+				args.unshift('module');
+				return args.join('.');
 			};
 			this.dataHandler = function(region, key, data) {
 				key = this.buildKey(region, key);
@@ -8479,15 +8447,14 @@ return Q;
 			this.map = function(key, data) {
 				return this.dataHandler('map', key, data);
 			};
-			this.i18n = function(key, data) {
-				return this.dataHandler('i18n', key, data);
+			this.i18n = function(locale, key, data) {
+				return this.dataHandler(('i18n.' + locale), key, data);
 			};
 			this.setting = function(key, data) {
 				return this.dataHandler('setting', key, data);
 			};
-			this.template = function(key, data) {
-				var tplName = key;
-				key = this.buildKey('template', key);
+			this.template = function(tplName, data) {
+				var key = this.buildKey('template', tplName);
 				if (typeof data === 'undefined') {
 					return this.context.get(key);
 				}
@@ -8523,22 +8490,13 @@ return Q;
 				}
 				return this;
 			};
-			this.test = function(data, callbackFn) {
+			this.test = function(locale, data, callbackFn) {
+				newContext = this.context.push(data);
+				newContext.set('module.locale', locale);
 				dust.render('index', this.context.push(data), callbackFn);
 			};
 			this.start = function(elem, params) {
 				log('starting module '+moduleId);
-				var module = this;
-				var providerFn = function(type, key) {
-					if (type === 'module') {
-						return module;
-					}
-					if (typeof module.data[type] !== 'undefined') {
-						return this.context.get(type+'.'+key);
-					}
-				}
-
-				// call dust.render or something with providerFn
 				// start render tooltip
 				// -> callback: display tooltip
 			}
@@ -8672,5 +8630,5 @@ return Q;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_ae988cd4.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_3f98129f.js","/")
 },{"./dustjs-darktip":10,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9}]},{},[11])

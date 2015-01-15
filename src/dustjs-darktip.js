@@ -7,30 +7,23 @@
   };
 
   var helpers = {
-    'i18n': (function(){
-      var helper = function(chunk, context, bodies, params) {
-        var newContext = context.push(dust.helpers.i18n.context());
-        var i18nstring = dust.helpers.tap(params.t, chunk, context);
-        if (i18nstring) {
-          var contextlookup = '_i18n_.' + i18nstring;
-          var localized = newContext.get(contextlookup);
-          if (localized) {
-            var newParams = params;
-            delete newParams.t;
-            dust.loadSource(dust.compile(localized, contextlookup));
-            return chunk.partial(contextlookup, context.push(newParams));
-          }
-          return chunk.write('**' + i18nstring + '**');
+    i18n: function(chunk, context, bodies, params) {
+      var i18nkey = dust.helpers.tap(params.t, chunk, context);
+      var locale = context.get('module.locale');
+      if (i18nkey) {
+        var contextlookup = 'module.i18n.' + locale + '.' + i18nkey;
+        var localized = context.get(contextlookup);
+        if (localized) {
+          var newParams = params;
+          delete newParams.t;
+          dust.loadSource(dust.compile(localized, contextlookup));
+          return chunk.partial(contextlookup, context.push(newParams));
         }
-        return chunk;
-      };
-      helper.context = function(context) {
-        if (typeof context === 'undefined') return { '_i18n_': dust.helpers.i18n._context_ || {} };
-        return dust.helpers.i18n._context_ = context;
+        return chunk.write('**' + i18nkey + '**');
       }
-      return helper;
-    })(),
-    'api': function(chunk, context, bodies, params) {
+      return chunk;
+    },
+    api: function(chunk, context, bodies, params) {
       var body = bodies['block'];
       var skip = bodies['else'];
       if (body && params && params.query) {
