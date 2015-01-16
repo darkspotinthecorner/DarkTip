@@ -34,7 +34,7 @@
         var newContext   = context.push(params);
         for (var i = 0; i < queriesCount; i++) {
           (function(item) {
-            var alias = false;
+            var alias = item;
             var query = item;
             var aliasSeperatorPosition = query.indexOf(':', 1);
             if (aliasSeperatorPosition > 0) {
@@ -42,7 +42,7 @@
               query = query.substr((aliasSeperatorPosition + 1));
             }
             var queryId = dust.helpers.tap(query, chunk, context);
-            var rawcallData = DarkTip.getApicallData(queryId);
+            var rawcallData = context.get('module.apicall.' + queryId);
             queryStack.push((function() {
               var deferred = DarkTip.q.defer();
               dust.renderSource(rawcallData.url, newContext, function(err, apicall) {

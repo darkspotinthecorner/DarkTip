@@ -1,19 +1,53 @@
 (function(globalScope) {
 
+	/* # INIT ################################################## */
+
 	var DarkTip = {};
 
-	var q    = require('q'),
-		dust = require('dustjs-linkedin');
+	var q      = require('q'),
+		dust   = require('dustjs-linkedin'),
+		tether = require('tether');
 
 	//require('dustjs-linkedin/lib/parser');
 	require('dustjs-linkedin/lib/compiler');
 	require('dustjs-helpers');
 	require('./dustjs-darktip');
 
-	DarkTip.dust = dust;
-	DarkTip.q    = q;
+	DarkTip.q      = q;
+	DarkTip.dust   = dust;
+	DarkTip.tether = tether;
 
-	// Target browser support - 2 versions back (that's version 9, I'm looking at you, IE!)
+	DarkTip.modules          = {};
+	DarkTip.triggerGroups    = {};
+	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
+
+	/* # SETTINGS ############################################## */
+
+	DarkTip._settings = {
+		'module': {
+			'tether': {
+				'classPrefix': 'darktip'
+			}
+		}
+	};
+
+	DarkTip.settings  = dust.makeBase().push(DarkTip._settings);
+
+	DarkTip.setting = function(key, data) {
+		var tplNames = [];
+		if (typeof data === 'undefined') {
+			return DarkTip.settings.get(key);
+		}
+		tplNames = key.match(/^module\.template\.([^\.].*)$/);
+		if (tplNames.length)
+		{
+			data = dust.loadSource(dust.compile(data, tplNames[1]));
+		}
+		DarkTip.settings.set(key, data);
+		return this;
+	};
+
+	/* # TOOLS ################################################# */
 
 	var log = (function() {
 		var logger = {},
@@ -78,10 +112,6 @@
 
 	/* ######################################################### */
 
-	DarkTip.modules = {};
-	DarkTip.triggerGroups = {};
-	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
-
 	DarkTip.dataReceiveFn = function(url, successFn, errorFn, cacheDuration, callBackName) {
 		return function(data) {
 			if (typeof callBackName !== 'undefined') {
@@ -103,7 +133,7 @@
 				successFn(data);
 			}
 		};
-	}
+	};
 
 	DarkTip.jsonp = (function() {
 		var callbackId = 0;
@@ -199,26 +229,6 @@
 		}
 		return cache;
 	})();
-
-	DarkTip.getApicallData = function(apicallId) {
-		if (apicallId == 'github-user') {
-			return {
-				url: '//api.github.com/users/{username}',
-				caching : (60 * 60 * 24 * 1),
-				validationFn: function(data) { return (data.meta.status == 200); },
-				processFn: function(data) { return (data.data); }
-			};
-		}
-		if (apicallId == 'github-user-repos') {
-			return {
-				url: '//api.github.com/users/{username}/repos',
-				caching : (60 * 60 * 24 * 1),
-				validationFn: function(data) { return (data.meta.status == 200); },
-				processFn: function(data) { return (data.data); }
-			};
-		}
-		return false;
-	};
 
 	DarkTip.callApi = function(url, successFn, errorFn, cacheDuration, validationFn, processFn) {
 		successFn.processFn = processFn;
@@ -410,6 +420,12 @@
 			};
 			this.start = function(elem, params) {
 				log('starting module '+moduleId);
+
+				// elem['DarkTip'] = new tether( ... );
+				// Start async render of "loading" template
+				// Start async render of "index" template
+
+
 				// start render tooltip
 				// -> callback: display tooltip
 			}
@@ -418,7 +434,7 @@
 				// stop rendering tooltip
 				// if already rendered, hide it
 			}
-			this.context = this.buildContext(dust.makeBase());
+			this.context = this.buildContext(dust.makeBase().push(DarkTip._settings));
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
