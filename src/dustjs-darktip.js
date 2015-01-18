@@ -109,6 +109,9 @@
   dust.load = function(name, chunk, context) {
     var tmpl = context.get('module.template.'+name);
     if (tmpl) {
+      if (typeof tmpl !== 'function') {
+        return chunk.setError(new Error('Template Not Compiled: ' + name));
+      }
       return tmpl(chunk, context);
     }
     return chunk.setError(new Error('Template Not Found: ' + name));
@@ -169,7 +172,7 @@
         try {
           return ctx.apply(ctxThis, arguments);
         } catch (err) {
-          dust.log(err, ERROR);
+          dust.log(err, dust.ERROR);
           throw err;
         }
       };

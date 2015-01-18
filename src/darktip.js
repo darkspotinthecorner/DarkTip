@@ -25,8 +25,19 @@
 
 	DarkTip._settings = {
 		'module': {
+			'setting': {
+				'template': {
+					'index': 'index',
+					'error': 'error'
+				}
+			},
 			'tether': {
 				'classPrefix': 'darktip'
+			},
+			'hoverintent': {
+				'timeout': 500,
+				'interval': 50,
+				'sensitivity': 7
 			}
 		}
 	};
@@ -46,6 +57,8 @@
 		DarkTip.settings.set(key, data);
 		return this;
 	};
+
+	DarkTip.setting('module.template.loading', '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20mm" height="20mm" viewBox="0 0 40 40" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>');
 
 	/* # TOOLS ################################################# */
 
@@ -550,6 +563,118 @@
 				queue.push(callbackFn);
 			}
 		};
+	})();
+
+	/* hoverintent v0.1.0 (2013-05-20) | http://tristen.ca/hoverintent | Copyright (c) 2013 ; Licensed MIT */
+
+	DarkTip.hoverintent = (function() {
+
+		var hoverintent = function(el, over, out) {
+			var x, y, pX, pY,
+				h = {},
+				state = 0,
+				timer = 0;
+
+			var options = {
+				sensitivity: 7,
+				interval: 100,
+				timeout: 0
+			};
+
+			var defaults = function(opt) {
+				options = merge(opt || {}, options);
+			};
+
+			// Cross browser events
+			var addEvent = function(object, event, method) {
+				if (object.attachEvent) {
+					object['e'+event+method] = method;
+					object[event+method] = function(){object['e'+event+method](window.event);};
+					object.attachEvent('on'+event, object[event+method]);
+				} else {
+					object.addEventListener(event, method, false);
+				}
+			};
+
+			var removeEvent = function(object, event, method) {
+				if (object.detachEvent) {
+					object.detachEvent('on'+event, object[event+method]);
+					object[event+method] = null;
+				} else {
+					object.removeEventListener(event, method, false);
+				}
+			};
+
+			var track = function(e) { x = e.clientX; y = e.clientY; };
+
+			var delay = function(el, outEvent, e) {
+				if (timer) timer = clearTimeout(timer);
+				state = 0;
+				return outEvent.call(el, e);
+			};
+
+			var dispatch = function(e, event, over) {
+				var tracker = function() {
+					track(e);
+				};
+				if (timer) timer = clearTimeout(timer);
+				if (over) {
+					pX = e.clientX;
+					pY = e.clientY;
+					addEvent(el, 'mousemove', tracker);
+					if (state !== 1) {
+						timer = setTimeout(function() {
+							compare(el, event, e);
+						}, options.interval);
+					}
+				} else {
+					removeEvent(el, 'mousemove', tracker);
+					if (state === 1) {
+						timer = setTimeout(function() {
+							delay(el, event, e);
+						}, options.timeout);
+					}
+				}
+				return this;
+			};
+
+			var compare = function(el, overEvent, e) {
+				if (timer) timer = clearTimeout(timer);
+				if ((Math.abs(pX - x) + Math.abs(pY - y)) < options.sensitivity) {
+					state = 1;
+					return overEvent.call(el, e);
+				} else {
+					pX = x; pY = y;
+					timer = setTimeout(function () {
+						compare(el, overEvent, e);
+					}, options.interval);
+				}
+			};
+
+			// Public methods
+			h.options = function(opt) {
+				defaults(opt);
+			};
+
+			var dispatchOver = function(e) { dispatch(e, over, true); }
+			var dispatchOut = function(e) { dispatch(e, out); }
+
+			h.remove = function() {
+				if (!el) return
+				removeEvent(el, 'mouseover', dispatchOver);
+				removeEvent(el, 'mouseout', dispatchOut);
+			}
+
+			if (el) {
+				addEvent(el, 'mouseover', dispatchOver);
+				addEvent(el, 'mouseout', dispatchOut);
+			}
+
+			defaults();
+
+			return h;
+		};
+		return hoverintent;
 	})();
 
 	if (typeof exports === 'object') {
