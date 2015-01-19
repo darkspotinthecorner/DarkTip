@@ -23,6 +23,8 @@
 
 		#testing {
 			padding: 1em;
+			font-size: 1.5em;
+			line-height: 130%;
 		}
 
 		#output {
@@ -52,9 +54,12 @@
 </head>
 <body>
 	<section id="container">
-		<ul id="testing">
-			<a href="https://github.com/darkspotinthecorner">https://github.com/darkspotinthecorner</a>
-		</ul>
+		<div id="testing">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</div>
 
 		<ul id="output"></ul>
 
@@ -80,8 +85,11 @@
 	</script>
 	<script type="text/javascript" charset="utf-8">
 
-		DarkTip.triggerGroup('implicit').event('a[href]', 'hover', function(elem) { return elem.getAttribute('href'); });
-		DarkTip.triggerGroup('explicit').event('[data-darktip]', 'hover', function(elem) { return elem.getAttribute('data-darktip'); });
+		DarkTip.triggerGroup('implicit')
+			.event('a[href]', 'hoverintent', function(elem) { return elem.getAttribute('href'); });
+
+		DarkTip.triggerGroup('explicit')
+			.event('[data-darktip]', 'hoverintent', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
 			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com/')
