@@ -21,10 +21,19 @@
 			background-color: #eee;
 		}
 
+		#testcontroller {
+			padding: 1em;
+		}
+
 		#testing {
 			padding: 1em;
-			font-size: 1.5em;
+			font-size: 1em;
 			line-height: 130%;
+			list-style-type: none;
+		}
+
+		#testing > li {
+			padding-bottom: 1em;
 		}
 
 		#output {
@@ -54,19 +63,30 @@
 </head>
 <body>
 	<section id="container">
-		<div id="testing">
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		<div id="testcontroller">
+			<input type="button" name="test" value="Generate new content" onclick="window.demo.addTest();" />
 		</div>
+		<ul id="testing">
+			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li>Lorem ipsum dolor sit amet, <a href="https://github.com">consectetur adipisicing</a> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+		</ul>
 
 		<ul id="output"></ul>
 
 	</section>
 	<script type="text/javascript" charset="utf-8">
 
-		var buildDemoCallbackFn = function(label) {
+		window.demo = {};
+
+		window.demo.addTest = function() {
+			var el = window.document.createElement('li');
+			el.innerHTML = '<a href="https://github.com/tristen">https://github.com/tristen</a>';
+			return window.document.querySelector('#testing').appendChild(el);
+		};
+
+		window.demo.buildDemoCallbackFn = function(label) {
 			return function(err, out)
 			{
 				if (err) {
@@ -76,11 +96,11 @@
 					container.innerHTML = container.innerHTML + '<li><h3>' + label + '</h3><pre>' + out + '</pre></li>';
 				}
 			}
-		}
+		};
 
-		var formatJSON = function(json) {
+		window.demo.formatJSON = function(json) {
 			return '<pre>'+(json.replace(/(\})/ig, "$1\r\n").replace(/(\{)/g, "\r\n$1"))+'</pre>';
-		}
+		};
 
 	</script>
 	<script type="text/javascript" charset="utf-8">
@@ -92,22 +112,23 @@
 			.event('[data-darktip]', 'hoverintent', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
-			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com/')
-			.map('url.api', '//api\.github\.com/')
+			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com')
+			.map('url.api', '//api\.github\.com')
+			.trigger('implicit', '^{module.map.url.trigger}/?$')
 			.template('index', 'Loading...<div>{>loading /}</div>');
 
 		DarkTip.module('github-user', 'github')
-			.trigger('implicit', '^{module.map.url.trigger}([^/]+)/?$', {1: 'username'})
-			.apicall('user', '{module.map.url.api}users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.apicall('user-repos', '{module.map.url.api}users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/?$', {1: 'username'})
+			.apicall('user', '{module.map.url.api}/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.apicall('user-repos', '{module.map.url.api}/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('index', '{@api query="user|user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
 
 		DarkTip.module('github-repository', 'github')
-			.trigger('implicit', '^{module.map.url.trigger}([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
+			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
 
-		DarkTip.module('github').test('en_GB', {'username': 'darkspotinthecorner'}, buildDemoCallbackFn('Test: github (loading)'));
-		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotinthecorner'}, buildDemoCallbackFn('Test: github-user (valid)'));
-		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotterinthecorner'}, buildDemoCallbackFn('Test: github-user (invalid)'));
+		DarkTip.module('github').test('en_GB', {'username': 'darkspotinthecorner'}, window.demo.buildDemoCallbackFn('Test: github (loading)'));
+		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotinthecorner'}, window.demo.buildDemoCallbackFn('Test: github-user (valid)'));
+		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotterinthecorner'}, window.demo.buildDemoCallbackFn('Test: github-user (invalid)'));
 
 		/*
 		var mod_wow = DarkTip.module('wow');

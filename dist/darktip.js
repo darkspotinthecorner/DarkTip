@@ -9328,238 +9328,296 @@ return this.Tether;
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/tether/tether.js","/../node_modules/tether")
 },{"1YiZ5S":8,"buffer":5}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-(function(dust){
+(function(){
 
-  var getResult = function(obj, key) {
-    if (obj && hasOwnProperty.call(obj, key)) {
-      return obj[key];
-    }
-  };
+	var Tools = {};
 
-  var helpers = {
-    i18n: function(chunk, context, bodies, params) {
-      var i18nkey = dust.helpers.tap(params.t, chunk, context);
-      var locale = context.get('module.locale');
-      if (i18nkey) {
-        var contextlookup = 'module.i18n.' + locale + '.' + i18nkey;
-        var localized = context.get(contextlookup);
-        if (localized) {
-          var newParams = params;
-          delete newParams.t;
-          dust.loadSource(dust.compile(localized, contextlookup));
-          return chunk.partial(contextlookup, context.push(newParams));
-        }
-        return chunk.write('**' + i18nkey + '**');
-      }
-      return chunk;
-    },
-    api: function(chunk, context, bodies, params) {
-      var body = bodies['block'];
-      var skip = bodies['else'];
-      if (body && params && params.query) {
-        var queries      = params.query.split('|');
-        var queriesCount = queries.length;
-        var queryStack   = [];
-        delete params.query;
-        var newContext   = context.push(params);
-        for (var i = 0; i < queriesCount; i++) {
-          (function(item) {
-            var alias = item;
-            var query = item;
-            var aliasSeperatorPosition = query.indexOf(':', 1);
-            if (aliasSeperatorPosition > 0) {
-              alias = query.substr(0, aliasSeperatorPosition);
-              query = query.substr((aliasSeperatorPosition + 1));
-            }
-            var queryId = dust.helpers.tap(query, chunk, context);
-            var rawcallData = context.get('module.apicall.' + queryId);
-            queryStack.push((function() {
-              var deferred = DarkTip.q.defer();
-              dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
-                if (err) {
-                  deferred.reject();
-                }
-                deferred.resolve((function(apicall) {
-                  var deferred = DarkTip.q.defer();
-                  DarkTip.callApi(
-                    apicall,
-                    function(data) {
-                      deferred.resolve({
-                        'alias': alias,
-                        'data': data
-                      });
-                    },
-                    function(data) {
-                      deferred.reject();
-                    },
-                    rawcallData.caching,
-                    rawcallData.validationFn,
-                    rawcallData.processFn
-                  );
-                  return deferred.promise;
-                })(apicall));
-              });
-              return deferred.promise;
-            })());
-          })(queries[i]);
-        };
-        return chunk.map(function(chunk) {
-          var pushData = {};
-          DarkTip.q.all(queryStack).spread(function() {
-            var argumentsCount = arguments.length;
-            for (var i = 0; i < argumentsCount; i++) {
-              if (arguments[i]['alias'] !== false) {
-                pushData[arguments[i]['alias']] = arguments[i]['data'];
-              } else {
-                pushData = DarkTip.merge(pushData, arguments[i]['data']);
-              }
-            }
-          }).done(function() {
-            return chunk.render(body, newContext.push(pushData)).end();
-          }, function() {
-            if (skip) {
-              return chunk.render(skip, newContext.push(pushData)).end();
-            }
-            return chunk.end();
-          });
-        });
-      } else {
-        dust.log('No "query" parameter given for @api helper');
-      }
-      return chunk;
-    }
-  };
+	/* ### ELEMENTS ######################################################## */
 
-  for (var key in helpers) {
-    dust.helpers[key] = helpers[key];
-  }
+	Tools.element = {};
 
-  /* ==========---------- Modify core dust functions ----------========== */
+	Tools.element.hasClass = function(el, className) {
+		if (el.classList) {
+			return el.classList.contains(className);
+		} else {
+			return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+		}
+	}
 
-  dust.load = function(name, chunk, context) {
-    var tmpl = context.get('module.template.'+name);
-    if (tmpl) {
-      if (typeof tmpl !== 'function') {
-        return chunk.setError(new Error('Template Not Compiled: ' + name));
-      }
-      return tmpl(chunk, context);
-    }
-    return chunk.setError(new Error('Template Not Found: ' + name));
-  };
+	Tools.element.addClass = function(el, className) {
+		if (el.classList) {
+			el.classList.add(className);
+		} else {
+			el.className += ' ' + className;
+			el.className = el.className.trim();
+		}
+	};
 
-  var Context = dust.makeBase().constructor;
+	Tools.element.removeClass = function(el, className) {
+		if (el.classList) {
+			el.classList.remove(className);
+		} else {
+			el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+		}
+	};
 
-  Context.prototype.getPath = function(cur, down) {
-    if (cur) {
-      return this._get(cur, down);
-    }
-    return this._gget(down);
-  };
+	Tools.element.toggleClass = function(el, className) {
+		if (el.classList) {
+			el.classList.toggle(className);
+		} else {
+			if (Tools.element.hasClass(el, className)) {
+				Tools.element.removeClass(el, className);
+			} else {
+				Tools.element.addClass(el, className);
+			}
+		}
+	}
 
-  Context.prototype.get = function(path, cur) {
-    if (typeof path === 'string') {
-      if (path[0] === '.') {
-        cur = true;
-        path = path.substr(1);
-      }
-      path = path.split('.');
-    }
-    if (cur) {
-      return this._get(cur, path);
-    }
-    return this._gget(path);
-  };
+	if (typeof exports === 'object') {
+		module.exports = Tools;
+	} else {
+		DarkTip.Tools = Tools;
+	}
 
-  Context.prototype._gget = function(down) {
-    var ctx = this.stack,
-        i = 1,
-        value, first, len, ctxThis, fn;
-    first = down[0];
-    len = down.length;
-    loop:
-    while (ctx) {
-      i = 1;
-      if (ctx.isObject) {
-        ctxThis = ctx.head;
-        value = getResult(ctx.head, first);
-        if (value !== undefined) {
+})();
 
-          while (value && i < len) {
-            ctxThis = value;
-            value = getResult(value, down[i]);
-            i++;
-          }
-          if (value !== undefined) {
-            ctx = value;
-            break loop;
-          }
-        }
-      }
-      ctx = ctx.tail;
-    }
-    if (typeof ctx === 'function') {
-      fn = function() {
-        try {
-          return ctx.apply(ctxThis, arguments);
-        } catch (err) {
-          dust.log(err, dust.ERROR);
-          throw err;
-        }
-      };
-      fn.__dustBody = !!ctx.__dustBody;
-      return fn;
-    } else {
-      if (ctx === undefined) {
-        dust.log('Cannot find the value for reference [{' + down.join('.') + '}] in template [' + this.getTemplateName() + ']');
-      }
-      return ctx;
-    }
-  };
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/darktip-tools.js","/")
+},{"1YiZ5S":8,"buffer":5}],12:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+(function(dust) {
 
-  Context.prototype.set = function(path, value) {
-    if (typeof path === 'string') {
-      path = path.split('.');
-    }
-    return this._set(path, value);
-  };
+	var getResult = function(obj, key) {
+		if (obj && hasOwnProperty.call(obj, key)) {
+			return obj[key];
+		}
+	};
 
-  Context.prototype._set = function(down, value) {
-    var len = down.length;
-    var cur = this.stack.head
-    for (var i = 0; i <= len; i++) {
-      if ((i + 1) == len) {
-        var oldvalue = cur[down[i]];
-        cur[down[i]] = value;
-        return oldvalue;
-      } else {
-        if (typeof cur[down[i]] !== 'object') {
-          cur[down[i]] = {};
-        }
-        cur = cur[down[i]];
-      }
-    }
-  }
+	var helpers = {
+		i18n: function(chunk, context, bodies, params) {
+			var i18nkey = dust.helpers.tap(params.t, chunk, context);
+			var locale = context.get('module.locale');
+			if (i18nkey) {
+				var contextlookup = 'module.i18n.' + locale + '.' + i18nkey;
+				var localized = context.get(contextlookup);
+				if (localized) {
+					var newParams = params;
+					delete newParams.t;
+					dust.loadSource(dust.compile(localized, contextlookup));
+					return chunk.partial(contextlookup, context.push(newParams));
+				}
+				return chunk.write('**' + i18nkey + '**');
+			}
+			return chunk;
+		},
+		api: function(chunk, context, bodies, params) {
+			var body = bodies['block'];
+			var skip = bodies['else'];
+			if (body && params && params.query) {
+				var queries = params.query.split('|');
+				var queriesCount = queries.length;
+				var queryStack = [];
+				delete params.query;
+				var newContext = context.push(params);
+				for (var i = 0; i < queriesCount; i++) {
+					(function(item) {
+						var alias = item;
+						var query = item;
+						var aliasSeperatorPosition = query.indexOf(':', 1);
+						if (aliasSeperatorPosition > 0) {
+							alias = query.substr(0, aliasSeperatorPosition);
+							query = query.substr((aliasSeperatorPosition + 1));
+						}
+						var queryId = dust.helpers.tap(query, chunk, context);
+						var rawcallData = context.get('module.apicall.' + queryId);
+						queryStack.push((function() {
+							var deferred = DarkTip.q.defer();
+							dust.renderSource(rawcallData.url, newContext, function(err, apicall) {
+								if (err) {
+									deferred.reject();
+								}
+								deferred.resolve((function(apicall) {
+									var deferred = DarkTip.q.defer();
+									DarkTip.callApi(
+										apicall,
+										function(data) {
+											deferred.resolve({
+												'alias': alias,
+												'data': data
+											});
+										},
+										function(data) {
+											deferred.reject();
+										},
+										rawcallData.caching,
+										rawcallData.validationFn,
+										rawcallData.processFn
+									);
+									return deferred.promise;
+								})(apicall));
+							});
+							return deferred.promise;
+						})());
+					})(queries[i]);
+				};
+				return chunk.map(function(chunk) {
+					var pushData = {};
+					DarkTip.q.all(queryStack).spread(function() {
+						var argumentsCount = arguments.length;
+						for (var i = 0; i < argumentsCount; i++) {
+							if (arguments[i]['alias'] !== false) {
+								pushData[arguments[i]['alias']] = arguments[i]['data'];
+							} else {
+								pushData = DarkTip.merge(pushData, arguments[i]['data']);
+							}
+						}
+					}).done(function() {
+						return chunk.render(body, newContext.push(pushData)).end();
+					}, function() {
+						if (skip) {
+							return chunk.render(skip, newContext.push(pushData)).end();
+						}
+						return chunk.end();
+					});
+				});
+			} else {
+				dust.log('No "query" parameter given for @api helper');
+			}
+			return chunk;
+		}
+	};
 
-  if(typeof exports !== 'undefined') {
-    module.exports = dust;
-  }
+	for (var key in helpers) {
+		dust.helpers[key] = helpers[key];
+	}
+
+	/* ==========---------- Modify core dust functions ----------========== */
+
+	dust.load = function(name, chunk, context) {
+		var tmpl = context.get('module.template.' + name);
+		if (tmpl) {
+			if (typeof tmpl !== 'function') {
+				return chunk.setError(new Error('Template Not Compiled: ' + name));
+			}
+			return tmpl(chunk, context);
+		}
+		return chunk.setError(new Error('Template Not Found: ' + name));
+	};
+
+	var Context = dust.makeBase().constructor;
+
+	Context.prototype.getPath = function(cur, down) {
+		if (cur) {
+			return this._get(cur, down);
+		}
+		return this._gget(down);
+	};
+
+	Context.prototype.get = function(path, cur) {
+		if (typeof path === 'string') {
+			if (path[0] === '.') {
+				cur = true;
+				path = path.substr(1);
+			}
+			path = path.split('.');
+		}
+		if (cur) {
+			return this._get(cur, path);
+		}
+		return this._gget(path);
+	};
+
+	Context.prototype._gget = function(down) {
+		var ctx = this.stack,
+			i = 1,
+			value, first, len, ctxThis, fn;
+		first = down[0];
+		len = down.length;
+		loop:
+			while (ctx) {
+				i = 1;
+				if (ctx.isObject) {
+					ctxThis = ctx.head;
+					value = getResult(ctx.head, first);
+					if (value !== undefined) {
+
+						while (value && i < len) {
+							ctxThis = value;
+							value = getResult(value, down[i]);
+							i++;
+						}
+						if (value !== undefined) {
+							ctx = value;
+							break loop;
+						}
+					}
+				}
+				ctx = ctx.tail;
+			}
+		if (typeof ctx === 'function') {
+			fn = function() {
+				try {
+					return ctx.apply(ctxThis, arguments);
+				} catch (err) {
+					dust.log(err, dust.ERROR);
+					throw err;
+				}
+			};
+			fn.__dustBody = !!ctx.__dustBody;
+			return fn;
+		} else {
+			if (ctx === undefined) {
+				dust.log('Cannot find the value for reference [{' + down.join('.') + '}] in template [' + this.getTemplateName() + ']');
+			}
+			return ctx;
+		}
+	};
+
+	Context.prototype.set = function(path, value) {
+		if (typeof path === 'string') {
+			path = path.split('.');
+		}
+		return this._set(path, value);
+	};
+
+	Context.prototype._set = function(down, value) {
+		var len = down.length;
+		var cur = this.stack.head
+		for (var i = 0; i <= len; i++) {
+			if ((i + 1) == len) {
+				var oldvalue = cur[down[i]];
+				cur[down[i]] = value;
+				return oldvalue;
+			} else {
+				if (typeof cur[down[i]] !== 'object') {
+					cur[down[i]] = {};
+				}
+				cur = cur[down[i]];
+			}
+		}
+	}
+
+	if (typeof exports !== 'undefined') {
+		module.exports = dust;
+	}
 
 })(typeof exports !== 'undefined' ? require('dustjs-linkedin') : dust);
 
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/dustjs-darktip.js","/")
-},{"1YiZ5S":8,"buffer":5,"dustjs-linkedin":3}],12:[function(require,module,exports){
+},{"1YiZ5S":8,"buffer":5,"dustjs-linkedin":3}],13:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function(globalScope) {
 
 	/* # INIT ################################################## */
 
-	var DarkTip = {};
+	var log, merge,
+		doc = globalScope.document,
+		DarkTip = {};
 
 	var q      = require('q'),
 		dust   = require('dustjs-linkedin'),
-		tether = require('tether');
+		tether = require('tether')
+		tools  = require('./darktip-tools');
 
-	//require('dustjs-linkedin/lib/parser');
 	require('dustjs-linkedin/lib/compiler');
 	require('dustjs-helpers');
 	require('./dustjs-darktip');
@@ -9568,6 +9626,11 @@ return this.Tether;
 	DarkTip.dust   = dust;
 	DarkTip.tether = tether;
 
+	DarkTip.observer         = undefined;
+	DarkTip.observeAddFns    = [];
+	DarkTip.observeRemoveFns = [];
+
+	DarkTip.css              = undefined;
 	DarkTip.modules          = {};
 	DarkTip.triggerGroups    = {};
 	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
@@ -9579,17 +9642,18 @@ return this.Tether;
 			'locale': 'en_GB',
 			'setting': {
 				'template': {
-					'index': 'index',
-					'error': 'error'
+					'loading': 'loading',
+					'index'  : 'index',
+					'error'  : 'error'
 				}
 			},
 			'tether': {
-				'classPrefix': 'darktip',
+				'classPrefix': 'darktip-tether',
 				'attachment': 'bottom center',
 				'targetAttachment': 'top center',
 				'constraints':[
 					{
-						'to': 'scrollParent',
+						'to': 'window',
 						'attachment': 'together'
 					}
 				]
@@ -9622,7 +9686,7 @@ return this.Tether;
 
 	/* # TOOLS ################################################# */
 
-	var log = (function() {
+	log = (function() {
 		var logger = {},
 			originalLog,
 			loggerContext;
@@ -9644,7 +9708,7 @@ return this.Tether;
 		};
 	})();
 
-	var merge = function(target, src) {
+	merge = function(target, src) {
 		var array = dust.isArray(src);
 		var dst = array && [] || {};
 		if (array) {
@@ -9715,7 +9779,6 @@ return this.Tether;
 			timeout = timeout || 5000;
 			var callBackName = '_cb' + callbackId++;
 			var queryString = '?' + remoteCallbackParam + '=DarkTip.jsonp.' + callBackName;
-			var doc = globalScope.document;
 			var scr = doc.createElement('script');
 			scr.type = 'text/javascript';
 			scr.src = url + queryString;
@@ -9825,13 +9888,13 @@ return this.Tether;
 					return extractorFn;
 				}
 				if (typeof extractorFn === 'string') {
+					if (typeof extractorPayload === 'undefined') {
+						extractorPayload = {};
+					}
 					if (typeof extractorPayload !== 'object') {
 						log('TriggerGroup.trigger: Invalid RegExp payload! 3rd argument must be an object.');
 						return false;
 					}
-					// Treat extractorFn as a dust template and pass
-					DarkTip.dust
-
 					extractorFn = new RegExp(extractorFn);
 					return function(candidate) {
 						var data = {};
@@ -9992,166 +10055,215 @@ return this.Tether;
 				dust.render('index', this.context.push(data), callbackFn);
 			};
 			this.start = function(elem, params) {
-				log('starting module '+moduleId);
-				if (!elem.DarkTip) {
-					elem.DarkTip = {
-						'status': 'started',
-						'tether': false
+				if (!elem.DarkTip.init) {
+					elem.DarkTip.init   = true;
+					elem.DarkTip.active = true;
+					elem.DarkTip.tether = false;
+					elem.DarkTip.tip    = false;
+					var newContext = this.context.push(params);
+					var tetheroptions = {
+						'target'          : elem,
+						'attachment'      : this.context.get('module.tether.attachment'),
+						'targetAttachment': this.context.get('module.tether.targetAttachment'),
+						//'offset'          : this.context.get('module.tether.offset'),
+						//'targetOffset'    : this.context.get('module.tether.targetOffset'),
+						//'targetModifier'  : this.context.get('module.tether.targetModifier'),
+						'constraints'     : this.context.get('module.tether.constraints'),
+						//'optimizations'   : this.context.get('module.tether.optimizations'),
+						'classPrefix'     : this.context.get('module.tether.classPrefix')
 					};
-				}
-				var doc = globalScope.document;
-				var newContext = this.context.push(params);
-				var tetheroptions = {
-					'target'          : elem,
-					'attachment'      : this.context.get('module.tether.attachment'),
-					'targetAttachment': this.context.get('module.tether.targetAttachment'),
-					//'offset'          : this.context.get('module.tether.offset'),
-					//'targetOffset'    : this.context.get('module.tether.targetOffset'),
-					//'targetModifier'  : this.context.get('module.tether.targetModifier'),
-					'constraints'     : this.context.get('module.tether.constraints'),
-					//'optimizations'   : this.context.get('module.tether.optimizations'),
-					'classPrefix'     : this.context.get('module.tether.classPrefix')
-				};
-				var displayFn = function(err, content) {
-					console.log(['displayFn', tetheroptions]);
-					if (!err && content) {
-						if (elem.DarkTip.status !== 'stopped') {
-							if (elem.DarkTip.tether) {
+					var displayFn = function(err, content) {
+						if (!err && content) {
+							if (elem.DarkTip.tip && elem.DarkTip.tether) {
 								elem.DarkTip.tip.innerHTML = content;
-								elem.DarkTip.tether.position();
+								if (elem.DarkTip.active) {
+									elem.DarkTip.tether.position();
+									tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
+								}
 							} else {
-								var tip = doc.createElement('div');
-								tip.innerHTML = content;
-								doc.body.appendChild(tip);
+								var tip = DarkTip.createTooltipElement(content);
 								elem.DarkTip.tip = tetheroptions.element = tip;
+								console.log(['module start thetheroptions', tetheroptions]);
 								elem.DarkTip.tether = new tether(tetheroptions);
+								if (!elem.DarkTip.active) {
+									elem.DarkTip.tether.disable();
+								} else {
+									tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
+								}
 							}
 						}
+					};
+					var displayTempFn = function(err, content) {
+						if (!elem.DarkTip.tip) {
+							displayFn(err, content);
+						}
+					};
+					dust.render('loading', this.context.push(params), displayTempFn);
+					dust.render('index', this.context.push(params), displayFn);
+				} else {
+					elem.DarkTip.active = true;
+					if (elem.DarkTip.tether) {
+						elem.DarkTip.tether.enable();
 					}
-				};
-				var displayTempFn = function(err, content) {
-					if (elem.DarkTip.status === 'started') {
-						displayFn(err, content);
+					if (elem.DarkTip.tip) {
+						tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
 					}
-				};
-
-				dust.render('loading', this.context.push(params), displayTempFn);
-				dust.render('index', this.context.push(params), displayFn);
-
-				// elem['DarkTip'] = new tether( ... );
-				// Start async render of "loading" template
-				// Start async render of "index" template
-				// whatever is ready, put into dom and tether it
-
-				// start render tooltip
-				// -> callback: display tooltip
+				}
 			}
 			this.stop = function(elem, params) {
-				log('stopping module '+moduleId);
-				if (!elem.DarkTip) {
+				if (!elem.DarkTip.init) {
+					elem.DarkTip.active = false;
+					elem.DarkTip.tether = false;
+					elem.DarkTip.tip    = false;
 					return;
 				}
-				elem.DarkTip.status = 'stopped';
-				if (elem.DarkTip.tether) {
-					elem.DarkTip.tether.destroy();
+				elem.DarkTip.active = false;
+				if (elem.DarkTip.tip) {
+					tools.element.removeClass(elem.DarkTip.tip, 'darktip-active');
 				}
-
-				// stop rendering tooltip
-				// if already rendered, hide it
+				if (elem.DarkTip.tether) {
+					elem.DarkTip.tether.disable();
+				}
 			}
 			this.context = this.buildContext(dust.makeBase().push(DarkTip._settings));
 		}
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
+	DarkTip.createTooltipElement = function(content) {
+		var tip = doc.createElement('div');
+		tools.element.addClass(tip, 'darktip-tooltip');
+		tip.innerHTML = content;
+		doc.body.appendChild(tip);
+		return tip;
+	};
+
+	DarkTip.initStyle = function() {
+		var styleSheet,
+			api      = {},
+			styleTag = doc.createElement('style');
+		styleTag.setAttribute('media', 'screen');
+		styleTag.setAttribute('type', 'text/css');
+		doc.head.appendChild(styleTag);
+		styleSheet = styleTag.sheet;
+		var api = {};
+		api.addRules = function(selector, rules) {
+			var index = styleSheet.cssRules.length;
+			if (styleSheet.insertRule) {
+				styleSheet.insertRule(selector + '{' + rules + '}', index);
+				return api;
+			} else if (styleSheet.addRule) {
+				styleSheet.addRule(selector, rules, index);
+				return api;
+			}
+			return false;
+		}
+		return api;
+	}
+
 	DarkTip.bindEvent = function(event, selector, accessFn, triggerGroup) {
-		var doc = globalScope.document;
 		DarkTip.domReady(function() {
 			var elems = doc.querySelectorAll(selector);
 			Array.prototype.forEach.call(elems, function(elem) {
-				DarkTip.addEventListeners(elem, event, accessFn, triggerGroup);
+				if (!elem.DarkTip) {
+					DarkTip.addEventListeners(elem, event, accessFn, triggerGroup);
+				}
 			});
 		});
 		if (DarkTip.MutationObserver) {
 			var observedAddFn = function(elem) {
-				console.log({'do': 'added elements', 'elem': elem, 'elems matching selector': elems});
+				console.log({'do': 'added elements', 'root': elem, 'selector': selector, 'elems matching selector': elems});
 				if (!elem || elem.nodeType !== 1) {
 					return;
 				}
 				var elems = elem.querySelectorAll(selector);
 				Array.prototype.forEach.call(elems, function(elem) {
-					DarkTip.addEventListeners(elem, event, accessFn, triggerGroup);
+					if (!elem.DarkTip) {
+						DarkTip.addEventListeners(elem, event, accessFn, triggerGroup);
+					}
 				});
 			};
 			var observedRemoveFn = function(elem) {
-				console.log({'do': 'removed elements', 'elem': elem, 'elems matching selector': elems});
+				console.log({'do': 'removed elements', 'root': elem, 'selector': selector, 'elems matching selector': elems});
 				if (!elem || elem.nodeType !== 1) {
 					return;
 				}
 				var elems = elem.querySelectorAll(selector);
 				Array.prototype.forEach.call(elems, function(elem) {
-					DarkTip.removeEventListeners(elem, event, accessFn, triggerGroup);
+					if (elem.DarkTip) {
+						DarkTip.removeEventListeners(elem, event, accessFn, triggerGroup);
+					}
 				});
 			};
-			var observeFn = function(mutations) {
-				console.log({'do': 'DarkTip.MutationObserver', 'mutations': mutations});
-				var added, removed, i, l;
-				for (var m = 0, ml = mutations.length; m < ml; m++) {
-					added = mutations[m].addedNodes;
-					removed = mutations[m].removedNodes;
-					for (i = 0, l = added.length; i < l; i++) {
-						observedAddFn(added[i]);
-					}
-					for (i = 0, l = removed.length; i < l; i++) {
-						observedRemoveFn(added[i]);
-					}
-				}
-			};
-			var observer = new DarkTip.MutationObserver(observeFn);
-			// observer.observe(doc, {childList: true, subtree: true});
+			DarkTip.observeAddFns.push(observedAddFn);
+			DarkTip.observeRemoveFns.push(observedRemoveFn);
 		}
+	};
 
-
-		// If MutationObserver: Bind it
-			// If new content comes in: document.querySelectorAll(newroot, selector...) for each triggergroup
-				// Foreach element found, check each trigger on the triggergroup for events to bind
-				// triggers are checked from last to first, so the newest wins
+	DarkTip.observeMutationHandler = function(mutations) {
+		var added, removed, i, l, n, o;
+		for (var m = 0, ml = mutations.length; m < ml; m++) {
+			added = mutations[m].addedNodes;
+			removed = mutations[m].removedNodes;
+			for (i = 0, l = added.length; i < l; i++) {
+				for (n = 0, o = DarkTip.observeAddFns.length; n < o; n++) {
+					DarkTip.observeAddFns[n](added[i]);
+				}
+			}
+			for (i = 0, l = removed.length; i < l; i++) {
+				for (n = 0, o = DarkTip.observeRemoveFns.length; n < o; n++) {
+					DarkTip.observeRemoveFns[n](removed[i]);
+				}
+			}
+		}
 	};
 
 	DarkTip.addEventListeners = function(elem, event, accessFn, triggerGroup) {
-		var eventOnFn = function() {
-			var accessed = accessFn(this);
-			if (accessed) {
-				DarkTip.handleEventFire(event, this, accessed, triggerGroup, true);
-			}
-		};
-		var eventOffFn = function() {
-			var accessed = accessFn(this);
-			if (accessed) {
-				DarkTip.handleEventFire(event, this, accessed, triggerGroup, false);
-			}
-		};
-		if (event === 'hover') {
-			elem.addEventListener('mouseenter', eventOnFn,  false);
-			elem.addEventListener('mouseleave', eventOffFn, false);
-		}
-		if (event === 'hoverintent') {
-			var opt = {
-				'timeout': DarkTip.settings.get('module.hoverintent.timeout'),
-				'interval': DarkTip.settings.get('module.hoverintent.interval'),
-				'sensitivity': DarkTip.settings.get('module.hoverintent.sensitivity')
+		if (!elem.DarkTip) {
+			elem.DarkTip = {
+				cleanupFns: []
 			};
-			console.log(opt);
-			DarkTip.hoverintent(elem, eventOnFn, eventOffFn).options(opt);
+			var eventOnFn = function() {
+				var accessed = accessFn(this);
+				if (accessed) {
+					DarkTip.handleEventFire(event, this, accessed, triggerGroup, true);
+				}
+			};
+			var eventOffFn = function() {
+				var accessed = accessFn(this);
+				if (accessed) {
+					DarkTip.handleEventFire(event, this, accessed, triggerGroup, false);
+				}
+			};
+			if (event === 'hover') {
+				elem.addEventListener('mouseenter', eventOnFn,  false);
+				elem.addEventListener('mouseleave', eventOffFn, false);
+				elem.DarkTip.cleanupFns.push(function() {
+					elem.removeEventListener('mouseenter', eventOnFn);
+					elem.removeEventListener('mouseleave', eventOffFn);
+				});
+			}
+			if (event === 'hoverintent') {
+				var opt = {
+					'timeout'    : DarkTip.settings.get('module.hoverintent.timeout'),
+					'interval'   : DarkTip.settings.get('module.hoverintent.interval'),
+					'sensitivity': DarkTip.settings.get('module.hoverintent.sensitivity')
+				};
+				var h = DarkTip.hoverintent(elem, eventOnFn, eventOffFn);
+				h.options(opt);
+				elem.DarkTip.cleanupFns.push(function() {
+					h.remove();
+				});
+			}
 		}
-		// if (event === 'hover&stay') {}
-		// if (event === 'hoverintent&stay') {}
-		// if (event === 'click') {}
-		// if (event === 'click&hover') {}
 	};
 
 	DarkTip.removeEventListeners = function(elem, event, accessFn, triggerGroup) {
-
+		if (elem.DarkTip) {
+			for (var i = 0, j = elem.DarkTip.cleanupFns.length; i < j; i++) {
+				elem.DarkTip.cleanupFns[i]();
+			}
+		}
 	};
 
 	DarkTip.handleEventFire = function(event, elem, accessed, triggerGroup, on) {
@@ -10174,7 +10286,6 @@ return this.Tether;
 	DarkTip.domReady = (function () {
 		var listener;
 		var queue = [];
-		var doc = globalScope.document;
 		var domContentLoaded = 'DOMContentLoaded';
 		var loaded = /^loaded|^i|^c/.test(doc.readyState);
 		if (!loaded) {
@@ -10275,6 +10386,17 @@ return this.Tether;
 		return hoverintent;
 	})();
 
+	DarkTip.domReady(function() {
+		DarkTip.css = DarkTip.initStyle();
+		DarkTip.css.addRules('.darktip-tooltip', 'display:none; background-color: rgba(0,0,0,0.8); color: #eee; padding: 10px;')
+			.addRules('.darktip-active', 'display:inherit;');
+
+		if (DarkTip.MutationObserver) {
+			DarkTip.observer = new DarkTip.MutationObserver(DarkTip.observeMutationHandler);
+			DarkTip.observer.observe(doc, {childList: true, subtree: true});
+		}
+	});
+
 	if (typeof exports === 'object') {
 		module.exports = DarkTip;
 	}
@@ -10282,5 +10404,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_139106f0.js","/")
-},{"./dustjs-darktip":11,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[12])
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_e43c66ae.js","/")
+},{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])
