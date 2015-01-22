@@ -31,6 +31,7 @@
 	/* # SETTINGS ############################################## */
 
 	DarkTip._settings = {
+		'cache': true,
 		'module': {
 			'locale': 'en_GB',
 			'setting': {
@@ -59,7 +60,7 @@
 		}
 	};
 
-	DarkTip.settings  = dust.makeBase().push(DarkTip._settings);
+	DarkTip.settings = dust.makeBase().push(DarkTip._settings);
 
 	DarkTip.setting = function(key, data) {
 		var tplNames = [];
@@ -67,7 +68,7 @@
 			return DarkTip.settings.get(key);
 		}
 		tplNames = key.match(/^module\.template\.([^\.].*)$/);
-		if (tplNames.length)
+		if (tplNames && tplNames.length)
 		{
 			data = dust.loadSource(dust.compile(data, tplNames[1]));
 		}
@@ -211,6 +212,9 @@
 				return ('DarkTip_cache_' + region + '_' + key);
 			};
 			cache.read = function(region, key) {
+				if (!DarkTip.settings.get('cache')) {
+					return undefined;
+				}
 				var result = undefined;
 				var rawitem = globalScope.localStorage.getItem(cache.key(region, key));
 				if (typeof rawitem !== 'undefined')
@@ -241,6 +245,9 @@
 		} else {
 			cache.storage = {};
 			cache.read = function(region, key) {
+				if (!DarkTip.settings.get('cache')) {
+					return undefined;
+				}
 				var result = undefined;
 				if (typeof cache.storage[region][key] !== 'undefined') {
 					var curtime = Math.round((new Date()).getTime() / 1000);

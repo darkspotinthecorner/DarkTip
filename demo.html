@@ -105,6 +105,8 @@
 	</script>
 	<script type="text/javascript" charset="utf-8">
 
+		DarkTip.setting('cache', false);
+
 		DarkTip.triggerGroup('implicit')
 			.event('a[href]', 'hoverintent', function(elem) { return elem.getAttribute('href'); });
 

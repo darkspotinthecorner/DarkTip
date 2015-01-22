@@ -1096,7 +1096,6 @@ var helpers = {
 
   dust.load = function(name, chunk, context) {
     var tmpl = dust.cache[name];
-    // console.log({name, chunk, context, tmpl});
     if (tmpl) {
       return tmpl(chunk, context);
     } else {
@@ -9638,6 +9637,7 @@ return this.Tether;
 	/* # SETTINGS ############################################## */
 
 	DarkTip._settings = {
+		'cache': true,
 		'module': {
 			'locale': 'en_GB',
 			'setting': {
@@ -9666,7 +9666,7 @@ return this.Tether;
 		}
 	};
 
-	DarkTip.settings  = dust.makeBase().push(DarkTip._settings);
+	DarkTip.settings = dust.makeBase().push(DarkTip._settings);
 
 	DarkTip.setting = function(key, data) {
 		var tplNames = [];
@@ -9674,7 +9674,7 @@ return this.Tether;
 			return DarkTip.settings.get(key);
 		}
 		tplNames = key.match(/^module\.template\.([^\.].*)$/);
-		if (tplNames.length)
+		if (tplNames && tplNames.length)
 		{
 			data = dust.loadSource(dust.compile(data, tplNames[1]));
 		}
@@ -9818,6 +9818,9 @@ return this.Tether;
 				return ('DarkTip_cache_' + region + '_' + key);
 			};
 			cache.read = function(region, key) {
+				if (!DarkTip.settings.get('cache')) {
+					return undefined;
+				}
 				var result = undefined;
 				var rawitem = globalScope.localStorage.getItem(cache.key(region, key));
 				if (typeof rawitem !== 'undefined')
@@ -9848,6 +9851,9 @@ return this.Tether;
 		} else {
 			cache.storage = {};
 			cache.read = function(region, key) {
+				if (!DarkTip.settings.get('cache')) {
+					return undefined;
+				}
 				var result = undefined;
 				if (typeof cache.storage[region][key] !== 'undefined') {
 					var curtime = Math.round((new Date()).getTime() / 1000);
@@ -10443,5 +10449,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_e6684e0a.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_1899a6a1.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])
