@@ -70,7 +70,7 @@
 			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li>Lorem ipsum dolor sit amet, <a href="https://github.com">consectetur adipisicing</a> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li><a href="https://github.com/darkspotinthecorner/DarkTip">Lorem ipsum dolor sit amet</a>, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 		</ul>
 
 		<ul id="output"></ul>
@@ -113,22 +113,22 @@
 
 		DarkTip.module('github')
 			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com')
-			.map('url.api', '//api\.github\.com')
+			.map('url.api', 'https://api\.github\.com')
 			.trigger('implicit', '^{module.map.url.trigger}/?$')
-			.template('index', 'Loading...<div>{>loading /}</div>');
+			.template('index', '<div class="darktip-content"><div class="darktip-inner">{>main /}</div></div>')
+			.template('main', 'Loading...<div>{>loading /}</div>')
+			.css('', 'background-color: rgba(0,0,0,0.8); color: #eee; padding: 10px; width: 20em;');
 
 		DarkTip.module('github-user', 'github')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/?$', {1: 'username'})
 			.apicall('user', '{module.map.url.api}/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.apicall('user-repos', '{module.map.url.api}/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.template('index', '{@api query="user|user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
+			.template('main', '{@api query="user|user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
 
 		DarkTip.module('github-repository', 'github')
-			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'});
-
-		DarkTip.module('github').test('en_GB', {'username': 'darkspotinthecorner'}, window.demo.buildDemoCallbackFn('Test: github (loading)'));
-		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotinthecorner'}, window.demo.buildDemoCallbackFn('Test: github-user (valid)'));
-		DarkTip.module('github-user').test('en_GB', {'username': 'darkspotterinthecorner'}, window.demo.buildDemoCallbackFn('Test: github-user (invalid)'));
+			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
+			.apicall('repo', '{module.map.url.api}/repos/{username}/{repository}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.template('main', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');
 
 		/*
 		var mod_wow = DarkTip.module('wow');
