@@ -8,18 +8,25 @@
 
 	var helpers = {
 		i18n: function(chunk, context, bodies, params) {
-			var i18nkey = dust.helpers.tap(params.t, chunk, context);
-			var locale = context.get('module.locale');
+			var contextlookup, localized, i, il,
+				newParams = params,
+				i18nkey   = dust.helpers.tap(params.t, chunk, context),
+				locale    = context.get('module.locale'),
+				localeAlt = DarkTip.settings.get('module.locale'),
+				lookups   = [locale];
 			if (i18nkey) {
-				var contextlookup = 'module.i18n.' + locale + '.' + i18nkey;
-				var localized = context.get(contextlookup);
-				if (localized) {
-					var newParams = params;
-					delete newParams.t;
-					dust.loadSource(dust.compile(localized, contextlookup));
-					return chunk.partial(contextlookup, context.push(newParams));
+				delete newParams.t;
+				if (locale != localeAlt) {
+					lookups.push(localeAlt);
 				}
-				return chunk.write('**' + i18nkey + '**');
+				for (i = 0, il = lookups.length; i < il; i++) {
+					contextlookup = 'module.i18n.' + lookups[i] + '.' + i18nkey;
+					localized = context.get(contextlookup);
+					if (localized) {
+						return chunk.write(dust.helpers.tap(localized, chunk, context.push(newParams)));
+					}
+				};
+				return chunk.write('**' + locale + '.' + i18nkey + '**');
 			}
 			return chunk;
 		},
@@ -64,7 +71,8 @@
 										},
 										rawcallData.caching,
 										rawcallData.validationFn,
-										rawcallData.processFn
+										rawcallData.processFn,
+										newContext.get('module.setting.apicall.remoteCallbackParam')
 									);
 									return deferred.promise;
 								})(apicall));

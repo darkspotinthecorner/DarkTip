@@ -35,7 +35,8 @@
   "devDependencies": {
     "gulp": "^3.8.10",
     "gulp-browserify": "^0.5.1",
-    "gulp-watch": "^3.0.0"
+    "gulp-watch": "^3.0.0",
+    "karma": "^0.12.31"
   },
   "private": true
 }

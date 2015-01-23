@@ -125,9 +125,12 @@
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/?$', {1: 'username'})
 			.apicall('user', '{module.map.url.api}/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.apicall('user-repos', '{module.map.url.api}/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.template('main', '{@api query="user|user-repos"}User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id}){?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
+			.i18n('en_GB', 'user_identification', 'User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
+			.i18n('de_DE', 'user_identification', 'Benutzer gefunden: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
+			.template('main', '{@api query="user|user-repos"}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
 
 		DarkTip.module('github-repository', 'github')
+			.setting('tether.offset', '20px 30px')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
 			.apicall('repo', '{module.map.url.api}/repos/{username}/{repository}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('main', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');

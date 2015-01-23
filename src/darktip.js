@@ -13,6 +13,7 @@
 
 	require('dustjs-linkedin/lib/compiler');
 	require('dustjs-helpers');
+
 	require('./dustjs-darktip');
 
 	DarkTip.q      = q;
@@ -22,11 +23,11 @@
 	DarkTip.observer         = undefined;
 	DarkTip.observeAddFns    = [];
 	DarkTip.observeRemoveFns = [];
+	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
 
 	DarkTip.css              = undefined;
 	DarkTip.modules          = {};
 	DarkTip.triggerGroups    = {};
-	DarkTip.MutationObserver = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false;
 
 	/* # SETTINGS ############################################## */
 
@@ -35,22 +36,25 @@
 		'module': {
 			'locale': 'en_GB',
 			'setting': {
+				'apicall': {
+					'remoteCallbackParam': 'callback'
+				},
 				'template': {
 					'loading': 'loading',
 					'index'  : 'index',
 					'error'  : 'error'
+				},
+				'tether': {
+					'classPrefix': 'darktip-tether',
+					'attachment': 'bottom center',
+					'targetAttachment': 'top center',
+					'constraints':[
+						{
+							'to': 'window',
+							'attachment': 'together'
+						}
+					]
 				}
-			},
-			'tether': {
-				'classPrefix': 'darktip-tether',
-				'attachment': 'bottom center',
-				'targetAttachment': 'top center',
-				'constraints':[
-					{
-						'to': 'window',
-						'attachment': 'together'
-					}
-				]
 			},
 			'hoverintent': {
 				'timeout': 300,
@@ -141,7 +145,17 @@
 		return dst;
 	}
 
-	/* ######################################################### */
+	/* # JSONP & API ########################################### */
+
+	DarkTip.callApi = function(url, successFn, errorFn, cacheDuration, validationFn, processFn, remoteCallbackParam) {
+		successFn.processFn = processFn;
+		successFn.validationFn = validationFn;
+		var cache = DarkTip.cache('apicall', url);
+		if (typeof cache !== 'undefined') {
+			return DarkTip.dataReceiveFn(url, successFn, errorFn, false)(cache);
+		}
+		return DarkTip.jsonp(url, successFn, errorFn, cacheDuration, remoteCallbackParam);
+	};
 
 	DarkTip.dataReceiveFn = function(url, successFn, errorFn, cacheDuration, callBackName) {
 		return function(data) {
@@ -195,6 +209,8 @@
 		};
 		return jsonp;
 	})();
+
+	/* # CACHE ################################################# */
 
 	DarkTip.cache = (function() {
 		var cache = function(region, key, data, duration) {
@@ -266,15 +282,7 @@
 		return cache;
 	})();
 
-	DarkTip.callApi = function(url, successFn, errorFn, cacheDuration, validationFn, processFn) {
-		successFn.processFn = processFn;
-		successFn.validationFn = validationFn;
-		var cache = DarkTip.cache('apicall', url);
-		if (typeof cache !== 'undefined') {
-			return DarkTip.dataReceiveFn(url, successFn, errorFn, false)(cache);
-		}
-		return DarkTip.jsonp(url, successFn, errorFn, cacheDuration);
-	};
+	/* # TRIGGER GROUP ######################################### */
 
 	DarkTip.triggerGroup = function(triggerGroupId) {
 		if (typeof DarkTip.triggerGroups[triggerGroupId] !== 'undefined') {
@@ -352,8 +360,9 @@
 		return (DarkTip.triggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
 	};
 
-	DarkTip.module = function(moduleId, dependencies)
-	{
+	/* # MODULE ################################################ */
+
+	DarkTip.module = function(moduleId, dependencies) {
 		var numdeps = 0;
 		if (typeof DarkTip.modules[moduleId] !== 'undefined') {
 			return DarkTip.modules[moduleId];
@@ -377,6 +386,18 @@
 					}
 				};
 			}
+			var createTooltipElement = function(content, cssClasses) {
+				var tip = doc.createElement('div');
+				tools.element.addClass(tip, 'darktip-tooltip');
+				if (cssClasses && cssClasses.length) {
+					for (var i = cssClasses.length - 1; i >= 0; i--) {
+						tools.element.addClass(tip, cssClasses[i]);
+					};
+				}
+				tip.innerHTML = content;
+				doc.body.appendChild(tip);
+				return tip;
+			};
 			this.data = {
 				'name'    : moduleId,
 				'map'     : {},
@@ -410,11 +431,16 @@
 			this.map = function(key, data) {
 				return this.dataHandler('map', key, data);
 			};
-			this.i18n = function(locale, key, data) {
-				return this.dataHandler(('i18n.' + locale), key, data);
-			};
 			this.setting = function(key, data) {
 				return this.dataHandler('setting', key, data);
+			};
+			this.i18n = function(locale, tplName, data) {
+				var key = this.buildKey('i18n', locale, tplName);
+				if (typeof data === 'undefined') {
+					return this.context.get(key);
+				}
+				this.context.set(key, dust.loadSource(dust.compile(data, tplName)));
+				return this;
 			};
 			this.template = function(tplName, data) {
 				var key = this.buildKey('template', tplName);
@@ -465,23 +491,24 @@
 				return this;
 			};
 			this.start = function(elem, params) {
+				var r;
 				if (!elem.DarkTip.init) {
 					elem.DarkTip.init   = true;
 					elem.DarkTip.active = true;
 					elem.DarkTip.tether = false;
 					elem.DarkTip.tip    = false;
-					var newContext = this.context.push(params);
-					var tetheroptions = {
-						'target'          : elem,
-						'attachment'      : this.context.get('module.tether.attachment'),
-						'targetAttachment': this.context.get('module.tether.targetAttachment'),
-						//'offset'          : this.context.get('module.tether.offset'),
-						//'targetOffset'    : this.context.get('module.tether.targetOffset'),
-						//'targetModifier'  : this.context.get('module.tether.targetModifier'),
-						'constraints'     : this.context.get('module.tether.constraints'),
-						//'optimizations'   : this.context.get('module.tether.optimizations'),
-						'classPrefix'     : this.context.get('module.tether.classPrefix')
+					var newContext      = this.context.push(params);
+					var tetheroptions   = {
+						'target'          : elem
 					};
+					if (typeof this.setting('tether.attachment')       !== 'undefined') tetheroptions.attachment       = this.setting('tether.attachment');
+					if (typeof this.setting('tether.targetAttachment') !== 'undefined') tetheroptions.targetAttachment = this.setting('tether.targetAttachment');
+					if (typeof this.setting('tether.offset')           !== 'undefined') tetheroptions.offset           = this.setting('tether.offset');
+					if (typeof this.setting('tether.targetOffset')     !== 'undefined') tetheroptions.targetOffset     = this.setting('tether.targetOffset');
+					if (typeof this.setting('tether.targetModifier')   !== 'undefined') tetheroptions.targetModifier   = this.setting('tether.targetModifier');
+					if (typeof this.setting('tether.constraints')      !== 'undefined') tetheroptions.constraints      = this.setting('tether.constraints');
+					if (typeof this.setting('tether.optimizations')    !== 'undefined') tetheroptions.optimizations    = this.setting('tether.optimizations');
+					if (typeof this.setting('tether.classPrefix')      !== 'undefined') tetheroptions.classPrefix      = this.setting('tether.classPrefix');
 					var displayFn = function(err, content) {
 						if (!err && content) {
 							if (elem.DarkTip.tip && elem.DarkTip.tether) {
@@ -491,7 +518,7 @@
 									tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
 								}
 							} else {
-								var tip = DarkTip.createTooltipElement(content, cssClasses);
+								var tip = createTooltipElement(content, cssClasses);
 								if (elem.DarkTip.hoverintent) {
 									elem.DarkTip.hoverintent.add(tip);
 								}
@@ -510,8 +537,8 @@
 							displayFn(err, content);
 						}
 					};
-					dust.render(this.context.get('module.setting.template.loading'), this.context.push(params), displayTempFn);
-					dust.render(this.context.get('module.setting.template.index'),   this.context.push(params), displayFn);
+					dust.render(this.setting('template.loading'), this.context.push(params), displayTempFn);
+					dust.render(this.setting('template.index'),   this.context.push(params), displayFn);
 				} else {
 					elem.DarkTip.active = true;
 					if (elem.DarkTip.tether) {
@@ -542,18 +569,7 @@
 		return (DarkTip.modules[moduleId] = new Module(moduleId, dependencies));
 	};
 
-	DarkTip.createTooltipElement = function(content, cssClasses) {
-		var tip = doc.createElement('div');
-		tools.element.addClass(tip, 'darktip-tooltip');
-		if (cssClasses && cssClasses.length) {
-			for (var i = cssClasses.length - 1; i >= 0; i--) {
-				tools.element.addClass(tip, cssClasses[i]);
-			};
-		}
-		tip.innerHTML = content;
-		doc.body.appendChild(tip);
-		return tip;
-	};
+	/* ######################################################### */
 
 	DarkTip.css = function(selector, rules) {
 		selector = '.darktip-tooltip ' + selector;
@@ -829,7 +845,6 @@
 		DarkTip.css = DarkTip.initStyle();
 		DarkTip.css.addRules('.darktip-tooltip', 'display:none;')
 			.addRules('.darktip-active', 'display:inherit;');
-
 		if (DarkTip.MutationObserver) {
 			DarkTip.observer = new DarkTip.MutationObserver(DarkTip.observeMutationHandler);
 			DarkTip.observer.observe(doc, {childList: true, subtree: true});
