@@ -1,12 +1,12 @@
 (function(){
 
-	var Tools = {};
+	var tools = {};
 
 	/* ### ELEMENTS ######################################################## */
 
-	Tools.element = {};
+	tools.element = {};
 
-	Tools.element.hasClass = function(el, className) {
+	tools.element.hasClass = function(el, className) {
 		if (el.classList) {
 			return el.classList.contains(className);
 		} else {
@@ -14,7 +14,7 @@
 		}
 	}
 
-	Tools.element.addClass = function(el, className) {
+	tools.element.addClass = function(el, className) {
 		if (el.classList) {
 			el.classList.add(className);
 		} else {
@@ -23,7 +23,7 @@
 		}
 	};
 
-	Tools.element.removeClass = function(el, className) {
+	tools.element.removeClass = function(el, className) {
 		if (el.classList) {
 			el.classList.remove(className);
 		} else {
@@ -31,22 +31,22 @@
 		}
 	};
 
-	Tools.element.toggleClass = function(el, className) {
+	tools.element.toggleClass = function(el, className) {
 		if (el.classList) {
 			el.classList.toggle(className);
 		} else {
-			if (Tools.element.hasClass(el, className)) {
-				Tools.element.removeClass(el, className);
+			if (tools.element.hasClass(el, className)) {
+				tools.element.removeClass(el, className);
 			} else {
-				Tools.element.addClass(el, className);
+				tools.element.addClass(el, className);
 			}
 		}
 	}
 
 	if (typeof exports === 'object') {
-		module.exports = Tools;
+		module.exports = tools;
 	} else {
-		DarkTip.Tools = Tools;
+		DarkTip.tools = tools;
 	}
 
 })();

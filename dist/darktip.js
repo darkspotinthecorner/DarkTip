@@ -9330,13 +9330,13 @@ return this.Tether;
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function(){
 
-	var Tools = {};
+	var tools = {};
 
 	/* ### ELEMENTS ######################################################## */
 
-	Tools.element = {};
+	tools.element = {};
 
-	Tools.element.hasClass = function(el, className) {
+	tools.element.hasClass = function(el, className) {
 		if (el.classList) {
 			return el.classList.contains(className);
 		} else {
@@ -9344,7 +9344,7 @@ return this.Tether;
 		}
 	}
 
-	Tools.element.addClass = function(el, className) {
+	tools.element.addClass = function(el, className) {
 		if (el.classList) {
 			el.classList.add(className);
 		} else {
@@ -9353,7 +9353,7 @@ return this.Tether;
 		}
 	};
 
-	Tools.element.removeClass = function(el, className) {
+	tools.element.removeClass = function(el, className) {
 		if (el.classList) {
 			el.classList.remove(className);
 		} else {
@@ -9361,22 +9361,22 @@ return this.Tether;
 		}
 	};
 
-	Tools.element.toggleClass = function(el, className) {
+	tools.element.toggleClass = function(el, className) {
 		if (el.classList) {
 			el.classList.toggle(className);
 		} else {
-			if (Tools.element.hasClass(el, className)) {
-				Tools.element.removeClass(el, className);
+			if (tools.element.hasClass(el, className)) {
+				tools.element.removeClass(el, className);
 			} else {
-				Tools.element.addClass(el, className);
+				tools.element.addClass(el, className);
 			}
 		}
 	}
 
 	if (typeof exports === 'object') {
-		module.exports = Tools;
+		module.exports = tools;
 	} else {
-		DarkTip.Tools = Tools;
+		DarkTip.tools = tools;
 	}
 
 })();
@@ -9695,7 +9695,7 @@ return this.Tether;
 		return this;
 	};
 
-	DarkTip.setting('module.template.loading', '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="20mm" viewBox="0 0 40 40" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>');
+	DarkTip.setting('module.template.loading', '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="12mm" viewBox="0 0 40 40" preserveAspectRatio="xMidYMid meet" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>');
 
 	/* # TOOLS ################################################# */
 
@@ -9839,7 +9839,7 @@ return this.Tether;
 			}
 		}
 		if (typeof globalScope.localStorage !== 'undefined') {
-			cache.key = function(region, key) {
+			var getKey = function(region, key) {
 				return ('DarkTip_cache_' + region + '_' + key);
 			};
 			cache.read = function(region, key) {
@@ -9847,7 +9847,7 @@ return this.Tether;
 					return undefined;
 				}
 				var result = undefined;
-				var rawitem = globalScope.localStorage.getItem(cache.key(region, key));
+				var rawitem = globalScope.localStorage.getItem(getKey(region, key));
 				if (typeof rawitem !== 'undefined')
 				{
 					var item = JSON.parse(rawitem);
@@ -9864,7 +9864,7 @@ return this.Tether;
 			cache.write = function(region, key, data, duration) {
 				var maxtime = (duration === 0 ? 0 : (Math.round((new Date()).getTime() / 1000) + duration));
 				try {
-					globalScope.localStorage.setItem(cache.key(region, key), JSON.stringify({'maxtime': maxtime, 'content': data}));
+					globalScope.localStorage.setItem(getKey(region, key), JSON.stringify({'maxtime': maxtime, 'content': data}));
 				} catch (e) {
 					if (e == QUOTA_EXCEEDED_ERR) {
 						log('Writing to localStorage failed! Quote exeeded for region/key "' + region + '/' + key + '".');
@@ -9904,8 +9904,7 @@ return this.Tether;
 			return DarkTip.triggerGroups[triggerGroupId];
 		}
 		var TriggerGroup = function(triggerGroupId) {
-			this.id = triggerGroupId;
-			this.triggers = [];
+			var triggers = [];
 			this.generateExtractorFn = function(moduleId, extractorFn, extractorPayload) {
 				if (typeof extractorFn === 'function') {
 					return extractorFn;
@@ -9958,13 +9957,13 @@ return this.Tether;
 					log('TriggerGroup.trigger: Invalid extractor payload! 2nd argument must be a function or a valid extractor build object.');
 					return this;
 				}
-				this.triggers.push({ 'module': moduleId, 'extractor': extractorFn });
+				triggers.push({ 'module': moduleId, 'extractor': extractorFn });
 				return this;
 			};
 			this.findFirstTrigger = function(candidate) {
-				var i, result, trigger, triggerlen = this.triggers.length;
-				for (i = (triggerlen - 1); i >= 0; i--) {
-					trigger = this.triggers[i];
+				var i, result, trigger;
+				for (i = (triggers.length - 1); i >= 0; i--) {
+					trigger = triggers[i];
 					result  = trigger.extractor(candidate);
 					if (result) {
 						return {'module': trigger.module, 'params': result}
@@ -10101,6 +10100,7 @@ return this.Tether;
 					selector = '.darktip-tooltip ' + selector;
 				}
 				DarkTip.domReady(function() {
+					log({'selector': selector, 'rules': rules});
 					DarkTip.css.addRules(selector, rules);
 				});
 				return this;
@@ -10143,6 +10143,7 @@ return this.Tether;
 									elem.DarkTip.tether.disable();
 								} else {
 									tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
+									elem.DarkTip.tether.position();
 								}
 							}
 						}
@@ -10473,5 +10474,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_bdc29b1a.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_44e8e4e5.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])

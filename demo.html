@@ -71,6 +71,7 @@
 			<li>Lorem ipsum dolor sit amet, <a href="https://github.com">consectetur adipisicing</a> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li><a href="https://github.com/darkspotinthecorner/DarkTip">Lorem ipsum dolor sit amet</a>, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li><a href="http://test.me/darkspotinthecorner/">Lorem ipsum dolor sit amet</a>, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 		</ul>
 
 		<ul id="output"></ul>
@@ -134,6 +135,12 @@
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
 			.apicall('repo', '{module.map.url.api}/repos/{username}/{repository}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('main', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');
+
+		DarkTip.module('test')
+			.trigger('implicit', '^http://test.me/([^/]+)/?$', {1: 'paaaram'})
+			.apicall('narf', '//localhost/blubb/{paaaram}', 0, function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
+			.template('index', 'Start<br />{@api query="narf"}Success{:else}Fail{/api}<br />End')
+			.css('', 'background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; width: auto;');
 
 		/*
 		var mod_wow = DarkTip.module('wow');
