@@ -9395,15 +9395,19 @@ return this.Tether;
 	var helpers = {
 		i18n: function(chunk, context, bodies, params) {
 			var contextlookup, localized, i, il,
-				newParams = params,
-				i18nkey   = dust.helpers.tap(params.t, chunk, context),
-				locale    = context.get('module.locale'),
-				localeAlt = DarkTip.settings.get('module.locale'),
-				lookups   = [locale];
+				newParams      = params,
+				i18nkey        = dust.helpers.tap(params.t, chunk, context),
+				locale         = context.get('module.locale'),
+				localeFallback = DarkTip.settings.get('locale.fallback.'+locale),
+				localeDefault  = DarkTip.settings.get('locale.default'),
+				lookups        = [locale];
 			if (i18nkey) {
 				delete newParams.t;
-				if (locale != localeAlt) {
-					lookups.push(localeAlt);
+				if (localeFallback && localeFallback != locale && (!localeDefault || localeFallback != localeDefault)) {
+					lookups.push(localeFallback);
+				}
+				if (localeDefault && locale != localeDefault) {
+					lookups.push(localeDefault);
 				}
 				for (i = 0, il = lookups.length; i < il; i++) {
 					contextlookup = 'module.i18n.' + lookups[i] + '.' + i18nkey;
@@ -9648,8 +9652,13 @@ return this.Tether;
 
 	DarkTip._settings = {
 		'cache': true,
+		'locale': {
+			'default': 'en_GB',
+			'fallback': {
+				'es_MX': 'es_ES'
+			}
+		},
 		'module': {
-			'locale': 'en_GB',
 			'setting': {
 				'apicall': {
 					'remoteCallbackParam': 'callback'
@@ -9695,7 +9704,7 @@ return this.Tether;
 		return this;
 	};
 
-	DarkTip.setting('module.template.loading', '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="12mm" viewBox="0 0 40 40" preserveAspectRatio="xMidYMid meet" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>');
+	DarkTip.setting('module.template.loading', '<div class="loading"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="12mm" height="12mm" viewBox="0 0 40 40" preserveAspectRatio="xMidYMid meet" fill="currentColor"><path opacity="0.2" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946 s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634 c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0 C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg></div>');
 
 	/* # TOOLS ################################################# */
 
@@ -9759,6 +9768,29 @@ return this.Tether;
 		}
 		return dst;
 	}
+
+	var domReady = (function () {
+		var listener;
+		var queue = [];
+		var domContentLoaded = 'DOMContentLoaded';
+		var loaded = /^loaded|^i|^c/.test(doc.readyState);
+		if (!loaded) {
+			doc.addEventListener(domContentLoaded, listener = function () {
+				doc.removeEventListener(domContentLoaded, listener);
+				loaded = true;
+				while (listener = queue.shift()) {
+					listener();
+				}
+			});
+		}
+		return function (callbackFn) {
+			if (loaded) {
+				callbackFn();
+			} else {
+				queue.push(callbackFn);
+			}
+		};
+	})();
 
 	/* # JSONP & API ########################################### */
 
@@ -9936,19 +9968,10 @@ return this.Tether;
 				return false;
 			};
 			this.event = function(selector, event, accessFn) {
-				if (typeof selector !== 'string') {
-					log('TriggerGroup.event: Invalid selector! 1st argument must be selector string.');
-					return this;
-				}
-				if (typeof event !== 'string') {
-					log('TriggerGroup.event: Invalid show event! 2nd argument must be event type string.');
-					return this;
-				}
-				if (typeof accessFn !== 'function') {
-					log('TriggerGroup.event: Invalid access function! 3rd argument must be a function.');
-					return this;
-				}
-				DarkTip.bindEvent(event, selector, accessFn, this);
+				if (typeof selector !== 'string')   { log('TriggerGroup.event: Invalid selector! 1st argument must be selector string.');     return this; }
+				if (typeof event    !== 'string')   { log('TriggerGroup.event: Invalid show event! 2nd argument must be event type string.'); return this; }
+				if (typeof accessFn !== 'function') { log('TriggerGroup.event: Invalid access function! 3rd argument must be a function.');   return this; }
+				bindEvent(event, selector, accessFn, this);
 				return this;
 			};
 			this.trigger = function(moduleId, extractorFn, extractorPayload) {
@@ -10099,7 +10122,7 @@ return this.Tether;
 				} else {
 					selector = '.darktip-tooltip ' + selector;
 				}
-				DarkTip.domReady(function() {
+				domReady(function() {
 					log({'selector': selector, 'rules': rules});
 					DarkTip.css.addRules(selector, rules);
 				});
@@ -10114,16 +10137,16 @@ return this.Tether;
 					elem.DarkTip.tip    = false;
 					var newContext      = this.context.push(params);
 					var tetheroptions   = {
-						'target'          : elem
+						'target': elem
 					};
-					if (typeof this.setting('tether.attachment')       !== 'undefined') tetheroptions.attachment       = this.setting('tether.attachment');
-					if (typeof this.setting('tether.targetAttachment') !== 'undefined') tetheroptions.targetAttachment = this.setting('tether.targetAttachment');
-					if (typeof this.setting('tether.offset')           !== 'undefined') tetheroptions.offset           = this.setting('tether.offset');
-					if (typeof this.setting('tether.targetOffset')     !== 'undefined') tetheroptions.targetOffset     = this.setting('tether.targetOffset');
-					if (typeof this.setting('tether.targetModifier')   !== 'undefined') tetheroptions.targetModifier   = this.setting('tether.targetModifier');
-					if (typeof this.setting('tether.constraints')      !== 'undefined') tetheroptions.constraints      = this.setting('tether.constraints');
-					if (typeof this.setting('tether.optimizations')    !== 'undefined') tetheroptions.optimizations    = this.setting('tether.optimizations');
-					if (typeof this.setting('tether.classPrefix')      !== 'undefined') tetheroptions.classPrefix      = this.setting('tether.classPrefix');
+					r = this.setting('tether.attachment');       if (typeof r !== 'undefined' && r !== false) tetheroptions.attachment       = r;
+					r = this.setting('tether.targetAttachment'); if (typeof r !== 'undefined' && r !== false) tetheroptions.targetAttachment = r;
+					r = this.setting('tether.offset');           if (typeof r !== 'undefined' && r !== false) tetheroptions.offset           = r;
+					r = this.setting('tether.targetOffset');     if (typeof r !== 'undefined' && r !== false) tetheroptions.targetOffset     = r;
+					r = this.setting('tether.targetModifier');   if (typeof r !== 'undefined' && r !== false) tetheroptions.targetModifier   = r;
+					r = this.setting('tether.constraints');      if (typeof r !== 'undefined' && r !== false) tetheroptions.constraints      = r;
+					r = this.setting('tether.optimizations');    if (typeof r !== 'undefined' && r !== false) tetheroptions.optimizations    = r;
+					r = this.setting('tether.classPrefix');      if (typeof r !== 'undefined' && r !== false) tetheroptions.classPrefix      = r;
 					var displayFn = function(err, content) {
 						if (!err && content) {
 							if (elem.DarkTip.tip && elem.DarkTip.tether) {
@@ -10189,7 +10212,7 @@ return this.Tether;
 
 	DarkTip.css = function(selector, rules) {
 		selector = '.darktip-tooltip ' + selector;
-		DarkTip.domReady(function() {
+		domReady(function() {
 			DarkTip.css.addRules(selector, rules);
 		});
 	};
@@ -10217,8 +10240,8 @@ return this.Tether;
 		return api;
 	}
 
-	DarkTip.bindEvent = function(event, selector, accessFn, triggerGroup) {
-		DarkTip.domReady(function() {
+	var bindEvent = function(event, selector, accessFn, triggerGroup) {
+		domReady(function() {
 			var elems = doc.querySelectorAll(selector);
 			Array.prototype.forEach.call(elems, function(elem) {
 				if (!elem.DarkTip) {
@@ -10339,29 +10362,6 @@ return this.Tether;
 		// log({'event': event, 'elem': elem, 'accessed': accessed, 'foundTrigger': result});
 	};
 
-	DarkTip.domReady = (function () {
-		var listener;
-		var queue = [];
-		var domContentLoaded = 'DOMContentLoaded';
-		var loaded = /^loaded|^i|^c/.test(doc.readyState);
-		if (!loaded) {
-			doc.addEventListener(domContentLoaded, listener = function () {
-				doc.removeEventListener(domContentLoaded, listener);
-				loaded = true;
-				while (listener = queue.shift()) {
-					listener();
-				}
-			});
-		}
-		return function (callbackFn) {
-			if (loaded) {
-				callbackFn();
-			} else {
-				queue.push(callbackFn);
-			}
-		};
-	})();
-
 	/* hoverintent v0.1.0 (2013-05-20) | http://tristen.ca/hoverintent | Copyright (c) 2013 ; Licensed MIT */
 
 	DarkTip.hoverintent = (function() {
@@ -10457,10 +10457,10 @@ return this.Tether;
 		return hoverintent;
 	})();
 
-	DarkTip.domReady(function() {
+	domReady(function() {
 		DarkTip.css = DarkTip.initStyle();
-		DarkTip.css.addRules('.darktip-tooltip', 'display:none;')
-			.addRules('.darktip-active', 'display:inherit;');
+		DarkTip.css.addRules('.darktip-tooltip', 'opacity:0; pointer-events:none;')
+			.addRules('.darktip-active', 'opacity:1; pointer-events:auto;');
 		if (DarkTip.MutationObserver) {
 			DarkTip.observer = new DarkTip.MutationObserver(DarkTip.observeMutationHandler);
 			DarkTip.observer.observe(doc, {childList: true, subtree: true});
@@ -10474,5 +10474,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_44e8e4e5.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_1742e775.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])

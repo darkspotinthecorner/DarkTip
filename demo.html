@@ -36,6 +36,10 @@
 			padding-bottom: 1em;
 		}
 
+		#testing [data-darktip] {
+			background-color: #bada55;
+		}
+
 		#output {
 			padding: 1em;
 			list-style-type: none;
@@ -67,7 +71,7 @@
 			<input type="button" name="test" value="Generate new content" onclick="window.demo.addTest();" />
 		</div>
 		<ul id="testing">
-			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+			<li>Lorem ipsum dolor sit amet, <span data-darktip="github-user:linkedin">consectetur</span> adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li>Lorem ipsum dolor sit amet, <a href="https://github.com">consectetur adipisicing</a> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li>Lorem ipsum dolor sit amet, consectetur adipisicing elit, <a href="https://github.com/darkspotinthecorner">sed do eiusmod tempor incididunt</a> ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
 			<li><a href="https://github.com/darkspotinthecorner/DarkTip">Lorem ipsum dolor sit amet</a>, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
@@ -106,7 +110,7 @@
 	</script>
 	<script type="text/javascript" charset="utf-8">
 
-		DarkTip.setting('cache', false);
+		// DarkTip.setting('cache', false);
 
 		DarkTip.triggerGroup('implicit')
 			.event('a[href]', 'hoverintent', function(elem) { return elem.getAttribute('href'); });
@@ -118,17 +122,23 @@
 			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com')
 			.map('url.api', 'https://api\.github\.com')
 			.trigger('implicit', '^{module.map.url.trigger}/?$')
+			.i18n('en_GB', 'loading', 'Loading...')
+			.i18n('de_DE', 'loading', 'Lade...')
 			.template('index', '<div class="darktip-content"><div class="darktip-inner">{>main /}</div></div>')
-			.template('main', 'Loading...<div>{>loading /}</div>')
-			.css('', 'background-color: rgba(0,0,0,0.8); color: #eee; padding: 10px; width: 20em;');
+			.template('main', '{@i18n t="loading" /}<div>{>loading /}</div>')
+			.css('', 'background-color: rgba(0,0,0,0.8); color: #eee; padding: 10px; max-width: 100mm;')
+			.css('.loading', 'text-align: center;');
 
 		DarkTip.module('github-user', 'github')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/?$', {1: 'username'})
+			.trigger('explicit', '^github-user:(.+)$', {1: 'username'})
 			.apicall('user', '{module.map.url.api}/users/{username}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.apicall('user-repos', '{module.map.url.api}/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.i18n('en_GB', 'user_identification', 'User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
 			.i18n('de_DE', 'user_identification', 'Benutzer gefunden: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
-			.template('main', '{@api query="user|user-repos"}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}');
+			.template('main', '{@api query="user|user-repos"}{>avatar url=user.avatar_url /}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}')
+			.template('avatar', '<img class="avatar" src="{url}" />')
+			.css('img.avatar', 'float:right; width:20mm; margin:0 0 5mm 5mm;');
 
 		DarkTip.module('github-repository', 'github')
 			.setting('tether.offset', '20px 30px')
@@ -140,7 +150,8 @@
 			.trigger('implicit', '^http://test.me/([^/]+)/?$', {1: 'paaaram'})
 			.apicall('narf', '//localhost/blubb/{paaaram}', 0, function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('index', 'Start<br />{@api query="narf"}Success{:else}Fail{/api}<br />End')
-			.css('', 'background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; width: auto;');
+			.css('', 'background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; max-width: 50mm;')
+			.css('.loading', 'text-align: center;');
 
 		/*
 		var mod_wow = DarkTip.module('wow');

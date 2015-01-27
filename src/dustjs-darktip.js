@@ -9,15 +9,19 @@
 	var helpers = {
 		i18n: function(chunk, context, bodies, params) {
 			var contextlookup, localized, i, il,
-				newParams = params,
-				i18nkey   = dust.helpers.tap(params.t, chunk, context),
-				locale    = context.get('module.locale'),
-				localeAlt = DarkTip.settings.get('module.locale'),
-				lookups   = [locale];
+				newParams      = params,
+				i18nkey        = dust.helpers.tap(params.t, chunk, context),
+				locale         = context.get('module.locale'),
+				localeFallback = DarkTip.settings.get('locale.fallback.'+locale),
+				localeDefault  = DarkTip.settings.get('locale.default'),
+				lookups        = [locale];
 			if (i18nkey) {
 				delete newParams.t;
-				if (locale != localeAlt) {
-					lookups.push(localeAlt);
+				if (localeFallback && localeFallback != locale && (!localeDefault || localeFallback != localeDefault)) {
+					lookups.push(localeFallback);
+				}
+				if (localeDefault && locale != localeDefault) {
+					lookups.push(localeDefault);
 				}
 				for (i = 0, il = lookups.length; i < il; i++) {
 					contextlookup = 'module.i18n.' + lookups[i] + '.' + i18nkey;
