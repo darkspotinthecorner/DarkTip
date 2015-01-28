@@ -142,7 +142,6 @@
 			.css('img.avatar', 'float:right; width:20mm; margin:0 0 5mm 5mm;');
 
 		DarkTip.module('github-repository', 'github')
-			.setting('tether.offset', '20px 30px')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
 			.apicall('repo', '{module.map.url.api}/repos/{username}/{repository}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('main', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');
@@ -153,34 +152,6 @@
 			.template('index', 'Start<br />{@api query="narf"}Success{:else}Fail{/api}<br />End')
 			.css('', 'background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; max-width: 50mm;')
 			.css('.loading', 'text-align: center;');
-
-		/*
-		var mod_wow = DarkTip.module('wow');
-		var mod_wow2 = DarkTip.module('wow2', 'wow');
-
-		console.log('setting wow.setting.aaa to "999"');
-		mod_wow.setting('aaa', 999);
-		console.log('setting wow.setting.bbb.b to "111"');
-		mod_wow.setting('bbb.a', 111);
-		console.log('setting wow.setting.bbb.b to "222"');
-		mod_wow.setting('bbb.b', 222);
-		console.log('setting wow.setting.bbb.b to "333"');
-		mod_wow.setting('bbb.c', 333);
-
-		console.log({'wow2.setting.bbb.b' : DarkTip.module('wow2').setting('bbb.b')});
-
-		console.log('setting wow2.setting.bbb.b to "888"');
-		mod_wow2.setting('bbb.b', 888);
-
-		console.log({'wow2.setting.bbb.c' : DarkTip.module('wow2').setting('bbb.c')});
-		console.log({'wow2.setting.bbb.b' : DarkTip.module('wow2').setting('bbb.b')});
-
-		console.log('setting wow2.setting.bbb.b.a to "777"');
-		mod_wow2.setting('bbb.b.a', 777);
-
-		console.log({'wow2.setting.bbb.b' : DarkTip.module('wow2').setting('bbb.b')});
-		console.log({'wow2.setting.bbb.b.a' : DarkTip.module('wow2').setting('bbb.b.a')});
-		// */
 
 		DarkTip.init();
 

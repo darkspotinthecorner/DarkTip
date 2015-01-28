@@ -1096,7 +1096,6 @@ var helpers = {
 
   dust.load = function(name, chunk, context) {
     var tmpl = dust.cache[name];
-    // console.log({name, chunk, context, tmpl});
     if (tmpl) {
       return tmpl(chunk, context);
     } else {
@@ -9626,6 +9625,7 @@ return this.Tether;
 		doc                     = globalScope.document,
 		MutationObserver        = globalScope.MutationObserver || globalScope.WebkitMutationObserver || false,
 		DarkTip                 = {},
+		repositoryStyles        = {},
 		repositoryModules       = {},
 		repositoryTriggerGroups = {},
 		queueFnInit             = [],
@@ -10075,14 +10075,30 @@ return this.Tether;
 		return cache;
 	})();
 
+	/* # STYLE ################################################# */
+
+	DarkTip.style = function(styleId) {
+		if (typeof repositoryStyles[styleId] !== 'undefined') {
+			return repositoryStyles[styleId];
+		}
+		var Style = function() {
+			this.css = function(selector, rules) {
+				selector = '.darktip-style-' + styleId + (selector ? ' ' + selector : '');
+				DarkTip.css.add(selector, rules);
+				return self;
+			};
+		};
+	};
+
 	/* # TRIGGER GROUP ######################################### */
 
 	DarkTip.triggerGroup = function(triggerGroupId) {
 		if (typeof repositoryTriggerGroups[triggerGroupId] !== 'undefined') {
 			return repositoryTriggerGroups[triggerGroupId];
 		}
-		var TriggerGroup = function(triggerGroupId) {
-			var triggers = [];
+		var TriggerGroup = function() {
+			var self     = this,
+				triggers = [];
 			var findFirstTrigger = function(candidate) {
 				var i, result, trigger;
 				for (i = (triggers.length - 1); i >= 0; i--) {
@@ -10234,7 +10250,7 @@ return this.Tether;
 				return this;
 			};
 		}
-		return (repositoryTriggerGroups[triggerGroupId] = new TriggerGroup(triggerGroupId));
+		return (repositoryTriggerGroups[triggerGroupId] = new TriggerGroup());
 	};
 
 	/* # MODULE ################################################ */
@@ -10251,8 +10267,8 @@ return this.Tether;
 			numdeps = dependencies.length;
 		}
 		var Module = function(moduleId, dependencies) {
-			var self = this;
-			var cssClasses = [('darktip-module-' + moduleId)];
+			var self       = this,
+				cssClasses = [('darktip-module-' + moduleId)];
 			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
 					if (typeof repositoryModules[dependencies[i]] === 'undefined') {
@@ -10456,5 +10472,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_ef4339c8.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_d506116.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])
