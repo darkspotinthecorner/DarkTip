@@ -68,7 +68,8 @@
 <body>
 	<section id="container">
 		<div id="testcontroller">
-			<input type="button" name="test" value="Generate new content" onclick="window.demo.addTest();" />
+			<input type="button" name="test" value="Generate new valid content" onclick="window.demo.addTest('https://github.com/tristen');" />
+			<input type="button" name="test" value="Generate new invalid content" onclick="window.demo.addTest('http://www.dsitc.de');" />
 		</div>
 		<ul id="testing">
 			<li>Lorem ipsum dolor sit amet, <span data-darktip="github-user:linkedin">consectetur</span> adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
@@ -85,9 +86,9 @@
 
 		window.demo = {};
 
-		window.demo.addTest = function() {
+		window.demo.addTest = function(url) {
 			var el = window.document.createElement('li');
-			el.innerHTML = '<a href="https://github.com/tristen">https://github.com/tristen</a>';
+			el.innerHTML = '<a href="'+url+'">'+url+'</a>';
 			return window.document.querySelector('#testing').appendChild(el);
 		};
 
