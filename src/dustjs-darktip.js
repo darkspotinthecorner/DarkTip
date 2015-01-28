@@ -1,19 +1,20 @@
 (function(dust) {
+	var getResult, helpers;
 
-	var getResult = function(obj, key) {
+	getResult = function(obj, key) {
 		if (obj && hasOwnProperty.call(obj, key)) {
 			return obj[key];
 		}
 	};
 
-	var helpers = {
+	helpers = {
 		i18n: function(chunk, context, bodies, params) {
 			var contextlookup, localized, i, il,
 				newParams      = params,
 				i18nkey        = dust.helpers.tap(params.t, chunk, context),
 				locale         = context.get('module.locale'),
-				localeFallback = DarkTip.settings.get('locale.fallback.'+locale),
-				localeDefault  = DarkTip.settings.get('locale.default'),
+				localeFallback = DarkTip.setting('locale.fallback.'+locale),
+				localeDefault  = DarkTip.setting('locale.default'),
 				lookups        = [locale];
 			if (i18nkey) {
 				delete newParams.t;
