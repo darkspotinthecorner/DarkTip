@@ -1096,6 +1096,7 @@ var helpers = {
 
   dust.load = function(name, chunk, context) {
     var tmpl = dust.cache[name];
+    // console.log({name, chunk, context, tmpl});
     if (tmpl) {
       return tmpl(chunk, context);
     } else {
@@ -10082,12 +10083,39 @@ return this.Tether;
 			return repositoryStyles[styleId];
 		}
 		var Style = function() {
+			var self = this,
+				styleContext = dust.makeBase().push({}),
+				wrappperTplIndex,
+				wrappperTplLoading;
+			this.var = function(key, value) {
+				styleContext.set(key, value);
+				return self;
+			}
 			this.css = function(selector, rules) {
 				selector = '.darktip-style-' + styleId + (selector ? ' ' + selector : '');
-				DarkTip.css.add(selector, rules);
+				dust.renderSource(rules, styleContext, function(err, compiledRules) {
+					if (!err) {
+						log('adding stylesheet rule', selector, compiledRules);
+						DarkTip.css.add(selector, compiledRules);
+					}
+				});
 				return self;
 			};
+			this.wrapper = function(before, after) {
+				before = before || '';
+				after  = after  || '';
+				wrappperTplIndex   = dust.loadSource(dust.compile((before + '{>"{module.setting.template.index}" /}'   + after), 'wrapper-index'));
+				wrappperTplLoading = dust.loadSource(dust.compile((before + '{>"{module.setting.template.loading}" /}' + after), 'wrapper-loading'));
+				return self;
+			};
+			this.getWrappedIndexTpl = function() {
+				return wrappperTplIndex || false;
+			};
+			this.getWrappedLoadingTpl = function() {
+				return wrappperTplLoading || false;
+			};
 		};
+		return (repositoryStyles[styleId] = new Style());
 	};
 
 	/* # TRIGGER GROUP ######################################### */
@@ -10249,7 +10277,7 @@ return this.Tether;
 				}
 				return this;
 			};
-		}
+		};
 		return (repositoryTriggerGroups[triggerGroupId] = new TriggerGroup());
 	};
 
@@ -10267,7 +10295,8 @@ return this.Tether;
 			numdeps = dependencies.length;
 		}
 		var Module = function(moduleId, dependencies) {
-			var self       = this,
+			var style,
+				self       = this,
 				cssClasses = [('darktip-module-' + moduleId)];
 			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
@@ -10459,7 +10488,7 @@ return this.Tether;
 				}
 			}
 			moduleContext = self.buildContext(settingsContext);
-		}
+		};
 		return (repositoryModules[moduleId] = new Module(moduleId, dependencies));
 	};
 
@@ -10472,5 +10501,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_d506116.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_28874f69.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])

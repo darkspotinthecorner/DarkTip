@@ -463,12 +463,39 @@
 			return repositoryStyles[styleId];
 		}
 		var Style = function() {
+			var self = this,
+				styleContext = dust.makeBase().push({}),
+				wrappperTplIndex,
+				wrappperTplLoading;
+			this.var = function(key, value) {
+				styleContext.set(key, value);
+				return self;
+			}
 			this.css = function(selector, rules) {
 				selector = '.darktip-style-' + styleId + (selector ? ' ' + selector : '');
-				DarkTip.css.add(selector, rules);
+				dust.renderSource(rules, styleContext, function(err, compiledRules) {
+					if (!err) {
+						log('adding stylesheet rule', selector, compiledRules);
+						DarkTip.css.add(selector, compiledRules);
+					}
+				});
 				return self;
 			};
+			this.wrapper = function(before, after) {
+				before = before || '';
+				after  = after  || '';
+				wrappperTplIndex   = dust.loadSource(dust.compile((before + '{>"{module.setting.template.index}" /}'   + after), 'wrapper-index'));
+				wrappperTplLoading = dust.loadSource(dust.compile((before + '{>"{module.setting.template.loading}" /}' + after), 'wrapper-loading'));
+				return self;
+			};
+			this.getWrappedIndexTpl = function() {
+				return wrappperTplIndex || false;
+			};
+			this.getWrappedLoadingTpl = function() {
+				return wrappperTplLoading || false;
+			};
 		};
+		return (repositoryStyles[styleId] = new Style());
 	};
 
 	/* # TRIGGER GROUP ######################################### */
@@ -630,7 +657,7 @@
 				}
 				return this;
 			};
-		}
+		};
 		return (repositoryTriggerGroups[triggerGroupId] = new TriggerGroup());
 	};
 
@@ -648,7 +675,8 @@
 			numdeps = dependencies.length;
 		}
 		var Module = function(moduleId, dependencies) {
-			var self       = this,
+			var style,
+				self       = this,
 				cssClasses = [('darktip-module-' + moduleId)];
 			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
@@ -840,7 +868,7 @@
 				}
 			}
 			moduleContext = self.buildContext(settingsContext);
-		}
+		};
 		return (repositoryModules[moduleId] = new Module(moduleId, dependencies));
 	};
 
