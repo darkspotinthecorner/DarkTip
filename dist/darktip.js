@@ -9851,7 +9851,8 @@ return this.Tether;
 					'constraints':[
 						{
 							'to': 'window',
-							'attachment': 'together'
+							'attachment': 'together',
+							'pin': true
 						}
 					]
 				}
@@ -10087,15 +10088,20 @@ return this.Tether;
 				styleContext = dust.makeBase().push({}),
 				wrappperTplIndex,
 				wrappperTplLoading;
+			var getCssClass = function() {
+				return ('darktip-style-' + styleId);
+			};
+			this.cssClass = function() {
+				return getCssClass();
+			};
 			this.var = function(key, value) {
 				styleContext.set(key, value);
 				return self;
-			}
+			};
 			this.css = function(selector, rules) {
-				selector = '.darktip-style-' + styleId + (selector ? ' ' + selector : '');
+				selector = '.' + getCssClass() + (selector ? ' ' + selector : '');
 				dust.renderSource(rules, styleContext, function(err, compiledRules) {
 					if (!err) {
-						log('adding stylesheet rule', selector, compiledRules);
 						DarkTip.css.add(selector, compiledRules);
 					}
 				});
@@ -10108,8 +10114,14 @@ return this.Tether;
 				wrappperTplLoading = dust.loadSource(dust.compile((before + '{>"{module.setting.template.loading}" /}' + after), 'wrapper-loading'));
 				return self;
 			};
+			this.getWrappedIndexTplName = function() {
+				return 'wrapper-index-style-' + styleId;
+			};
 			this.getWrappedIndexTpl = function() {
 				return wrappperTplIndex || false;
+			};
+			this.getWrappedLoadingTplName = function() {
+				return 'wrapper-loading-style-' + styleId;
 			};
 			this.getWrappedLoadingTpl = function() {
 				return wrappperTplLoading || false;
@@ -10295,8 +10307,7 @@ return this.Tether;
 			numdeps = dependencies.length;
 		}
 		var Module = function(moduleId, dependencies) {
-			var style,
-				self       = this,
+			var self       = this,
 				cssClasses = [('darktip-module-' + moduleId)];
 			if (numdeps > 0) {
 				for (var i = 0; i < numdeps; i++) {
@@ -10308,13 +10319,15 @@ return this.Tether;
 					}
 				};
 			}
-			var createTooltipElement = function(content, cssClasses) {
-				var tip = doc.createElement('div');
+			var createTooltipElement = function(content) {
+				var tip   = doc.createElement('div'),
+					style = moduleContext.get('module.style');
 				tools.element.addClass(tip, 'darktip-tooltip');
-				if (cssClasses && cssClasses.length) {
-					for (var i = cssClasses.length - 1; i >= 0; i--) {
-						tools.element.addClass(tip, cssClasses[i]);
-					};
+				if (style) {
+					tools.element.addClass(tip, style.cssClass());
+				}
+				for (var i = cssClasses.length - 1; i >= 0; i--) {
+					tools.element.addClass(tip, cssClasses[i]);
 				}
 				tip.innerHTML = content;
 				doc.body.appendChild(tip);
@@ -10335,6 +10348,7 @@ return this.Tether;
 			};
 			var moduleData = {
 				'name'    : moduleId,
+				'style'   : undefined,
 				'map'     : {},
 				'i18n'    : {},
 				'setting' : {},
@@ -10351,6 +10365,22 @@ return this.Tether;
 				context = context.push({'module': moduleData});
 				return context;
 			};
+			this.style = function(styleId) {
+				var key   = buildKey('style');
+				if (typeof styleId !== 'undefined')
+				{
+					var style = repositoryStyles[styleId];
+					if (style) {
+						moduleContext.set(key, style);
+						moduleContext.set(buildKey('template', style.getWrappedIndexTplName()),   style.getWrappedIndexTpl());
+						moduleContext.set(buildKey('template', style.getWrappedLoadingTplName()), style.getWrappedLoadingTpl());
+					} else {
+						log('Style "' + styleId + '" could not be attached to module "' + moduleId + '"! Style was not found.');
+					}
+					return self;
+				}
+				return moduleContext.get(key);
+			}
 			this.map = function(key, data) {
 				return dataHandler('map', key, data);
 			};
@@ -10412,7 +10442,7 @@ return this.Tether;
 				return self;
 			};
 			this.start = function(elem, params) {
-				var r;
+				var r, style, templateIndex, templateLoading;
 				if (!elem.DarkTip.init) {
 					elem.DarkTip.init   = true;
 					elem.DarkTip.active = true;
@@ -10435,16 +10465,19 @@ return this.Tether;
 							if (elem.DarkTip.tip && elem.DarkTip.tether) {
 								elem.DarkTip.tip.innerHTML = content;
 								if (elem.DarkTip.active) {
-									elem.DarkTip.tether.position();
 									tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
+									elem.DarkTip.tether.position();
 								}
 							} else {
-								var tip = createTooltipElement(content, cssClasses);
+								var tip = createTooltipElement(content);
 								if (elem.DarkTip.hoverintent) {
 									elem.DarkTip.hoverintent.add(tip);
 								}
 								elem.DarkTip.tip = tetheroptions.element = tip;
 								elem.DarkTip.tether = new tether(tetheroptions);
+								elem.DarkTip.cleanupFns.push(function() {
+									elem.DarkTip.tether.destroy();
+								});
 								if (!elem.DarkTip.active) {
 									elem.DarkTip.tether.disable();
 								} else {
@@ -10459,16 +10492,24 @@ return this.Tether;
 							displayFn(err, content);
 						}
 					};
-					dust.render(self.setting('template.loading'), newContext, displayTempFn);
-					dust.render(self.setting('template.index'),   newContext, displayFn);
+					style = self.style();
+					if (style) {
+						templateLoading = style.getWrappedLoadingTplName();
+						templateIndex   = style.getWrappedIndexTplName();
+					} else {
+						templateLoading = self.setting('template.loading');
+						templateIndex   = self.setting('template.index');
+					}
+					dust.render(templateLoading, newContext, displayTempFn);
+					dust.render(templateIndex, newContext, displayFn);
 				} else {
 					elem.DarkTip.active = true;
 					if (elem.DarkTip.tether) {
 						elem.DarkTip.tether.enable();
-						elem.DarkTip.tether.position();
 					}
 					if (elem.DarkTip.tip) {
 						tools.element.addClass(elem.DarkTip.tip, 'darktip-active');
+						elem.DarkTip.tether.position();
 					}
 				}
 			}
@@ -10501,5 +10542,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_28874f69.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_26080486.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])

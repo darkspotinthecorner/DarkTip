@@ -117,9 +117,8 @@
 			.var('color.background', 'rgba(0,0,0,0.8)')
 			.var('color.text', '#eee')
 			.var('color.highlight', '#fb0')
-			.css('.darktip-content', 'background-color: {color.background}; color: {color.text};')
-			.wrapper('<div class="darktip-content"><div class="darktip-inner">', '</div></div>');
-
+			.css('.darktip-content', 'background-color: {color.background}; color: {color.text}; padding: 10px; max-width: 100mm;')
+			.wrapper('<div class="darktip-content">', '</div>');
 
 		DarkTip.triggerGroup('implicit')
 			.event('a[href]', 'hoverintent', function(elem) { return elem.getAttribute('href'); });
@@ -128,14 +127,13 @@
 			.event('[data-darktip]', 'hoverintent', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
+			.style('plain')
 			.map('url.trigger', '(?:https?://)?(?:www\.)?github\.com')
 			.map('url.api', 'https://api\.github\.com')
 			.trigger('implicit', '^{module.map.url.trigger}/?$')
 			.i18n('en_GB', 'loading', 'Loading...')
 			.i18n('de_DE', 'loading', 'Lade...')
-			.template('index', '<div class="darktip-content"><div class="darktip-inner">{>main /}</div></div>')
-			.template('main', '{@i18n t="loading" /}<div>{>loading /}</div>')
-			.css('', 'background-color: rgba(0,0,0,0.8); color: #eee; padding: 10px; max-width: 100mm;')
+			.template('index', '{@i18n t="loading" /}<div>{>loading /}</div>')
 			.css('.loading', 'text-align: center;');
 
 		DarkTip.module('github-user', 'github')
@@ -145,14 +143,14 @@
 			.apicall('user-repos', '{module.map.url.api}/users/{username}/repos', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.i18n('en_GB', 'user_identification', 'User found: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
 			.i18n('de_DE', 'user_identification', 'Benutzer gefunden: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
-			.template('main', '{@api query="user|user-repos"}{>avatar url=user.avatar_url /}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}')
+			.template('index', '{@api query="user|user-repos"}{>avatar url=user.avatar_url /}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}')
 			.template('avatar', '<img class="avatar" src="{url}" />')
 			.css('img.avatar', 'float:right; width:20mm; margin:0 0 5mm 5mm;');
 
 		DarkTip.module('github-repository', 'github')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
 			.apicall('repo', '{module.map.url.api}/repos/{username}/{repository}', (60 * 60 * 24 * 1), function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
-			.template('main', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');
+			.template('index', '{@api query="repo"}{#repo}{name} ({id}){/repo}{:else}github repo apicall failed for "{username}/{repository}"{/api}');
 
 		DarkTip.module('test')
 			.trigger('implicit', '^http://test.me/([^/]+)/?$', {1: 'paaaram'})
