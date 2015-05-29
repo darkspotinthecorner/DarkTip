@@ -478,7 +478,7 @@
 				styleContext.set(key, value);
 				return self;
 			};
-			this.css = function(selector, rules) {
+			this.css = function(rules, selector) {
 				selector = '.' + getCssClass() + (selector ? ' ' + selector : '');
 				dust.renderSource(rules, styleContext, function(err, compiledRules) {
 					if (!err) {
@@ -531,13 +531,15 @@
 			};
 			var bindEvent = function(event, selector, accessFn, triggerGroup) {
 				var addEventListeners = function(elem) {
-					var handleEventFire = function(accessed, on) {
+					var handleEventFire = function(evt, accessed, on) {
 						if (typeof on === 'undefined') on = false;
 						var result = findFirstTrigger(accessed);
 						if (result) {
 							var module = DarkTip.module(result.module);
 							if (module) {
+								evt.preventDefault();
 								if (on) {
+									evt.stopPropagation();
 									module.start(elem, result.params);
 								} else {
 									module.stop(elem, result.params);
@@ -549,37 +551,55 @@
 						elem.DarkTip = {
 							cleanupFns: []
 						};
-						var eventOnFn = function() {
+						var eventOnFn = function(evt) {
 							var accessed = accessFn(this);
 							if (accessed) {
-								handleEventFire(accessed, true);
+								handleEventFire(evt, accessed, true);
 							}
 						};
-						var eventOffFn = function() {
+						var eventOffFn = function(evt) {
 							var accessed = accessFn(this);
 							if (accessed) {
-								handleEventFire(accessed, false);
+								handleEventFire(evt, accessed, false);
 							}
 						};
-						if (event === 'hover') {
-							elem.addEventListener('mouseenter', eventOnFn,  false);
-							elem.addEventListener('mouseleave', eventOffFn, false);
-							elem.DarkTip.cleanupFns.push(function() {
-								elem.removeEventListener('mouseenter', eventOnFn);
-								elem.removeEventListener('mouseleave', eventOffFn);
-							});
-						}
-						if (event === 'hoverintent') {
-							var opt = {
-								'timeout'    : DarkTip.setting('module.hoverintent.timeout'),
-								'interval'   : DarkTip.setting('module.hoverintent.interval'),
-								'sensitivity': DarkTip.setting('module.hoverintent.sensitivity')
+						var eventClickOnFn = function(evt) {
+							var source = this;
+							var eventClickOffFn = function(evt) {
+								eventOffFn.call(source, evt);
+								doc.removeEventListener('click', eventClickOffFn);
 							};
-							elem.DarkTip.hoverintent = hoverintent(elem, eventOnFn, eventOffFn);
-							elem.DarkTip.hoverintent.options(opt);
-							elem.DarkTip.cleanupFns.push(function() {
-								elem.DarkTip.hoverintent.remove();
-							});
+							doc.removeEventListener('click', eventClickOffFn);
+							doc.addEventListener('click', eventClickOffFn, false);
+							eventOnFn.call(this, evt);
+						};
+						switch (event) {
+							case 'hover':
+								elem.addEventListener('mouseenter', eventOnFn,  false);
+								elem.addEventListener('mouseleave', eventOffFn, false);
+								elem.DarkTip.cleanupFns.push(function() {
+									elem.removeEventListener('mouseenter', eventOnFn);
+									elem.removeEventListener('mouseleave', eventOffFn);
+								});
+								break;
+							case 'hoverintent':
+								var opt = {
+									'timeout'    : DarkTip.setting('module.hoverintent.timeout'),
+									'interval'   : DarkTip.setting('module.hoverintent.interval'),
+									'sensitivity': DarkTip.setting('module.hoverintent.sensitivity')
+								};
+								elem.DarkTip.hoverintent = hoverintent(elem, eventOnFn, eventOffFn);
+								elem.DarkTip.hoverintent.options(opt);
+								elem.DarkTip.cleanupFns.push(function() {
+									elem.DarkTip.hoverintent.remove();
+								});
+								break;
+							case 'click':
+								elem.addEventListener('click', eventClickOnFn, false);
+								elem.DarkTip.cleanupFns.push(function() {
+									elem.removeEventListener('click', eventClickOnFn);
+								});
+								break;
 						}
 					}
 				};
@@ -812,11 +832,12 @@
 				}
 				return self;
 			};
-			this.css = function(selector, rules) {
+			this.css = function(rules, selector) {
+				selector = selector || '';
 				if (cssClasses && cssClasses.length) {
-					selector = '.darktip-tooltip.' + cssClasses.join('.') + ' ' + selector;
+					selector = '.darktip-tooltip.' + cssClasses.join('.') + (selector ? ' ' + selector : '');
 				} else {
-					selector = '.darktip-tooltip ' + selector;
+					selector = '.darktip-tooltip' + (selector ? ' ' + selector : '');
 				}
 				DarkTip.css.add(selector, rules);
 				return self;
