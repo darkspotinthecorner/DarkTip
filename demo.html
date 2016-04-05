@@ -117,14 +117,14 @@
 			.var('color.background', 'rgba(0,0,0,0.8)')
 			.var('color.text', '#eee')
 			.var('color.highlight', '#fb0')
-			.css('background-color: {color.background}; color: {color.text}; padding: 10px; max-width: 100mm;', '.darktip-content')
+			.css('background-color: {color.background}; color: {color.text}; padding: 10px; max-width: 100mm; border-radius: 2mm;', '.darktip-content')
 			.wrapper('<div class="darktip-content">', '</div>');
 
 		DarkTip.triggerGroup('implicit')
-			.event('a[href]', 'click', function(elem) { return elem.getAttribute('href'); });
+			.event('a[href]', 'hoverintent:notouch|click:touch', function(elem) { return elem.getAttribute('href'); });
 
 		DarkTip.triggerGroup('explicit')
-			.event('[data-darktip]', 'click', function(elem) { return elem.getAttribute('data-darktip'); });
+			.event('[data-darktip]', 'hoverintent:notouch|click:touch', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
 			.style('plain')
