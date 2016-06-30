@@ -117,14 +117,14 @@
 			.var('color.background', 'rgba(0,0,0,0.8)')
 			.var('color.text', '#eee')
 			.var('color.highlight', '#fb0')
-			.css('background-color: {color.background}; color: {color.text}; padding: 10px; max-width: 100mm;', '.darktip-content')
+			.css('.darktip-content', 'background-color: {color.background}; color: {color.text}; padding: 10px; max-width: 100mm;')
 			.wrapper('<div class="darktip-content">', '</div>');
 
 		DarkTip.triggerGroup('implicit')
-			.event('a[href]', 'click', function(elem) { return elem.getAttribute('href'); });
+			.event('a[href]', 'hoverintent', function(elem) { return elem.getAttribute('href'); });
 
 		DarkTip.triggerGroup('explicit')
-			.event('[data-darktip]', 'click', function(elem) { return elem.getAttribute('data-darktip'); });
+			.event('[data-darktip]', 'hoverintent', function(elem) { return elem.getAttribute('data-darktip'); });
 
 		DarkTip.module('github')
 			.style('plain')
@@ -134,7 +134,7 @@
 			.i18n('en_GB', 'loading', 'Loading...')
 			.i18n('de_DE', 'loading', 'Lade...')
 			.template('index', '{@i18n t="loading" /}<div>{>loading /}</div>')
-			.css('text-align: center;', '.loading');
+			.css('.loading', 'text-align: center;');
 
 		DarkTip.module('github-user', 'github')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/?$', {1: 'username'})
@@ -145,7 +145,7 @@
 			.i18n('de_DE', 'user_identification', 'Benutzer gefunden: {#user.name}{.} {/user.name}"{user.login}" ({user.id})')
 			.template('index', '{@api query="user|user-repos"}{>avatar url=user.avatar_url /}{@i18n t="user_identification" /}{?user-repos}<h4>Repositories:</h4>{#user-repos}  - {full_name}<br />{/user-repos}{/user-repos}{:else}github user apicall failed for "{username}"{/api}')
 			.template('avatar', '<img class="avatar" src="{url}" />')
-			.css('float:right; width:20mm; margin:0 0 5mm 5mm;', 'img.avatar');
+			.css('img.avatar', 'float:right; width:20mm; margin:0 0 5mm 5mm;');
 
 		DarkTip.module('github-repository', 'github')
 			.trigger('implicit', '^{module.map.url.trigger}/([^/]+)/([^/]+)/?$', {1: 'username', 2: 'repository'})
@@ -156,8 +156,8 @@
 			.trigger('implicit', '^http://test.me/([^/]+)/?$', {1: 'paaaram'})
 			.apicall('narf', '//localhost/blubb/{paaaram}', 0, function(data) { return (data.meta.status == 200); }, function(data) { return (data.data); })
 			.template('index', 'Start<br />{@api query="narf"}Success{:else}Fail{/api}<br />End')
-			.css('background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; max-width: 50mm;')
-			.css('text-align: center;', '.loading');
+			.css('', 'background-color: rgba(255,255,255,0.9); color: #333; padding: 10px; max-width: 50mm;')
+			.css('.loading', 'text-align: center;');
 
 		DarkTip.init();
 

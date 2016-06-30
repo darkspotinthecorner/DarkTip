@@ -478,7 +478,7 @@
 				styleContext.set(key, value);
 				return self;
 			};
-			this.css = function(rules, selector) {
+			this.css = function(selector, rules) {
 				selector = '.' + getCssClass() + (selector ? ' ' + selector : '');
 				dust.renderSource(rules, styleContext, function(err, compiledRules) {
 					if (!err) {
@@ -832,17 +832,13 @@
 				}
 				return self;
 			};
-			this.css = function(rules, selector) {
-				selector = selector || '';
-				if (cssClasses && cssClasses.length) {
-					selector = '.darktip-tooltip.' + cssClasses.join('.') + (selector ? ' ' + selector : '');
-				} else {
-					selector = '.darktip-tooltip' + (selector ? ' ' + selector : '');
-				}
-				DarkTip.css.add(selector, rules);
+			this.css = function(selector, rules) {
+				effectiveSelector = '.darktip-tooltip' + ((cssClasses && cssClasses.length) ? ('.' + cssClasses.join('.')) : '') + (selector ? ' ' + selector : '');
+				DarkTip.css.add(effectiveSelector, rules);
 				return self;
 			};
 			this.start = function(elem, params) {
+				log('module start', elem, params);
 				var r, style, templateIndex, templateLoading;
 				if (!elem.DarkTip.init) {
 					elem.DarkTip.init   = true;
@@ -894,6 +890,7 @@
 						}
 					};
 					style = self.style();
+					console.log('style', style);
 					if (style) {
 						templateLoading = style.getWrappedLoadingTplName();
 						templateIndex   = style.getWrappedIndexTplName();

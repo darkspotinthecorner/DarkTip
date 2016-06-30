@@ -27,16 +27,17 @@
     "url": "https://github.com/darkspotinthecorner/DarkTip.git"
   },
   "dependencies": {
-    "dustjs-helpers": "^1.5.0",
-    "dustjs-linkedin": "^2.5.1",
-    "q": "^1.1.2",
-    "tether": "^0.6.5"
+    "dustjs-helpers": "1.x",
+    "dustjs-linkedin": "2.x",
+    "q": "1.x",
+    "tether": "1.x",
+    "animejs": "1.x"
   },
   "devDependencies": {
-    "gulp": "^3.8.10",
-    "gulp-browserify": "^0.5.1",
-    "gulp-watch": "^3.0.0",
-    "karma": "^0.12.31"
+    "gulp": "3.x",
+    "gulp-browserify": "0.5.x",
+    "gulp-watch": "4.x",
+    "karma": "1.x"
   },
   "private": true
 }

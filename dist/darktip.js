@@ -1,95 +1,167 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-(function(dust){
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd && define.amd.dust === true) {
+    define(['dust.core'], factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('dustjs-linkedin'));
+  } else {
+    factory(root.dust);
+  }
+}(this, function(dust) {
 
-// Use dust's built-in logging when available
-var _log = dust.log ? function(msg, level) {
+function log(helper, msg, level) {
   level = level || "INFO";
-  dust.log(msg, level);
-} : function() {};
+  helper = helper ? '{@' + helper + '}: ' : '';
+  dust.log(helper + msg, level);
+}
 
 var _deprecatedCache = {};
 function _deprecated(target) {
   if(_deprecatedCache[target]) { return; }
-  _log("Deprecation warning: " + target + " is deprecated and will be removed in a future version of dustjs-helpers", "WARN");
-  _log("For help and a deprecation timeline, see https://github.com/linkedin/dustjs-helpers/wiki/Deprecated-Features#" + target.replace(/\W+/g, ""), "WARN");
+  log(target, "Deprecation warning: " + target + " is deprecated and will be removed in a future version of dustjs-helpers", "WARN");
+  log(null, "For help and a deprecation timeline, see https://github.com/linkedin/dustjs-helpers/wiki/Deprecated-Features#" + target.replace(/\W+/g, ""), "WARN");
   _deprecatedCache[target] = true;
 }
 
 function isSelect(context) {
-  var value = context.current();
-  return typeof value === "object" && value.isSelect === true;
+  return context.stack.tail &&
+         context.stack.tail.head &&
+         typeof context.stack.tail.head.__select__ !== "undefined";
 }
 
-// Utility method : toString() equivalent for functions
+function getSelectState(context) {
+  return isSelect(context) && context.get('__select__');
+}
+
+/**
+ * Adds a special __select__ key behind the head of the context stack. Used to maintain the state
+ * of {@select} blocks
+ * @param context {Context} add state to this Context
+ * @param opts {Object} add these properties to the state (`key` and `type`)
+ */
+function addSelectState(context, opts) {
+  var head = context.stack.head,
+      newContext = context.rebase(),
+      key;
+
+  if(context.stack && context.stack.tail) {
+    newContext.stack = context.stack.tail;
+  }
+
+  var state = {
+    isPending: false,
+    isResolved: false,
+    isDeferredComplete: false,
+    deferreds: []
+  };
+
+  for(key in opts) {
+    state[key] = opts[key];
+  }
+
+  return newContext
+  .push({ "__select__": state })
+  .push(head, context.stack.index, context.stack.of);
+}
+
+/**
+ * After a {@select} or {@math} block is complete, they invoke this function
+ */
+function resolveSelectDeferreds(state) {
+  var x, len;
+  state.isDeferredPending = true;
+  if(state.deferreds.length) {
+    state.isDeferredComplete = true;
+    for(x=0, len=state.deferreds.length; x<len; x++) {
+      state.deferreds[x]();
+    }
+  }
+  state.isDeferredPending = false;
+}
+
+/**
+ * Used by {@contextDump}
+ */
 function jsonFilter(key, value) {
   if (typeof value === "function") {
-    //to make sure all environments format functions the same way
     return value.toString()
-      //remove all leading and trailing whitespace
       .replace(/(^\s+|\s+$)/mg, '')
-      //remove new line characters
       .replace(/\n/mg, '')
-      //replace , and 0 or more spaces with ", "
       .replace(/,\s*/mg, ', ')
-      //insert space between ){
-      .replace(/\)\{/mg, ') {')
-    ;
+      .replace(/\)\{/mg, ') {');
   }
   return value;
 }
 
-// Utility method: to invoke the given filter operation such as eq/gt etc
-function filter(chunk, context, bodies, params, filterOp) {
-  params = params || {};
-  var body = bodies.block,
-      actualKey,
-      expectedValue,
-      filterOpType = params.filterOpType || '';
+/**
+ * Generate a truth test helper
+ */
+function truthTest(name, test) {
+  return function(chunk, context, bodies, params) {
+    return filter(chunk, context, bodies, params, name, test);
+  };
+}
 
-  // when @eq, @lt etc are used as standalone helpers, key is required and hence check for defined
-  if (params.hasOwnProperty("key")) {
-    actualKey = dust.helpers.tap(params.key, chunk, context);
-  } else if (isSelect(context)) {
-    actualKey = context.current().selectKey;
-    //  supports only one of the blocks in the select to be selected
-    if (context.current().isResolved) {
-      filterOp = function() { return false; };
-    }
-  } else {
-    _log("No key specified for filter in:" + filterOpType + " helper ");
+/**
+ * This function is invoked by truth test helpers
+ */
+function filter(chunk, context, bodies, params, helperName, test) {
+  var body = bodies.block,
+      skip = bodies['else'],
+      selectState = getSelectState(context) || {},
+      willResolve, key, value, type;
+
+  // Once one truth test in a select passes, short-circuit the rest of the tests
+  if (selectState.isResolved && !selectState.isDeferredPending) {
     return chunk;
   }
-  expectedValue = dust.helpers.tap(params.value, chunk, context);
-  // coerce both the actualKey and expectedValue to the same type for equality and non-equality compares
-  if (filterOp(coerce(expectedValue, params.type, context), coerce(actualKey, params.type, context))) {
-    if (isSelect(context)) {
-      context.current().isResolved = true;
+
+  // First check for a key on the helper itself, then look for a key on the {@select}
+  if (params.hasOwnProperty('key')) {
+    key = params.key;
+  } else if (selectState.hasOwnProperty('key')) {
+    key = selectState.key;
+  } else {
+    log(helperName, "No key specified", "WARN");
+    return chunk;
+  }
+
+  type = params.type || selectState.type;
+
+  key = coerce(context.resolve(key), type);
+  value = coerce(context.resolve(params.value), type);
+
+  if (test(key, value)) {
+    // Once a truth test passes, put the select into "pending" state. Now we can render the body of
+    // the truth test (which may contain truth tests) without altering the state of the select.
+    if (!selectState.isPending) {
+      willResolve = true;
+      selectState.isPending = true;
     }
-    // we want helpers without bodies to fail gracefully so check it first
-    if(body) {
-     return chunk.render(body, context);
-    } else {
-      _log("No body specified for " + filterOpType + " helper ");
-      return chunk;
+    if (body) {
+      chunk = chunk.render(body, context);
     }
-  } else if (bodies['else']) {
-    return chunk.render(bodies['else'], context);
+    if (willResolve) {
+      selectState.isResolved = true;
+    }
+  } else if (skip) {
+    chunk = chunk.render(skip, context);
   }
   return chunk;
 }
 
-function coerce(value, type, context) {
-  if (typeof value !== "undefined") {
-    switch (type || typeof value) {
-      case 'number': return +value;
-      case 'string': return String(value);
-      case 'boolean':
-        value = (value === 'false' ? false : value);
-        return Boolean(value);
-      case 'date': return new Date(value);
-      case 'context': return context.get(value);
-    }
+function coerce(value, type) {
+  if (type) {
+    type = type.toLowerCase();
+  }
+  switch (type) {
+    case 'number': return +value;
+    case 'string': return String(value);
+    case 'boolean':
+      value = (value === 'false' ? false : value);
+      return Boolean(value);
+    case 'date': return new Date(value);
   }
 
   return value;
@@ -98,50 +170,11 @@ function coerce(value, type, context) {
 var helpers = {
 
   // Utility helping to resolve dust references in the given chunk
-  // uses the Chunk.render method to resolve value
-  /*
-   Reference resolution rules:
-   if value exists in JSON:
-    "" or '' will evaluate to false, boolean false, null, or undefined will evaluate to false,
-    numeric 0 evaluates to true, so does, string "0", string "null", string "undefined" and string "false".
-    Also note that empty array -> [] is evaluated to false and empty object -> {} and non-empty object are evaluated to true
-    The type of the return value is string ( since we concatenate to support interpolated references
-
-   if value does not exist in JSON and the input is a single reference: {x}
-     dust render emits empty string, and we then return false
-
-   if values does not exist in JSON and the input is interpolated references : {x} < {y}
-     dust render emits <  and we return the partial output
-
-  */
+  // uses native Dust Context#resolve (available since Dust 2.6.2)
   "tap": function(input, chunk, context) {
-    // return given input if there is no dust reference to resolve
-    // dust compiles a string/reference such as {foo} to a function
-    if (typeof input !== "function") {
-      return input;
-    }
-
-    var dustBodyOutput = '',
-      returnValue;
-
-    //use chunk render to evaluate output. For simple functions result will be returned from render call,
-    //for dust body functions result will be output via callback function
-    returnValue = chunk.tap(function(data) {
-      dustBodyOutput += data;
-      return '';
-    }).render(input, context);
-
-    chunk.untap();
-
-    //assume it's a simple function call if return result is not a chunk
-    if (returnValue.constructor !== chunk.constructor) {
-      //use returnValue as a result of tap
-      return returnValue;
-    } else if (dustBodyOutput === '') {
-      return false;
-    } else {
-      return dustBodyOutput;
-    }
+    // deprecated for removal in 1.8
+    _deprecated("tap");
+    return context.resolve(input);
   },
 
   "sep": function(chunk, context, bodies) {
@@ -156,388 +189,284 @@ var helpers = {
     }
   },
 
-  "idx": function(chunk, context, bodies) {
-    var body = bodies.block;
-    // Will be removed in 1.6
-    _deprecated("{@idx}");
-    if(body) {
-      return body(chunk, context.push(context.stack.index));
+  "first": function(chunk, context, bodies) {
+    if (context.stack.index === 0) {
+      return bodies.block(chunk, context);
     }
-    else {
-      return chunk;
+    return chunk;
+  },
+
+  "last": function(chunk, context, bodies) {
+    if (context.stack.index === context.stack.of - 1) {
+      return bodies.block(chunk, context);
     }
+    return chunk;
   },
 
   /**
-   * contextDump helper
-   * @param key specifies how much to dump.
-   * "current" dumps current context. "full" dumps the full context stack.
-   * @param to specifies where to write dump output.
-   * Values can be "console" or "output". Default is output.
+   * {@contextDump}
+   * @param key {String} set to "full" to the full context stack, otherwise the current context is dumped
+   * @param to {String} set to "console" to log to console, otherwise outputs to the chunk
    */
   "contextDump": function(chunk, context, bodies, params) {
-    var p = params || {},
-      to = p.to || 'output',
-      key = p.key || 'current',
-      dump;
-    to = dust.helpers.tap(to, chunk, context);
-    key = dust.helpers.tap(key, chunk, context);
-    if (key === 'full') {
-      dump = JSON.stringify(context.stack, jsonFilter, 2);
+    var to = context.resolve(params.to),
+        key = context.resolve(params.key),
+        target, output;
+    switch(key) {
+      case 'full':
+        target = context.stack;
+        break;
+      default:
+        target = context.stack.head;
     }
-    else {
-      dump = JSON.stringify(context.stack.head, jsonFilter, 2);
+    output = JSON.stringify(target, jsonFilter, 2);
+    switch(to) {
+      case 'console':
+        log('contextDump', output);
+        break;
+      default:
+        output = output.replace(/</g, '\\u003c');
+        chunk = chunk.write(output);
     }
-    if (to === 'console') {
-      _log(dump);
+    return chunk;
+  },
+
+  /**
+   * {@math}
+   * @param key first value
+   * @param method {String} operation to perform
+   * @param operand second value (not required for operations like `abs`)
+   * @param round if truthy, round() the result
+   */
+  "math": function (chunk, context, bodies, params) {
+    var key = params.key,
+        method = params.method,
+        operand = params.operand,
+        round = params.round,
+        output, state, x, len;
+
+    if(!params.hasOwnProperty('key') || !params.method) {
+      log("math", "`key` or `method` was not provided", "ERROR");
       return chunk;
     }
-    else {
-      // encode opening brackets when outputting to html
-      dump = dump.replace(/</g, '\\u003c');
 
-      return chunk.write(dump);
+    key = parseFloat(context.resolve(key));
+    operand = parseFloat(context.resolve(operand));
+
+    switch(method) {
+      case "mod":
+        if(operand === 0) {
+          log("math", "Division by 0", "ERROR");
+        }
+        output = key % operand;
+        break;
+      case "add":
+        output = key + operand;
+        break;
+      case "subtract":
+        output = key - operand;
+        break;
+      case "multiply":
+        output = key * operand;
+        break;
+      case "divide":
+        if(operand === 0) {
+          log("math", "Division by 0", "ERROR");
+        }
+        output = key / operand;
+        break;
+      case "ceil":
+      case "floor":
+      case "round":
+      case "abs":
+        output = Math[method](key);
+        break;
+      case "toint":
+        output = parseInt(key, 10);
+        break;
+      default:
+        log("math", "Method `" + method + "` is not supported", "ERROR");
     }
-  },
-  /**
-   if helper for complex evaluation complex logic expressions.
-   Note : #1 if helper fails gracefully when there is no body block nor else block
-          #2 Undefined values and false values in the JSON need to be handled specially with .length check
-             for e.g @if cond=" '{a}'.length && '{b}'.length" is advised when there are chances of the a and b been
-             undefined or false in the context
-          #3 Use only when the default ? and ^ dust operators and the select fall short in addressing the given logic,
-             since eval executes in the global scope
-          #4 All dust references are default escaped as they are resolved, hence eval will block malicious scripts in the context
-             Be mindful of evaluating a expression that is passed through the unescape filter -> |s
-   @param cond, either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. cond="2>3"
-                a dust reference is also enclosed in double quotes, e.g. cond="'{val}'' > 3"
-    cond argument should evaluate to a valid javascript expression
-   **/
 
-  "if": function( chunk, context, bodies, params ) {
-    var body = bodies.block,
-        skip = bodies['else'],
-        cond;
-
-    if(params && params.cond) {
-      // Will be removed in 1.6
-      _deprecated("{@if}");
-
-      cond = dust.helpers.tap(params.cond, chunk, context);
-      // eval expressions with given dust references
-      if(eval(cond)){
-       if(body) {
-        return chunk.render( bodies.block, context );
-       }
-       else {
-         _log("Missing body block in the if helper!");
-         return chunk;
-       }
+    if (typeof output !== 'undefined') {
+      if (round) {
+        output = Math.round(output);
       }
-      if(skip){
-       return chunk.render( bodies['else'], context );
+      if (bodies && bodies.block) {
+        context = addSelectState(context, { key: output });
+        chunk = chunk.render(bodies.block, context);
+        resolveSelectDeferreds(getSelectState(context));
+      } else {
+        chunk = chunk.write(output);
       }
     }
-    // no condition
-    else {
-      _log("No condition given in the if helper!");
-    }
+
     return chunk;
   },
 
   /**
-   * math helper
-   * @param key is the value to perform math against
-   * @param method is the math method,  is a valid string supported by math helper like mod, add, subtract
-   * @param operand is the second value needed for operations like mod, add, subtract, etc.
-   * @param round is a flag to assure that an integer is returned
+   * {@select}
+   * Groups a set of truth tests and outputs the first one that passes.
+   * Also contains {@any} and {@none} blocks.
+   * @param key a value or reference to use as the left-hand side of comparisons
+   * @param type coerce all truth test keys without an explicit type to this type
    */
-  "math": function ( chunk, context, bodies, params ) {
-    //key and method are required for further processing
-    if( params && typeof params.key !== "undefined" && params.method ){
-      var key  = params.key,
-          method = params.method,
-          // operand can be null for "abs", ceil and floor
-          operand = params.operand,
-          round = params.round,
-          mathOut = null,
-          operError = function(){
-              _log("operand is required for this math method");
-              return null;
-          };
-      key  = dust.helpers.tap(key, chunk, context);
-      operand = dust.helpers.tap(operand, chunk, context);
-      //  TODO: handle  and tests for negatives and floats in all math operations
-      switch(method) {
-        case "mod":
-          if(operand === 0 || operand === -0) {
-            _log("operand for divide operation is 0/-0: expect Nan!");
-          }
-          mathOut = parseFloat(key) %  parseFloat(operand);
-          break;
-        case "add":
-          mathOut = parseFloat(key) + parseFloat(operand);
-          break;
-        case "subtract":
-          mathOut = parseFloat(key) - parseFloat(operand);
-          break;
-        case "multiply":
-          mathOut = parseFloat(key) * parseFloat(operand);
-          break;
-        case "divide":
-         if(operand === 0 || operand === -0) {
-           _log("operand for divide operation is 0/-0: expect Nan/Infinity!");
-         }
-          mathOut = parseFloat(key) / parseFloat(operand);
-          break;
-        case "ceil":
-          mathOut = Math.ceil(parseFloat(key));
-          break;
-        case "floor":
-          mathOut = Math.floor(parseFloat(key));
-          break;
-        case "round":
-          mathOut = Math.round(parseFloat(key));
-          break;
-        case "abs":
-          mathOut = Math.abs(parseFloat(key));
-          break;
-        default:
-          _log("method passed is not supported");
-     }
-
-      if (mathOut !== null){
-        if (round) {
-          mathOut = Math.round(mathOut);
-        }
-        if (bodies && bodies.block) {
-          // with bodies act like the select helper with mathOut as the key
-          // like the select helper bodies['else'] is meaningless and is ignored
-          return chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, selectKey: mathOut }));
-        } else {
-          // self closing math helper will return the calculated output
-          return chunk.write(mathOut);
-        }
-       } else {
-        return chunk;
-      }
-    }
-    // no key parameter and no method
-    else {
-      _log("Key is a required parameter for math helper along with method/operand!");
-    }
-    return chunk;
-  },
-   /**
-   select helper works with one of the eq/ne/gt/gte/lt/lte/default providing the functionality
-   of branching conditions
-   @param key,  ( required ) either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   **/
   "select": function(chunk, context, bodies, params) {
-    var body = bodies.block;
-    // key is required for processing, hence check for defined
-    if( params && typeof params.key !== "undefined"){
-      // returns given input as output, if the input is not a dust reference, else does a context lookup
-      var key = dust.helpers.tap(params.key, chunk, context);
-      // bodies['else'] is meaningless and is ignored
-      if( body ) {
-       return chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, selectKey: key }));
+    var body = bodies.block,
+        state = {};
+
+    if (params.hasOwnProperty('key')) {
+      state.key = context.resolve(params.key);
+    }
+    if (params.hasOwnProperty('type')) {
+      state.type = params.type;
+    }
+
+    if (body) {
+      context = addSelectState(context, state);
+      chunk = chunk.render(body, context);
+      resolveSelectDeferreds(getSelectState(context));
+    } else {
+      log("select", "Missing body block", "WARN");
+    }
+    return chunk;
+  },
+
+  /**
+   * Truth test helpers
+   * @param key a value or reference to use as the left-hand side of comparisons
+   * @param value a value or reference to use as the right-hand side of comparisons
+   * @param type if specified, `key` and `value` will be forcibly cast to this type
+   */
+  "eq": truthTest('eq', function(left, right) {
+    return left === right;
+  }),
+  "ne": truthTest('ne', function(left, right) {
+    return left !== right;
+  }),
+  "lt": truthTest('lt', function(left, right) {
+    return left < right;
+  }),
+  "lte": truthTest('lte', function(left, right) {
+    return left <= right;
+  }),
+  "gt": truthTest('gt', function(left, right) {
+    return left > right;
+  }),
+  "gte": truthTest('gte', function(left, right) {
+    return left >= right;
+  }),
+
+  /**
+   * {@any}
+   * Outputs as long as at least one truth test inside a {@select} has passed.
+   * Must be contained inside a {@select} block.
+   * The passing truth test can be before or after the {@any} block.
+   */
+  "any": function(chunk, context, bodies, params) {
+    var selectState = getSelectState(context);
+
+    if(!selectState) {
+      log("any", "Must be used inside a {@select} block", "ERROR");
+    } else {
+      if(selectState.isDeferredComplete) {
+        log("any", "Must not be nested inside {@any} or {@none} block", "ERROR");
+      } else {
+        chunk = chunk.map(function(chunk) {
+          selectState.deferreds.push(function() {
+            if(selectState.isResolved) {
+              chunk = chunk.render(bodies.block, context);
+            }
+            chunk.end();
+          });
+        });
       }
-      else {
-       _log("Missing body block in the select helper ");
-       return chunk;
+    }
+    return chunk;
+  },
+
+  /**
+   * {@none}
+   * Outputs if no truth tests inside a {@select} pass.
+   * Must be contained inside a {@select} block.
+   * The position of the helper does not matter.
+   */
+  "none": function(chunk, context, bodies, params) {
+    var selectState = getSelectState(context);
+
+    if(!selectState) {
+      log("none", "Must be used inside a {@select} block", "ERROR");
+    } else {
+      if(selectState.isDeferredComplete) {
+        log("none", "Must not be nested inside {@any} or {@none} block", "ERROR");
+      } else {
+        chunk = chunk.map(function(chunk) {
+          selectState.deferreds.push(function() {
+            if(!selectState.isResolved) {
+              chunk = chunk.render(bodies.block, context);
+            }
+            chunk.end();
+          });
+        });
       }
     }
-    // no key
-    else {
-      _log("No key given in the select helper!");
-    }
     return chunk;
   },
 
   /**
-   eq helper compares the given key is same as the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-   **/
-  "eq": function(chunk, context, bodies, params) {
-    if(params) {
-      params.filterOpType = "eq";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual === expected; });
-    }
-    return chunk;
-  },
-
-  /**
-   ne helper compares the given key is not the same as the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-   **/
-  "ne": function(chunk, context, bodies, params) {
-    if(params) {
-      params.filterOpType = "ne";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual !== expected; });
-    }
-    return chunk;
-  },
-
-  /**
-   lt helper compares the given key is less than the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone  or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-   **/
-  "lt": function(chunk, context, bodies, params) {
-    if(params) {
-      params.filterOpType = "lt";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual < expected; });
-    }
-    return chunk;
-  },
-
-  /**
-   lte helper compares the given key is less or equal to the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-  **/
-  "lte": function(chunk, context, bodies, params) {
-    if(params) {
-      params.filterOpType = "lte";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual <= expected; });
-    }
-    return chunk;
-  },
-
-
-  /**
-   gt helper compares the given key is greater than the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone  or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-   **/
-  "gt": function(chunk, context, bodies, params) {
-    // if no params do no go further
-    if(params) {
-      params.filterOpType = "gt";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual > expected; });
-    }
-    return chunk;
-  },
-
- /**
-   gte helper, compares the given key is greater than or equal to the expected value
-   It can be used standalone or in conjunction with select for multiple branching
-   @param key,  The actual key to be compared ( optional when helper used in conjunction with select)
-                either a string literal value or a dust reference
-                a string literal value, is enclosed in double quotes, e.g. key="foo"
-                a dust reference may or may not be enclosed in double quotes, e.g. key="{val}" and key=val are both valid
-   @param value, The expected value to compare to, when helper is used standalone or in conjunction with select
-   @param type (optional), supported types are  number, boolean, string, date, context, defaults to string
-   Note : use type="number" when comparing numeric
-  **/
-  "gte": function(chunk, context, bodies, params) {
-     if(params) {
-      params.filterOpType = "gte";
-      return filter(chunk, context, bodies, params, function(expected, actual) { return actual >= expected; });
-     }
-    return chunk;
-  },
-
-  // to be used in conjunction with the select helper
-  // TODO: fix the helper to do nothing when used standalone
-  "default": function(chunk, context, bodies, params) {
-    // does not require any params
-     if(params) {
-        params.filterOpType = "default";
-      }
-     return filter(chunk, context, bodies, params, function(expected, actual) { return true; });
-  },
-
-  /**
-  * size helper prints the size of the given key
-  * Note : size helper is self closing and does not support bodies
-  * @param key, the element whose size is returned
+  * {@size}
+  * Write the size of the target to the chunk
+  * Falsy values and true have size 0
+  * Numbers are returned as-is
+  * Arrays and Strings have size equal to their length
+  * Objects have size equal to the number of keys they contain
+  * Dust bodies are evaluated and the length of the string is returned
+  * Functions are evaluated and the length of their return value is evaluated
+  * @param key find the size of this value or reference
   */
-  "size": function( chunk, context, bodies, params ) {
-    var key, value=0, nr, k;
-    params = params || {};
-    key = params.key;
-    if (!key || key === true) { //undefined, null, "", 0
+  "size": function(chunk, context, bodies, params) {
+    var key = params.key,
+        value, k;
+
+    key = context.resolve(params.key);
+    if (!key || key === true) {
       value = 0;
-    }
-    else if(dust.isArray(key)) { //array
+    } else if(dust.isArray(key)) {
       value = key.length;
-    }
-    else if (!isNaN(parseFloat(key)) && isFinite(key)) { //numeric values
+    } else if (!isNaN(parseFloat(key)) && isFinite(key)) {
       value = key;
-    }
-    else if (typeof key  === "object") { //object test
-      //objects, null and array all have typeof ojbect...
-      //null and array are already tested so typeof is sufficient http://jsperf.com/isobject-tests
-      nr = 0;
+    } else if (typeof key === "object") {
+      value = 0;
       for(k in key){
-        if(Object.hasOwnProperty.call(key,k)){
-          nr++;
+        if(key.hasOwnProperty(k)){
+          value++;
         }
       }
-      value = nr;
     } else {
-      value = (key + '').length; //any other value (strings etc.)
+      value = (key + '').length;
     }
     return chunk.write(value);
   }
 
-
 };
 
-  for (var key in helpers) {
-    dust.helpers[key] = helpers[key];
-  }
+for(var key in helpers) {
+  dust.helpers[key] = helpers[key];
+}
 
-  if(typeof exports !== 'undefined') {
-    module.exports = dust;
-  }
+return dust;
 
-})(typeof exports !== 'undefined' ? require('dustjs-linkedin') : dust);
+}));
 
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/dustjs-helpers/lib/dust-helpers.js","/../node_modules/dustjs-helpers/lib")
 },{"1YiZ5S":8,"buffer":5,"dustjs-linkedin":3}],2:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-/*jshint latedef:false */
 (function(root, factory) {
-  if (typeof exports === 'object') {
+  if (typeof define === "function" && define.amd && define.amd.dust === true) {
+    define("dust.compile", ["dust.core", "dust.parse"], function(dust, parse) {
+      return factory(parse, dust).compile;
+    });
+  } else if (typeof exports === 'object') {
     // in Node, require this file if we want to use the compiler as a standalone module
     module.exports = factory(require('./parser').parse, require('./dust'));
   } else {
@@ -555,9 +484,6 @@ var helpers = {
     // for templates that are compiled as a callable (compileFn)
     //
     // for the common case (using compile and render) a name is required so that templates will be cached by name and rendered later, by name.
-    if (!name && name !== null) {
-      throw new Error('Template name parameter cannot be undefined when calling dust.compile');
-    }
 
     try {
       var ast = filterAST(parse(source));
@@ -610,7 +536,7 @@ var helpers = {
   };
 
   compiler.pragmas = {
-    esc: function(compiler, context, bodies, params) {
+    esc: function(compiler, context, bodies) {
       var old = compiler.auto,
           out;
       if (!context) {
@@ -678,7 +604,14 @@ var helpers = {
   function nullify(){}
 
   function format(context, node) {
-    return dust.config.whitespace ? node : null;
+    if(dust.config.whitespace) {
+      // Format nodes are in the form ['format', eol, whitespace, line, col],
+      // which is unlike other nodes in that there are two pieces of content
+      // Join eol and whitespace together to normalize the node format
+      node.splice(1, 2, node.slice(1, -2).join(''));
+      return node;
+    }
+    return null;
   }
 
   function compile(ast, name) {
@@ -688,16 +621,33 @@ var helpers = {
       blocks: {},
       index: 0,
       auto: 'h'
-    };
+    },
+    escapedName = dust.escapeJs(name),
+    AMDName = name? '"' + escapedName + '",' : '',
+    compiled = 'function(dust){',
+    entry = compiler.compileNode(context, ast),
+    iife;
 
-    return '(function(){dust.register(' +
-        (name ? '"' + name + '"' : 'null') + ',' +
-        compiler.compileNode(context, ast) +
-        ');' +
-        compileBlocks(context) +
-        compileBodies(context) +
-        'return body_0;' +
-        '})();';
+    if(name) {
+      compiled += 'dust.register("' + escapedName + '",' + entry + ');';
+    }
+
+    compiled += compileBlocks(context) +
+                compileBodies(context) +
+                'return ' + entry + '}';
+
+    iife = '(' + compiled + '(dust));';
+
+    if(dust.config.amd) {
+      return 'define(' + AMDName + '["dust.core"],' + compiled + ');';
+    } else if(dust.config.cjs) {
+      return 'module.exports=function(dust){' +
+             'var tmpl=' + iife +
+             'var f=' + loaderFor().toString() + ';' +
+             'f.template=tmpl;return f}';
+    } else {
+      return iife;
+    }
   }
 
   function compileBlocks(context) {
@@ -711,8 +661,10 @@ var helpers = {
     if (out.length) {
       context.blocks = 'ctx=ctx.shiftBlocks(blocks);';
       return 'var blocks={' + out.join(',') + '};';
+    } else {
+      context.blocks = '';
     }
-    return context.blocks = '';
+    return context.blocks;
   }
 
   function compileBodies(context) {
@@ -754,7 +706,7 @@ var helpers = {
     },
 
     format: function(context, node) {
-      return '.w(' + escape(node[1] + node[2]) + ')';
+      return '.w(' + escape(node[1]) + ')';
     },
 
     reference: function(context, node) {
@@ -789,13 +741,13 @@ var helpers = {
 
     '+': function(context, node) {
       if (typeof(node[1].text) === 'undefined'  && typeof(node[4]) === 'undefined'){
-        return '.block(ctx.getBlock(' +
+        return '.b(ctx.getBlock(' +
               compiler.compileNode(context, node[1]) +
               ',chk, ctx),' + compiler.compileNode(context, node[2]) + ', {},' +
               compiler.compileNode(context, node[3]) +
               ')';
       } else {
-        return '.block(ctx.getBlock(' +
+        return '.b(ctx.getBlock(' +
             escape(node[1].text) +
             '),' + compiler.compileNode(context, node[2]) + ',' +
             compiler.compileNode(context, node[4]) + ',' +
@@ -809,7 +761,8 @@ var helpers = {
         escape(node[1].text) +
         ',' + compiler.compileNode(context, node[2]) + ',' +
         compiler.compileNode(context, node[4]) + ',' +
-        compiler.compileNode(context, node[3]) +
+        compiler.compileNode(context, node[3]) + ',' +
+        compiler.compileNode(context, node[5]) +
         ')';
     },
 
@@ -847,7 +800,7 @@ var helpers = {
     partial: function(context, node) {
       return '.p(' +
           compiler.compileNode(context, node[1]) +
-          ',' + compiler.compileNode(context, node[2]) +
+          ',ctx,' + compiler.compileNode(context, node[2]) +
           ',' + compiler.compileNode(context, node[3]) + ')';
     },
 
@@ -946,8 +899,30 @@ var helpers = {
                   function(str) { return '"' + escapeToJsSafeString(str) + '"';} :
                   JSON.stringify;
 
+  function renderSource(source, context, callback) {
+    var tmpl = dust.loadSource(dust.compile(source));
+    return loaderFor(tmpl)(context, callback);
+  }
+
+  function compileFn(source, name) {
+    var tmpl = dust.loadSource(dust.compile(source, name));
+    return loaderFor(tmpl);
+  }
+
+  function loaderFor(tmpl) {
+    return function load(ctx, cb) {
+      var fn = cb ? 'render' : 'stream';
+      return dust[fn](tmpl, ctx, cb);
+    };
+  }
+
   // expose compiler methods
-  dust.compile = compiler.compile;
+  dust.compiler = compiler;
+  dust.compile = dust.compiler.compile;
+  dust.renderSource = renderSource;
+  dust.compileFn = compileFn;
+
+  // DEPRECATED legacy names. Removed in 2.8.0
   dust.filterNode = compiler.filterNode;
   dust.optimizers = compiler.optimizers;
   dust.pragmas = compiler.pragmas;
@@ -961,24 +936,26 @@ var helpers = {
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/dustjs-linkedin/lib/compiler.js","/../node_modules/dustjs-linkedin/lib")
 },{"./dust":3,"./parser":4,"1YiZ5S":8,"buffer":5}],3:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-/*jshint evil:true*/
-(function(root) {
-  var dust = {},
-      NONE = 'NONE',
-      ERROR = 'ERROR',
-      WARN = 'WARN',
-      INFO = 'INFO',
-      DEBUG = 'DEBUG',
-      loggingLevels = [DEBUG, INFO, WARN, ERROR, NONE],
-      EMPTY_FUNC = function() {},
-      logger = {},
-      originalLog,
-      loggerContext;
-
-  dust.debugLevel = NONE;
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd && define.amd.dust === true) {
+    define('dust.core', [], factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.dust = factory();
+  }
+}(this, function() {
+  var dust = {
+        "version": "2.7.2"
+      },
+      NONE = 'NONE', ERROR = 'ERROR', WARN = 'WARN', INFO = 'INFO', DEBUG = 'DEBUG',
+      EMPTY_FUNC = function() {};
 
   dust.config = {
     whitespace: false,
+    amd: false,
+    cjs: false,
+    cache: true
   };
 
   // Directive aliases to minify code
@@ -996,47 +973,47 @@ var helpers = {
     "helper": "h"
   };
 
-  // Try to find the console in global scope
-  if (root && root.console && root.console.log) {
-    loggerContext = root.console;
-    originalLog = root.console.log;
-  }
+  (function initLogging() {
+    /*global process, console*/
+    var loggingLevels = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, NONE: 4 },
+        consoleLog,
+        log;
 
-  // robust logger for node.js, modern browsers, and IE <= 9.
-  logger.log = loggerContext ? function() {
-      // Do this for normal browsers
-      if (typeof originalLog === 'function') {
-        logger.log = function() {
-          originalLog.apply(loggerContext, arguments);
+    if (typeof console !== 'undefined' && console.log) {
+      consoleLog = console.log;
+      if(typeof consoleLog === 'function') {
+        log = function() {
+          consoleLog.apply(console, arguments);
         };
       } else {
-        // Do this for IE <= 9
-        logger.log = function() {
-          var message = Array.prototype.slice.apply(arguments).join(' ');
-          originalLog(message);
+        log = function() {
+          consoleLog(Array.prototype.slice.apply(arguments).join(' '));
         };
       }
-      logger.log.apply(this, arguments);
-  } : function() { /* no op */ };
-
-  /**
-   * Log dust debug statements, info statements, warning statements, and errors.
-   * Filters out the messages based on the dust.debuglevel.
-   * This default implementation will print to the console if it exists.
-   * @param {String|Error} message the message to print/throw
-   * @param {String} type the severity of the message(ERROR, WARN, INFO, or DEBUG)
-   * @public
-   */
-  dust.log = function(message, type) {
-    type = type || INFO;
-    if (dust.debugLevel !== NONE && dust.indexInArray(loggingLevels, type) >= dust.indexInArray(loggingLevels, dust.debugLevel)) {
-      if(!dust.logQueue) {
-        dust.logQueue = [];
-      }
-      dust.logQueue.push({message: message, type: type});
-      logger.log('[DUST ' + type + ']: ' + message);
+    } else {
+      log = EMPTY_FUNC;
     }
-  };
+
+    /**
+     * Filters messages based on `dust.debugLevel`.
+     * This default implementation will print to the console if it exists.
+     * @param {String|Error} message the message to print/throw
+     * @param {String} type the severity of the message(ERROR, WARN, INFO, or DEBUG)
+     * @public
+     */
+    dust.log = function(message, type) {
+      type = type || INFO;
+      if (loggingLevels[type] >= loggingLevels[dust.debugLevel]) {
+        log('[DUST:' + type + ']', message);
+      }
+    };
+
+    dust.debugLevel = NONE;
+    if(typeof process !== 'undefined' && process.env && /\bdust\b/.test(process.env.DEBUG)) {
+      dust.debugLevel = DEBUG;
+    }
+
+  }());
 
   dust.helpers = {};
 
@@ -1046,24 +1023,27 @@ var helpers = {
     if (!name) {
       return;
     }
-    dust.cache[name] = tmpl;
+    tmpl.templateName = name;
+    if (dust.config.cache !== false) {
+      dust.cache[name] = tmpl;
+    }
   };
 
-  dust.render = function(name, context, callback) {
+  dust.render = function(nameOrTemplate, context, callback) {
     var chunk = new Stub(callback).head;
     try {
-      dust.load(name, chunk, Context.wrap(context, name)).end();
+      load(nameOrTemplate, chunk, context).end();
     } catch (err) {
       chunk.setError(err);
     }
   };
 
-  dust.stream = function(name, context) {
+  dust.stream = function(nameOrTemplate, context) {
     var stream = new Stream(),
         chunk = stream.head;
     dust.nextTick(function() {
       try {
-        dust.load(name, stream.head, Context.wrap(context, name)).end();
+        load(nameOrTemplate, chunk, context).end();
       } catch (err) {
         chunk.setError(err);
       }
@@ -1071,52 +1051,82 @@ var helpers = {
     return stream;
   };
 
-  dust.renderSource = function(source, context, callback) {
-    return dust.compileFn(source)(context, callback);
-  };
+  /**
+   * Extracts a template function (body_0) from whatever is passed.
+   * @param nameOrTemplate {*} Could be:
+   *   - the name of a template to load from cache
+   *   - a CommonJS-compiled template (a function with a `template` property)
+   *   - a template function
+   * @param loadFromCache {Boolean} if false, don't look in the cache
+   * @return {Function} a template function, if found
+   */
+  function getTemplate(nameOrTemplate, loadFromCache/*=true*/) {
+    if(!nameOrTemplate) {
+      return;
+    }
+    if(typeof nameOrTemplate === 'function' && nameOrTemplate.template) {
+      // Sugar away CommonJS module templates
+      return nameOrTemplate.template;
+    }
+    if(dust.isTemplateFn(nameOrTemplate)) {
+      // Template functions passed directly
+      return nameOrTemplate;
+    }
+    if(loadFromCache !== false) {
+      // Try loading a template with this name from cache
+      return dust.cache[nameOrTemplate];
+    }
+  }
 
-  dust.compileFn = function(source, name) {
-    // name is optional. When name is not provided the template can only be rendered using the callable returned by this function.
-    // If a name is provided the compiled template can also be rendered by name.
-    name = name || null;
-    var tmpl = dust.loadSource(dust.compile(source, name));
-    return function(context, callback) {
-      var master = callback ? new Stub(callback) : new Stream();
-      dust.nextTick(function() {
-        if(typeof tmpl === 'function') {
-          tmpl(master.head, Context.wrap(context, name)).end();
-        }
-        else {
-          dust.log(new Error('Template [' + name + '] cannot be resolved to a Dust function'), ERROR);
-        }
-      });
-      return master;
-    };
-  };
+  function load(nameOrTemplate, chunk, context) {
+    if(!nameOrTemplate) {
+      return chunk.setError(new Error('No template or template name provided to render'));
+    }
 
-  dust.load = function(name, chunk, context) {
-    var tmpl = dust.cache[name];
-    if (tmpl) {
-      return tmpl(chunk, context);
+    var template = getTemplate(nameOrTemplate, dust.config.cache);
+
+    if (template) {
+      return template(chunk, Context.wrap(context, template.templateName));
     } else {
       if (dust.onLoad) {
         return chunk.map(function(chunk) {
-          dust.onLoad(name, function(err, src) {
+          // Alias just so it's easier to read that this would always be a name
+          var name = nameOrTemplate;
+          // Three possible scenarios for a successful callback:
+          //   - `require(nameOrTemplate)(dust); cb()`
+          //   - `src = readFile('src.dust'); cb(null, src)`
+          //   - `compiledTemplate = require(nameOrTemplate)(dust); cb(null, compiledTemplate)`
+          function done(err, srcOrTemplate) {
+            var template;
             if (err) {
               return chunk.setError(err);
             }
-            if (!dust.cache[name]) {
-              dust.loadSource(dust.compile(src, name));
+            // Prefer a template that is passed via callback over the cached version.
+            template = getTemplate(srcOrTemplate, false) || getTemplate(name, dust.config.cache);
+            if (!template) {
+              // It's a template string, compile it and register under `name`
+              if(dust.compile) {
+                template = dust.loadSource(dust.compile(srcOrTemplate, name));
+              } else {
+                return chunk.setError(new Error('Dust compiler not available'));
+              }
             }
-            dust.cache[name](chunk, context).end();
-          });
+            template(chunk, Context.wrap(context, template.templateName)).end();
+          }
+
+          if(dust.onLoad.length === 3) {
+            dust.onLoad(name, context.options, done);
+          } else {
+            dust.onLoad(name, done);
+          }
         });
       }
-      return chunk.setError(new Error('Template Not Found: ' + name));
+      return chunk.setError(new Error('Template Not Found: ' + nameOrTemplate));
     }
-  };
+  }
 
-  dust.loadSource = function(source, path) {
+  dust.loadSource = function(source) {
+    /*jshint evil:true*/
     return eval(source);
   };
 
@@ -1128,75 +1138,94 @@ var helpers = {
     };
   }
 
-  // indexOf shim for arrays for IE <= 8
-  // source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf
-  dust.indexInArray = function(arr, item, fromIndex) {
-    fromIndex = +fromIndex || 0;
-    if (Array.prototype.indexOf) {
-      return arr.indexOf(item, fromIndex);
-    } else {
-    if ( arr === undefined || arr === null ) {
-      throw new TypeError( 'cannot call method "indexOf" of null' );
-    }
-
-    var length = arr.length; // Hack to convert object.length to a UInt32
-
-    if (Math.abs(fromIndex) === Infinity) {
-      fromIndex = 0;
-    }
-
-    if (fromIndex < 0) {
-      fromIndex += length;
-      if (fromIndex < 0) {
-        fromIndex = 0;
-      }
-    }
-
-    for (;fromIndex < length; fromIndex++) {
-      if (arr[fromIndex] === item) {
-        return fromIndex;
-      }
-    }
-
-    return -1;
-    }
-  };
-
   dust.nextTick = (function() {
     return function(callback) {
-      setTimeout(callback,0);
+      setTimeout(callback, 0);
     };
-  } )();
+  })();
 
+  /**
+   * Dust has its own rules for what is "empty"-- which is not the same as falsy.
+   * Empty arrays, null, and undefined are empty
+   */
   dust.isEmpty = function(value) {
-    if (dust.isArray(value) && !value.length) {
-      return true;
-    }
     if (value === 0) {
       return false;
     }
-    return (!value);
+    if (dust.isArray(value) && !value.length) {
+      return true;
+    }
+    return !value;
+  };
+
+  dust.isEmptyObject = function(obj) {
+    var key;
+    if (obj === null) {
+      return false;
+    }
+    if (obj === undefined) {
+      return false;
+    }
+    if (obj.length > 0) {
+      return false;
+    }
+    for (key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  dust.isTemplateFn = function(elem) {
+    return typeof elem === 'function' &&
+           elem.__dustBody;
+  };
+
+  /**
+   * Decide somewhat-naively if something is a Thenable.
+   * @param elem {*} object to inspect
+   * @return {Boolean} is `elem` a Thenable?
+   */
+  dust.isThenable = function(elem) {
+    return elem &&
+           typeof elem === 'object' &&
+           typeof elem.then === 'function';
+  };
+
+  /**
+   * Decide very naively if something is a Stream.
+   * @param elem {*} object to inspect
+   * @return {Boolean} is `elem` a Stream?
+   */
+  dust.isStreamable = function(elem) {
+    return elem &&
+           typeof elem.on === 'function' &&
+           typeof elem.pipe === 'function';
   };
 
   // apply the filter chain and return the output string
-  dust.filter = function(string, auto, filters) {
+  dust.filter = function(string, auto, filters, context) {
+    var i, len, name, filter;
     if (filters) {
-      for (var i=0, len=filters.length; i<len; i++) {
-        var name = filters[i];
+      for (i = 0, len = filters.length; i < len; i++) {
+        name = filters[i];
+        if (!name.length) {
+          continue;
+        }
+        filter = dust.filters[name];
         if (name === 's') {
           auto = null;
-        }
-        else if (typeof dust.filters[name] === 'function') {
-          string = dust.filters[name](string);
-        }
-        else {
-          dust.log('Invalid filter [' + name + ']', WARN);
+        } else if (typeof filter === 'function') {
+          string = filter(string, context);
+        } else {
+          dust.log('Invalid filter `' + name + '`', WARN);
         }
       }
     }
     // by default always apply the h filter, unless asked to unescape with |s
     if (auto) {
-      string = dust.filters[auto](string);
+      string = dust.filters[auto](string, context);
     }
     return string;
   };
@@ -1206,16 +1235,9 @@ var helpers = {
     j: function(value) { return dust.escapeJs(value); },
     u: encodeURI,
     uc: encodeURIComponent,
-    js: function(value) {
-      if (!JSON) {
-        dust.log('JSON is undefined.  JSON stringify has not been used on [' + value + ']', WARN);
-        return value;
-      } else {
-        return JSON.stringify(value);
-      }
-    },
+    js: function(value) { return dust.escapeJSON(value); },
     jp: function(value) {
-      if (!JSON) {dust.log('JSON is undefined.  JSON parse has not been used on [' + value + ']', WARN);
+      if (!JSON) {dust.log('JSON is undefined; could not parse `' + value + '`', WARN);
         return value;
       } else {
         return JSON.parse(value);
@@ -1223,22 +1245,38 @@ var helpers = {
     }
   };
 
-  function Context(stack, global, blocks, templateName) {
-    this.stack  = stack;
+  function Context(stack, global, options, blocks, templateName) {
+    if(stack !== undefined && !(stack instanceof Stack)) {
+      stack = new Stack(stack);
+    }
+    this.stack = stack;
     this.global = global;
+    this.options = options;
     this.blocks = blocks;
     this.templateName = templateName;
   }
 
-  dust.makeBase = function(global) {
-    return new Context(new Stack(), global);
+  dust.makeBase = dust.context = function(global, options) {
+    return new Context(undefined, global, options);
   };
+
+  /**
+   * Factory function that creates a closure scope around a Thenable-callback.
+   * Returns a function that can be passed to a Thenable that will resume a
+   * Context lookup once the Thenable resolves with new data, adding that new
+   * data to the lookup stack.
+   */
+  function getWithResolvedData(ctx, cur, down) {
+    return function(data) {
+      return ctx.push(data)._get(cur, down);
+    };
+  }
 
   Context.wrap = function(context, name) {
     if (context instanceof Context) {
       return context;
     }
-    return new Context(new Stack(context), {}, null, name);
+    return new Context(context, {}, {}, null, name);
   };
 
   /**
@@ -1275,9 +1313,10 @@ var helpers = {
    * @return {string | object}
    */
   Context.prototype._get = function(cur, down) {
-    var ctx = this.stack,
+    var ctx = this.stack || {},
         i = 1,
         value, first, len, ctxThis, fn;
+
     first = down[0];
     len = down.length;
 
@@ -1298,29 +1337,33 @@ var helpers = {
           ctx = ctx.tail;
         }
 
+        // Try looking in the global context if we haven't found anything yet
         if (value !== undefined) {
           ctx = value;
         } else {
-          ctx = this.global ? this.global[first] : undefined;
+          ctx = this.global && this.global[first];
         }
       } else if (ctx) {
         // if scope is limited by a leading dot, don't search up the tree
         if(ctx.head) {
           ctx = ctx.head[first];
         } else {
-          //context's head is empty, value we are searching for is not defined
+          // context's head is empty, value we are searching for is not defined
           ctx = undefined;
         }
       }
 
       while (ctx && i < len) {
+        if (dust.isThenable(ctx)) {
+          // Bail early by returning a Thenable for the remainder of the search tree
+          return ctx.then(getWithResolvedData(this, cur, down.slice(i)));
+        }
         ctxThis = ctx;
         ctx = ctx[down[i]];
         i++;
       }
     }
 
-    // Return the ctx or a function wrapping the application of the context.
     if (typeof ctx === 'function') {
       fn = function() {
         try {
@@ -1334,7 +1377,7 @@ var helpers = {
       return fn;
     } else {
       if (ctx === undefined) {
-        dust.log('Cannot find the value for reference [{' + down.join('.') + '}] in template [' + this.getTemplateName() + ']');
+        dust.log('Cannot find reference `{' + down.join('.') + '}` in template `' + this.getTemplateName() + '`', INFO);
       }
       return ctx;
     }
@@ -1345,36 +1388,57 @@ var helpers = {
   };
 
   Context.prototype.push = function(head, idx, len) {
-    return new Context(new Stack(head, this.stack, idx, len), this.global, this.blocks, this.getTemplateName());
+    if(head === undefined) {
+      dust.log("Not pushing an undefined variable onto the context", INFO);
+      return this;
+    }
+    return this.rebase(new Stack(head, this.stack, idx, len));
+  };
+
+  Context.prototype.pop = function() {
+    var head = this.current();
+    this.stack = this.stack && this.stack.tail;
+    return head;
   };
 
   Context.prototype.rebase = function(head) {
-    return new Context(new Stack(head), this.global, this.blocks, this.getTemplateName());
+    return new Context(head, this.global, this.options, this.blocks, this.getTemplateName());
+  };
+
+  Context.prototype.clone = function() {
+    var context = this.rebase();
+    context.stack = this.stack;
+    return context;
   };
 
   Context.prototype.current = function() {
-    return this.stack.head;
+    return this.stack && this.stack.head;
   };
 
-  Context.prototype.getBlock = function(key, chk, ctx) {
+  Context.prototype.getBlock = function(key) {
+    var blocks, len, fn;
+
     if (typeof key === 'function') {
-      var tempChk = new Chunk();
-      key = key(tempChk, this).data.join('');
+      key = key(new Chunk(), this).data.join('');
     }
 
-    var blocks = this.blocks;
+    blocks = this.blocks;
 
     if (!blocks) {
-      dust.log('No blocks for context[{' + key + '}] in template [' + this.getTemplateName() + ']', DEBUG);
-      return;
+      dust.log('No blocks for context `' + key + '` in template `' + this.getTemplateName() + '`', DEBUG);
+      return false;
     }
-    var len = blocks.length, fn;
+
+    len = blocks.length;
     while (len--) {
       fn = blocks[len][key];
       if (fn) {
         return fn;
       }
     }
+
+    dust.log('Malformed template `' + this.getTemplateName() + '` was missing one or more blocks.');
+    return false;
   };
 
   Context.prototype.shiftBlocks = function(locals) {
@@ -1387,9 +1451,22 @@ var helpers = {
       } else {
         newBlocks = blocks.concat([locals]);
       }
-      return new Context(this.stack, this.global, newBlocks, this.getTemplateName());
+      return new Context(this.stack, this.global, this.options, newBlocks, this.getTemplateName());
     }
     return this;
+  };
+
+  Context.prototype.resolve = function(body) {
+    var chunk;
+
+    if(typeof body !== 'function') {
+      return body;
+    }
+    chunk = new Chunk().render(body, this);
+    if(chunk instanceof Chunk) {
+      return chunk.data.join(''); // ie7 perf
+    }
+    return chunk;
   };
 
   Context.prototype.getTemplateName = function() {
@@ -1418,7 +1495,7 @@ var helpers = {
         this.out += chunk.data.join(''); //ie7 perf
       } else if (chunk.error) {
         this.callback(chunk.error);
-        dust.log('Chunk error [' + chunk.error + '] thrown. Ceasing to render this template.', WARN);
+        dust.log('Rendering failed with error `' + chunk.error + '`', ERROR);
         this.flush = EMPTY_FUNC;
         return;
       } else {
@@ -1430,6 +1507,9 @@ var helpers = {
     this.callback(null, this.out);
   };
 
+  /**
+   * Creates an interface sort of like a Streams2 ReadableStream.
+   */
   function Stream() {
     this.head = new Chunk(this);
   }
@@ -1442,7 +1522,8 @@ var helpers = {
         this.emit('data', chunk.data.join('')); //ie7 perf
       } else if (chunk.error) {
         this.emit('error', chunk.error);
-        dust.log('Chunk error [' + chunk.error + '] thrown. Ceasing to render this template.', WARN);
+        this.emit('end');
+        dust.log('Streaming failed with error `' + chunk.error + '`', ERROR);
         this.flush = EMPTY_FUNC;
         return;
       } else {
@@ -1454,63 +1535,87 @@ var helpers = {
     this.emit('end');
   };
 
+  /**
+   * Executes listeners for `type` by passing data. Note that this is different from a
+   * Node stream, which can pass an arbitrary number of arguments
+   * @return `true` if event had listeners, `false` otherwise
+   */
   Stream.prototype.emit = function(type, data) {
-    if (!this.events) {
-      dust.log('No events to emit', INFO);
+    var events = this.events || {},
+        handlers = events[type] || [],
+        i, l;
+
+    if (!handlers.length) {
+      dust.log('Stream broadcasting, but no listeners for `' + type + '`', DEBUG);
       return false;
     }
-    var handler = this.events[type];
-    if (!handler) {
-      dust.log('Event type [' + type + '] does not exist', WARN);
-      return false;
+
+    handlers = handlers.slice(0);
+    for (i = 0, l = handlers.length; i < l; i++) {
+      handlers[i](data);
     }
-    if (typeof handler === 'function') {
-      handler(data);
-    } else if (dust.isArray(handler)) {
-      var listeners = handler.slice(0);
-      for (var i = 0, l = listeners.length; i < l; i++) {
-        listeners[i](data);
-      }
-    } else {
-      dust.log('Event Handler [' + handler + '] is not of a type that is handled by emit', WARN);
-    }
+    return true;
   };
 
   Stream.prototype.on = function(type, callback) {
-    if (!this.events) {
-      this.events = {};
-    }
-    if (!this.events[type]) {
-      if(callback) {
-        this.events[type] = callback;
-      } else {
-        dust.log('Callback for type [' + type + '] does not exist. Listener not registered.', WARN);
-      }
-    } else if(typeof this.events[type] === 'function') {
-      this.events[type] = [this.events[type], callback];
+    var events = this.events = this.events || {},
+        handlers = events[type] = events[type] || [];
+
+    if(typeof callback !== 'function') {
+      dust.log('No callback function provided for `' + type + '` event listener', WARN);
     } else {
-      this.events[type].push(callback);
+      handlers.push(callback);
     }
     return this;
   };
 
+  /**
+   * Pipes to a WritableStream. Note that backpressure isn't implemented,
+   * so we just write as fast as we can.
+   * @param stream {WritableStream}
+   * @return self
+   */
   Stream.prototype.pipe = function(stream) {
-    this.on('data', function(data) {
+    if(typeof stream.write !== 'function' ||
+       typeof stream.end !== 'function') {
+      dust.log('Incompatible stream passed to `pipe`', WARN);
+      return this;
+    }
+
+    var destEnded = false;
+
+    if(typeof stream.emit === 'function') {
+      stream.emit('pipe', this);
+    }
+
+    if(typeof stream.on === 'function') {
+      stream.on('error', function() {
+        destEnded = true;
+      });
+    }
+
+    return this
+    .on('data', function(data) {
+      if(destEnded) {
+        return;
+      }
       try {
         stream.write(data, 'utf8');
       } catch (err) {
         dust.log(err, ERROR);
       }
-    }).on('end', function() {
+    })
+    .on('end', function() {
+      if(destEnded) {
+        return;
+      }
       try {
-        return stream.end();
+        stream.end();
+        destEnded = true;
       } catch (err) {
         dust.log(err, ERROR);
       }
-    }).on('error', function(err) {
-      stream.error(err);
     });
-    return this;
   };
 
   function Chunk(root, next, taps) {
@@ -1522,7 +1627,7 @@ var helpers = {
   }
 
   Chunk.prototype.write = function(data) {
-    var taps  = this.taps;
+    var taps = this.taps;
 
     if (taps) {
       data = taps.go(data);
@@ -1548,9 +1653,9 @@ var helpers = {
     this.flushable = true;
     try {
       callback(branch);
-    } catch(e) {
-      dust.log(e, ERROR);
-      branch.setError(e);
+    } catch(err) {
+      dust.log(err, ERROR);
+      branch.setError(err);
     }
     return cursor;
   };
@@ -1577,40 +1682,51 @@ var helpers = {
 
   Chunk.prototype.reference = function(elem, context, auto, filters) {
     if (typeof elem === 'function') {
-      // Changed the function calling to use apply with the current context to make sure
-      // that "this" is wat we expect it to be inside the function
       elem = elem.apply(context.current(), [this, context, null, {auto: auto, filters: filters}]);
       if (elem instanceof Chunk) {
         return elem;
+      } else {
+        return this.reference(elem, context, auto, filters);
       }
     }
-    if (!dust.isEmpty(elem)) {
-      return this.write(dust.filter(elem, auto, filters));
+    if (dust.isThenable(elem)) {
+      return this.await(elem, context, null, auto, filters);
+    } else if (dust.isStreamable(elem)) {
+      return this.stream(elem, context, null, auto, filters);
+    } else if (!dust.isEmpty(elem)) {
+      return this.write(dust.filter(elem, auto, filters, context));
     } else {
       return this;
     }
   };
 
   Chunk.prototype.section = function(elem, context, bodies, params) {
-    // anonymous functions
-    if (typeof elem === 'function' && !elem.__dustBody) {
+    var body = bodies.block,
+        skip = bodies['else'],
+        chunk = this,
+        i, len, head;
+
+    if (typeof elem === 'function' && !dust.isTemplateFn(elem)) {
       try {
         elem = elem.apply(context.current(), [this, context, bodies, params]);
-      } catch(e) {
-        dust.log(e, ERROR);
-        return this.setError(e);
+      } catch(err) {
+        dust.log(err, ERROR);
+        return this.setError(err);
       }
-      // functions that return chunks are assumed to have handled the body and/or have modified the chunk
-      // use that return value as the current chunk and go to the next method in the chain
+      // Functions that return chunks are assumed to have handled the chunk manually.
+      // Make that chunk the current one and go to the next method in the chain.
       if (elem instanceof Chunk) {
         return elem;
       }
     }
-    var body = bodies.block,
-        skip = bodies['else'];
 
-    // a.k.a Inline parameters in the Dust documentations
-    if (params) {
+    if (dust.isEmptyObject(bodies)) {
+      // No bodies to render, and we've already invoked any function that was available in
+      // hopes of returning a Chunk.
+      return chunk;
+    }
+
+    if (!dust.isEmptyObject(params)) {
       context = context.push(params);
     }
 
@@ -1619,33 +1735,28 @@ var helpers = {
     When elem resolves to a value or object instead of an array, Dust sets the current context to the value
     and renders the block one time.
     */
-    //non empty array is truthy, empty array is falsy
     if (dust.isArray(elem)) {
       if (body) {
-        var len = elem.length, chunk = this;
+        len = elem.length;
         if (len > 0) {
-          // any custom helper can blow up the stack
-          // and store a flattened context, guard defensively
-          if(context.stack.head) {
-            context.stack.head['$len'] = len;
-          }
-          for (var i=0; i<len; i++) {
-            if(context.stack.head) {
-              context.stack.head['$idx'] = i;
-            }
+          head = context.stack && context.stack.head || {};
+          head.$len = len;
+          for (i = 0; i < len; i++) {
+            head.$idx = i;
             chunk = body(chunk, context.push(elem[i], i, len));
           }
-          if(context.stack.head) {
-            context.stack.head['$idx'] = undefined;
-            context.stack.head['$len'] = undefined;
-          }
+          head.$idx = undefined;
+          head.$len = undefined;
           return chunk;
-        }
-        else if (skip) {
+        } else if (skip) {
           return skip(this, context);
         }
       }
-    } else if (elem  === true) {
+    } else if (dust.isThenable(elem)) {
+      return this.await(elem, context, bodies);
+    } else if (dust.isStreamable(elem)) {
+      return this.stream(elem, context, bodies);
+    } else if (elem === true) {
      // true is truthy but does not change context
       if (body) {
         return body(this, context);
@@ -1662,7 +1773,7 @@ var helpers = {
     } else if (skip) {
       return skip(this, context);
     }
-    dust.log('Not rendering section (#) block in template [' + context.getTemplateName() + '], because above key was not found', DEBUG);
+    dust.log('Section without corresponding key in template `' + context.getTemplateName() + '`', DEBUG);
     return this;
   };
 
@@ -1674,10 +1785,10 @@ var helpers = {
       if (body) {
         return body(this, context);
       }
+      dust.log('No block for exists check in template `' + context.getTemplateName() + '`', DEBUG);
     } else if (skip) {
       return skip(this, context);
     }
-    dust.log('Not rendering exists (?) block in template [' + context.getTemplateName() + '], because above key was not found', DEBUG);
     return this;
   };
 
@@ -1689,19 +1800,15 @@ var helpers = {
       if (body) {
         return body(this, context);
       }
+      dust.log('No block for not-exists check in template `' + context.getTemplateName() + '`', DEBUG);
     } else if (skip) {
       return skip(this, context);
     }
-    dust.log('Not rendering not exists (^) block check in template [' + context.getTemplateName() + '], because above key was found', DEBUG);
     return this;
   };
 
   Chunk.prototype.block = function(elem, context, bodies) {
-    var body = bodies.block;
-
-    if (elem) {
-      body = elem;
-    }
+    var body = elem || bodies.block;
 
     if (body) {
       return body(this, context);
@@ -1709,54 +1816,154 @@ var helpers = {
     return this;
   };
 
-  Chunk.prototype.partial = function(elem, context, params) {
-    var partialContext;
-    //put the params context second to match what section does. {.} matches the current context without parameters
-    // start with an empty context
-    partialContext = dust.makeBase(context.global);
-    partialContext.blocks = context.blocks;
-    if (context.stack && context.stack.tail){
-      // grab the stack(tail) off of the previous context if we have it
-      partialContext.stack = context.stack.tail;
-    }
-    if (params){
-      //put params on
-      partialContext = partialContext.push(params);
+  Chunk.prototype.partial = function(elem, context, partialContext, params) {
+    var head;
+
+    if(params === undefined) {
+      // Compatibility for < 2.7.0 where `partialContext` did not exist
+      params = partialContext;
+      partialContext = context;
     }
 
-    if(typeof elem === 'string') {
-      partialContext.templateName = elem;
+    if (!dust.isEmptyObject(params)) {
+      partialContext = partialContext.clone();
+      head = partialContext.pop();
+      partialContext = partialContext.push(params)
+                                     .push(head);
     }
 
-    //reattach the head
-    partialContext = partialContext.push(context.stack.head);
-
-    var partialChunk;
-    if (typeof elem === 'function') {
-      partialChunk = this.capture(elem, partialContext, function(name, chunk) {
-        partialContext.templateName = partialContext.templateName || name;
-        dust.load(name, chunk, partialContext).end();
+    if (dust.isTemplateFn(elem)) {
+      // The eventual result of evaluating `elem` is a partial name
+      // Load the partial after getting its name and end the async chunk
+      return this.capture(elem, context, function(name, chunk) {
+        partialContext.templateName = name;
+        load(name, chunk, partialContext).end();
       });
     } else {
-      partialChunk = dust.load(elem, this, partialContext);
+      partialContext.templateName = elem;
+      return load(elem, this, partialContext);
     }
-    return partialChunk;
   };
 
-  Chunk.prototype.helper = function(name, context, bodies, params) {
-    var chunk = this;
+  Chunk.prototype.helper = function(name, context, bodies, params, auto) {
+    var chunk = this,
+        filters = params.filters,
+        ret;
+
+    // Pre-2.7.1 compat: if auto is undefined, it's an old template. Automatically escape
+    if (auto === undefined) {
+      auto = 'h';
+    }
+
     // handle invalid helpers, similar to invalid filters
     if(dust.helpers[name]) {
       try {
-        return dust.helpers[name](chunk, context, bodies, params);
-      } catch(e) {
-        dust.log('Error in ' + name + ' helper: ' + e, ERROR);
-        return chunk.setError(e);
+        ret = dust.helpers[name](chunk, context, bodies, params);
+        if (ret instanceof Chunk) {
+          return ret;
+        }
+        if(typeof filters === 'string') {
+          filters = filters.split('|');
+        }
+        if (!dust.isEmptyObject(bodies)) {
+          return chunk.section(ret, context, bodies, params);
+        }
+        // Helpers act slightly differently from functions in context in that they will act as
+        // a reference if they are self-closing (due to grammar limitations)
+        // In the Chunk.await function we check to make sure bodies is null before acting as a reference
+        return chunk.reference(ret, context, auto, filters);
+      } catch(err) {
+        dust.log('Error in helper `' + name + '`: ' + err.message, ERROR);
+        return chunk.setError(err);
       }
     } else {
-      dust.log('Invalid helper [' + name + ']', WARN);
+      dust.log('Helper `' + name + '` does not exist', WARN);
       return chunk;
     }
+  };
+
+  /**
+   * Reserve a chunk to be evaluated once a thenable is resolved or rejected
+   * @param thenable {Thenable} the target thenable to await
+   * @param context {Context} context to use to render the deferred chunk
+   * @param bodies {Object} must contain a "body", may contain an "error"
+   * @param auto {String} automatically apply this filter if the Thenable is a reference
+   * @param filters {Array} apply these filters if the Thenable is a reference
+   * @return {Chunk}
+   */
+  Chunk.prototype.await = function(thenable, context, bodies, auto, filters) {
+    return this.map(function(chunk) {
+      thenable.then(function(data) {
+        if (bodies) {
+          chunk = chunk.section(data, context, bodies);
+        } else {
+          // Actually a reference. Self-closing sections don't render
+          chunk = chunk.reference(data, context, auto, filters);
+        }
+        chunk.end();
+      }, function(err) {
+        var errorBody = bodies && bodies.error;
+        if(errorBody) {
+          chunk.render(errorBody, context.push(err)).end();
+        } else {
+          dust.log('Unhandled promise rejection in `' + context.getTemplateName() + '`', INFO);
+          chunk.end();
+        }
+      });
+    });
+  };
+
+  /**
+   * Reserve a chunk to be evaluated with the contents of a streamable.
+   * Currently an error event will bomb out the stream. Once an error
+   * is received, we push it to an {:error} block if one exists, and log otherwise,
+   * then stop listening to the stream.
+   * @param streamable {Streamable} the target streamable that will emit events
+   * @param context {Context} context to use to render each thunk
+   * @param bodies {Object} must contain a "body", may contain an "error"
+   * @return {Chunk}
+   */
+  Chunk.prototype.stream = function(stream, context, bodies, auto, filters) {
+    var body = bodies && bodies.block,
+        errorBody = bodies && bodies.error;
+    return this.map(function(chunk) {
+      var ended = false;
+      stream
+        .on('data', function data(thunk) {
+          if(ended) {
+            return;
+          }
+          if(body) {
+            // Fork a new chunk out of the blockstream so that we can flush it independently
+            chunk = chunk.map(function(chunk) {
+              chunk.render(body, context.push(thunk)).end();
+            });
+          } else if(!bodies) {
+            // When actually a reference, don't fork, just write into the master async chunk
+            chunk = chunk.reference(thunk, context, auto, filters);
+          }
+        })
+        .on('error', function error(err) {
+          if(ended) {
+            return;
+          }
+          if(errorBody) {
+            chunk.render(errorBody, context.push(err));
+          } else {
+            dust.log('Unhandled stream error in `' + context.getTemplateName() + '`', INFO);
+          }
+          if(!ended) {
+            ended = true;
+            chunk.end();
+          }
+        })
+        .on('end', function end() {
+          if(!ended) {
+            ended = true;
+            chunk.end();
+          }
+        });
+    });
   };
 
   Chunk.prototype.capture = function(body, context, callback) {
@@ -1812,7 +2019,10 @@ var helpers = {
       SQUOT  = /\'/g;
 
   dust.escapeHtml = function(s) {
-    if (typeof s === 'string') {
+    if (typeof s === "string" || (s && typeof s.toString === "function")) {
+      if (typeof s !== "string") {
+        s = s.toString();
+      }
       if (!HCHARS.test(s)) {
         return s;
       }
@@ -1849,21 +2059,32 @@ var helpers = {
     return s;
   };
 
+  dust.escapeJSON = function(o) {
+    if (!JSON) {
+      dust.log('JSON is undefined; could not escape `' + o + '`', WARN);
+      return o;
+    } else {
+      return JSON.stringify(o)
+        .replace(LS, '\\u2028')
+        .replace(PS, '\\u2029')
+        .replace(LT, '\\u003c');
+    }
+  };
 
-  if (typeof exports === 'object') {
-    module.exports = dust;
-  } else {
-    root.dust = dust;
-  }
+  return dust;
 
-})((function(){return this;})());
+}));
 
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/dustjs-linkedin/lib/dust.js","/../node_modules/dustjs-linkedin/lib")
 },{"1YiZ5S":8,"buffer":5}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-/* Do not edit the parser directly. This is a generated file created using a build script and the PEG grammar. */
+/* Do not edit this file directly. It is automatically generated from src/dust.pegjs */
 (function(root, factory) {
-  if (typeof exports === 'object') {
+  if (typeof define === "function" && define.amd && define.amd.dust === true) {
+    define("dust.parse", ["dust.core"], function(dust) {
+      return factory(dust).parse;
+    });
+  } else if (typeof exports === 'object') {
     // in Node, require this file if we want to use the parser as a standalone module
     module.exports = factory(require('./dust'));
     // @see server file for parser methods exposed in node
@@ -1908,9 +2129,8 @@ var helpers = {
 
         peg$c0 = [],
         peg$c1 = function(p) {
-            return ["body"]
-                   .concat(p)
-                   .concat([['line', line()], ['col', column()]]);
+            var body = ["body"].concat(p);
+            return withPosition(body);
           },
         peg$c2 = { type: "other", description: "section" },
         peg$c3 = peg$FAILED,
@@ -1924,14 +2144,14 @@ var helpers = {
         peg$c6 = void 0,
         peg$c7 = function(t, b, e, n) {
             e.push(["param", ["literal", "block"], b]);
-            t.push(e);
-            return t.concat([['line', line()], ['col', column()]]);
+            t.push(e, ["filters"]);
+            return withPosition(t)
           },
         peg$c8 = "/",
         peg$c9 = { type: "literal", value: "/", description: "\"/\"" },
         peg$c10 = function(t) {
-            t.push(["bodies"]);
-            return t.concat([['line', line()], ['col', column()]]);
+            t.push(["bodies"], ["filters"]);
+            return withPosition(t)
           },
         peg$c11 = /^[#?\^<+@%]/,
         peg$c12 = { type: "class", value: "[#?\\^<+@%]", description: "[#?\\^<+@%]" },
@@ -1950,7 +2170,7 @@ var helpers = {
         peg$c25 = { type: "other", description: "bodies" },
         peg$c26 = function(p) { return ["bodies"].concat(p) },
         peg$c27 = { type: "other", description: "reference" },
-        peg$c28 = function(n, f) { return ["reference", n, f].concat([['line', line()], ['col', column()]]) },
+        peg$c28 = function(n, f) { return withPosition(["reference", n, f]) },
         peg$c29 = { type: "other", description: "partial" },
         peg$c30 = ">",
         peg$c31 = { type: "literal", value: ">", description: "\">\"" },
@@ -1959,7 +2179,7 @@ var helpers = {
         peg$c34 = function(k) {return ["literal", k]},
         peg$c35 = function(s, n, c, p) {
             var key = (s === ">") ? "partial" : s;
-            return [key, n, c, p].concat([['line', line()], ['col', column()]]);
+            return withPosition([key, n, c, p])
           },
         peg$c36 = { type: "other", description: "filters" },
         peg$c37 = "|",
@@ -1968,102 +2188,115 @@ var helpers = {
         peg$c40 = { type: "other", description: "special" },
         peg$c41 = "~",
         peg$c42 = { type: "literal", value: "~", description: "\"~\"" },
-        peg$c43 = function(k) { return ["special", k].concat([['line', line()], ['col', column()]]) },
+        peg$c43 = function(k) { return withPosition(["special", k]) },
         peg$c44 = { type: "other", description: "identifier" },
-        peg$c45 = function(p) { var arr = ["path"].concat(p); arr.text = p[1].join('.').replace(/,line,\d+,col,\d+/g,''); return arr; },
-        peg$c46 = function(k) { var arr = ["key", k]; arr.text = k; return arr; },
+        peg$c45 = function(p) {
+            var arr = ["path"].concat(p);
+            arr.text = p[1].join('.').replace(/,line,\d+,col,\d+/g,'');
+            return arr;
+          },
+        peg$c46 = function(k) {
+            var arr = ["key", k];
+            arr.text = k;
+            return arr;
+          },
         peg$c47 = { type: "other", description: "number" },
         peg$c48 = function(n) { return ['literal', n]; },
         peg$c49 = { type: "other", description: "float" },
         peg$c50 = ".",
         peg$c51 = { type: "literal", value: ".", description: "\".\"" },
-        peg$c52 = function(l, r) { return parseFloat(l + "." + r.join('')); },
-        peg$c53 = { type: "other", description: "integer" },
+        peg$c52 = function(l, r) { return parseFloat(l + "." + r); },
+        peg$c53 = { type: "other", description: "unsigned_integer" },
         peg$c54 = /^[0-9]/,
         peg$c55 = { type: "class", value: "[0-9]", description: "[0-9]" },
-        peg$c56 = function(digits) { return parseInt(digits.join(""), 10); },
-        peg$c57 = { type: "other", description: "path" },
-        peg$c58 = function(k, d) {
+        peg$c56 = function(digits) { return makeInteger(digits); },
+        peg$c57 = { type: "other", description: "signed_integer" },
+        peg$c58 = "-",
+        peg$c59 = { type: "literal", value: "-", description: "\"-\"" },
+        peg$c60 = function(sign, n) { return n * -1; },
+        peg$c61 = { type: "other", description: "integer" },
+        peg$c62 = { type: "other", description: "path" },
+        peg$c63 = function(k, d) {
             d = d[0];
             if (k && d) {
               d.unshift(k);
-              return [false, d].concat([['line', line()], ['col', column()]]);
+              return withPosition([false, d])
             }
-            return [true, d].concat([['line', line()], ['col', column()]]);
+            return withPosition([true, d])
           },
-        peg$c59 = function(d) {
+        peg$c64 = function(d) {
             if (d.length > 0) {
-              return [true, d[0]].concat([['line', line()], ['col', column()]]);
+              return withPosition([true, d[0]])
             }
-            return [true, []].concat([['line', line()], ['col', column()]]);
+            return withPosition([true, []])
           },
-        peg$c60 = { type: "other", description: "key" },
-        peg$c61 = /^[a-zA-Z_$]/,
-        peg$c62 = { type: "class", value: "[a-zA-Z_$]", description: "[a-zA-Z_$]" },
-        peg$c63 = /^[0-9a-zA-Z_$\-]/,
-        peg$c64 = { type: "class", value: "[0-9a-zA-Z_$\\-]", description: "[0-9a-zA-Z_$\\-]" },
-        peg$c65 = function(h, t) { return h + t.join('') },
-        peg$c66 = { type: "other", description: "array" },
-        peg$c67 = function(n) {return n.join('')},
-        peg$c68 = function(a) {return a; },
-        peg$c69 = function(i, nk) { if(nk) { nk.unshift(i); } else {nk = [i] } return nk; },
-        peg$c70 = { type: "other", description: "array_part" },
-        peg$c71 = function(k) {return k},
-        peg$c72 = function(d, a) { if (a) { return d.concat(a); } else { return d; } },
-        peg$c73 = { type: "other", description: "inline" },
-        peg$c74 = "\"",
-        peg$c75 = { type: "literal", value: "\"", description: "\"\\\"\"" },
-        peg$c76 = function() { return ["literal", ""].concat([['line', line()], ['col', column()]]) },
-        peg$c77 = function(l) { return ["literal", l].concat([['line', line()], ['col', column()]]) },
-        peg$c78 = function(p) { return ["body"].concat(p).concat([['line', line()], ['col', column()]]) },
-        peg$c79 = function(l) { return ["buffer", l] },
-        peg$c80 = { type: "other", description: "buffer" },
-        peg$c81 = function(e, w) { return ["format", e, w.join('')].concat([['line', line()], ['col', column()]]) },
-        peg$c82 = { type: "any", description: "any character" },
-        peg$c83 = function(c) {return c},
-        peg$c84 = function(b) { return ["buffer", b.join('')].concat([['line', line()], ['col', column()]]) },
-        peg$c85 = { type: "other", description: "literal" },
-        peg$c86 = /^[^"]/,
-        peg$c87 = { type: "class", value: "[^\"]", description: "[^\"]" },
-        peg$c88 = function(b) { return b.join('') },
-        peg$c89 = "\\\"",
-        peg$c90 = { type: "literal", value: "\\\"", description: "\"\\\\\\\"\"" },
-        peg$c91 = function() { return '"' },
-        peg$c92 = { type: "other", description: "raw" },
-        peg$c93 = "{`",
-        peg$c94 = { type: "literal", value: "{`", description: "\"{`\"" },
-        peg$c95 = "`}",
-        peg$c96 = { type: "literal", value: "`}", description: "\"`}\"" },
-        peg$c97 = function(char) {return char},
-        peg$c98 = function(rawText) { return ["raw", rawText.join('')].concat([['line', line()], ['col', column()]]) },
-        peg$c99 = { type: "other", description: "comment" },
-        peg$c100 = "{!",
-        peg$c101 = { type: "literal", value: "{!", description: "\"{!\"" },
-        peg$c102 = "!}",
-        peg$c103 = { type: "literal", value: "!}", description: "\"!}\"" },
-        peg$c104 = function(c) { return ["comment", c.join('')].concat([['line', line()], ['col', column()]]) },
-        peg$c105 = /^[#?\^><+%:@\/~%]/,
-        peg$c106 = { type: "class", value: "[#?\\^><+%:@\\/~%]", description: "[#?\\^><+%:@\\/~%]" },
-        peg$c107 = "{",
-        peg$c108 = { type: "literal", value: "{", description: "\"{\"" },
-        peg$c109 = "}",
-        peg$c110 = { type: "literal", value: "}", description: "\"}\"" },
-        peg$c111 = "[",
-        peg$c112 = { type: "literal", value: "[", description: "\"[\"" },
-        peg$c113 = "]",
-        peg$c114 = { type: "literal", value: "]", description: "\"]\"" },
-        peg$c115 = "\n",
-        peg$c116 = { type: "literal", value: "\n", description: "\"\\n\"" },
-        peg$c117 = "\r\n",
-        peg$c118 = { type: "literal", value: "\r\n", description: "\"\\r\\n\"" },
-        peg$c119 = "\r",
-        peg$c120 = { type: "literal", value: "\r", description: "\"\\r\"" },
-        peg$c121 = "\u2028",
-        peg$c122 = { type: "literal", value: "\u2028", description: "\"\\u2028\"" },
-        peg$c123 = "\u2029",
-        peg$c124 = { type: "literal", value: "\u2029", description: "\"\\u2029\"" },
-        peg$c125 = /^[\t\x0B\f \xA0\uFEFF]/,
-        peg$c126 = { type: "class", value: "[\\t\\x0B\\f \\xA0\\uFEFF]", description: "[\\t\\x0B\\f \\xA0\\uFEFF]" },
+        peg$c65 = { type: "other", description: "key" },
+        peg$c66 = /^[a-zA-Z_$]/,
+        peg$c67 = { type: "class", value: "[a-zA-Z_$]", description: "[a-zA-Z_$]" },
+        peg$c68 = /^[0-9a-zA-Z_$\-]/,
+        peg$c69 = { type: "class", value: "[0-9a-zA-Z_$\\-]", description: "[0-9a-zA-Z_$\\-]" },
+        peg$c70 = function(h, t) { return h + t.join('') },
+        peg$c71 = { type: "other", description: "array" },
+        peg$c72 = function(n) {return n.join('')},
+        peg$c73 = function(a) {return a; },
+        peg$c74 = function(i, nk) { if(nk) { nk.unshift(i); } else {nk = [i] } return nk; },
+        peg$c75 = { type: "other", description: "array_part" },
+        peg$c76 = function(k) {return k},
+        peg$c77 = function(d, a) { if (a) { return d.concat(a); } else { return d; } },
+        peg$c78 = { type: "other", description: "inline" },
+        peg$c79 = "\"",
+        peg$c80 = { type: "literal", value: "\"", description: "\"\\\"\"" },
+        peg$c81 = function() { return withPosition(["literal", ""]) },
+        peg$c82 = function(l) { return withPosition(["literal", l]) },
+        peg$c83 = function(p) { return withPosition(["body"].concat(p)) },
+        peg$c84 = function(l) { return ["buffer", l] },
+        peg$c85 = { type: "other", description: "buffer" },
+        peg$c86 = function(e, w) { return withPosition(["format", e, w.join('')]) },
+        peg$c87 = { type: "any", description: "any character" },
+        peg$c88 = function(c) {return c},
+        peg$c89 = function(b) { return withPosition(["buffer", b.join('')]) },
+        peg$c90 = { type: "other", description: "literal" },
+        peg$c91 = /^[^"]/,
+        peg$c92 = { type: "class", value: "[^\"]", description: "[^\"]" },
+        peg$c93 = function(b) { return b.join('') },
+        peg$c94 = "\\\"",
+        peg$c95 = { type: "literal", value: "\\\"", description: "\"\\\\\\\"\"" },
+        peg$c96 = function() { return '"' },
+        peg$c97 = { type: "other", description: "raw" },
+        peg$c98 = "{`",
+        peg$c99 = { type: "literal", value: "{`", description: "\"{`\"" },
+        peg$c100 = "`}",
+        peg$c101 = { type: "literal", value: "`}", description: "\"`}\"" },
+        peg$c102 = function(character) {return character},
+        peg$c103 = function(rawText) { return withPosition(["raw", rawText.join('')]) },
+        peg$c104 = { type: "other", description: "comment" },
+        peg$c105 = "{!",
+        peg$c106 = { type: "literal", value: "{!", description: "\"{!\"" },
+        peg$c107 = "!}",
+        peg$c108 = { type: "literal", value: "!}", description: "\"!}\"" },
+        peg$c109 = function(c) { return withPosition(["comment", c.join('')]) },
+        peg$c110 = /^[#?\^><+%:@\/~%]/,
+        peg$c111 = { type: "class", value: "[#?\\^><+%:@\\/~%]", description: "[#?\\^><+%:@\\/~%]" },
+        peg$c112 = "{",
+        peg$c113 = { type: "literal", value: "{", description: "\"{\"" },
+        peg$c114 = "}",
+        peg$c115 = { type: "literal", value: "}", description: "\"}\"" },
+        peg$c116 = "[",
+        peg$c117 = { type: "literal", value: "[", description: "\"[\"" },
+        peg$c118 = "]",
+        peg$c119 = { type: "literal", value: "]", description: "\"]\"" },
+        peg$c120 = "\n",
+        peg$c121 = { type: "literal", value: "\n", description: "\"\\n\"" },
+        peg$c122 = "\r\n",
+        peg$c123 = { type: "literal", value: "\r\n", description: "\"\\r\\n\"" },
+        peg$c124 = "\r",
+        peg$c125 = { type: "literal", value: "\r", description: "\"\\r\"" },
+        peg$c126 = "\u2028",
+        peg$c127 = { type: "literal", value: "\u2028", description: "\"\\u2028\"" },
+        peg$c128 = "\u2029",
+        peg$c129 = { type: "literal", value: "\u2029", description: "\"\\u2029\"" },
+        peg$c130 = /^[\t\x0B\f \xA0\uFEFF]/,
+        peg$c131 = { type: "class", value: "[\\t\\x0B\\f \\xA0\\uFEFF]", description: "[\\t\\x0B\\f \\xA0\\uFEFF]" },
 
         peg$currPos          = 0,
         peg$reportedPos      = 0,
@@ -3106,7 +3339,7 @@ var helpers = {
     }
 
     function peg$parsefloat() {
-      var s0, s1, s2, s3, s4;
+      var s0, s1, s2, s3;
 
       peg$silentFails++;
       s0 = peg$currPos;
@@ -3120,16 +3353,7 @@ var helpers = {
           if (peg$silentFails === 0) { peg$fail(peg$c51); }
         }
         if (s2 !== peg$FAILED) {
-          s3 = [];
-          s4 = peg$parseinteger();
-          if (s4 !== peg$FAILED) {
-            while (s4 !== peg$FAILED) {
-              s3.push(s4);
-              s4 = peg$parseinteger();
-            }
-          } else {
-            s3 = peg$c3;
-          }
+          s3 = peg$parseunsigned_integer();
           if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
             s1 = peg$c52(s1, s3);
@@ -3155,7 +3379,7 @@ var helpers = {
       return s0;
     }
 
-    function peg$parseinteger() {
+    function peg$parseunsigned_integer() {
       var s0, s1, s2;
 
       peg$silentFails++;
@@ -3196,6 +3420,58 @@ var helpers = {
       return s0;
     }
 
+    function peg$parsesigned_integer() {
+      var s0, s1, s2;
+
+      peg$silentFails++;
+      s0 = peg$currPos;
+      if (input.charCodeAt(peg$currPos) === 45) {
+        s1 = peg$c58;
+        peg$currPos++;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c59); }
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = peg$parseunsigned_integer();
+        if (s2 !== peg$FAILED) {
+          peg$reportedPos = s0;
+          s1 = peg$c60(s1, s2);
+          s0 = s1;
+        } else {
+          peg$currPos = s0;
+          s0 = peg$c3;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$c3;
+      }
+      peg$silentFails--;
+      if (s0 === peg$FAILED) {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c57); }
+      }
+
+      return s0;
+    }
+
+    function peg$parseinteger() {
+      var s0, s1;
+
+      peg$silentFails++;
+      s0 = peg$parsesigned_integer();
+      if (s0 === peg$FAILED) {
+        s0 = peg$parseunsigned_integer();
+      }
+      peg$silentFails--;
+      if (s0 === peg$FAILED) {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c61); }
+      }
+
+      return s0;
+    }
+
     function peg$parsepath() {
       var s0, s1, s2, s3;
 
@@ -3224,7 +3500,7 @@ var helpers = {
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c58(s1, s2);
+          s1 = peg$c63(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3258,7 +3534,7 @@ var helpers = {
           }
           if (s2 !== peg$FAILED) {
             peg$reportedPos = s0;
-            s1 = peg$c59(s2);
+            s1 = peg$c64(s2);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -3272,7 +3548,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c57); }
+        if (peg$silentFails === 0) { peg$fail(peg$c62); }
       }
 
       return s0;
@@ -3283,35 +3559,35 @@ var helpers = {
 
       peg$silentFails++;
       s0 = peg$currPos;
-      if (peg$c61.test(input.charAt(peg$currPos))) {
+      if (peg$c66.test(input.charAt(peg$currPos))) {
         s1 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c62); }
+        if (peg$silentFails === 0) { peg$fail(peg$c67); }
       }
       if (s1 !== peg$FAILED) {
         s2 = [];
-        if (peg$c63.test(input.charAt(peg$currPos))) {
+        if (peg$c68.test(input.charAt(peg$currPos))) {
           s3 = input.charAt(peg$currPos);
           peg$currPos++;
         } else {
           s3 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c64); }
+          if (peg$silentFails === 0) { peg$fail(peg$c69); }
         }
         while (s3 !== peg$FAILED) {
           s2.push(s3);
-          if (peg$c63.test(input.charAt(peg$currPos))) {
+          if (peg$c68.test(input.charAt(peg$currPos))) {
             s3 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c64); }
+            if (peg$silentFails === 0) { peg$fail(peg$c69); }
           }
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c65(s1, s2);
+          s1 = peg$c70(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3324,7 +3600,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c60); }
+        if (peg$silentFails === 0) { peg$fail(peg$c65); }
       }
 
       return s0;
@@ -3363,7 +3639,7 @@ var helpers = {
         }
         if (s4 !== peg$FAILED) {
           peg$reportedPos = s3;
-          s4 = peg$c67(s4);
+          s4 = peg$c72(s4);
         }
         s3 = s4;
         if (s3 === peg$FAILED) {
@@ -3373,7 +3649,7 @@ var helpers = {
           s4 = peg$parserb();
           if (s4 !== peg$FAILED) {
             peg$reportedPos = s1;
-            s2 = peg$c68(s3);
+            s2 = peg$c73(s3);
             s1 = s2;
           } else {
             peg$currPos = s1;
@@ -3394,7 +3670,7 @@ var helpers = {
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c69(s1, s2);
+          s1 = peg$c74(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3407,7 +3683,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c66); }
+        if (peg$silentFails === 0) { peg$fail(peg$c71); }
       }
 
       return s0;
@@ -3431,7 +3707,7 @@ var helpers = {
         s4 = peg$parsekey();
         if (s4 !== peg$FAILED) {
           peg$reportedPos = s2;
-          s3 = peg$c71(s4);
+          s3 = peg$c76(s4);
           s2 = s3;
         } else {
           peg$currPos = s2;
@@ -3456,7 +3732,7 @@ var helpers = {
             s4 = peg$parsekey();
             if (s4 !== peg$FAILED) {
               peg$reportedPos = s2;
-              s3 = peg$c71(s4);
+              s3 = peg$c76(s4);
               s2 = s3;
             } else {
               peg$currPos = s2;
@@ -3477,7 +3753,7 @@ var helpers = {
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c72(s1, s2);
+          s1 = peg$c77(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3490,7 +3766,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c70); }
+        if (peg$silentFails === 0) { peg$fail(peg$c75); }
       }
 
       return s0;
@@ -3502,23 +3778,23 @@ var helpers = {
       peg$silentFails++;
       s0 = peg$currPos;
       if (input.charCodeAt(peg$currPos) === 34) {
-        s1 = peg$c74;
+        s1 = peg$c79;
         peg$currPos++;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c75); }
+        if (peg$silentFails === 0) { peg$fail(peg$c80); }
       }
       if (s1 !== peg$FAILED) {
         if (input.charCodeAt(peg$currPos) === 34) {
-          s2 = peg$c74;
+          s2 = peg$c79;
           peg$currPos++;
         } else {
           s2 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c75); }
+          if (peg$silentFails === 0) { peg$fail(peg$c80); }
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c76();
+          s1 = peg$c81();
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3531,25 +3807,25 @@ var helpers = {
       if (s0 === peg$FAILED) {
         s0 = peg$currPos;
         if (input.charCodeAt(peg$currPos) === 34) {
-          s1 = peg$c74;
+          s1 = peg$c79;
           peg$currPos++;
         } else {
           s1 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c75); }
+          if (peg$silentFails === 0) { peg$fail(peg$c80); }
         }
         if (s1 !== peg$FAILED) {
           s2 = peg$parseliteral();
           if (s2 !== peg$FAILED) {
             if (input.charCodeAt(peg$currPos) === 34) {
-              s3 = peg$c74;
+              s3 = peg$c79;
               peg$currPos++;
             } else {
               s3 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c75); }
+              if (peg$silentFails === 0) { peg$fail(peg$c80); }
             }
             if (s3 !== peg$FAILED) {
               peg$reportedPos = s0;
-              s1 = peg$c77(s2);
+              s1 = peg$c82(s2);
               s0 = s1;
             } else {
               peg$currPos = s0;
@@ -3566,11 +3842,11 @@ var helpers = {
         if (s0 === peg$FAILED) {
           s0 = peg$currPos;
           if (input.charCodeAt(peg$currPos) === 34) {
-            s1 = peg$c74;
+            s1 = peg$c79;
             peg$currPos++;
           } else {
             s1 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c75); }
+            if (peg$silentFails === 0) { peg$fail(peg$c80); }
           }
           if (s1 !== peg$FAILED) {
             s2 = [];
@@ -3585,15 +3861,15 @@ var helpers = {
             }
             if (s2 !== peg$FAILED) {
               if (input.charCodeAt(peg$currPos) === 34) {
-                s3 = peg$c74;
+                s3 = peg$c79;
                 peg$currPos++;
               } else {
                 s3 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c75); }
+                if (peg$silentFails === 0) { peg$fail(peg$c80); }
               }
               if (s3 !== peg$FAILED) {
                 peg$reportedPos = s0;
-                s1 = peg$c78(s2);
+                s1 = peg$c83(s2);
                 s0 = s1;
               } else {
                 peg$currPos = s0;
@@ -3612,7 +3888,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c73); }
+        if (peg$silentFails === 0) { peg$fail(peg$c78); }
       }
 
       return s0;
@@ -3629,7 +3905,7 @@ var helpers = {
           s1 = peg$parseliteral();
           if (s1 !== peg$FAILED) {
             peg$reportedPos = s0;
-            s1 = peg$c79(s1);
+            s1 = peg$c84(s1);
           }
           s0 = s1;
         }
@@ -3653,7 +3929,7 @@ var helpers = {
         }
         if (s2 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c81(s1, s2);
+          s1 = peg$c86(s1, s2);
           s0 = s1;
         } else {
           peg$currPos = s0;
@@ -3716,11 +3992,11 @@ var helpers = {
                   peg$currPos++;
                 } else {
                   s7 = peg$FAILED;
-                  if (peg$silentFails === 0) { peg$fail(peg$c82); }
+                  if (peg$silentFails === 0) { peg$fail(peg$c87); }
                 }
                 if (s7 !== peg$FAILED) {
                   peg$reportedPos = s2;
-                  s3 = peg$c83(s7);
+                  s3 = peg$c88(s7);
                   s2 = s3;
                 } else {
                   peg$currPos = s2;
@@ -3795,11 +4071,11 @@ var helpers = {
                       peg$currPos++;
                     } else {
                       s7 = peg$FAILED;
-                      if (peg$silentFails === 0) { peg$fail(peg$c82); }
+                      if (peg$silentFails === 0) { peg$fail(peg$c87); }
                     }
                     if (s7 !== peg$FAILED) {
                       peg$reportedPos = s2;
-                      s3 = peg$c83(s7);
+                      s3 = peg$c88(s7);
                       s2 = s3;
                     } else {
                       peg$currPos = s2;
@@ -3827,14 +4103,14 @@ var helpers = {
         }
         if (s1 !== peg$FAILED) {
           peg$reportedPos = s0;
-          s1 = peg$c84(s1);
+          s1 = peg$c89(s1);
         }
         s0 = s1;
       }
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c80); }
+        if (peg$silentFails === 0) { peg$fail(peg$c85); }
       }
 
       return s0;
@@ -3860,17 +4136,17 @@ var helpers = {
       if (s3 !== peg$FAILED) {
         s4 = peg$parseesc();
         if (s4 === peg$FAILED) {
-          if (peg$c86.test(input.charAt(peg$currPos))) {
+          if (peg$c91.test(input.charAt(peg$currPos))) {
             s4 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s4 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c87); }
+            if (peg$silentFails === 0) { peg$fail(peg$c92); }
           }
         }
         if (s4 !== peg$FAILED) {
           peg$reportedPos = s2;
-          s3 = peg$c83(s4);
+          s3 = peg$c88(s4);
           s2 = s3;
         } else {
           peg$currPos = s2;
@@ -3897,17 +4173,17 @@ var helpers = {
           if (s3 !== peg$FAILED) {
             s4 = peg$parseesc();
             if (s4 === peg$FAILED) {
-              if (peg$c86.test(input.charAt(peg$currPos))) {
+              if (peg$c91.test(input.charAt(peg$currPos))) {
                 s4 = input.charAt(peg$currPos);
                 peg$currPos++;
               } else {
                 s4 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c87); }
+                if (peg$silentFails === 0) { peg$fail(peg$c92); }
               }
             }
             if (s4 !== peg$FAILED) {
               peg$reportedPos = s2;
-              s3 = peg$c83(s4);
+              s3 = peg$c88(s4);
               s2 = s3;
             } else {
               peg$currPos = s2;
@@ -3923,13 +4199,13 @@ var helpers = {
       }
       if (s1 !== peg$FAILED) {
         peg$reportedPos = s0;
-        s1 = peg$c88(s1);
+        s1 = peg$c93(s1);
       }
       s0 = s1;
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c85); }
+        if (peg$silentFails === 0) { peg$fail(peg$c90); }
       }
 
       return s0;
@@ -3939,16 +4215,16 @@ var helpers = {
       var s0, s1;
 
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 2) === peg$c89) {
-        s1 = peg$c89;
+      if (input.substr(peg$currPos, 2) === peg$c94) {
+        s1 = peg$c94;
         peg$currPos += 2;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c90); }
+        if (peg$silentFails === 0) { peg$fail(peg$c95); }
       }
       if (s1 !== peg$FAILED) {
         peg$reportedPos = s0;
-        s1 = peg$c91();
+        s1 = peg$c96();
       }
       s0 = s1;
 
@@ -3960,24 +4236,24 @@ var helpers = {
 
       peg$silentFails++;
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 2) === peg$c93) {
-        s1 = peg$c93;
+      if (input.substr(peg$currPos, 2) === peg$c98) {
+        s1 = peg$c98;
         peg$currPos += 2;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c94); }
+        if (peg$silentFails === 0) { peg$fail(peg$c99); }
       }
       if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$currPos;
         s4 = peg$currPos;
         peg$silentFails++;
-        if (input.substr(peg$currPos, 2) === peg$c95) {
-          s5 = peg$c95;
+        if (input.substr(peg$currPos, 2) === peg$c100) {
+          s5 = peg$c100;
           peg$currPos += 2;
         } else {
           s5 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c96); }
+          if (peg$silentFails === 0) { peg$fail(peg$c101); }
         }
         peg$silentFails--;
         if (s5 === peg$FAILED) {
@@ -3992,11 +4268,11 @@ var helpers = {
             peg$currPos++;
           } else {
             s5 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c82); }
+            if (peg$silentFails === 0) { peg$fail(peg$c87); }
           }
           if (s5 !== peg$FAILED) {
             peg$reportedPos = s3;
-            s4 = peg$c97(s5);
+            s4 = peg$c102(s5);
             s3 = s4;
           } else {
             peg$currPos = s3;
@@ -4011,12 +4287,12 @@ var helpers = {
           s3 = peg$currPos;
           s4 = peg$currPos;
           peg$silentFails++;
-          if (input.substr(peg$currPos, 2) === peg$c95) {
-            s5 = peg$c95;
+          if (input.substr(peg$currPos, 2) === peg$c100) {
+            s5 = peg$c100;
             peg$currPos += 2;
           } else {
             s5 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c96); }
+            if (peg$silentFails === 0) { peg$fail(peg$c101); }
           }
           peg$silentFails--;
           if (s5 === peg$FAILED) {
@@ -4031,11 +4307,11 @@ var helpers = {
               peg$currPos++;
             } else {
               s5 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c82); }
+              if (peg$silentFails === 0) { peg$fail(peg$c87); }
             }
             if (s5 !== peg$FAILED) {
               peg$reportedPos = s3;
-              s4 = peg$c97(s5);
+              s4 = peg$c102(s5);
               s3 = s4;
             } else {
               peg$currPos = s3;
@@ -4047,16 +4323,16 @@ var helpers = {
           }
         }
         if (s2 !== peg$FAILED) {
-          if (input.substr(peg$currPos, 2) === peg$c95) {
-            s3 = peg$c95;
+          if (input.substr(peg$currPos, 2) === peg$c100) {
+            s3 = peg$c100;
             peg$currPos += 2;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c96); }
+            if (peg$silentFails === 0) { peg$fail(peg$c101); }
           }
           if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
-            s1 = peg$c98(s2);
+            s1 = peg$c103(s2);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -4073,7 +4349,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c92); }
+        if (peg$silentFails === 0) { peg$fail(peg$c97); }
       }
 
       return s0;
@@ -4084,24 +4360,24 @@ var helpers = {
 
       peg$silentFails++;
       s0 = peg$currPos;
-      if (input.substr(peg$currPos, 2) === peg$c100) {
-        s1 = peg$c100;
+      if (input.substr(peg$currPos, 2) === peg$c105) {
+        s1 = peg$c105;
         peg$currPos += 2;
       } else {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c101); }
+        if (peg$silentFails === 0) { peg$fail(peg$c106); }
       }
       if (s1 !== peg$FAILED) {
         s2 = [];
         s3 = peg$currPos;
         s4 = peg$currPos;
         peg$silentFails++;
-        if (input.substr(peg$currPos, 2) === peg$c102) {
-          s5 = peg$c102;
+        if (input.substr(peg$currPos, 2) === peg$c107) {
+          s5 = peg$c107;
           peg$currPos += 2;
         } else {
           s5 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c103); }
+          if (peg$silentFails === 0) { peg$fail(peg$c108); }
         }
         peg$silentFails--;
         if (s5 === peg$FAILED) {
@@ -4116,11 +4392,11 @@ var helpers = {
             peg$currPos++;
           } else {
             s5 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c82); }
+            if (peg$silentFails === 0) { peg$fail(peg$c87); }
           }
           if (s5 !== peg$FAILED) {
             peg$reportedPos = s3;
-            s4 = peg$c83(s5);
+            s4 = peg$c88(s5);
             s3 = s4;
           } else {
             peg$currPos = s3;
@@ -4135,12 +4411,12 @@ var helpers = {
           s3 = peg$currPos;
           s4 = peg$currPos;
           peg$silentFails++;
-          if (input.substr(peg$currPos, 2) === peg$c102) {
-            s5 = peg$c102;
+          if (input.substr(peg$currPos, 2) === peg$c107) {
+            s5 = peg$c107;
             peg$currPos += 2;
           } else {
             s5 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c103); }
+            if (peg$silentFails === 0) { peg$fail(peg$c108); }
           }
           peg$silentFails--;
           if (s5 === peg$FAILED) {
@@ -4155,11 +4431,11 @@ var helpers = {
               peg$currPos++;
             } else {
               s5 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c82); }
+              if (peg$silentFails === 0) { peg$fail(peg$c87); }
             }
             if (s5 !== peg$FAILED) {
               peg$reportedPos = s3;
-              s4 = peg$c83(s5);
+              s4 = peg$c88(s5);
               s3 = s4;
             } else {
               peg$currPos = s3;
@@ -4171,16 +4447,16 @@ var helpers = {
           }
         }
         if (s2 !== peg$FAILED) {
-          if (input.substr(peg$currPos, 2) === peg$c102) {
-            s3 = peg$c102;
+          if (input.substr(peg$currPos, 2) === peg$c107) {
+            s3 = peg$c107;
             peg$currPos += 2;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c103); }
+            if (peg$silentFails === 0) { peg$fail(peg$c108); }
           }
           if (s3 !== peg$FAILED) {
             peg$reportedPos = s0;
-            s1 = peg$c104(s2);
+            s1 = peg$c109(s2);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -4197,7 +4473,7 @@ var helpers = {
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c99); }
+        if (peg$silentFails === 0) { peg$fail(peg$c104); }
       }
 
       return s0;
@@ -4216,12 +4492,12 @@ var helpers = {
           s3 = peg$parsews();
         }
         if (s2 !== peg$FAILED) {
-          if (peg$c105.test(input.charAt(peg$currPos))) {
+          if (peg$c110.test(input.charAt(peg$currPos))) {
             s3 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s3 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c106); }
+            if (peg$silentFails === 0) { peg$fail(peg$c111); }
           }
           if (s3 !== peg$FAILED) {
             s4 = [];
@@ -4260,7 +4536,7 @@ var helpers = {
                     peg$currPos++;
                   } else {
                     s9 = peg$FAILED;
-                    if (peg$silentFails === 0) { peg$fail(peg$c82); }
+                    if (peg$silentFails === 0) { peg$fail(peg$c87); }
                   }
                   if (s9 !== peg$FAILED) {
                     s7 = [s7, s8, s9];
@@ -4308,7 +4584,7 @@ var helpers = {
                         peg$currPos++;
                       } else {
                         s9 = peg$FAILED;
-                        if (peg$silentFails === 0) { peg$fail(peg$c82); }
+                        if (peg$silentFails === 0) { peg$fail(peg$c87); }
                       }
                       if (s9 !== peg$FAILED) {
                         s7 = [s7, s8, s9];
@@ -4380,11 +4656,11 @@ var helpers = {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 123) {
-        s0 = peg$c107;
+        s0 = peg$c112;
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c108); }
+        if (peg$silentFails === 0) { peg$fail(peg$c113); }
       }
 
       return s0;
@@ -4394,11 +4670,11 @@ var helpers = {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 125) {
-        s0 = peg$c109;
+        s0 = peg$c114;
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c110); }
+        if (peg$silentFails === 0) { peg$fail(peg$c115); }
       }
 
       return s0;
@@ -4408,11 +4684,11 @@ var helpers = {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 91) {
-        s0 = peg$c111;
+        s0 = peg$c116;
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c112); }
+        if (peg$silentFails === 0) { peg$fail(peg$c117); }
       }
 
       return s0;
@@ -4422,11 +4698,11 @@ var helpers = {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 93) {
-        s0 = peg$c113;
+        s0 = peg$c118;
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c114); }
+        if (peg$silentFails === 0) { peg$fail(peg$c119); }
       }
 
       return s0;
@@ -4436,43 +4712,43 @@ var helpers = {
       var s0;
 
       if (input.charCodeAt(peg$currPos) === 10) {
-        s0 = peg$c115;
+        s0 = peg$c120;
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c116); }
+        if (peg$silentFails === 0) { peg$fail(peg$c121); }
       }
       if (s0 === peg$FAILED) {
-        if (input.substr(peg$currPos, 2) === peg$c117) {
-          s0 = peg$c117;
+        if (input.substr(peg$currPos, 2) === peg$c122) {
+          s0 = peg$c122;
           peg$currPos += 2;
         } else {
           s0 = peg$FAILED;
-          if (peg$silentFails === 0) { peg$fail(peg$c118); }
+          if (peg$silentFails === 0) { peg$fail(peg$c123); }
         }
         if (s0 === peg$FAILED) {
           if (input.charCodeAt(peg$currPos) === 13) {
-            s0 = peg$c119;
+            s0 = peg$c124;
             peg$currPos++;
           } else {
             s0 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c120); }
+            if (peg$silentFails === 0) { peg$fail(peg$c125); }
           }
           if (s0 === peg$FAILED) {
             if (input.charCodeAt(peg$currPos) === 8232) {
-              s0 = peg$c121;
+              s0 = peg$c126;
               peg$currPos++;
             } else {
               s0 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c122); }
+              if (peg$silentFails === 0) { peg$fail(peg$c127); }
             }
             if (s0 === peg$FAILED) {
               if (input.charCodeAt(peg$currPos) === 8233) {
-                s0 = peg$c123;
+                s0 = peg$c128;
                 peg$currPos++;
               } else {
                 s0 = peg$FAILED;
-                if (peg$silentFails === 0) { peg$fail(peg$c124); }
+                if (peg$silentFails === 0) { peg$fail(peg$c129); }
               }
             }
           }
@@ -4485,12 +4761,12 @@ var helpers = {
     function peg$parsews() {
       var s0;
 
-      if (peg$c125.test(input.charAt(peg$currPos))) {
+      if (peg$c130.test(input.charAt(peg$currPos))) {
         s0 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c126); }
+        if (peg$silentFails === 0) { peg$fail(peg$c131); }
       }
       if (s0 === peg$FAILED) {
         s0 = peg$parseeol();
@@ -4498,6 +4774,15 @@ var helpers = {
 
       return s0;
     }
+
+
+      function makeInteger(arr) {
+        return parseInt(arr.join(''), 10);
+      }
+      function withPosition(arr) {
+        return arr.concat([['line', line()], ['col', column()]]);
+      }
+
 
     peg$result = peg$startRuleFunction();
 
@@ -4523,8 +4808,6 @@ var helpers = {
 
   return parser;
 }));
-  
-
 
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/dustjs-linkedin/lib/parser.js","/../node_modules/dustjs-linkedin/lib")
 },{"./dust":3,"1YiZ5S":8,"buffer":5}],5:[function(require,module,exports){
@@ -5770,90 +6053,90 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib/b64.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib")
 },{"1YiZ5S":8,"buffer":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-exports.read = function(buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i];
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
-  i += d;
+  i += d
 
-  e = s & ((1 << (-nBits)) - 1);
-  s >>= (-nBits);
-  nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8);
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
-  m = e & ((1 << (-nBits)) - 1);
-  e >>= (-nBits);
-  nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8);
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
-    e = 1 - eBias;
+    e = 1 - eBias
   } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity);
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
   } else {
-    m = m + Math.pow(2, mLen);
-    e = e - eBias;
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
-};
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-  value = Math.abs(value);
+  value = Math.abs(value)
 
   if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0;
-    e = eMax;
+    m = isNaN(value) ? 1 : 0
+    e = eMax
   } else {
-    e = Math.floor(Math.log(value) / Math.LN2);
+    e = Math.floor(Math.log(value) / Math.LN2)
     if (value * (c = Math.pow(2, -e)) < 1) {
-      e--;
-      c *= 2;
+      e--
+      c *= 2
     }
     if (e + eBias >= 1) {
-      value += rt / c;
+      value += rt / c
     } else {
-      value += rt * Math.pow(2, 1 - eBias);
+      value += rt * Math.pow(2, 1 - eBias)
     }
     if (value * c >= 2) {
-      e++;
-      c /= 2;
+      e++
+      c /= 2
     }
 
     if (e + eBias >= eMax) {
-      m = 0;
-      e = eMax;
+      m = 0
+      e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen);
-      e = e + eBias;
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-      e = 0;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
   }
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8);
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
-  e = (e << mLen) | m;
-  eLen += mLen;
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8);
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
-  buffer[offset + i - d] |= s * 128;
-};
+  buffer[offset + i - d] |= s * 128
+}
 
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/ieee754/index.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/ieee754")
 },{"1YiZ5S":8,"buffer":5}],8:[function(require,module,exports){
@@ -5982,11 +6265,25 @@ process.chdir = function (dir) {
         }
 
     // <script>
-    } else if (typeof self !== "undefined") {
-        self.Q = definition();
+    } else if (typeof window !== "undefined" || typeof self !== "undefined") {
+        // Prefer window over self for add-on scripts. Use self for
+        // non-windowed contexts.
+        var global = typeof window !== "undefined" ? window : self;
+
+        // Get the `window` object, save the previous Q global
+        // and initialize Q as a global.
+        var previousQ = global.Q;
+        global.Q = definition();
+
+        // Add a noConflict function so Q can be removed from the
+        // global namespace.
+        global.Q.noConflict = function () {
+            global.Q = previousQ;
+            return this;
+        };
 
     } else {
-        throw new Error("This environment was not anticiapted by Q. Please file a bug.");
+        throw new Error("This environment was not anticipated by Q. Please file a bug.");
     }
 
 })(function () {
@@ -6018,57 +6315,67 @@ var nextTick =(function () {
     var flushing = false;
     var requestTick = void 0;
     var isNodeJS = false;
+    // queue for late tasks, used by unhandled rejection tracking
+    var laterQueue = [];
 
     function flush() {
         /* jshint loopfunc: true */
+        var task, domain;
 
         while (head.next) {
             head = head.next;
-            var task = head.task;
+            task = head.task;
             head.task = void 0;
-            var domain = head.domain;
+            domain = head.domain;
 
             if (domain) {
                 head.domain = void 0;
                 domain.enter();
             }
+            runSingle(task, domain);
 
-            try {
-                task();
+        }
+        while (laterQueue.length) {
+            task = laterQueue.pop();
+            runSingle(task);
+        }
+        flushing = false;
+    }
+    // runs a single function in the async queue
+    function runSingle(task, domain) {
+        try {
+            task();
 
-            } catch (e) {
-                if (isNodeJS) {
-                    // In node, uncaught exceptions are considered fatal errors.
-                    // Re-throw them synchronously to interrupt flushing!
+        } catch (e) {
+            if (isNodeJS) {
+                // In node, uncaught exceptions are considered fatal errors.
+                // Re-throw them synchronously to interrupt flushing!
 
-                    // Ensure continuation if the uncaught exception is suppressed
-                    // listening "uncaughtException" events (as domains does).
-                    // Continue in next event to avoid tick recursion.
-                    if (domain) {
-                        domain.exit();
-                    }
-                    setTimeout(flush, 0);
-                    if (domain) {
-                        domain.enter();
-                    }
-
-                    throw e;
-
-                } else {
-                    // In browsers, uncaught exceptions are not fatal.
-                    // Re-throw them asynchronously to avoid slow-downs.
-                    setTimeout(function() {
-                       throw e;
-                    }, 0);
+                // Ensure continuation if the uncaught exception is suppressed
+                // listening "uncaughtException" events (as domains does).
+                // Continue in next event to avoid tick recursion.
+                if (domain) {
+                    domain.exit();
                 }
-            }
+                setTimeout(flush, 0);
+                if (domain) {
+                    domain.enter();
+                }
 
-            if (domain) {
-                domain.exit();
+                throw e;
+
+            } else {
+                // In browsers, uncaught exceptions are not fatal.
+                // Re-throw them asynchronously to avoid slow-downs.
+                setTimeout(function () {
+                    throw e;
+                }, 0);
             }
         }
 
-        flushing = false;
+        if (domain) {
+            domain.exit();
+        }
     }
 
     nextTick = function (task) {
@@ -6084,9 +6391,16 @@ var nextTick =(function () {
         }
     };
 
-    if (typeof process !== "undefined" && process.nextTick) {
-        // Node.js before 0.9. Note that some fake-Node environments, like the
-        // Mocha test runner, introduce a `process` global without a `nextTick`.
+    if (typeof process === "object" &&
+        process.toString() === "[object process]" && process.nextTick) {
+        // Ensure Q is in a real Node environment, with a `process.nextTick`.
+        // To see through fake Node environments:
+        // * Mocha test runner - exposes a `process` global without a `nextTick`
+        // * Browserify - exposes a `process.nexTick` function that uses
+        //   `setTimeout`. In this case `setImmediate` is preferred because
+        //    it is faster. Browserify's `process.toString()` yields
+        //   "[object Object]", while in a real Node environment
+        //   `process.nextTick()` yields "[object process]".
         isNodeJS = true;
 
         requestTick = function () {
@@ -6130,7 +6444,16 @@ var nextTick =(function () {
             setTimeout(flush, 0);
         };
     }
-
+    // runs a task after all other tasks have been run
+    // this is useful for unhandled rejection tracking that needs to happen
+    // after all `then`d tasks have been run.
+    nextTick.runAfter = function (task) {
+        laterQueue.push(task);
+        if (!flushing) {
+            flushing = true;
+            requestTick();
+        }
+    };
     return nextTick;
 })();
 
@@ -6624,9 +6947,9 @@ Promise.prototype.join = function (that) {
  */
 Q.race = race;
 function race(answerPs) {
-    return promise(function(resolve, reject) {
+    return promise(function (resolve, reject) {
         // Switch to this once we can assume at least ES5
-        // answerPs.forEach(function(answerP) {
+        // answerPs.forEach(function (answerP) {
         //     Q(answerP).then(resolve, reject);
         // });
         // Use this in the meantime
@@ -6924,6 +7247,7 @@ Promise.prototype.isRejected = function () {
 // shimmed environments, this would naturally be a `Set`.
 var unhandledReasons = [];
 var unhandledRejections = [];
+var reportedUnhandledRejections = [];
 var trackUnhandledRejections = true;
 
 function resetUnhandledRejections() {
@@ -6938,6 +7262,14 @@ function resetUnhandledRejections() {
 function trackRejection(promise, reason) {
     if (!trackUnhandledRejections) {
         return;
+    }
+    if (typeof process === "object" && typeof process.emit === "function") {
+        Q.nextTick.runAfter(function () {
+            if (array_indexOf(unhandledRejections, promise) !== -1) {
+                process.emit("unhandledRejection", reason, promise);
+                reportedUnhandledRejections.push(promise);
+            }
+        });
     }
 
     unhandledRejections.push(promise);
@@ -6955,6 +7287,15 @@ function untrackRejection(promise) {
 
     var at = array_indexOf(unhandledRejections, promise);
     if (at !== -1) {
+        if (typeof process === "object" && typeof process.emit === "function") {
+            Q.nextTick.runAfter(function () {
+                var atReport = array_indexOf(reportedUnhandledRejections, promise);
+                if (atReport !== -1) {
+                    process.emit("rejectionHandled", unhandledReasons[at], promise);
+                    reportedUnhandledRejections.splice(atReport, 1);
+                }
+            });
+        }
         unhandledRejections.splice(at, 1);
         unhandledReasons.splice(at, 1);
     }
@@ -7429,7 +7770,7 @@ Promise.prototype.keys = function () {
 Q.all = all;
 function all(promises) {
     return when(promises, function (promises) {
-        var countDown = 0;
+        var pendingCount = 0;
         var deferred = defer();
         array_reduce(promises, function (undefined, promise, index) {
             var snapshot;
@@ -7439,12 +7780,12 @@ function all(promises) {
             ) {
                 promises[index] = snapshot.value;
             } else {
-                ++countDown;
+                ++pendingCount;
                 when(
                     promise,
                     function (value) {
                         promises[index] = value;
-                        if (--countDown === 0) {
+                        if (--pendingCount === 0) {
                             deferred.resolve(promises);
                         }
                     },
@@ -7455,7 +7796,7 @@ function all(promises) {
                 );
             }
         }, void 0);
-        if (countDown === 0) {
+        if (pendingCount === 0) {
             deferred.resolve(promises);
         }
         return deferred.promise;
@@ -7464,6 +7805,55 @@ function all(promises) {
 
 Promise.prototype.all = function () {
     return all(this);
+};
+
+/**
+ * Returns the first resolved promise of an array. Prior rejected promises are
+ * ignored.  Rejects only if all promises are rejected.
+ * @param {Array*} an array containing values or promises for values
+ * @returns a promise fulfilled with the value of the first resolved promise,
+ * or a rejected promise if all promises are rejected.
+ */
+Q.any = any;
+
+function any(promises) {
+    if (promises.length === 0) {
+        return Q.resolve();
+    }
+
+    var deferred = Q.defer();
+    var pendingCount = 0;
+    array_reduce(promises, function (prev, current, index) {
+        var promise = promises[index];
+
+        pendingCount++;
+
+        when(promise, onFulfilled, onRejected, onProgress);
+        function onFulfilled(result) {
+            deferred.resolve(result);
+        }
+        function onRejected() {
+            pendingCount--;
+            if (pendingCount === 0) {
+                deferred.reject(new Error(
+                    "Can't get fulfillment value from any promise, all " +
+                    "promises were rejected."
+                ));
+            }
+        }
+        function onProgress(progress) {
+            deferred.notify({
+                index: index,
+                value: progress
+            });
+        }
+    }, undefined);
+
+    return deferred.promise;
+}
+
+Promise.prototype.any = function () {
+    return any(this);
 };
 
 /**
@@ -7856,6 +8246,10 @@ Promise.prototype.nodeify = function (nodeback) {
     }
 };
 
+Q.noConflict = function() {
+    throw new Error("Q.noConflict only works when Q is used as a global");
+};
+
 // All code before this point will be filtered from stack traces.
 var qEndingLine = captureLine();
 
@@ -7866,576 +8260,663 @@ return Q;
 }).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/q/q.js","/../node_modules/q")
 },{"1YiZ5S":8,"buffer":5}],10:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-/*! tether 0.6.5 */
-
+/*! tether 1.3.1 */
 
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require,exports,module);
+    module.exports = factory(require, exports, module);
   } else {
     root.Tether = factory();
   }
-}(this, function(require,exports,module) {
+}(this, function(require, exports, module) {
 
-(function() {
-  var Evented, addClass, defer, deferred, extend, flush, getBounds, getClassName, getOffsetParent, getOrigin, getScrollBarSize, getScrollParent, hasClass, node, removeClass, setClassName, uniqueId, updateClasses, zeroPosCache,
-    __hasProp = {}.hasOwnProperty,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = [].slice;
+'use strict';
 
-  if (this.Tether == null) {
-    this.Tether = {
-      modules: []
-    };
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var TetherBase = undefined;
+if (typeof TetherBase === 'undefined') {
+  TetherBase = { modules: [] };
+}
+
+var zeroElement = null;
+
+function getScrollParents(el) {
+  // In firefox if the el is inside an iframe with display: none; window.getComputedStyle() will return null;
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+  var computedStyle = getComputedStyle(el) || {};
+  var position = computedStyle.position;
+  var parents = [];
+
+  if (position === 'fixed') {
+    return [el];
   }
 
-  getScrollParent = function(el) {
-    var parent, position, scrollParent, style, _ref;
-    position = getComputedStyle(el).position;
-    if (position === 'fixed') {
-      return el;
+  var parent = el;
+  while ((parent = parent.parentNode) && parent && parent.nodeType === 1) {
+    var style = undefined;
+    try {
+      style = getComputedStyle(parent);
+    } catch (err) {}
+
+    if (typeof style === 'undefined' || style === null) {
+      parents.push(parent);
+      return parents;
     }
-    scrollParent = void 0;
-    parent = el;
-    while (parent = parent.parentNode) {
-      try {
-        style = getComputedStyle(parent);
-      } catch (_error) {}
-      if (style == null) {
-        return parent;
+
+    var _style = style;
+    var overflow = _style.overflow;
+    var overflowX = _style.overflowX;
+    var overflowY = _style.overflowY;
+
+    if (/(auto|scroll)/.test(overflow + overflowY + overflowX)) {
+      if (position !== 'absolute' || ['relative', 'absolute', 'fixed'].indexOf(style.position) >= 0) {
+        parents.push(parent);
       }
-      if (/(auto|scroll)/.test(style['overflow'] + style['overflowY'] + style['overflowX'])) {
-        if (position !== 'absolute' || ((_ref = style['position']) === 'relative' || _ref === 'absolute' || _ref === 'fixed')) {
-          return parent;
-        }
-      }
     }
-    return document.body;
+  }
+
+  parents.push(document.body);
+  return parents;
+}
+
+var uniqueId = (function () {
+  var id = 0;
+  return function () {
+    return ++id;
   };
+})();
 
-  uniqueId = (function() {
-    var id;
-    id = 0;
-    return function() {
-      return id++;
-    };
-  })();
-
-  zeroPosCache = {};
-
-  getOrigin = function(doc) {
-    var id, k, node, v, _ref;
-    node = doc._tetherZeroElement;
-    if (node == null) {
-      node = doc.createElement('div');
-      node.setAttribute('data-tether-id', uniqueId());
-      extend(node.style, {
-        top: 0,
-        left: 0,
-        position: 'absolute'
-      });
-      doc.body.appendChild(node);
-      doc._tetherZeroElement = node;
-    }
-    id = node.getAttribute('data-tether-id');
-    if (zeroPosCache[id] == null) {
-      zeroPosCache[id] = {};
-      _ref = node.getBoundingClientRect();
-      for (k in _ref) {
-        v = _ref[k];
-        zeroPosCache[id][k] = v;
-      }
-      defer(function() {
-        return zeroPosCache[id] = void 0;
-      });
-    }
-    return zeroPosCache[id];
-  };
-
-  node = null;
-
-  getBounds = function(el) {
-    var box, doc, docEl, k, origin, v, _ref;
-    if (el === document) {
-      doc = document;
-      el = document.documentElement;
-    } else {
-      doc = el.ownerDocument;
-    }
-    docEl = doc.documentElement;
-    box = {};
-    _ref = el.getBoundingClientRect();
-    for (k in _ref) {
-      v = _ref[k];
-      box[k] = v;
-    }
-    origin = getOrigin(doc);
-    box.top -= origin.top;
-    box.left -= origin.left;
-    if (box.width == null) {
-      box.width = document.body.scrollWidth - box.left - box.right;
-    }
-    if (box.height == null) {
-      box.height = document.body.scrollHeight - box.top - box.bottom;
-    }
-    box.top = box.top - docEl.clientTop;
-    box.left = box.left - docEl.clientLeft;
-    box.right = doc.body.clientWidth - box.width - box.left;
-    box.bottom = doc.body.clientHeight - box.height - box.top;
-    return box;
-  };
-
-  getOffsetParent = function(el) {
-    return el.offsetParent || document.documentElement;
-  };
-
-  getScrollBarSize = function() {
-    var inner, outer, width, widthContained, widthScroll;
-    inner = document.createElement('div');
-    inner.style.width = '100%';
-    inner.style.height = '200px';
-    outer = document.createElement('div');
-    extend(outer.style, {
-      position: 'absolute',
+var zeroPosCache = {};
+var getOrigin = function getOrigin() {
+  // getBoundingClientRect is unfortunately too accurate.  It introduces a pixel or two of
+  // jitter as the user scrolls that messes with our ability to detect if two positions
+  // are equivilant or not.  We place an element at the top left of the page that will
+  // get the same jitter, so we can cancel the two out.
+  var node = zeroElement;
+  if (!node) {
+    node = document.createElement('div');
+    node.setAttribute('data-tether-id', uniqueId());
+    extend(node.style, {
       top: 0,
       left: 0,
-      pointerEvents: 'none',
-      visibility: 'hidden',
-      width: '200px',
-      height: '150px',
-      overflow: 'hidden'
+      position: 'absolute'
     });
-    outer.appendChild(inner);
-    document.body.appendChild(outer);
-    widthContained = inner.offsetWidth;
-    outer.style.overflow = 'scroll';
-    widthScroll = inner.offsetWidth;
-    if (widthContained === widthScroll) {
-      widthScroll = outer.clientWidth;
-    }
-    document.body.removeChild(outer);
-    width = widthContained - widthScroll;
-    return {
-      width: width,
-      height: width
-    };
-  };
 
-  extend = function(out) {
-    var args, key, obj, val, _i, _len, _ref;
-    if (out == null) {
-      out = {};
-    }
-    args = [];
-    Array.prototype.push.apply(args, arguments);
-    _ref = args.slice(1);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      obj = _ref[_i];
-      if (obj) {
-        for (key in obj) {
-          if (!__hasProp.call(obj, key)) continue;
-          val = obj[key];
-          out[key] = val;
-        }
-      }
-    }
-    return out;
-  };
+    document.body.appendChild(node);
 
-  removeClass = function(el, name) {
-    var className, cls, _i, _len, _ref, _results;
-    if (el.classList != null) {
-      _ref = name.split(' ');
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cls = _ref[_i];
-        if (cls.trim()) {
-          _results.push(el.classList.remove(cls));
-        }
-      }
-      return _results;
-    } else {
-      className = getClassName(el).replace(new RegExp("(^| )" + (name.split(' ').join('|')) + "( |$)", 'gi'), ' ');
-      return setClassName(el, className);
-    }
-  };
-
-  addClass = function(el, name) {
-    var cls, _i, _len, _ref, _results;
-    if (el.classList != null) {
-      _ref = name.split(' ');
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cls = _ref[_i];
-        if (cls.trim()) {
-          _results.push(el.classList.add(cls));
-        }
-      }
-      return _results;
-    } else {
-      removeClass(el, name);
-      cls = getClassName(el) + (" " + name);
-      return setClassName(el, cls);
-    }
-  };
-
-  hasClass = function(el, name) {
-    if (el.classList != null) {
-      return el.classList.contains(name);
-    } else {
-      return new RegExp("(^| )" + name + "( |$)", 'gi').test(getClassName(el));
-    }
-  };
-
-  getClassName = function(el) {
-    if (el.className instanceof SVGAnimatedString) {
-      return el.className.baseVal;
-    } else {
-      return el.className;
-    }
-  };
-
-  setClassName = function(el, className) {
-    return el.setAttribute('class', className);
-  };
-
-  updateClasses = function(el, add, all) {
-    var cls, _i, _j, _len, _len1, _results;
-    for (_i = 0, _len = all.length; _i < _len; _i++) {
-      cls = all[_i];
-      if (__indexOf.call(add, cls) < 0) {
-        if (hasClass(el, cls)) {
-          removeClass(el, cls);
-        }
-      }
-    }
-    _results = [];
-    for (_j = 0, _len1 = add.length; _j < _len1; _j++) {
-      cls = add[_j];
-      if (!hasClass(el, cls)) {
-        _results.push(addClass(el, cls));
-      } else {
-        _results.push(void 0);
-      }
-    }
-    return _results;
-  };
-
-  deferred = [];
-
-  defer = function(fn) {
-    return deferred.push(fn);
-  };
-
-  flush = function() {
-    var fn, _results;
-    _results = [];
-    while (fn = deferred.pop()) {
-      _results.push(fn());
-    }
-    return _results;
-  };
-
-  Evented = (function() {
-    function Evented() {}
-
-    Evented.prototype.on = function(event, handler, ctx, once) {
-      var _base;
-      if (once == null) {
-        once = false;
-      }
-      if (this.bindings == null) {
-        this.bindings = {};
-      }
-      if ((_base = this.bindings)[event] == null) {
-        _base[event] = [];
-      }
-      return this.bindings[event].push({
-        handler: handler,
-        ctx: ctx,
-        once: once
-      });
-    };
-
-    Evented.prototype.once = function(event, handler, ctx) {
-      return this.on(event, handler, ctx, true);
-    };
-
-    Evented.prototype.off = function(event, handler) {
-      var i, _ref, _results;
-      if (((_ref = this.bindings) != null ? _ref[event] : void 0) == null) {
-        return;
-      }
-      if (handler == null) {
-        return delete this.bindings[event];
-      } else {
-        i = 0;
-        _results = [];
-        while (i < this.bindings[event].length) {
-          if (this.bindings[event][i].handler === handler) {
-            _results.push(this.bindings[event].splice(i, 1));
-          } else {
-            _results.push(i++);
-          }
-        }
-        return _results;
-      }
-    };
-
-    Evented.prototype.trigger = function() {
-      var args, ctx, event, handler, i, once, _ref, _ref1, _results;
-      event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      if ((_ref = this.bindings) != null ? _ref[event] : void 0) {
-        i = 0;
-        _results = [];
-        while (i < this.bindings[event].length) {
-          _ref1 = this.bindings[event][i], handler = _ref1.handler, ctx = _ref1.ctx, once = _ref1.once;
-          handler.apply(ctx != null ? ctx : this, args);
-          if (once) {
-            _results.push(this.bindings[event].splice(i, 1));
-          } else {
-            _results.push(i++);
-          }
-        }
-        return _results;
-      }
-    };
-
-    return Evented;
-
-  })();
-
-  this.Tether.Utils = {
-    getScrollParent: getScrollParent,
-    getBounds: getBounds,
-    getOffsetParent: getOffsetParent,
-    extend: extend,
-    addClass: addClass,
-    removeClass: removeClass,
-    hasClass: hasClass,
-    updateClasses: updateClasses,
-    defer: defer,
-    flush: flush,
-    uniqueId: uniqueId,
-    Evented: Evented,
-    getScrollBarSize: getScrollBarSize
-  };
-
-}).call(this);
-
-(function() {
-  var MIRROR_LR, MIRROR_TB, OFFSET_MAP, Tether, addClass, addOffset, attachmentToOffset, autoToFixedAttachment, defer, extend, flush, getBounds, getOffsetParent, getOuterSize, getScrollBarSize, getScrollParent, getSize, now, offsetToPx, parseAttachment, parseOffset, position, removeClass, tethers, transformKey, updateClasses, within, _Tether, _ref,
-    __slice = [].slice,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  if (this.Tether == null) {
-    throw new Error("You must include the utils.js file before tether.js");
+    zeroElement = node;
   }
 
-  Tether = this.Tether;
+  var id = node.getAttribute('data-tether-id');
+  if (typeof zeroPosCache[id] === 'undefined') {
+    zeroPosCache[id] = {};
 
-  _ref = Tether.Utils, getScrollParent = _ref.getScrollParent, getSize = _ref.getSize, getOuterSize = _ref.getOuterSize, getBounds = _ref.getBounds, getOffsetParent = _ref.getOffsetParent, extend = _ref.extend, addClass = _ref.addClass, removeClass = _ref.removeClass, updateClasses = _ref.updateClasses, defer = _ref.defer, flush = _ref.flush, getScrollBarSize = _ref.getScrollBarSize;
-
-  within = function(a, b, diff) {
-    if (diff == null) {
-      diff = 1;
+    var rect = node.getBoundingClientRect();
+    for (var k in rect) {
+      // Can't use extend, as on IE9, elements don't resolve to be hasOwnProperty
+      zeroPosCache[id][k] = rect[k];
     }
-    return (a + diff >= b && b >= a - diff);
+
+    // Clear the cache when this position call is done
+    defer(function () {
+      delete zeroPosCache[id];
+    });
+  }
+
+  return zeroPosCache[id];
+};
+
+function removeUtilElements() {
+  if (zeroElement) {
+    document.body.removeChild(zeroElement);
+  }
+  zeroElement = null;
+};
+
+function getBounds(el) {
+  var doc = undefined;
+  if (el === document) {
+    doc = document;
+    el = document.documentElement;
+  } else {
+    doc = el.ownerDocument;
+  }
+
+  var docEl = doc.documentElement;
+
+  var box = {};
+  // The original object returned by getBoundingClientRect is immutable, so we clone it
+  // We can't use extend because the properties are not considered part of the object by hasOwnProperty in IE9
+  var rect = el.getBoundingClientRect();
+  for (var k in rect) {
+    box[k] = rect[k];
+  }
+
+  var origin = getOrigin();
+
+  box.top -= origin.top;
+  box.left -= origin.left;
+
+  if (typeof box.width === 'undefined') {
+    box.width = document.body.scrollWidth - box.left - box.right;
+  }
+  if (typeof box.height === 'undefined') {
+    box.height = document.body.scrollHeight - box.top - box.bottom;
+  }
+
+  box.top = box.top - docEl.clientTop;
+  box.left = box.left - docEl.clientLeft;
+  box.right = doc.body.clientWidth - box.width - box.left;
+  box.bottom = doc.body.clientHeight - box.height - box.top;
+
+  return box;
+}
+
+function getOffsetParent(el) {
+  return el.offsetParent || document.documentElement;
+}
+
+function getScrollBarSize() {
+  var inner = document.createElement('div');
+  inner.style.width = '100%';
+  inner.style.height = '200px';
+
+  var outer = document.createElement('div');
+  extend(outer.style, {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    pointerEvents: 'none',
+    visibility: 'hidden',
+    width: '200px',
+    height: '150px',
+    overflow: 'hidden'
+  });
+
+  outer.appendChild(inner);
+
+  document.body.appendChild(outer);
+
+  var widthContained = inner.offsetWidth;
+  outer.style.overflow = 'scroll';
+  var widthScroll = inner.offsetWidth;
+
+  if (widthContained === widthScroll) {
+    widthScroll = outer.clientWidth;
+  }
+
+  document.body.removeChild(outer);
+
+  var width = widthContained - widthScroll;
+
+  return { width: width, height: width };
+}
+
+function extend() {
+  var out = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  var args = [];
+
+  Array.prototype.push.apply(args, arguments);
+
+  args.slice(1).forEach(function (obj) {
+    if (obj) {
+      for (var key in obj) {
+        if (({}).hasOwnProperty.call(obj, key)) {
+          out[key] = obj[key];
+        }
+      }
+    }
+  });
+
+  return out;
+}
+
+function removeClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.remove(cls);
+      }
+    });
+  } else {
+    var regex = new RegExp('(^| )' + name.split(' ').join('|') + '( |$)', 'gi');
+    var className = getClassName(el).replace(regex, ' ');
+    setClassName(el, className);
+  }
+}
+
+function addClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    name.split(' ').forEach(function (cls) {
+      if (cls.trim()) {
+        el.classList.add(cls);
+      }
+    });
+  } else {
+    removeClass(el, name);
+    var cls = getClassName(el) + (' ' + name);
+    setClassName(el, cls);
+  }
+}
+
+function hasClass(el, name) {
+  if (typeof el.classList !== 'undefined') {
+    return el.classList.contains(name);
+  }
+  var className = getClassName(el);
+  return new RegExp('(^| )' + name + '( |$)', 'gi').test(className);
+}
+
+function getClassName(el) {
+  if (el.className instanceof SVGAnimatedString) {
+    return el.className.baseVal;
+  }
+  return el.className;
+}
+
+function setClassName(el, className) {
+  el.setAttribute('class', className);
+}
+
+function updateClasses(el, add, all) {
+  // Of the set of 'all' classes, we need the 'add' classes, and only the
+  // 'add' classes to be set.
+  all.forEach(function (cls) {
+    if (add.indexOf(cls) === -1 && hasClass(el, cls)) {
+      removeClass(el, cls);
+    }
+  });
+
+  add.forEach(function (cls) {
+    if (!hasClass(el, cls)) {
+      addClass(el, cls);
+    }
+  });
+}
+
+var deferred = [];
+
+var defer = function defer(fn) {
+  deferred.push(fn);
+};
+
+var flush = function flush() {
+  var fn = undefined;
+  while (fn = deferred.pop()) {
+    fn();
+  }
+};
+
+var Evented = (function () {
+  function Evented() {
+    _classCallCheck(this, Evented);
+  }
+
+  _createClass(Evented, [{
+    key: 'on',
+    value: function on(event, handler, ctx) {
+      var once = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+      if (typeof this.bindings === 'undefined') {
+        this.bindings = {};
+      }
+      if (typeof this.bindings[event] === 'undefined') {
+        this.bindings[event] = [];
+      }
+      this.bindings[event].push({ handler: handler, ctx: ctx, once: once });
+    }
+  }, {
+    key: 'once',
+    value: function once(event, handler, ctx) {
+      this.on(event, handler, ctx, true);
+    }
+  }, {
+    key: 'off',
+    value: function off(event, handler) {
+      if (typeof this.bindings !== 'undefined' && typeof this.bindings[event] !== 'undefined') {
+        return;
+      }
+
+      if (typeof handler === 'undefined') {
+        delete this.bindings[event];
+      } else {
+        var i = 0;
+        while (i < this.bindings[event].length) {
+          if (this.bindings[event][i].handler === handler) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'trigger',
+    value: function trigger(event) {
+      if (typeof this.bindings !== 'undefined' && this.bindings[event]) {
+        var i = 0;
+
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+
+        while (i < this.bindings[event].length) {
+          var _bindings$event$i = this.bindings[event][i];
+          var handler = _bindings$event$i.handler;
+          var ctx = _bindings$event$i.ctx;
+          var once = _bindings$event$i.once;
+
+          var context = ctx;
+          if (typeof context === 'undefined') {
+            context = this;
+          }
+
+          handler.apply(context, args);
+
+          if (once) {
+            this.bindings[event].splice(i, 1);
+          } else {
+            ++i;
+          }
+        }
+      }
+    }
+  }]);
+
+  return Evented;
+})();
+
+TetherBase.Utils = {
+  getScrollParents: getScrollParents,
+  getBounds: getBounds,
+  getOffsetParent: getOffsetParent,
+  extend: extend,
+  addClass: addClass,
+  removeClass: removeClass,
+  hasClass: hasClass,
+  updateClasses: updateClasses,
+  defer: defer,
+  flush: flush,
+  uniqueId: uniqueId,
+  Evented: Evented,
+  getScrollBarSize: getScrollBarSize,
+  removeUtilElements: removeUtilElements
+};
+/* globals TetherBase, performance */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+if (typeof TetherBase === 'undefined') {
+  throw new Error('You must include the utils.js file before tether.js');
+}
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getScrollParents = _TetherBase$Utils.getScrollParents;
+var getBounds = _TetherBase$Utils.getBounds;
+var getOffsetParent = _TetherBase$Utils.getOffsetParent;
+var extend = _TetherBase$Utils.extend;
+var addClass = _TetherBase$Utils.addClass;
+var removeClass = _TetherBase$Utils.removeClass;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+var flush = _TetherBase$Utils.flush;
+var getScrollBarSize = _TetherBase$Utils.getScrollBarSize;
+var removeUtilElements = _TetherBase$Utils.removeUtilElements;
+
+function within(a, b) {
+  var diff = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+  return a + diff >= b && b >= a - diff;
+}
+
+var transformKey = (function () {
+  if (typeof document === 'undefined') {
+    return '';
+  }
+  var el = document.createElement('div');
+
+  var transforms = ['transform', 'webkitTransform', 'OTransform', 'MozTransform', 'msTransform'];
+  for (var i = 0; i < transforms.length; ++i) {
+    var key = transforms[i];
+    if (el.style[key] !== undefined) {
+      return key;
+    }
+  }
+})();
+
+var tethers = [];
+
+var position = function position() {
+  tethers.forEach(function (tether) {
+    tether.position(false);
+  });
+  flush();
+};
+
+function now() {
+  if (typeof performance !== 'undefined' && typeof performance.now !== 'undefined') {
+    return performance.now();
+  }
+  return +new Date();
+}
+
+(function () {
+  var lastCall = null;
+  var lastDuration = null;
+  var pendingTimeout = null;
+
+  var tick = function tick() {
+    if (typeof lastDuration !== 'undefined' && lastDuration > 16) {
+      // We voluntarily throttle ourselves if we can't manage 60fps
+      lastDuration = Math.min(lastDuration - 16, 250);
+
+      // Just in case this is the last event, remember to position just once more
+      pendingTimeout = setTimeout(tick, 250);
+      return;
+    }
+
+    if (typeof lastCall !== 'undefined' && now() - lastCall < 10) {
+      // Some browsers call events a little too frequently, refuse to run more than is reasonable
+      return;
+    }
+
+    if (pendingTimeout != null) {
+      clearTimeout(pendingTimeout);
+      pendingTimeout = null;
+    }
+
+    lastCall = now();
+    position();
+    lastDuration = now() - lastCall;
   };
 
-  transformKey = (function() {
-    var el, key, _i, _len, _ref1;
-    el = document.createElement('div');
-    _ref1 = ['transform', 'webkitTransform', 'OTransform', 'MozTransform', 'msTransform'];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      key = _ref1[_i];
-      if (el.style[key] !== void 0) {
+  if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
+    ['resize', 'scroll', 'touchmove'].forEach(function (event) {
+      window.addEventListener(event, tick);
+    });
+  }
+})();
+
+var MIRROR_LR = {
+  center: 'center',
+  left: 'right',
+  right: 'left'
+};
+
+var MIRROR_TB = {
+  middle: 'middle',
+  top: 'bottom',
+  bottom: 'top'
+};
+
+var OFFSET_MAP = {
+  top: 0,
+  left: 0,
+  middle: '50%',
+  center: '50%',
+  bottom: '100%',
+  right: '100%'
+};
+
+var autoToFixedAttachment = function autoToFixedAttachment(attachment, relativeToAttachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (left === 'auto') {
+    left = MIRROR_LR[relativeToAttachment.left];
+  }
+
+  if (top === 'auto') {
+    top = MIRROR_TB[relativeToAttachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+var attachmentToOffset = function attachmentToOffset(attachment) {
+  var left = attachment.left;
+  var top = attachment.top;
+
+  if (typeof OFFSET_MAP[attachment.left] !== 'undefined') {
+    left = OFFSET_MAP[attachment.left];
+  }
+
+  if (typeof OFFSET_MAP[attachment.top] !== 'undefined') {
+    top = OFFSET_MAP[attachment.top];
+  }
+
+  return { left: left, top: top };
+};
+
+function addOffset() {
+  var out = { top: 0, left: 0 };
+
+  for (var _len = arguments.length, offsets = Array(_len), _key = 0; _key < _len; _key++) {
+    offsets[_key] = arguments[_key];
+  }
+
+  offsets.forEach(function (_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
+
+    if (typeof top === 'string') {
+      top = parseFloat(top, 10);
+    }
+    if (typeof left === 'string') {
+      left = parseFloat(left, 10);
+    }
+
+    out.top += top;
+    out.left += left;
+  });
+
+  return out;
+}
+
+function offsetToPx(offset, size) {
+  if (typeof offset.left === 'string' && offset.left.indexOf('%') !== -1) {
+    offset.left = parseFloat(offset.left, 10) / 100 * size.width;
+  }
+  if (typeof offset.top === 'string' && offset.top.indexOf('%') !== -1) {
+    offset.top = parseFloat(offset.top, 10) / 100 * size.height;
+  }
+
+  return offset;
+}
+
+var parseOffset = function parseOffset(value) {
+  var _value$split = value.split(' ');
+
+  var _value$split2 = _slicedToArray(_value$split, 2);
+
+  var top = _value$split2[0];
+  var left = _value$split2[1];
+
+  return { top: top, left: left };
+};
+var parseAttachment = parseOffset;
+
+var TetherClass = (function (_Evented) {
+  _inherits(TetherClass, _Evented);
+
+  function TetherClass(options) {
+    var _this = this;
+
+    _classCallCheck(this, TetherClass);
+
+    _get(Object.getPrototypeOf(TetherClass.prototype), 'constructor', this).call(this);
+    this.position = this.position.bind(this);
+
+    tethers.push(this);
+
+    this.history = [];
+
+    this.setOptions(options, false);
+
+    TetherBase.modules.forEach(function (module) {
+      if (typeof module.initialize !== 'undefined') {
+        module.initialize.call(_this);
+      }
+    });
+
+    this.position();
+  }
+
+  _createClass(TetherClass, [{
+    key: 'getClass',
+    value: function getClass() {
+      var key = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+      var classes = this.options.classes;
+
+      if (typeof classes !== 'undefined' && classes[key]) {
+        return this.options.classes[key];
+      } else if (this.options.classPrefix) {
+        return this.options.classPrefix + '-' + key;
+      } else {
         return key;
       }
     }
-  })();
+  }, {
+    key: 'setOptions',
+    value: function setOptions(options) {
+      var _this2 = this;
 
-  tethers = [];
+      var pos = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-  position = function() {
-    var tether, _i, _len;
-    for (_i = 0, _len = tethers.length; _i < _len; _i++) {
-      tether = tethers[_i];
-      tether.position(false);
-    }
-    return flush();
-  };
-
-  now = function() {
-    var _ref1;
-    return (_ref1 = typeof performance !== "undefined" && performance !== null ? typeof performance.now === "function" ? performance.now() : void 0 : void 0) != null ? _ref1 : +(new Date);
-  };
-
-  (function() {
-    var event, lastCall, lastDuration, pendingTimeout, tick, _i, _len, _ref1, _results;
-    lastCall = null;
-    lastDuration = null;
-    pendingTimeout = null;
-    tick = function() {
-      if ((lastDuration != null) && lastDuration > 16) {
-        lastDuration = Math.min(lastDuration - 16, 250);
-        pendingTimeout = setTimeout(tick, 250);
-        return;
-      }
-      if ((lastCall != null) && (now() - lastCall) < 10) {
-        return;
-      }
-      if (pendingTimeout != null) {
-        clearTimeout(pendingTimeout);
-        pendingTimeout = null;
-      }
-      lastCall = now();
-      position();
-      return lastDuration = now() - lastCall;
-    };
-    _ref1 = ['resize', 'scroll', 'touchmove'];
-    _results = [];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      event = _ref1[_i];
-      _results.push(window.addEventListener(event, tick));
-    }
-    return _results;
-  })();
-
-  MIRROR_LR = {
-    center: 'center',
-    left: 'right',
-    right: 'left'
-  };
-
-  MIRROR_TB = {
-    middle: 'middle',
-    top: 'bottom',
-    bottom: 'top'
-  };
-
-  OFFSET_MAP = {
-    top: 0,
-    left: 0,
-    middle: '50%',
-    center: '50%',
-    bottom: '100%',
-    right: '100%'
-  };
-
-  autoToFixedAttachment = function(attachment, relativeToAttachment) {
-    var left, top;
-    left = attachment.left, top = attachment.top;
-    if (left === 'auto') {
-      left = MIRROR_LR[relativeToAttachment.left];
-    }
-    if (top === 'auto') {
-      top = MIRROR_TB[relativeToAttachment.top];
-    }
-    return {
-      left: left,
-      top: top
-    };
-  };
-
-  attachmentToOffset = function(attachment) {
-    var _ref1, _ref2;
-    return {
-      left: (_ref1 = OFFSET_MAP[attachment.left]) != null ? _ref1 : attachment.left,
-      top: (_ref2 = OFFSET_MAP[attachment.top]) != null ? _ref2 : attachment.top
-    };
-  };
-
-  addOffset = function() {
-    var left, offsets, out, top, _i, _len, _ref1;
-    offsets = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    out = {
-      top: 0,
-      left: 0
-    };
-    for (_i = 0, _len = offsets.length; _i < _len; _i++) {
-      _ref1 = offsets[_i], top = _ref1.top, left = _ref1.left;
-      if (typeof top === 'string') {
-        top = parseFloat(top, 10);
-      }
-      if (typeof left === 'string') {
-        left = parseFloat(left, 10);
-      }
-      out.top += top;
-      out.left += left;
-    }
-    return out;
-  };
-
-  offsetToPx = function(offset, size) {
-    if (typeof offset.left === 'string' && offset.left.indexOf('%') !== -1) {
-      offset.left = parseFloat(offset.left, 10) / 100 * size.width;
-    }
-    if (typeof offset.top === 'string' && offset.top.indexOf('%') !== -1) {
-      offset.top = parseFloat(offset.top, 10) / 100 * size.height;
-    }
-    return offset;
-  };
-
-  parseAttachment = parseOffset = function(value) {
-    var left, top, _ref1;
-    _ref1 = value.split(' '), top = _ref1[0], left = _ref1[1];
-    return {
-      top: top,
-      left: left
-    };
-  };
-
-  _Tether = (function() {
-    _Tether.modules = [];
-
-    function _Tether(options) {
-      this.position = __bind(this.position, this);
-      var module, _i, _len, _ref1, _ref2;
-      tethers.push(this);
-      this.history = [];
-      this.setOptions(options, false);
-      _ref1 = Tether.modules;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        module = _ref1[_i];
-        if ((_ref2 = module.initialize) != null) {
-          _ref2.call(this);
-        }
-      }
-      this.position();
-    }
-
-    _Tether.prototype.getClass = function(key) {
-      var _ref1, _ref2;
-      if ((_ref1 = this.options.classes) != null ? _ref1[key] : void 0) {
-        return this.options.classes[key];
-      } else if (((_ref2 = this.options.classes) != null ? _ref2[key] : void 0) !== false) {
-        if (this.options.classPrefix) {
-          return "" + this.options.classPrefix + "-" + key;
-        } else {
-          return key;
-        }
-      } else {
-        return '';
-      }
-    };
-
-    _Tether.prototype.setOptions = function(options, position) {
-      var defaults, key, _i, _len, _ref1, _ref2;
-      this.options = options;
-      if (position == null) {
-        position = true;
-      }
-      defaults = {
+      var defaults = {
         offset: '0 0',
         targetOffset: '0 0',
         targetAttachment: 'auto auto',
         classPrefix: 'tether'
       };
-      this.options = extend(defaults, this.options);
-      _ref1 = this.options, this.element = _ref1.element, this.target = _ref1.target, this.targetModifier = _ref1.targetModifier;
+
+      this.options = extend(defaults, options);
+
+      var _options = this.options;
+      var element = _options.element;
+      var target = _options.target;
+      var targetModifier = _options.targetModifier;
+
+      this.element = element;
+      this.target = target;
+      this.targetModifier = targetModifier;
+
       if (this.target === 'viewport') {
         this.target = document.body;
         this.targetModifier = 'visible';
@@ -8443,290 +8924,364 @@ return Q;
         this.target = document.body;
         this.targetModifier = 'scroll-handle';
       }
-      _ref2 = ['element', 'target'];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        key = _ref2[_i];
-        if (this[key] == null) {
-          throw new Error("Tether Error: Both element and target must be defined");
+
+      ['element', 'target'].forEach(function (key) {
+        if (typeof _this2[key] === 'undefined') {
+          throw new Error('Tether Error: Both element and target must be defined');
         }
-        if (this[key].jquery != null) {
-          this[key] = this[key][0];
-        } else if (typeof this[key] === 'string') {
-          this[key] = document.querySelector(this[key]);
+
+        if (typeof _this2[key].jquery !== 'undefined') {
+          _this2[key] = _this2[key][0];
+        } else if (typeof _this2[key] === 'string') {
+          _this2[key] = document.querySelector(_this2[key]);
         }
-      }
+      });
+
       addClass(this.element, this.getClass('element'));
-      addClass(this.target, this.getClass('target'));
-      if (!this.options.attachment) {
-        throw new Error("Tether Error: You must provide an attachment");
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('target'));
       }
+
+      if (!this.options.attachment) {
+        throw new Error('Tether Error: You must provide an attachment');
+      }
+
       this.targetAttachment = parseAttachment(this.options.targetAttachment);
       this.attachment = parseAttachment(this.options.attachment);
       this.offset = parseOffset(this.options.offset);
       this.targetOffset = parseOffset(this.options.targetOffset);
-      if (this.scrollParent != null) {
+
+      if (typeof this.scrollParents !== 'undefined') {
         this.disable();
       }
-      if (this.targetModifier === 'scroll-handle') {
-        this.scrollParent = this.target;
-      } else {
-        this.scrollParent = getScrollParent(this.target);
-      }
-      if (this.options.enabled !== false) {
-        return this.enable(position);
-      }
-    };
 
-    _Tether.prototype.getTargetBounds = function() {
-      var bounds, fitAdj, hasBottomScroll, height, out, scrollBottom, scrollPercentage, style, target;
-      if (this.targetModifier != null) {
-        switch (this.targetModifier) {
-          case 'visible':
-            if (this.target === document.body) {
-              return {
-                top: pageYOffset,
-                left: pageXOffset,
-                height: innerHeight,
-                width: innerWidth
-              };
-            } else {
-              bounds = getBounds(this.target);
-              out = {
-                height: bounds.height,
-                width: bounds.width,
-                top: bounds.top,
-                left: bounds.left
-              };
-              out.height = Math.min(out.height, bounds.height - (pageYOffset - bounds.top));
-              out.height = Math.min(out.height, bounds.height - ((bounds.top + bounds.height) - (pageYOffset + innerHeight)));
-              out.height = Math.min(innerHeight, out.height);
-              out.height -= 2;
-              out.width = Math.min(out.width, bounds.width - (pageXOffset - bounds.left));
-              out.width = Math.min(out.width, bounds.width - ((bounds.left + bounds.width) - (pageXOffset + innerWidth)));
-              out.width = Math.min(innerWidth, out.width);
-              out.width -= 2;
-              if (out.top < pageYOffset) {
-                out.top = pageYOffset;
-              }
-              if (out.left < pageXOffset) {
-                out.left = pageXOffset;
-              }
-              return out;
-            }
-            break;
-          case 'scroll-handle':
-            target = this.target;
-            if (target === document.body) {
-              target = document.documentElement;
-              bounds = {
-                left: pageXOffset,
-                top: pageYOffset,
-                height: innerHeight,
-                width: innerWidth
-              };
-            } else {
-              bounds = getBounds(target);
-            }
-            style = getComputedStyle(target);
-            hasBottomScroll = target.scrollWidth > target.clientWidth || 'scroll' === [style.overflow, style.overflowX] || this.target !== document.body;
-            scrollBottom = 0;
-            if (hasBottomScroll) {
-              scrollBottom = 15;
-            }
-            height = bounds.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - scrollBottom;
-            out = {
-              width: 15,
-              height: height * 0.975 * (height / target.scrollHeight),
-              left: bounds.left + bounds.width - parseFloat(style.borderLeftWidth) - 15
+      if (this.targetModifier === 'scroll-handle') {
+        this.scrollParents = [this.target];
+      } else {
+        this.scrollParents = getScrollParents(this.target);
+      }
+
+      if (!(this.options.enabled === false)) {
+        this.enable(pos);
+      }
+    }
+  }, {
+    key: 'getTargetBounds',
+    value: function getTargetBounds() {
+      if (typeof this.targetModifier !== 'undefined') {
+        if (this.targetModifier === 'visible') {
+          if (this.target === document.body) {
+            return { top: pageYOffset, left: pageXOffset, height: innerHeight, width: innerWidth };
+          } else {
+            var bounds = getBounds(this.target);
+
+            var out = {
+              height: bounds.height,
+              width: bounds.width,
+              top: bounds.top,
+              left: bounds.left
             };
-            fitAdj = 0;
-            if (height < 408 && this.target === document.body) {
-              fitAdj = -0.00011 * Math.pow(height, 2) - 0.00727 * height + 22.58;
+
+            out.height = Math.min(out.height, bounds.height - (pageYOffset - bounds.top));
+            out.height = Math.min(out.height, bounds.height - (bounds.top + bounds.height - (pageYOffset + innerHeight)));
+            out.height = Math.min(innerHeight, out.height);
+            out.height -= 2;
+
+            out.width = Math.min(out.width, bounds.width - (pageXOffset - bounds.left));
+            out.width = Math.min(out.width, bounds.width - (bounds.left + bounds.width - (pageXOffset + innerWidth)));
+            out.width = Math.min(innerWidth, out.width);
+            out.width -= 2;
+
+            if (out.top < pageYOffset) {
+              out.top = pageYOffset;
             }
-            if (this.target !== document.body) {
-              out.height = Math.max(out.height, 24);
+            if (out.left < pageXOffset) {
+              out.left = pageXOffset;
             }
-            scrollPercentage = this.target.scrollTop / (target.scrollHeight - height);
-            out.top = scrollPercentage * (height - out.height - fitAdj) + bounds.top + parseFloat(style.borderTopWidth);
-            if (this.target === document.body) {
-              out.height = Math.max(out.height, 24);
-            }
+
             return out;
+          }
+        } else if (this.targetModifier === 'scroll-handle') {
+          var bounds = undefined;
+          var target = this.target;
+          if (target === document.body) {
+            target = document.documentElement;
+
+            bounds = {
+              left: pageXOffset,
+              top: pageYOffset,
+              height: innerHeight,
+              width: innerWidth
+            };
+          } else {
+            bounds = getBounds(target);
+          }
+
+          var style = getComputedStyle(target);
+
+          var hasBottomScroll = target.scrollWidth > target.clientWidth || [style.overflow, style.overflowX].indexOf('scroll') >= 0 || this.target !== document.body;
+
+          var scrollBottom = 0;
+          if (hasBottomScroll) {
+            scrollBottom = 15;
+          }
+
+          var height = bounds.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - scrollBottom;
+
+          var out = {
+            width: 15,
+            height: height * 0.975 * (height / target.scrollHeight),
+            left: bounds.left + bounds.width - parseFloat(style.borderLeftWidth) - 15
+          };
+
+          var fitAdj = 0;
+          if (height < 408 && this.target === document.body) {
+            fitAdj = -0.00011 * Math.pow(height, 2) - 0.00727 * height + 22.58;
+          }
+
+          if (this.target !== document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          var scrollPercentage = this.target.scrollTop / (target.scrollHeight - height);
+          out.top = scrollPercentage * (height - out.height - fitAdj) + bounds.top + parseFloat(style.borderTopWidth);
+
+          if (this.target === document.body) {
+            out.height = Math.max(out.height, 24);
+          }
+
+          return out;
         }
       } else {
         return getBounds(this.target);
       }
-    };
-
-    _Tether.prototype.clearCache = function() {
-      return this._cache = {};
-    };
-
-    _Tether.prototype.cache = function(k, getter) {
-      if (this._cache == null) {
+    }
+  }, {
+    key: 'clearCache',
+    value: function clearCache() {
+      this._cache = {};
+    }
+  }, {
+    key: 'cache',
+    value: function cache(k, getter) {
+      // More than one module will often need the same DOM info, so
+      // we keep a cache which is cleared on each position call
+      if (typeof this._cache === 'undefined') {
         this._cache = {};
       }
-      if (this._cache[k] == null) {
+
+      if (typeof this._cache[k] === 'undefined') {
         this._cache[k] = getter.call(this);
       }
-      return this._cache[k];
-    };
 
-    _Tether.prototype.enable = function(position) {
-      if (position == null) {
-        position = true;
+      return this._cache[k];
+    }
+  }, {
+    key: 'enable',
+    value: function enable() {
+      var _this3 = this;
+
+      var pos = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      if (!(this.options.addTargetClasses === false)) {
+        addClass(this.target, this.getClass('enabled'));
       }
-      addClass(this.target, this.getClass('enabled'));
       addClass(this.element, this.getClass('enabled'));
       this.enabled = true;
-      if (this.scrollParent !== document) {
-        this.scrollParent.addEventListener('scroll', this.position);
-      }
-      if (position) {
-        return this.position();
-      }
-    };
 
-    _Tether.prototype.disable = function() {
+      this.scrollParents.forEach(function (parent) {
+        if (parent !== document) {
+          parent.addEventListener('scroll', _this3.position);
+        }
+      });
+
+      if (pos) {
+        this.position();
+      }
+    }
+  }, {
+    key: 'disable',
+    value: function disable() {
+      var _this4 = this;
+
       removeClass(this.target, this.getClass('enabled'));
       removeClass(this.element, this.getClass('enabled'));
       this.enabled = false;
-      if (this.scrollParent != null) {
-        return this.scrollParent.removeEventListener('scroll', this.position);
-      }
-    };
 
-    _Tether.prototype.destroy = function() {
-      var i, tether, _i, _len, _results;
+      if (typeof this.scrollParents !== 'undefined') {
+        this.scrollParents.forEach(function (parent) {
+          parent.removeEventListener('scroll', _this4.position);
+        });
+      }
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      var _this5 = this;
+
       this.disable();
-      _results = [];
-      for (i = _i = 0, _len = tethers.length; _i < _len; i = ++_i) {
-        tether = tethers[i];
-        if (tether === this) {
-          tethers.splice(i, 1);
-          break;
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
-    };
 
-    _Tether.prototype.updateAttachClasses = function(elementAttach, targetAttach) {
-      var add, all, side, sides, _i, _j, _len, _len1, _ref1,
-        _this = this;
-      if (elementAttach == null) {
-        elementAttach = this.attachment;
+      tethers.forEach(function (tether, i) {
+        if (tether === _this5) {
+          tethers.splice(i, 1);
+        }
+      });
+
+      // Remove any elements we were using for convenience from the DOM
+      if (tethers.length === 0) {
+        removeUtilElements();
       }
-      if (targetAttach == null) {
-        targetAttach = this.targetAttachment;
-      }
-      sides = ['left', 'top', 'bottom', 'right', 'middle', 'center'];
-      if ((_ref1 = this._addAttachClasses) != null ? _ref1.length : void 0) {
+    }
+  }, {
+    key: 'updateAttachClasses',
+    value: function updateAttachClasses(elementAttach, targetAttach) {
+      var _this6 = this;
+
+      elementAttach = elementAttach || this.attachment;
+      targetAttach = targetAttach || this.targetAttachment;
+      var sides = ['left', 'top', 'bottom', 'right', 'middle', 'center'];
+
+      if (typeof this._addAttachClasses !== 'undefined' && this._addAttachClasses.length) {
+        // updateAttachClasses can be called more than once in a position call, so
+        // we need to clean up after ourselves such that when the last defer gets
+        // ran it doesn't add any extra classes from previous calls.
         this._addAttachClasses.splice(0, this._addAttachClasses.length);
       }
-      add = this._addAttachClasses != null ? this._addAttachClasses : this._addAttachClasses = [];
+
+      if (typeof this._addAttachClasses === 'undefined') {
+        this._addAttachClasses = [];
+      }
+      var add = this._addAttachClasses;
+
       if (elementAttach.top) {
-        add.push("" + (this.getClass('element-attached')) + "-" + elementAttach.top);
+        add.push(this.getClass('element-attached') + '-' + elementAttach.top);
       }
       if (elementAttach.left) {
-        add.push("" + (this.getClass('element-attached')) + "-" + elementAttach.left);
+        add.push(this.getClass('element-attached') + '-' + elementAttach.left);
       }
       if (targetAttach.top) {
-        add.push("" + (this.getClass('target-attached')) + "-" + targetAttach.top);
+        add.push(this.getClass('target-attached') + '-' + targetAttach.top);
       }
       if (targetAttach.left) {
-        add.push("" + (this.getClass('target-attached')) + "-" + targetAttach.left);
+        add.push(this.getClass('target-attached') + '-' + targetAttach.left);
       }
-      all = [];
-      for (_i = 0, _len = sides.length; _i < _len; _i++) {
-        side = sides[_i];
-        all.push("" + (this.getClass('element-attached')) + "-" + side);
-      }
-      for (_j = 0, _len1 = sides.length; _j < _len1; _j++) {
-        side = sides[_j];
-        all.push("" + (this.getClass('target-attached')) + "-" + side);
-      }
-      return defer(function() {
-        if (_this._addAttachClasses == null) {
+
+      var all = [];
+      sides.forEach(function (side) {
+        all.push(_this6.getClass('element-attached') + '-' + side);
+        all.push(_this6.getClass('target-attached') + '-' + side);
+      });
+
+      defer(function () {
+        if (!(typeof _this6._addAttachClasses !== 'undefined')) {
           return;
         }
-        updateClasses(_this.element, _this._addAttachClasses, all);
-        updateClasses(_this.target, _this._addAttachClasses, all);
-        return _this._addAttachClasses = void 0;
-      });
-    };
 
-    _Tether.prototype.position = function(flushChanges) {
-      var elementPos, elementStyle, height, left, manualOffset, manualTargetOffset, module, next, offset, offsetBorder, offsetParent, offsetParentSize, offsetParentStyle, offsetPosition, ret, scrollLeft, scrollTop, scrollbarSize, side, targetAttachment, targetOffset, targetPos, targetSize, top, width, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6,
-        _this = this;
-      if (flushChanges == null) {
-        flushChanges = true;
-      }
+        updateClasses(_this6.element, _this6._addAttachClasses, all);
+        if (!(_this6.options.addTargetClasses === false)) {
+          updateClasses(_this6.target, _this6._addAttachClasses, all);
+        }
+
+        delete _this6._addAttachClasses;
+      });
+    }
+  }, {
+    key: 'position',
+    value: function position() {
+      var _this7 = this;
+
+      var flushChanges = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      // flushChanges commits the changes immediately, leave true unless you are positioning multiple
+      // tethers (in which case call Tether.Utils.flush yourself when you're done)
+
       if (!this.enabled) {
         return;
       }
+
       this.clearCache();
-      targetAttachment = autoToFixedAttachment(this.targetAttachment, this.attachment);
+
+      // Turn 'auto' attachments into the appropriate corner or edge
+      var targetAttachment = autoToFixedAttachment(this.targetAttachment, this.attachment);
+
       this.updateAttachClasses(this.attachment, targetAttachment);
-      elementPos = this.cache('element-bounds', function() {
-        return getBounds(_this.element);
+
+      var elementPos = this.cache('element-bounds', function () {
+        return getBounds(_this7.element);
       });
-      width = elementPos.width, height = elementPos.height;
-      if (width === 0 && height === 0 && (this.lastSize != null)) {
-        _ref1 = this.lastSize, width = _ref1.width, height = _ref1.height;
+
+      var width = elementPos.width;
+      var height = elementPos.height;
+
+      if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+        var _lastSize = this.lastSize;
+
+        // We cache the height and width to make it possible to position elements that are
+        // getting hidden.
+        width = _lastSize.width;
+        height = _lastSize.height;
       } else {
-        this.lastSize = {
-          width: width,
-          height: height
-        };
+        this.lastSize = { width: width, height: height };
       }
-      targetSize = targetPos = this.cache('target-bounds', function() {
-        return _this.getTargetBounds();
+
+      var targetPos = this.cache('target-bounds', function () {
+        return _this7.getTargetBounds();
       });
-      offset = offsetToPx(attachmentToOffset(this.attachment), {
-        width: width,
-        height: height
-      });
-      targetOffset = offsetToPx(attachmentToOffset(targetAttachment), targetSize);
-      manualOffset = offsetToPx(this.offset, {
-        width: width,
-        height: height
-      });
-      manualTargetOffset = offsetToPx(this.targetOffset, targetSize);
+      var targetSize = targetPos;
+
+      // Get an actual px offset from the attachment
+      var offset = offsetToPx(attachmentToOffset(this.attachment), { width: width, height: height });
+      var targetOffset = offsetToPx(attachmentToOffset(targetAttachment), targetSize);
+
+      var manualOffset = offsetToPx(this.offset, { width: width, height: height });
+      var manualTargetOffset = offsetToPx(this.targetOffset, targetSize);
+
+      // Add the manually provided offset
       offset = addOffset(offset, manualOffset);
       targetOffset = addOffset(targetOffset, manualTargetOffset);
-      left = targetPos.left + targetOffset.left - offset.left;
-      top = targetPos.top + targetOffset.top - offset.top;
-      _ref2 = Tether.modules;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        module = _ref2[_i];
-        ret = module.position.call(this, {
+
+      // It's now our goal to make (element position + offset) == (target position + target offset)
+      var left = targetPos.left + targetOffset.left - offset.left;
+      var top = targetPos.top + targetOffset.top - offset.top;
+
+      for (var i = 0; i < TetherBase.modules.length; ++i) {
+        var _module2 = TetherBase.modules[i];
+        var ret = _module2.position.call(this, {
           left: left,
           top: top,
           targetAttachment: targetAttachment,
           targetPos: targetPos,
-          attachment: this.attachment,
           elementPos: elementPos,
           offset: offset,
           targetOffset: targetOffset,
           manualOffset: manualOffset,
           manualTargetOffset: manualTargetOffset,
-          scrollbarSize: scrollbarSize
+          scrollbarSize: scrollbarSize,
+          attachment: this.attachment
         });
-        if ((ret == null) || typeof ret !== 'object') {
-          continue;
-        } else if (ret === false) {
+
+        if (ret === false) {
           return false;
+        } else if (typeof ret === 'undefined' || typeof ret !== 'object') {
+          continue;
         } else {
-          top = ret.top, left = ret.left;
+          top = ret.top;
+          left = ret.left;
         }
       }
-      next = {
+
+      // We describe the position three different ways to give the optimizer
+      // a chance to decide the best possible way to position the element
+      // with the fewest repaints.
+      var next = {
+        // It's position relative to the page (absolute positioning when
+        // the element is a child of the body)
         page: {
           top: top,
           left: left
         },
+
+        // It's position relative to the viewport (fixed positioning)
         viewport: {
           top: top - pageYOffset,
           bottom: pageYOffset - top - height + innerHeight,
@@ -8734,597 +9289,735 @@ return Q;
           right: pageXOffset - left - width + innerWidth
         }
       };
+
+      var scrollbarSize = undefined;
       if (document.body.scrollWidth > window.innerWidth) {
         scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
         next.viewport.bottom -= scrollbarSize.height;
       }
+
       if (document.body.scrollHeight > window.innerHeight) {
         scrollbarSize = this.cache('scrollbar-size', getScrollBarSize);
         next.viewport.right -= scrollbarSize.width;
       }
-      if (((_ref3 = document.body.style.position) !== '' && _ref3 !== 'static') || ((_ref4 = document.body.parentElement.style.position) !== '' && _ref4 !== 'static')) {
+
+      if (['', 'static'].indexOf(document.body.style.position) === -1 || ['', 'static'].indexOf(document.body.parentElement.style.position) === -1) {
+        // Absolute positioning in the body will be relative to the page, not the 'initial containing block'
         next.page.bottom = document.body.scrollHeight - top - height;
         next.page.right = document.body.scrollWidth - left - width;
       }
-      if (((_ref5 = this.options.optimizations) != null ? _ref5.moveElement : void 0) !== false && (this.targetModifier == null)) {
-        offsetParent = this.cache('target-offsetparent', function() {
-          return getOffsetParent(_this.target);
-        });
-        offsetPosition = this.cache('target-offsetparent-bounds', function() {
-          return getBounds(offsetParent);
-        });
-        offsetParentStyle = getComputedStyle(offsetParent);
-        elementStyle = getComputedStyle(this.element);
-        offsetParentSize = offsetPosition;
-        offsetBorder = {};
-        _ref6 = ['Top', 'Left', 'Bottom', 'Right'];
-        for (_j = 0, _len1 = _ref6.length; _j < _len1; _j++) {
-          side = _ref6[_j];
-          offsetBorder[side.toLowerCase()] = parseFloat(offsetParentStyle["border" + side + "Width"]);
-        }
-        offsetPosition.right = document.body.scrollWidth - offsetPosition.left - offsetParentSize.width + offsetBorder.right;
-        offsetPosition.bottom = document.body.scrollHeight - offsetPosition.top - offsetParentSize.height + offsetBorder.bottom;
-        if (next.page.top >= (offsetPosition.top + offsetBorder.top) && next.page.bottom >= offsetPosition.bottom) {
-          if (next.page.left >= (offsetPosition.left + offsetBorder.left) && next.page.right >= offsetPosition.right) {
-            scrollTop = offsetParent.scrollTop;
-            scrollLeft = offsetParent.scrollLeft;
-            next.offset = {
-              top: next.page.top - offsetPosition.top + scrollTop - offsetBorder.top,
-              left: next.page.left - offsetPosition.left + scrollLeft - offsetBorder.left
-            };
+
+      if (typeof this.options.optimizations !== 'undefined' && this.options.optimizations.moveElement !== false && !(typeof this.targetModifier !== 'undefined')) {
+        (function () {
+          var offsetParent = _this7.cache('target-offsetparent', function () {
+            return getOffsetParent(_this7.target);
+          });
+          var offsetPosition = _this7.cache('target-offsetparent-bounds', function () {
+            return getBounds(offsetParent);
+          });
+          var offsetParentStyle = getComputedStyle(offsetParent);
+          var offsetParentSize = offsetPosition;
+
+          var offsetBorder = {};
+          ['Top', 'Left', 'Bottom', 'Right'].forEach(function (side) {
+            offsetBorder[side.toLowerCase()] = parseFloat(offsetParentStyle['border' + side + 'Width']);
+          });
+
+          offsetPosition.right = document.body.scrollWidth - offsetPosition.left - offsetParentSize.width + offsetBorder.right;
+          offsetPosition.bottom = document.body.scrollHeight - offsetPosition.top - offsetParentSize.height + offsetBorder.bottom;
+
+          if (next.page.top >= offsetPosition.top + offsetBorder.top && next.page.bottom >= offsetPosition.bottom) {
+            if (next.page.left >= offsetPosition.left + offsetBorder.left && next.page.right >= offsetPosition.right) {
+              // We're within the visible part of the target's scroll parent
+              var scrollTop = offsetParent.scrollTop;
+              var scrollLeft = offsetParent.scrollLeft;
+
+              // It's position relative to the target's offset parent (absolute positioning when
+              // the element is moved to be a child of the target's offset parent).
+              next.offset = {
+                top: next.page.top - offsetPosition.top + scrollTop - offsetBorder.top,
+                left: next.page.left - offsetPosition.left + scrollLeft - offsetBorder.left
+              };
+            }
           }
-        }
+        })();
       }
+
+      // We could also travel up the DOM and try each containing context, rather than only
+      // looking at the body, but we're gonna get diminishing returns.
+
       this.move(next);
+
       this.history.unshift(next);
+
       if (this.history.length > 3) {
         this.history.pop();
       }
+
       if (flushChanges) {
         flush();
       }
-      return true;
-    };
 
-    _Tether.prototype.move = function(position) {
-      var css, elVal, found, key, moved, offsetParent, point, same, transcribe, type, val, write, writeCSS, _i, _len, _ref1, _ref2,
-        _this = this;
-      if (this.element.parentNode == null) {
+      return true;
+    }
+
+    // THE ISSUE
+  }, {
+    key: 'move',
+    value: function move(pos) {
+      var _this8 = this;
+
+      if (!(typeof this.element.parentNode !== 'undefined')) {
         return;
       }
-      same = {};
-      for (type in position) {
+
+      var same = {};
+
+      for (var type in pos) {
         same[type] = {};
-        for (key in position[type]) {
-          found = false;
-          _ref1 = this.history;
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            point = _ref1[_i];
-            if (!within((_ref2 = point[type]) != null ? _ref2[key] : void 0, position[type][key])) {
+
+        for (var key in pos[type]) {
+          var found = false;
+
+          for (var i = 0; i < this.history.length; ++i) {
+            var point = this.history[i];
+            if (typeof point[type] !== 'undefined' && !within(point[type][key], pos[type][key])) {
               found = true;
               break;
             }
           }
+
           if (!found) {
             same[type][key] = true;
           }
         }
       }
-      css = {
-        top: '',
-        left: '',
-        right: '',
-        bottom: ''
-      };
-      transcribe = function(same, pos) {
-        var xPos, yPos, _ref3;
-        if (((_ref3 = _this.options.optimizations) != null ? _ref3.gpu : void 0) !== false) {
-          if (same.top) {
+
+      var css = { top: '', left: '', right: '', bottom: '' };
+
+      var transcribe = function transcribe(_same, _pos) {
+        var hasOptimizations = typeof _this8.options.optimizations !== 'undefined';
+        var gpu = hasOptimizations ? _this8.options.optimizations.gpu : null;
+        if (gpu !== false) {
+          var yPos = undefined,
+              xPos = undefined;
+          if (_same.top) {
             css.top = 0;
-            yPos = pos.top;
+            yPos = _pos.top;
           } else {
             css.bottom = 0;
-            yPos = -pos.bottom;
+            yPos = -_pos.bottom;
           }
-          if (same.left) {
+
+          if (_same.left) {
             css.left = 0;
-            xPos = pos.left;
+            xPos = _pos.left;
           } else {
             css.right = 0;
-            xPos = -pos.right;
+            xPos = -_pos.right;
           }
-          css[transformKey] = "translateX(" + (Math.round(xPos)) + "px) translateY(" + (Math.round(yPos)) + "px)";
+
+          css[transformKey] = 'translateX(' + Math.round(xPos) + 'px) translateY(' + Math.round(yPos) + 'px)';
+
           if (transformKey !== 'msTransform') {
-            return css[transformKey] += " translateZ(0)";
+            // The Z transform will keep this in the GPU (faster, and prevents artifacts),
+            // but IE9 doesn't support 3d transforms and will choke.
+            css[transformKey] += " translateZ(0)";
           }
         } else {
-          if (same.top) {
-            css.top = "" + pos.top + "px";
+          if (_same.top) {
+            css.top = _pos.top + 'px';
           } else {
-            css.bottom = "" + pos.bottom + "px";
+            css.bottom = _pos.bottom + 'px';
           }
-          if (same.left) {
-            return css.left = "" + pos.left + "px";
+
+          if (_same.left) {
+            css.left = _pos.left + 'px';
           } else {
-            return css.right = "" + pos.right + "px";
+            css.right = _pos.right + 'px';
           }
         }
       };
-      moved = false;
+
+      var moved = false;
       if ((same.page.top || same.page.bottom) && (same.page.left || same.page.right)) {
         css.position = 'absolute';
-        transcribe(same.page, position.page);
+        transcribe(same.page, pos.page);
       } else if ((same.viewport.top || same.viewport.bottom) && (same.viewport.left || same.viewport.right)) {
         css.position = 'fixed';
-        transcribe(same.viewport, position.viewport);
-      } else if ((same.offset != null) && same.offset.top && same.offset.left) {
-        css.position = 'absolute';
-        offsetParent = this.cache('target-offsetparent', function() {
-          return getOffsetParent(_this.target);
-        });
-        if (getOffsetParent(this.element) !== offsetParent) {
-          defer(function() {
-            _this.element.parentNode.removeChild(_this.element);
-            return offsetParent.appendChild(_this.element);
+        transcribe(same.viewport, pos.viewport);
+      } else if (typeof same.offset !== 'undefined' && same.offset.top && same.offset.left) {
+        (function () {
+          css.position = 'absolute';
+          var offsetParent = _this8.cache('target-offsetparent', function () {
+            return getOffsetParent(_this8.target);
           });
-        }
-        transcribe(same.offset, position.offset);
-        moved = true;
+
+          if (getOffsetParent(_this8.element) !== offsetParent) {
+            defer(function () {
+              _this8.element.parentNode.removeChild(_this8.element);
+              offsetParent.appendChild(_this8.element);
+            });
+          }
+
+          transcribe(same.offset, pos.offset);
+          moved = true;
+        })();
       } else {
         css.position = 'absolute';
-        transcribe({
-          top: true,
-          left: true
-        }, position.page);
+        transcribe({ top: true, left: true }, pos.page);
       }
-      if (!moved && this.element.parentNode.tagName !== 'BODY') {
-        this.element.parentNode.removeChild(this.element);
-        document.body.appendChild(this.element);
-      }
-      writeCSS = {};
-      write = false;
-      for (key in css) {
-        val = css[key];
-        elVal = this.element.style[key];
-        if (elVal !== '' && val !== '' && (key === 'top' || key === 'left' || key === 'bottom' || key === 'right')) {
-          elVal = parseFloat(elVal);
-          val = parseFloat(val);
+
+      if (!moved) {
+        var offsetParentIsBody = true;
+        var currentNode = this.element.parentNode;
+        while (currentNode && currentNode.nodeType === 1 && currentNode.tagName !== 'BODY') {
+          if (getComputedStyle(currentNode).position !== 'static') {
+            offsetParentIsBody = false;
+            break;
+          }
+
+          currentNode = currentNode.parentNode;
         }
+
+        if (!offsetParentIsBody) {
+          this.element.parentNode.removeChild(this.element);
+          document.body.appendChild(this.element);
+        }
+      }
+
+      // Any css change will trigger a repaint, so let's avoid one if nothing changed
+      var writeCSS = {};
+      var write = false;
+      for (var key in css) {
+        var val = css[key];
+        var elVal = this.element.style[key];
+
         if (elVal !== val) {
           write = true;
-          writeCSS[key] = css[key];
+          writeCSS[key] = val;
         }
       }
+
       if (write) {
-        return defer(function() {
-          return extend(_this.element.style, writeCSS);
+        defer(function () {
+          extend(_this8.element.style, writeCSS);
         });
       }
-    };
-
-    return _Tether;
-
-  })();
-
-  Tether.position = position;
-
-  this.Tether = extend(_Tether, Tether);
-
-}).call(this);
-
-(function() {
-  var BOUNDS_FORMAT, MIRROR_ATTACH, defer, extend, getBoundingRect, getBounds, getOuterSize, getSize, updateClasses, _ref,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-  _ref = this.Tether.Utils, getOuterSize = _ref.getOuterSize, getBounds = _ref.getBounds, getSize = _ref.getSize, extend = _ref.extend, updateClasses = _ref.updateClasses, defer = _ref.defer;
-
-  MIRROR_ATTACH = {
-    left: 'right',
-    right: 'left',
-    top: 'bottom',
-    bottom: 'top',
-    middle: 'middle'
-  };
-
-  BOUNDS_FORMAT = ['left', 'top', 'right', 'bottom'];
-
-  getBoundingRect = function(tether, to) {
-    var i, pos, side, size, style, _i, _len;
-    if (to === 'scrollParent') {
-      to = tether.scrollParent;
-    } else if (to === 'window') {
-      to = [pageXOffset, pageYOffset, innerWidth + pageXOffset, innerHeight + pageYOffset];
     }
-    if (to === document) {
-      to = to.documentElement;
-    }
-    if (to.nodeType != null) {
-      pos = size = getBounds(to);
-      style = getComputedStyle(to);
+  }]);
+
+  return TetherClass;
+})(Evented);
+
+TetherClass.modules = [];
+
+TetherBase.position = position;
+
+var Tether = extend(TetherClass, TetherBase);
+/* globals TetherBase */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var extend = _TetherBase$Utils.extend;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+
+var BOUNDS_FORMAT = ['left', 'top', 'right', 'bottom'];
+
+function getBoundingRect(tether, to) {
+  if (to === 'scrollParent') {
+    to = tether.scrollParents[0];
+  } else if (to === 'window') {
+    to = [pageXOffset, pageYOffset, innerWidth + pageXOffset, innerHeight + pageYOffset];
+  }
+
+  if (to === document) {
+    to = to.documentElement;
+  }
+
+  if (typeof to.nodeType !== 'undefined') {
+    (function () {
+      var size = getBounds(to);
+      var pos = size;
+      var style = getComputedStyle(to);
+
       to = [pos.left, pos.top, size.width + pos.left, size.height + pos.top];
-      for (i = _i = 0, _len = BOUNDS_FORMAT.length; _i < _len; i = ++_i) {
-        side = BOUNDS_FORMAT[i];
+
+      BOUNDS_FORMAT.forEach(function (side, i) {
         side = side[0].toUpperCase() + side.substr(1);
         if (side === 'Top' || side === 'Left') {
-          to[i] += parseFloat(style["border" + side + "Width"]);
+          to[i] += parseFloat(style['border' + side + 'Width']);
         } else {
-          to[i] -= parseFloat(style["border" + side + "Width"]);
+          to[i] -= parseFloat(style['border' + side + 'Width']);
         }
-      }
-    }
-    return to;
-  };
-
-  this.Tether.modules.push({
-    position: function(_arg) {
-      var addClasses, allClasses, attachment, bounds, changeAttachX, changeAttachY, cls, constraint, eAttachment, height, left, oob, oobClass, p, pin, pinned, pinnedClass, removeClass, side, tAttachment, targetAttachment, targetHeight, targetSize, targetWidth, to, top, width, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8,
-        _this = this;
-      top = _arg.top, left = _arg.left, targetAttachment = _arg.targetAttachment;
-      if (!this.options.constraints) {
-        return true;
-      }
-      removeClass = function(prefix) {
-        var side, _i, _len, _results;
-        _this.removeClass(prefix);
-        _results = [];
-        for (_i = 0, _len = BOUNDS_FORMAT.length; _i < _len; _i++) {
-          side = BOUNDS_FORMAT[_i];
-          _results.push(_this.removeClass("" + prefix + "-" + side));
-        }
-        return _results;
-      };
-      _ref1 = this.cache('element-bounds', function() {
-        return getBounds(_this.element);
-      }), height = _ref1.height, width = _ref1.width;
-      if (width === 0 && height === 0 && (this.lastSize != null)) {
-        _ref2 = this.lastSize, width = _ref2.width, height = _ref2.height;
-      }
-      targetSize = this.cache('target-bounds', function() {
-        return _this.getTargetBounds();
       });
-      targetHeight = targetSize.height;
-      targetWidth = targetSize.width;
-      tAttachment = {};
-      eAttachment = {};
-      allClasses = [this.getClass('pinned'), this.getClass('out-of-bounds')];
-      _ref3 = this.options.constraints;
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        constraint = _ref3[_i];
-        if (constraint.outOfBoundsClass) {
-          allClasses.push(constraint.outOfBoundsClass);
+    })();
+  }
+
+  return to;
+}
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
+
+    var top = _ref.top;
+    var left = _ref.left;
+    var targetAttachment = _ref.targetAttachment;
+
+    if (!this.options.constraints) {
+      return true;
+    }
+
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
+
+    var height = _cache.height;
+    var width = _cache.width;
+
+    if (width === 0 && height === 0 && typeof this.lastSize !== 'undefined') {
+      var _lastSize = this.lastSize;
+
+      // Handle the item getting hidden as a result of our positioning without glitching
+      // the classes in and out
+      width = _lastSize.width;
+      height = _lastSize.height;
+    }
+
+    var targetSize = this.cache('target-bounds', function () {
+      return _this.getTargetBounds();
+    });
+
+    var targetHeight = targetSize.height;
+    var targetWidth = targetSize.width;
+
+    var allClasses = [this.getClass('pinned'), this.getClass('out-of-bounds')];
+
+    this.options.constraints.forEach(function (constraint) {
+      var outOfBoundsClass = constraint.outOfBoundsClass;
+      var pinnedClass = constraint.pinnedClass;
+
+      if (outOfBoundsClass) {
+        allClasses.push(outOfBoundsClass);
+      }
+      if (pinnedClass) {
+        allClasses.push(pinnedClass);
+      }
+    });
+
+    allClasses.forEach(function (cls) {
+      ['left', 'top', 'right', 'bottom'].forEach(function (side) {
+        allClasses.push(cls + '-' + side);
+      });
+    });
+
+    var addClasses = [];
+
+    var tAttachment = extend({}, targetAttachment);
+    var eAttachment = extend({}, this.attachment);
+
+    this.options.constraints.forEach(function (constraint) {
+      var to = constraint.to;
+      var attachment = constraint.attachment;
+      var pin = constraint.pin;
+
+      if (typeof attachment === 'undefined') {
+        attachment = '';
+      }
+
+      var changeAttachX = undefined,
+          changeAttachY = undefined;
+      if (attachment.indexOf(' ') >= 0) {
+        var _attachment$split = attachment.split(' ');
+
+        var _attachment$split2 = _slicedToArray(_attachment$split, 2);
+
+        changeAttachY = _attachment$split2[0];
+        changeAttachX = _attachment$split2[1];
+      } else {
+        changeAttachX = changeAttachY = attachment;
+      }
+
+      var bounds = getBoundingRect(_this, to);
+
+      if (changeAttachY === 'target' || changeAttachY === 'both') {
+        if (top < bounds[1] && tAttachment.top === 'top') {
+          top += targetHeight;
+          tAttachment.top = 'bottom';
         }
-        if (constraint.pinnedClass) {
-          allClasses.push(constraint.pinnedClass);
+
+        if (top + height > bounds[3] && tAttachment.top === 'bottom') {
+          top -= targetHeight;
+          tAttachment.top = 'top';
         }
       }
-      for (_j = 0, _len1 = allClasses.length; _j < _len1; _j++) {
-        cls = allClasses[_j];
-        _ref4 = ['left', 'top', 'right', 'bottom'];
-        for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
-          side = _ref4[_k];
-          allClasses.push("" + cls + "-" + side);
-        }
-      }
-      addClasses = [];
-      tAttachment = extend({}, targetAttachment);
-      eAttachment = extend({}, this.attachment);
-      _ref5 = this.options.constraints;
-      for (_l = 0, _len3 = _ref5.length; _l < _len3; _l++) {
-        constraint = _ref5[_l];
-        to = constraint.to, attachment = constraint.attachment, pin = constraint.pin;
-        if (attachment == null) {
-          attachment = '';
-        }
-        if (__indexOf.call(attachment, ' ') >= 0) {
-          _ref6 = attachment.split(' '), changeAttachY = _ref6[0], changeAttachX = _ref6[1];
-        } else {
-          changeAttachX = changeAttachY = attachment;
-        }
-        bounds = getBoundingRect(this, to);
-        if (changeAttachY === 'target' || changeAttachY === 'both') {
-          if (top < bounds[1] && tAttachment.top === 'top') {
+
+      if (changeAttachY === 'together') {
+        if (tAttachment.top === 'top') {
+          if (eAttachment.top === 'bottom' && top < bounds[1]) {
             top += targetHeight;
             tAttachment.top = 'bottom';
-          }
-          if (top + height > bounds[3] && tAttachment.top === 'bottom') {
-            top -= targetHeight;
-            tAttachment.top = 'top';
-          }
-        }
-        if (changeAttachY === 'together') {
-          if (top < bounds[1] && tAttachment.top === 'top') {
-            if (eAttachment.top === 'bottom') {
-              top += targetHeight;
-              tAttachment.top = 'bottom';
-              top += height;
-              eAttachment.top = 'top';
-            } else if (eAttachment.top === 'top') {
-              top += targetHeight;
-              tAttachment.top = 'bottom';
-              top -= height;
-              eAttachment.top = 'bottom';
-            }
-          }
-          if (top + height > bounds[3] && tAttachment.top === 'bottom') {
-            if (eAttachment.top === 'top') {
-              top -= targetHeight;
-              tAttachment.top = 'top';
-              top -= height;
-              eAttachment.top = 'bottom';
-            } else if (eAttachment.top === 'bottom') {
-              top -= targetHeight;
-              tAttachment.top = 'top';
-              top += height;
-              eAttachment.top = 'top';
-            }
-          }
-          if (tAttachment.top === 'middle') {
-            if (top + height > bounds[3] && eAttachment.top === 'top') {
-              top -= height;
-              eAttachment.top = 'bottom';
-            } else if (top < bounds[1] && eAttachment.top === 'bottom') {
-              top += height;
-              eAttachment.top = 'top';
-            }
-          }
-        }
-        if (changeAttachX === 'target' || changeAttachX === 'both') {
-          if (left < bounds[0] && tAttachment.left === 'left') {
-            left += targetWidth;
-            tAttachment.left = 'right';
-          }
-          if (left + width > bounds[2] && tAttachment.left === 'right') {
-            left -= targetWidth;
-            tAttachment.left = 'left';
-          }
-        }
-        if (changeAttachX === 'together') {
-          if (left < bounds[0] && tAttachment.left === 'left') {
-            if (eAttachment.left === 'right') {
-              left += targetWidth;
-              tAttachment.left = 'right';
-              left += width;
-              eAttachment.left = 'left';
-            } else if (eAttachment.left === 'left') {
-              left += targetWidth;
-              tAttachment.left = 'right';
-              left -= width;
-              eAttachment.left = 'right';
-            }
-          } else if (left + width > bounds[2] && tAttachment.left === 'right') {
-            if (eAttachment.left === 'left') {
-              left -= targetWidth;
-              tAttachment.left = 'left';
-              left -= width;
-              eAttachment.left = 'right';
-            } else if (eAttachment.left === 'right') {
-              left -= targetWidth;
-              tAttachment.left = 'left';
-              left += width;
-              eAttachment.left = 'left';
-            }
-          } else if (tAttachment.left === 'center') {
-            if (left + width > bounds[2] && eAttachment.left === 'left') {
-              left -= width;
-              eAttachment.left = 'right';
-            } else if (left < bounds[0] && eAttachment.left === 'right') {
-              left += width;
-              eAttachment.left = 'left';
-            }
-          }
-        }
-        if (changeAttachY === 'element' || changeAttachY === 'both') {
-          if (top < bounds[1] && eAttachment.top === 'bottom') {
+
             top += height;
             eAttachment.top = 'top';
-          }
-          if (top + height > bounds[3] && eAttachment.top === 'top') {
-            top -= height;
+          } else if (eAttachment.top === 'top' && top + height > bounds[3] && top - (height - targetHeight) >= bounds[1]) {
+            top -= height - targetHeight;
+            tAttachment.top = 'bottom';
+
             eAttachment.top = 'bottom';
           }
         }
-        if (changeAttachX === 'element' || changeAttachX === 'both') {
-          if (left < bounds[0] && eAttachment.left === 'right') {
+
+        if (tAttachment.top === 'bottom') {
+          if (eAttachment.top === 'top' && top + height > bounds[3]) {
+            top -= targetHeight;
+            tAttachment.top = 'top';
+
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (eAttachment.top === 'bottom' && top < bounds[1] && top + (height * 2 - targetHeight) <= bounds[3]) {
+            top += height - targetHeight;
+            tAttachment.top = 'top';
+
+            eAttachment.top = 'top';
+          }
+        }
+
+        if (tAttachment.top === 'middle') {
+          if (top + height > bounds[3] && eAttachment.top === 'top') {
+            top -= height;
+            eAttachment.top = 'bottom';
+          } else if (top < bounds[1] && eAttachment.top === 'bottom') {
+            top += height;
+            eAttachment.top = 'top';
+          }
+        }
+      }
+
+      if (changeAttachX === 'target' || changeAttachX === 'both') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          left += targetWidth;
+          tAttachment.left = 'right';
+        }
+
+        if (left + width > bounds[2] && tAttachment.left === 'right') {
+          left -= targetWidth;
+          tAttachment.left = 'left';
+        }
+      }
+
+      if (changeAttachX === 'together') {
+        if (left < bounds[0] && tAttachment.left === 'left') {
+          if (eAttachment.left === 'right') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
             left += width;
             eAttachment.left = 'left';
-          }
-          if (left + width > bounds[2] && eAttachment.left === 'left') {
+          } else if (eAttachment.left === 'left') {
+            left += targetWidth;
+            tAttachment.left = 'right';
+
             left -= width;
             eAttachment.left = 'right';
           }
-        }
-        if (typeof pin === 'string') {
-          pin = (function() {
-            var _len4, _m, _ref7, _results;
-            _ref7 = pin.split(',');
-            _results = [];
-            for (_m = 0, _len4 = _ref7.length; _m < _len4; _m++) {
-              p = _ref7[_m];
-              _results.push(p.trim());
-            }
-            return _results;
-          })();
-        } else if (pin === true) {
-          pin = ['top', 'left', 'right', 'bottom'];
-        }
-        pin || (pin = []);
-        pinned = [];
-        oob = [];
-        if (top < bounds[1]) {
-          if (__indexOf.call(pin, 'top') >= 0) {
-            top = bounds[1];
-            pinned.push('top');
-          } else {
-            oob.push('top');
+        } else if (left + width > bounds[2] && tAttachment.left === 'right') {
+          if (eAttachment.left === 'left') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'right') {
+            left -= targetWidth;
+            tAttachment.left = 'left';
+
+            left += width;
+            eAttachment.left = 'left';
+          }
+        } else if (tAttachment.left === 'center') {
+          if (left + width > bounds[2] && eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (left < bounds[0] && eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
           }
         }
-        if (top + height > bounds[3]) {
-          if (__indexOf.call(pin, 'bottom') >= 0) {
-            top = bounds[3] - height;
-            pinned.push('bottom');
-          } else {
-            oob.push('bottom');
-          }
+      }
+
+      if (changeAttachY === 'element' || changeAttachY === 'both') {
+        if (top < bounds[1] && eAttachment.top === 'bottom') {
+          top += height;
+          eAttachment.top = 'top';
         }
+
+        if (top + height > bounds[3] && eAttachment.top === 'top') {
+          top -= height;
+          eAttachment.top = 'bottom';
+        }
+      }
+
+      if (changeAttachX === 'element' || changeAttachX === 'both') {
         if (left < bounds[0]) {
-          if (__indexOf.call(pin, 'left') >= 0) {
-            left = bounds[0];
-            pinned.push('left');
-          } else {
-            oob.push('left');
+          if (eAttachment.left === 'right') {
+            left += width;
+            eAttachment.left = 'left';
+          } else if (eAttachment.left === 'center') {
+            left += width / 2;
+            eAttachment.left = 'left';
           }
         }
+
         if (left + width > bounds[2]) {
-          if (__indexOf.call(pin, 'right') >= 0) {
-            left = bounds[2] - width;
-            pinned.push('right');
-          } else {
-            oob.push('right');
-          }
-        }
-        if (pinned.length) {
-          pinnedClass = (_ref7 = this.options.pinnedClass) != null ? _ref7 : this.getClass('pinned');
-          addClasses.push(pinnedClass);
-          for (_m = 0, _len4 = pinned.length; _m < _len4; _m++) {
-            side = pinned[_m];
-            addClasses.push("" + pinnedClass + "-" + side);
-          }
-        }
-        if (oob.length) {
-          oobClass = (_ref8 = this.options.outOfBoundsClass) != null ? _ref8 : this.getClass('out-of-bounds');
-          addClasses.push(oobClass);
-          for (_n = 0, _len5 = oob.length; _n < _len5; _n++) {
-            side = oob[_n];
-            addClasses.push("" + oobClass + "-" + side);
-          }
-        }
-        if (__indexOf.call(pinned, 'left') >= 0 || __indexOf.call(pinned, 'right') >= 0) {
-          eAttachment.left = tAttachment.left = false;
-        }
-        if (__indexOf.call(pinned, 'top') >= 0 || __indexOf.call(pinned, 'bottom') >= 0) {
-          eAttachment.top = tAttachment.top = false;
-        }
-        if (tAttachment.top !== targetAttachment.top || tAttachment.left !== targetAttachment.left || eAttachment.top !== this.attachment.top || eAttachment.left !== this.attachment.left) {
-          this.updateAttachClasses(eAttachment, tAttachment);
-        }
-      }
-      defer(function() {
-        updateClasses(_this.target, addClasses, allClasses);
-        return updateClasses(_this.element, addClasses, allClasses);
-      });
-      return {
-        top: top,
-        left: left
-      };
-    }
-  });
-
-}).call(this);
-
-(function() {
-  var defer, getBounds, updateClasses, _ref;
-
-  _ref = this.Tether.Utils, getBounds = _ref.getBounds, updateClasses = _ref.updateClasses, defer = _ref.defer;
-
-  this.Tether.modules.push({
-    position: function(_arg) {
-      var abutted, addClasses, allClasses, bottom, height, left, right, side, sides, targetPos, top, width, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref1, _ref2, _ref3, _ref4, _ref5,
-        _this = this;
-      top = _arg.top, left = _arg.left;
-      _ref1 = this.cache('element-bounds', function() {
-        return getBounds(_this.element);
-      }), height = _ref1.height, width = _ref1.width;
-      targetPos = this.getTargetBounds();
-      bottom = top + height;
-      right = left + width;
-      abutted = [];
-      if (top <= targetPos.bottom && bottom >= targetPos.top) {
-        _ref2 = ['left', 'right'];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          side = _ref2[_i];
-          if ((_ref3 = targetPos[side]) === left || _ref3 === right) {
-            abutted.push(side);
+          if (eAttachment.left === 'left') {
+            left -= width;
+            eAttachment.left = 'right';
+          } else if (eAttachment.left === 'center') {
+            left -= width / 2;
+            eAttachment.left = 'right';
           }
         }
       }
-      if (left <= targetPos.right && right >= targetPos.left) {
-        _ref4 = ['top', 'bottom'];
-        for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-          side = _ref4[_j];
-          if ((_ref5 = targetPos[side]) === top || _ref5 === bottom) {
-            abutted.push(side);
-          }
-        }
-      }
-      allClasses = [];
-      addClasses = [];
-      sides = ['left', 'top', 'right', 'bottom'];
-      allClasses.push(this.getClass('abutted'));
-      for (_k = 0, _len2 = sides.length; _k < _len2; _k++) {
-        side = sides[_k];
-        allClasses.push("" + (this.getClass('abutted')) + "-" + side);
-      }
-      if (abutted.length) {
-        addClasses.push(this.getClass('abutted'));
-      }
-      for (_l = 0, _len3 = abutted.length; _l < _len3; _l++) {
-        side = abutted[_l];
-        addClasses.push("" + (this.getClass('abutted')) + "-" + side);
-      }
-      defer(function() {
-        updateClasses(_this.target, addClasses, allClasses);
-        return updateClasses(_this.element, addClasses, allClasses);
-      });
-      return true;
-    }
-  });
 
-}).call(this);
-
-(function() {
-  this.Tether.modules.push({
-    position: function(_arg) {
-      var left, result, shift, shiftLeft, shiftTop, top, _ref;
-      top = _arg.top, left = _arg.left;
-      if (!this.options.shift) {
-        return;
+      if (typeof pin === 'string') {
+        pin = pin.split(',').map(function (p) {
+          return p.trim();
+        });
+      } else if (pin === true) {
+        pin = ['top', 'left', 'right', 'bottom'];
       }
-      result = function(val) {
-        if (typeof val === 'function') {
-          return val.call(this, {
-            top: top,
-            left: left
-          });
+
+      pin = pin || [];
+
+      var pinned = [];
+      var oob = [];
+
+      if (top < bounds[1]) {
+        if (pin.indexOf('top') >= 0) {
+          top = bounds[1];
+          pinned.push('top');
         } else {
-          return val;
+          oob.push('top');
         }
-      };
-      shift = result(this.options.shift);
-      if (typeof shift === 'string') {
-        shift = shift.split(' ');
-        shift[1] || (shift[1] = shift[0]);
-        shiftTop = shift[0], shiftLeft = shift[1];
-        shiftTop = parseFloat(shiftTop, 10);
-        shiftLeft = parseFloat(shiftLeft, 10);
-      } else {
-        _ref = [shift.top, shift.left], shiftTop = _ref[0], shiftLeft = _ref[1];
       }
-      top += shiftTop;
-      left += shiftLeft;
-      return {
-        top: top,
-        left: left
-      };
+
+      if (top + height > bounds[3]) {
+        if (pin.indexOf('bottom') >= 0) {
+          top = bounds[3] - height;
+          pinned.push('bottom');
+        } else {
+          oob.push('bottom');
+        }
+      }
+
+      if (left < bounds[0]) {
+        if (pin.indexOf('left') >= 0) {
+          left = bounds[0];
+          pinned.push('left');
+        } else {
+          oob.push('left');
+        }
+      }
+
+      if (left + width > bounds[2]) {
+        if (pin.indexOf('right') >= 0) {
+          left = bounds[2] - width;
+          pinned.push('right');
+        } else {
+          oob.push('right');
+        }
+      }
+
+      if (pinned.length) {
+        (function () {
+          var pinnedClass = undefined;
+          if (typeof _this.options.pinnedClass !== 'undefined') {
+            pinnedClass = _this.options.pinnedClass;
+          } else {
+            pinnedClass = _this.getClass('pinned');
+          }
+
+          addClasses.push(pinnedClass);
+          pinned.forEach(function (side) {
+            addClasses.push(pinnedClass + '-' + side);
+          });
+        })();
+      }
+
+      if (oob.length) {
+        (function () {
+          var oobClass = undefined;
+          if (typeof _this.options.outOfBoundsClass !== 'undefined') {
+            oobClass = _this.options.outOfBoundsClass;
+          } else {
+            oobClass = _this.getClass('out-of-bounds');
+          }
+
+          addClasses.push(oobClass);
+          oob.forEach(function (side) {
+            addClasses.push(oobClass + '-' + side);
+          });
+        })();
+      }
+
+      if (pinned.indexOf('left') >= 0 || pinned.indexOf('right') >= 0) {
+        eAttachment.left = tAttachment.left = false;
+      }
+      if (pinned.indexOf('top') >= 0 || pinned.indexOf('bottom') >= 0) {
+        eAttachment.top = tAttachment.top = false;
+      }
+
+      if (tAttachment.top !== targetAttachment.top || tAttachment.left !== targetAttachment.left || eAttachment.top !== _this.attachment.top || eAttachment.left !== _this.attachment.left) {
+        _this.updateAttachClasses(eAttachment, tAttachment);
+        _this.trigger('update', {
+          attachment: eAttachment,
+          targetAttachment: tAttachment
+        });
+      }
+    });
+
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
+
+    return { top: top, left: left };
+  }
+});
+/* globals TetherBase */
+
+'use strict';
+
+var _TetherBase$Utils = TetherBase.Utils;
+var getBounds = _TetherBase$Utils.getBounds;
+var updateClasses = _TetherBase$Utils.updateClasses;
+var defer = _TetherBase$Utils.defer;
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var _this = this;
+
+    var top = _ref.top;
+    var left = _ref.left;
+
+    var _cache = this.cache('element-bounds', function () {
+      return getBounds(_this.element);
+    });
+
+    var height = _cache.height;
+    var width = _cache.width;
+
+    var targetPos = this.getTargetBounds();
+
+    var bottom = top + height;
+    var right = left + width;
+
+    var abutted = [];
+    if (top <= targetPos.bottom && bottom >= targetPos.top) {
+      ['left', 'right'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === left || targetPosSide === right) {
+          abutted.push(side);
+        }
+      });
     }
-  });
 
-}).call(this);
+    if (left <= targetPos.right && right >= targetPos.left) {
+      ['top', 'bottom'].forEach(function (side) {
+        var targetPosSide = targetPos[side];
+        if (targetPosSide === top || targetPosSide === bottom) {
+          abutted.push(side);
+        }
+      });
+    }
 
-return this.Tether;
+    var allClasses = [];
+    var addClasses = [];
+
+    var sides = ['left', 'top', 'right', 'bottom'];
+    allClasses.push(this.getClass('abutted'));
+    sides.forEach(function (side) {
+      allClasses.push(_this.getClass('abutted') + '-' + side);
+    });
+
+    if (abutted.length) {
+      addClasses.push(this.getClass('abutted'));
+    }
+
+    abutted.forEach(function (side) {
+      addClasses.push(_this.getClass('abutted') + '-' + side);
+    });
+
+    defer(function () {
+      if (!(_this.options.addTargetClasses === false)) {
+        updateClasses(_this.target, addClasses, allClasses);
+      }
+      updateClasses(_this.element, addClasses, allClasses);
+    });
+
+    return true;
+  }
+});
+/* globals TetherBase */
+
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+TetherBase.modules.push({
+  position: function position(_ref) {
+    var top = _ref.top;
+    var left = _ref.left;
+
+    if (!this.options.shift) {
+      return;
+    }
+
+    var shift = this.options.shift;
+    if (typeof this.options.shift === 'function') {
+      shift = this.options.shift.call(this, { top: top, left: left });
+    }
+
+    var shiftTop = undefined,
+        shiftLeft = undefined;
+    if (typeof shift === 'string') {
+      shift = shift.split(' ');
+      shift[1] = shift[1] || shift[0];
+
+      var _shift = shift;
+
+      var _shift2 = _slicedToArray(_shift, 2);
+
+      shiftTop = _shift2[0];
+      shiftLeft = _shift2[1];
+
+      shiftTop = parseFloat(shiftTop, 10);
+      shiftLeft = parseFloat(shiftLeft, 10);
+    } else {
+      shiftTop = shift.top;
+      shiftLeft = shift.left;
+    }
+
+    top += shiftTop;
+    left += shiftLeft;
+
+    return { top: top, left: left };
+  }
+});
+return Tether;
 
 }));
 
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/tether/tether.js","/../node_modules/tether")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/tether/dist/js/tether.js","/../node_modules/tether/dist/js")
 },{"1YiZ5S":8,"buffer":5}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 (function(){
@@ -10097,7 +10790,7 @@ return this.Tether;
 				styleContext.set(key, value);
 				return self;
 			};
-			this.css = function(rules, selector) {
+			this.css = function(selector, rules) {
 				selector = '.' + getCssClass() + (selector ? ' ' + selector : '');
 				dust.renderSource(rules, styleContext, function(err, compiledRules) {
 					if (!err) {
@@ -10451,17 +11144,13 @@ return this.Tether;
 				}
 				return self;
 			};
-			this.css = function(rules, selector) {
-				selector = selector || '';
-				if (cssClasses && cssClasses.length) {
-					selector = '.darktip-tooltip.' + cssClasses.join('.') + (selector ? ' ' + selector : '');
-				} else {
-					selector = '.darktip-tooltip' + (selector ? ' ' + selector : '');
-				}
-				DarkTip.css.add(selector, rules);
+			this.css = function(selector, rules) {
+				effectiveSelector = '.darktip-tooltip' + ((cssClasses && cssClasses.length) ? ('.' + cssClasses.join('.')) : '') + (selector ? ' ' + selector : '');
+				DarkTip.css.add(effectiveSelector, rules);
 				return self;
 			};
 			this.start = function(elem, params) {
+				log('module start', elem, params);
 				var r, style, templateIndex, templateLoading;
 				if (!elem.DarkTip.init) {
 					elem.DarkTip.init   = true;
@@ -10513,6 +11202,7 @@ return this.Tether;
 						}
 					};
 					style = self.style();
+					console.log('style', style);
 					if (style) {
 						templateLoading = style.getWrappedLoadingTplName();
 						templateIndex   = style.getWrappedIndexTplName();
@@ -10562,5 +11252,5 @@ return this.Tether;
 	globalScope.DarkTip = DarkTip;
 
 })((function(){return this;})())
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_8ffeea2e.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_8e938457.js","/")
 },{"./darktip-tools":11,"./dustjs-darktip":12,"1YiZ5S":8,"buffer":5,"dustjs-helpers":1,"dustjs-linkedin":3,"dustjs-linkedin/lib/compiler":2,"q":9,"tether":10}]},{},[13])
