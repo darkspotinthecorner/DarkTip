@@ -119,15 +119,12 @@
 
 	/* ==========---------- Modify core dust functions ----------========== */
 
-	dust.load = function(name, chunk, context) {
-		var tmpl = context.get('module.template.' + name);
-		if (tmpl) {
-			if (typeof tmpl !== 'function') {
-				return chunk.setError(new Error('Template Not Compiled: ' + name));
-			}
-			return tmpl(chunk, context);
+	dust.templateProvider = function(name, chunk, context) {
+		var template = context.get('module.template.' + name);
+		if (template) {
+			return template;
 		}
-		return chunk.setError(new Error('Template Not Found: ' + name));
+		return false;
 	};
 
 	var Context = dust.makeBase().constructor;

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "dustjs-helpers": "1.x",
-    "dustjs-linkedin": "2.x",
+    "dustjs-linkedin": "darkspotinthecorner/dustjs",
     "q": "1.x",
     "tether": "1.x",
     "animejs": "1.x"

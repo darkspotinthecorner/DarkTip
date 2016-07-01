@@ -43,6 +43,8 @@
 		}
 	}
 
+	/* ### EXPORT ######################################################## */
+
 	if (typeof exports === 'object') {
 		module.exports = tools;
 	} else {
