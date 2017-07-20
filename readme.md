@@ -1,5 +1,7 @@
 # [DarkTip](https://github.com/darkspotinthecorner/DarkTip) - A Tooltip Framework for REST APIs & JSONP
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/darkspotinthecorner/DarkTip?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 
 Credit where credit is due (Thanks to...)
